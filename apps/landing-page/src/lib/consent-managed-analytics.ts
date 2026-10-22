@@ -1,6 +1,5 @@
 "use client";
 
-import posthog from "posthog-js";
 import {
   ANALYTICS_CONSENT_EVENT, ANALYTICS_CONSENT_VERSION,
   analyticsCookieDomain, hasAnalyticsConsent, readAnalyticsConsent, saveAnalyticsConsent,
@@ -9,10 +8,26 @@ import {
 
 const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
 export const isAnalyticsConfigured = Boolean(key) && process.env.NEXT_PUBLIC_POSTHOG_ENABLED !== "false";
+type PostHogClient = typeof import("posthog-js").default;
 let initialized = false;
 let started = false;
 let active = false;
 let previousConsent = "";
+let posthogClient: PostHogClient | null = null;
+let posthogLoading: Promise<PostHogClient> | null = null;
+
+function loadPostHog() {
+  if (!posthogLoading) {
+    posthogLoading = import("posthog-js").then(({ default: posthog }) => {
+      posthogClient = posthog;
+      return posthog;
+    }).catch((error: unknown) => {
+      posthogLoading = null;
+      throw error;
+    });
+  }
+  return posthogLoading;
+}
 
 function clearAnalyticsStorage() {
   if (!key) return;
@@ -109,19 +124,23 @@ export function safeAnalyticsProperties(properties: Record<string, unknown>) {
 export function syncAnalyticsConsent() {
   if (!isAnalyticsConfigured) return;
   if (!hasAnalyticsConsent()) {
-    if (initialized && active) {
-      posthog.opt_out_capturing();
-      posthog.set_config({ disable_persistence: true, persistence: "memory" });
-      posthog.reset(true);
-      posthog.opt_out_capturing();
+    if (initialized && active && posthogClient) {
+      posthogClient.opt_out_capturing();
+      posthogClient.set_config({ disable_persistence: true, persistence: "memory" });
+      posthogClient.reset(true);
+      posthogClient.opt_out_capturing();
     }
     active = false;
     clearAnalyticsStorage();
     return;
   }
 
-  if (!initialized) {
-    posthog.init(key!, {
+  void loadPostHog().then((posthog) => {
+    // Consent can be withdrawn while the SDK chunk is downloading.
+    if (!hasAnalyticsConsent()) return;
+
+    if (!initialized) {
+      posthog.init(key!, {
       api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com",
       capture_pageview: "history_change",
       capture_pageleave: true,
@@ -179,13 +198,30 @@ export function syncAnalyticsConsent() {
         if (eventProfile) event.properties.$set = eventProfile;
         return event;
       },
-    });
-    initialized = true;
-  } else if (!active) {
-    posthog.set_config({ disable_persistence: false, persistence: "cookie" });
-    posthog.opt_in_capturing({ captureEventName: false });
+      });
+      initialized = true;
+    } else if (!active) {
+      posthog.set_config({ disable_persistence: false, persistence: "cookie" });
+      posthog.opt_in_capturing({ captureEventName: false });
+    }
+    active = true;
+  }).catch(() => {
+    // Analytics must never prevent the marketing site from working.
+  });
+}
+
+export async function captureWithAnalyticsConsent(
+  capture: (posthog: PostHogClient) => void,
+) {
+  if (!isAnalyticsConfigured || !hasAnalyticsConsent()) return;
+  try {
+    const posthog = await loadPostHog();
+    if (!hasAnalyticsConsent()) return;
+    syncAnalyticsConsent();
+    capture(posthog);
+  } catch {
+    // Analytics must never prevent the marketing site from working.
   }
-  active = true;
 }
 
 export function setAnalyticsChoice(choice: AnalyticsChoice): boolean {

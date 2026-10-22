@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 // Shared scenarios exercise the real banner and SDK in each independently built app.
-export function analyticsConsentScenarios(entryPath: string, navigationPath: string) {
+export function analyticsConsentScenarios(entryPath: string, navigationPath: string, expectLazySdk = false) {
   // Exercise consenting human traffic: PostHog drops headless client hints.
   // This only affects the local test browser; production keeps its bot filtering.
   test.use({ viewport: { width: 1280, height: 720 }, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36" });
@@ -53,14 +53,22 @@ export function analyticsConsentScenarios(entryPath: string, navigationPath: str
 
   test("accord puis retrait : capture autorisée, suppression navigateur et arrêt après navigation", async ({ page, context }) => {
     const calls: string[] = [];
+    const scriptChunks = new Set<string>();
     page.on("request", (request) => {
       if (request.url().includes("posthog.com")) calls.push(request.url());
+      if (request.resourceType() === "script" && /\/_next\/static\/(?:immutable\/)?chunks\//.test(request.url())) {
+        scriptChunks.add(request.url());
+      }
     });
     await page.goto(entryPath + "?email=private%40example.test&token=secret#private");
+    const chunksBeforeConsent = new Set(scriptChunks);
     const preferences = page.getByRole("region", { name: "Votre choix de mesure d’audience" });
     await preferences.getByRole("button", { name: "Accepter", exact: true }).click();
     await expect(preferences).toBeHidden();
     await expect.poll(() => calls.length).toBeGreaterThan(0);
+    if (expectLazySdk) {
+      expect([...scriptChunks].some((chunk) => !chunksBeforeConsent.has(chunk))).toBe(true);
+    }
     expect((await context.cookies()).some((cookie) => cookie.name.startsWith("ph_"))).toBe(true);
     await page.getByRole("button", { name: "Gérer les cookies" }).click();
     await preferences.getByRole("button", { name: "Refuser", exact: true }).click();

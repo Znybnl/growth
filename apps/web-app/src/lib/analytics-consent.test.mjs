@@ -57,7 +57,7 @@ function browser() {
 }
 
 test("les deux applications partagent le protocole, les gardes et le composant de choix", () => {
-  for (const path of ["lib/analytics-consent.ts", "lib/consent-managed-analytics.ts", "components/privacy/cookie-preferences.tsx"]) {
+  for (const path of ["lib/analytics-consent.ts", "components/privacy/cookie-preferences.tsx"]) {
     assert.equal(
       readFileSync(new URL(`apps/web-app/src/${path}`, root), "utf8"),
       readFileSync(new URL(`apps/landing-page/src/${path}`, root), "utf8"),
@@ -94,6 +94,8 @@ for (const app of ["web-app", "landing-page"]) {
     assert.equal(client.setAnalyticsChoice("rejected"), true);
     assert.equal(state.init.length, 0);
     assert.equal(client.setAnalyticsChoice("accepted"), true);
+    // The landing page loads its SDK asynchronously only after consent.
+    await new Promise((resolve) => setImmediate(resolve));
     assert.equal(state.init.length, 1);
     const config = state.init[0].config;
     assert.equal(config.autocapture, false);
@@ -186,6 +188,7 @@ for (const app of ["web-app", "landing-page"]) {
     } else {
       const analytics = await import(new URL("apps/landing-page/src/lib/marketing-analytics.ts", root));
       analytics.captureMarketingEvent("marketing_cta_clicked", { cta: "start_trial" });
+      await new Promise((resolve) => setImmediate(resolve));
       assert.equal(state.events[0][1].utmCampaign, undefined);
       assert.deepEqual(state.events[0][2], { transport: "sendBeacon", send_instantly: true });
     }
@@ -204,6 +207,7 @@ for (const app of ["web-app", "landing-page"]) {
       assert.equal(state.logs.length, 1);
     }
     assert.equal(client.setAnalyticsChoice("accepted"), true);
+    await new Promise((resolve) => setImmediate(resolve));
     assert.ok(state.calls.includes("in"));
   });
 }

@@ -1,3 +1,3 @@
 import { analyticsConsentScenarios } from "../../../tests/analytics-consent-scenarios";
 
-analyticsConsentScenarios("/", "/tarifs");
+analyticsConsentScenarios("/", "/tarifs", true);
