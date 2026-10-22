@@ -71,7 +71,7 @@
   --font-sans: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-heading: var(--font-sans);
-  --font-mono: "Roboto Mono", "Roboto Mono Fallback", ui-monospace, monospace;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --color-linen-canvas: var(--color-linen-canvas);
   --color-sky-wash: var(--color-sky-wash);
   --color-midnight-ink: var(--color-midnight-ink);
