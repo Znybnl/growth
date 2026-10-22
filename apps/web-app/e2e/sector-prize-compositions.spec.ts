@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { assertNoPageOverflow, captureVisualAt1280, rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
 import beauty from "../src/lib/beauty-catalog-466.fixture.json";
 import additions from "../src/lib/prize-catalog-623.fixture.json";
-const suggestions = [...beauty, ...additions].map(item => ({ ...item, isActive: true }));
+const suggestions = [...beauty, ...additions].map(item => ({ ...item, industrySubsector: item.industrySubsector ?? undefined, isActive: true }));
 test.beforeEach(async ({ page, context, baseURL }) => {
   await rejectAnalyticsForVisualTests(context, baseURL!);
   await page.route(/https:\/\//, route => route.abort());
@@ -38,6 +38,12 @@ for (const config of [{width:1280,height:720,admin:false,scratch:false},{width:1
     await starter.getByRole("button",{name:"Voir la composition : Équilibré",exact:true}).click();
     const dialog=page.getByRole("dialog",{name:"Ajouter des lots",exact:true});
     await expect(dialog.getByRole("list",{name:"Lots de la composition"}).getByRole("listitem")).toHaveCount(3);
+    await expect(dialog.getByText("Achat requis pour utiliser ce gain",{exact:true})).toHaveCount(1);
+    await expect(dialog.getByText("Conditions d’utilisation proposées",{exact:true})).toHaveCount(3);
+    await dialog.getByRole("list",{name:"Lots de la composition"}).getByRole("listitem").nth(1).scrollIntoViewIfNeeded();
+    await expect(dialog.getByText("Achat requis pour utiliser ce gain",{exact:true})).toBeInViewport();
+    if(config.width===1280) await captureVisualAt1280(page,info,"detail-conditions",config.height);
+    else { await assertNoPageOverflow(page); await page.screenshot({path:info.outputPath("detail-conditions-mobile.png")}); }
     await expect(page.getByTestId("wizard-prize-row")).toHaveCount(0);
     await dialog.getByRole("button",{name:"Utiliser cette composition",exact:true}).click();
     await expect(dialog).toHaveCount(0);
@@ -63,6 +69,25 @@ test("catalogue en échec puis vide : réessai, création manuelle et aucun lot 
   await page.getByRole("button",{name:"Créer un lot",exact:true}).click();
   await expect(page.getByRole("dialog",{name:"Créer un lot",exact:true})).toBeVisible();
 });
+
+for (const invalid of [{ suggestions: {} }, { suggestions: [null] }]) {
+  test(`catalogue malformé récupérable : ${JSON.stringify(invalid)}`, async ({page}) => {
+    let broken=true;
+    await page.route("**/api/prize-suggestions?**",route=>route.fulfill({json:broken?invalid:{suggestions}}));
+    await start(page);
+    const starter=page.getByTestId("wizard-starter-compositions");
+    await expect(starter.getByRole("alert")).toContainText("Impossible de charger");
+    await expect(page.getByTestId("wizard-prize-row")).toHaveCount(0);
+    await page.getByRole("button",{name:"Créer un lot",exact:true}).click();
+    const editor=page.getByRole("dialog",{name:"Créer un lot",exact:true});
+    await expect(editor).toBeVisible();
+    await editor.getByRole("button",{name:"Annuler",exact:true}).click();
+    broken=false;
+    await starter.getByRole("button",{name:"Réessayer",exact:true}).click();
+    await expect(starter.getByTestId("wizard-composition-card")).toHaveCount(3);
+    await expect(page.getByTestId("wizard-prize-row")).toHaveCount(0);
+  });
+}
 
 test("restauration : recettes du secteur et conditions d’achat conservées",async({page})=>{
   await start(page,false,false,"restaurant");

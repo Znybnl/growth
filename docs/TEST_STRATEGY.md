@@ -12,6 +12,13 @@ exerce création sans lot, choix explicite, sauvegarde roue/ticket/admin, erreur
 et vide, avec captures1280×720/600 et320/390px. Les régressions bibliothèque,
 budget et réutilisation restent couvertes ; aucun e-mail ni écriture en production.
 
+Relecture PR #624 : le contrat réseau du catalogue est validé avant rendu
+(enveloppe, types des champs utilisés, valeurs numériques, IDs uniques).
+Un catalogue malformé produit un état d'erreur avec réessai et création manuelle,
+pas un faux état vide. Les tests vérifient aussi le retour à un catalogue valide
+sans ajout automatique. Le détail montre les conditions proposées et l'achat
+requis selon le même mapping que la copie, avec captures à 1280×720/600 et mobile.
+
 ### Budget et finitions — #609 phase5
 
 `test:prize-budget` vérifie le cas SFD3,08€/308€, les coûts inconnus/zéro,

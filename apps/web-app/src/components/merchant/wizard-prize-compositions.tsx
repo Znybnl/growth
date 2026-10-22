@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef } from "react";
 import { ChevronLeft, Layers3 } from "lucide-react";
 import type { PrizeComposition } from "@/lib/prize-compositions";
+import { prizeFieldsFromSuggestion } from "@/lib/prize-suggestion-fields";
 import styles from "./wizard-prize-library.module.css";
 
 const percent = (value: number) => new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(value);
@@ -39,6 +40,8 @@ export function WizardPrizeCompositions({ compositions, selected, confirming, wi
       <ul className="space-y-2" aria-label="Lots de la composition">
         {selected.prizes.map((item) => <li key={item.id} className="rounded-xl border border-[#e8e2ea] bg-white p-4">
           <div className="flex items-start justify-between gap-3"><h4 className="min-w-0 break-words text-sm font-semibold">{item.label}</h4><strong className="shrink-0 text-sm tabular-nums text-[#64206f]">{percent(item.probability)} %</strong></div>
+          {prizeFieldsFromSuggestion(item).purchaseRequired ? <p className="mt-2 inline-block rounded-md bg-[#fff5e5] px-2 py-1 text-xs font-semibold text-[#714400]">Achat requis pour utiliser ce gain</p> : null}
+          <p className="mt-2 text-xs font-semibold text-[#716b78]">Conditions d’utilisation proposées</p>
           <p className="mt-1 break-words text-[13px] leading-5 text-[#716b78]">{item.description}</p>
           <p className="mt-2 text-[13px] text-[#716b78]">Coût unitaire indicatif : {euros(item.estimatedUnitCost)} · Stock illimité</p>
         </li>)}

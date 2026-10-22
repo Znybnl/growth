@@ -128,3 +128,38 @@ migration ; ouvrir un ancien jeu et constater que ses lots n’ont pas changé.
 Ces preuves sont locales : API navigateur interceptées, DAL/migrations testées
 sur données fictives. Elles ne certifient ni une migration Supabase réelle ni
 un déploiement ; validation propriétaire, migration et checks CI restent requis.
+
+## Relecture de la PR #624
+
+Deux améliorations ciblées après la demande de relecture :
+
+- La réponse réseau n'est plus simplement considérée comme typée. Une enveloppe
+  incorrecte, une ligne nulle, un champ utilisé par le rendu de mauvais type ou
+  un identifiant dupliqué déclenche l'état d'erreur récupérable existant. Un
+  vrai tableau vide reste un catalogue vide. Aucune donnée n'est corrigée,
+  remplacée ou supprimée silencieusement. Le contrat suit la projection actuelle
+  de `toPrizeSuggestion`, notamment le sous-secteur absent omis par l'API.
+- Les conditions d'utilisation sont identifiées dans le détail, avec un badge
+  d'achat requis dérivé de `prizeFieldsFromSuggestion`, exactement comme lors
+  de la copie. La compétence frontend-design a guidé ce repère discret et
+  lisible sans refonte des cartes ; aucun changement de condition ni de règle.
+
+Deux tests unitaires et deux scénarios navigateur supplémentaires couvrent la
+validation, l'erreur, le réessai, l'accès à la création manuelle et l'absence
+d'ajout automatique. Captures du détail, y compris après défilement à 320 px,
+dans `apps/web-app/test-results/review-624-final`.
+
+Validation de cette relecture : 44 E2E réussis en une exécution (7 suites),
+31 tests compositions/contrat/migration et 24 tests catalogue Beauté réussis.
+Lint sans erreur (4 avertissements antérieurs hors périmètre), build Next et
+TypeScript réussis, verify:source et diffcheck réussis. Captures du détail
+inspectées : badge et conditions lisibles, pied d'actions accessible,
+défilement interne sans débordement horizontal. Le premier essai unitaire a
+détecté que la fixture SQL exportait un sous-secteur null, contrairement à
+l'API qui l'omet : les fixtures réseau reproduisent désormais la projection
+serveur, sans changement de stockage ni relaxation du contrat applicatif.
+
+La migration reste inchangée et à jouer avant la validation complète. La CI
+de la première version échoue sur l'audit des dépendances Next.js/DOMPurify,
+préexistant à cette PR : aucun audit contourné, aucune exception ajoutée,
+aucune mise à niveau de dépendance ou mise en production dans cette relecture.

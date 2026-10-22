@@ -7,12 +7,26 @@ import { INDUSTRY_OPTIONS, BEAUTY_SUBSECTOR_OPTIONS, RESTAURANT_TYPE_OPTIONS } f
 import beauty from "./beauty-catalog-466.fixture.json" with { type: "json" };
 import additions from "./prize-catalog-623.fixture.json" with { type: "json" };
 import recipes from "./prize-composition-recipes.json" with { type: "json" };
-const catalog = [...beauty, ...additions].map(item => ({ ...item, isActive: true }));
+import { parsePrizeSuggestionCatalog } from "./prize-suggestion-catalog.ts";
+const catalog = [...beauty, ...additions].map(item => ({ ...item, industrySubsector: item.industrySubsector ?? undefined, isActive: true }));
 const contexts = [
  ...INDUSTRY_OPTIONS.filter(industry => industry !== "Beauté").map(industry => ({ industry })),
  ...BEAUTY_SUBSECTOR_OPTIONS.map(industrySubsector => ({ industry: "Beauté", industrySubsector })),
  ...RESTAURANT_TYPE_OPTIONS.map(restaurantType => ({ industry: "Restauration", restaurantType })),
 ];
+test("frontière réseau : catalogue valide, vide et données inchangées", () => {
+ assert.deepEqual(parsePrizeSuggestionCatalog({suggestions: []}), []);
+ assert.equal(parsePrizeSuggestionCatalog({suggestions: catalog}), catalog);
+ const inactive=catalog.map(item=>({...item,isActive:false}));
+ assert.deepEqual(parsePrizeSuggestionCatalog({suggestions:inactive}),inactive);
+});
+test("frontière réseau : enveloppe ou ligne malformée refusée sans faux catalogue vide", () => {
+ for(const payload of [null,{},[],{suggestions:null},{suggestions:{}},{suggestions:[null]}])
+  assert.throws(()=>parsePrizeSuggestionCatalog(payload),/Catalogue invalide/);
+ for(const bad of [{id:""},{label:null},{label:" "},{description:null},{industry:42},{industrySubsector:null},{icon:null},{isActive:"true"},{sortOrder:NaN},{probability:"25"},{probability:-1},{estimatedUnitCost:Infinity},{estimatedUnitCost:-1}])
+  assert.throws(()=>parsePrizeSuggestionCatalog({suggestions:[{...catalog[0],...bad}]}),/Catalogue invalide/);
+ assert.throws(()=>parsePrizeSuggestionCatalog({suggestions:[catalog[0],catalog[0]]}),/Catalogue invalide/);
+});
 for (const context of contexts) test(`recettes complètes et cloisonnées : ${JSON.stringify(context)}`, () => {
  const before=JSON.stringify(catalog), result=buildPrizeCompositions(catalog,context), recipe=prizeCompositionRecipe(context);
  assert.deepEqual(result.map(p=>p.winningProbability),[40,70,100]);
