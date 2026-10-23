@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { enforceMinimumWheelPrizeLabelFontSize } from "../src/lib/wheel-labels";
+import { enforceMinimumWheelPrizeLabelFontSize, fittedWheelLabelFontSize } from "../src/lib/wheel-labels";
 
 import {
   DEFAULT_COCORICO_DUO_YELLOW,
@@ -26,12 +26,22 @@ test("un espacement réglé à zéro garde un dégagement structurel avant la ro
   expect(campaignWheelBlockSpacingPx(80)).toBe(80);
 });
 
-test("les libellés de lots des roues ne descendent jamais sous 25 px", () => {
+test("la taille de référence des libellés de roue reste au minimum 25 px avant ajustement local", () => {
   for (const currentSize of [17, 20, 22, 23, 24, 25]) {
     expect(enforceMinimumWheelPrizeLabelFontSize(currentSize)).toBe(25);
   }
   expect(enforceMinimumWheelPrizeLabelFontSize(26)).toBe(26);
   expect(enforceMinimumWheelPrizeLabelFontSize(30)).toBe(30);
+});
+
+test("seul un libellé trop large réduit sa police, sans agrandissement ni étirement", () => {
+  const size = (width: number, height = 20) => fittedWheelLabelFontSize(25, width, height, 194, 100.8, 304, 45);
+  expect(size(80)).toBe(25);
+  expect(size(120)).toBe(25);
+  expect(size(190, 64)).toBeLessThan(25);
+  expect(size(190, 64)).toBeGreaterThan(20);
+  expect(size(0)).toBe(25);
+  expect(fittedWheelLabelFontSize(30,80,20,194,100.8,304,45)).toBe(30);
 });
 
 test("Dynamique ne reprend pas le fond jaune de Bicolore à sa première sélection", () => {
