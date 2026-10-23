@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { selectWizardStep } from "./helpers/wizard-step";
+import { rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ context, page, baseURL }) => {
+  await rejectAnalyticsForVisualTests(context, baseURL!);
   await page.route("**/api/**", route => route.fulfill({ json: { campaign: { actions: [] }, suggestions: [], items: [], assets: {} } }));
 });
 
