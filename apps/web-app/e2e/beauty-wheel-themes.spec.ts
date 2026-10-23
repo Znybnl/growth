@@ -17,11 +17,11 @@ import { rosePowderVisualSegments } from "../src/lib/wheel-segments";
 import { buildWheelVisualSegments } from "../src/lib/wheel-segments";
 import { limitCampaignSubtitleLines, MAX_BEAUTY_WHEEL_TITLE_LINES } from "../src/lib/campaign-defaults";
 
-test("Rose poudré affiche huit segments sans masquer le résultat tiré", () => {
+test("Rose poudré ne masque aucun lot distinct pour atteindre huit segments", () => {
   const segments = Array.from({ length: 10 }, (_, index) => ({ id: `lot-${index}`, label: `LOT ${index}`, tone: "win" as const }));
   for (const winner of segments) {
     const visible = rosePowderVisualSegments(segments, winner.id);
-    expect(visible).toHaveLength(8);
+    expect(visible).toHaveLength(10);
     expect(visible.some((segment) => segment.id === winner.id)).toBe(true);
   }
   expect(segments).toHaveLength(10);
@@ -84,7 +84,7 @@ test("la validation conserve les couleurs et la police propres à un thème visi
   expect(Object.keys(parsed.presentation.layout.wheelTemplateStyles ?? {})).toEqual(["beauty-rose"]);
 });
 
-test("les roues Beauté sont plafonnées sans perdre le segment du gain effectivement tiré", () => {
+test("les roues Beauté dépassent la cible de huit secteurs plutôt que masquer des lots", () => {
   const prizes = Array.from({ length: 10 }, (_, index) => ({
     id: index === 9 ? "minus-ten" : `prize-${index}`,
     label: index === 9 ? "-10% PROCHAINE VISITE" : `Lot ${index + 1}`,
@@ -95,11 +95,12 @@ test("les roues Beauté sont plafonnées sans perdre le segment du gain effectiv
   const cappedWhenNineIsRequested = limitBeautyWheelSegments(segments, "minus-ten", 9);
 
   expect(segments).toHaveLength(11);
-  expect(capped).toHaveLength(8);
-  expect(capped.at(-1)?.id).toBe("minus-ten");
-  expect(capped.at(-1)?.label).toBe("-10% PROCHAINE VISITE");
-  expect(cappedWhenNineIsRequested).toHaveLength(8);
-  expect(cappedWhenNineIsRequested.at(-1)?.label).toBe("-10% PROCHAINE VISITE");
+  expect(capped).toHaveLength(11);
+  expect(cappedWhenNineIsRequested).toHaveLength(11);
+  for (const prize of prizes) {
+    expect(capped.some(segment => segment.id === prize.id)).toBe(true);
+    expect(cappedWhenNineIsRequested.some(segment => segment.id === prize.id)).toBe(true);
+  }
 });
 
 test("les boutons Nude & Or, Beauty Pop et Botanical adaptent leur texte au fond", () => {

@@ -5,7 +5,7 @@ export const BEAUTY_WHEEL_THEMES = [
   { id: "beauty-rose", name: "Rose poudré", tagline: "Doux & élégant", primary: "#d58a9a", secondary: "#fff7f8", background: "#fff7f8", text: "#512d3b", font: "cormorant" },
   { id: "beauty-nude", name: "Nude & Or", tagline: "Minimal & premium", primary: "#b99052", secondary: "#f8f3ea", background: "#f8f3ea", text: "#47382c", font: "playfair" },
   { id: "beauty-botanical", name: "Botanical", tagline: "Naturel & apaisant", primary: "#8da480", secondary: "#f6f7f1", background: "#f6f7f1", text: "#254238", font: "dm-sans" },
-  { id: "beauty-pop", name: "Beauty Pop", tagline: "Vif & ludique", primary: "#ff4f87", secondary: "#fff2f5", background: "#fff2f5", text: "#4b2440", font: "poppins" },
+  { id: "beauty-pop", name: "Beauty Pop", tagline: "Rose éclatant & dorures", primary: "#ed0067", secondary: "#fff2f5", background: "#fff2f5", text: "#e60062", font: "bodoni" },
   { id: "beauty-editorial", name: "Noir & Or", tagline: "Sobre & précieux", primary: "#171614", secondary: "#f4f0e8", background: "#0b0c0b", text: "#e4c17c", font: "bodoni" },
   { id: "beauty-tech", name: "Beauty Tech", tagline: "Moderne & lumineux", primary: "#7c4dff", secondary: "#24183a", background: "#171126", text: "#f8f5ff", font: "space-grotesk" },
 ] as const satisfies ReadonlyArray<{
@@ -50,7 +50,7 @@ export function isBeautyIndustry(industry?: string | null) {
 }
 
 export function beautyWheelLogoColor(templateId: BeautyWheelTemplateId) {
-  return templateId === "beauty-editorial" ? "#f6e7c6" : beautyWheelTheme(templateId)!.text;
+  return templateId === "beauty-pop" ? "#4b173e" : templateId === "beauty-editorial" ? "#f6e7c6" : beautyWheelTheme(templateId)!.text;
 }
 
 /** Native artwork is resolved at render time, never saved as a merchant image. */
@@ -60,6 +60,7 @@ export function beautyWheelDefaultBackground(
 ): string | null {
   const artwork = templateId === "beauty-rose"
     ? "/images/wheel-templates/beauty-rose-satin.webp"
+    : templateId === "beauty-pop" ? "/images/wheel-templates/beauty-pop-ribbons.webp"
     : templateId === "beauty-nude" ? beautyScratchTemplate("beauty-scratch-nude")!.background
     : templateId === "beauty-botanical" ? beautyScratchTemplate("beauty-scratch-botanical")!.background
     : templateId === "beauty-editorial" ? beautyScratchTemplate("beauty-scratch-noir-or")!.background : null;
@@ -93,7 +94,8 @@ export function beautyWheelButtonTextColor(templateId: BeautyWheelTemplateId, ba
   const normalizedBackground = background.toLowerCase();
   const usesWhiteOnDefaultAccent = ["beauty-nude", "beauty-pop", "beauty-botanical"].includes(templateId);
 
-  if (usesWhiteOnDefaultAccent && normalizedBackground === theme.primary) return "#ffffff";
+  if (usesWhiteOnDefaultAccent && (normalizedBackground === theme.primary
+    || (templateId === "beauty-pop" && normalizedBackground === "#ff4f87"))) return "#ffffff";
   return beautyWheelLegibleText(background, preferred);
 }
 

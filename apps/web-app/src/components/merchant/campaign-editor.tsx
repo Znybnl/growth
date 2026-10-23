@@ -948,8 +948,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
     !isCocoricoTemplate && (isCosmicTemplate || preview.gamePageTemplateId === "sunburst-festival");
   const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(preview.gamePageTemplateId);
   const showStandardHeader = !isImmersiveScratchTemplate;
-  const previewScale = compact ? 0.8 : 1;
-  const previewHeadingScale = compact ? 0.65 : 1;
+  const previewScale = compact && preview.gamePageTemplateId !== "beauty-pop" ? 0.8 : 1;
+  const previewHeadingScale = compact && preview.gamePageTemplateId !== "beauty-pop" ? 0.65 : 1;
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
   const previewHeadingFontSize = isBeautyTemplate
     ? `${Math.round(preview.headingFontSizePx * previewHeadingScale)}px`
@@ -1077,7 +1077,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
               style={{
                 color: previewHeadingTextColor,
                 fontSize: previewHeadingFontSize,
-                fontWeight: isRoseInstitutTemplate ? 600 : preview.gamePageTemplateId === "beauty-pop" ? 800 : preview.headingFontWeight,
+                fontWeight: isRoseInstitutTemplate ? 600 : preview.headingFontWeight,
               }}
             >
               {preview.subtitle.trim() || (preview.gameType === "scratch" ? DEFAULT_SCRATCH_SUBTITLE : "Découvrez votre animation")}

@@ -14,6 +14,7 @@ test("Nude & Or, Beauty Pop et Botanical assombrissent le centre sous un texte b
 });
 
 test("les couleurs personnalisées lisibles restent inchangées", () => {
+  expect(beautyWheelButtonTextColor("beauty-pop", "#ff4f87", "#4b2440")).toBe("#ffffff");
   expect(wheelButtonBackgroundForWhiteText("#0b4ea2", "#ffffff")).toBe("#0b4ea2");
   expect(wheelButtonBackgroundForWhiteText("#b99052", "#171614")).toBe("#b99052");
   expect(wheelButtonBackgroundForWhiteText("#fff", "#000000")).toBe("#fff");

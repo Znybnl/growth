@@ -315,8 +315,10 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   // The compact preview has 254px of usable content width inside its phone
   // frame. A .74 ratio mirrors a 375px mobile viewport while container query
   // units keep typography independent from the merchant desktop viewport.
-  const previewScale = compact ? 0.74 : 1;
-  const previewHeadingScale = compact ? 0.65 : 1;
+  // Beauty Pop's phone is already fitted as one canvas; don't shrink its
+  // typography and spacing a second time inside that canvas.
+  const previewScale = compact && preview.gamePageTemplateId !== "beauty-pop" ? 0.74 : 1;
+  const previewHeadingScale = compact && preview.gamePageTemplateId !== "beauty-pop" ? 0.65 : 1;
   const scalePreviewValue = (value: number) => Math.round(value * previewScale);
   const previewHeadingFontSize = isBeautyTemplate
     ? `${Math.round(preview.headingFontSizePx * previewHeadingScale)}px`
@@ -344,7 +346,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
 
   return (
     <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>
-      <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} ${mobileViewport ? "" : "border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)]"} ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, backgroundImage: useBeautyScratchThemeBackground ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
+      <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} ${mobileViewport ? "" : "border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)]"} ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, position: "relative", backgroundImage: useBeautyScratchThemeBackground ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
         {nativeBackgroundImageUrl ? (
           <Image
             src={nativeBackgroundImageUrl}
