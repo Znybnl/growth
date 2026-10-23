@@ -15,6 +15,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
+import { requiresGoogleClick } from "@/lib/google-click-policy";
 import { BrandMark } from "@/components/brand-mark";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CocoricoWheel } from "@/components/public/cocorico-wheel";
@@ -473,6 +474,10 @@ export function CampaignExperience({
   );
   const [drawSession, setDrawSession] = useState<DrawSession | null>(null);
   const marketingVisitId = useRef<string | null>(null);
+  const marketingClickToken = useRef<string | null>(null);
+  const marketingClickRequest = useRef<Promise<void> | null>(null);
+  const [marketingClickRecorded, setMarketingClickRecorded] = useState(false);
+  const launchingGame = useRef(false);
   const [previewToken, setPreviewToken] = useState<string | null>(initialPreviewToken ?? null);
   const [previewResult, setPreviewResult] = useState<Pick<CreateDrawSessionResult, "prize"> | null>(null);
   const [drawResult, setDrawResult] = useState<PublicDrawResult | null>(null);
@@ -657,18 +662,33 @@ export function CampaignExperience({
   }
 
   function trackMarketingClick() {
-    if (!currentAction || isPreview) return;
+    if (!currentAction) return;
+    setActionVisited(true);
+    if (isPreview || marketingClickRequest.current) return;
     captureClientProductEvent("marketing_action_clicked", {
       campaignId,
       gameType: campaign.gameType,
       actionKind: currentAction.kind,
     });
     marketingVisitId.current ??= crypto.randomUUID();
-    void trackEvent(currentAction.kind === "google" ? "review_clicked" : "social_clicked", undefined, {
-      actionId: currentAction.id,
-      eventId: crypto.randomUUID(),
-      sessionId: drawSession?.id ?? marketingVisitId.current,
-    });
+    marketingClickRequest.current = (async () => {
+      try {
+        const response = await fetch("/api/public/event", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ campaignId, eventType: currentAction.kind === "google" ? "review_clicked" : "social_clicked",
+            metadata: { actionId: currentAction.id, eventId: crypto.randomUUID(), sessionId: marketingVisitId.current } }),
+        });
+        const payload = await response.json();
+        if (!response.ok || typeof payload.marketingClickToken !== "string") throw new Error("Clic non enregistré");
+        marketingClickToken.current = payload.marketingClickToken;
+        setMarketingClickRecorded(true);
+        setError(null);
+      } catch {
+        if (requiresGoogleClick(campaign.googleClickRequired, currentAction.kind)) {
+          setError("Le clic n’a pas pu être enregistré. Cliquez à nouveau sur « Écrire un avis » pour réessayer.");
+        }
+      } finally { marketingClickRequest.current = null; }
+    })();
   }
 
   async function prepareSession(nextStage: ExperienceStage = "ready") {
@@ -681,7 +701,7 @@ export function CampaignExperience({
       const response = await fetch("/api/public/draw/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ campaignId, previewToken: activePreviewToken }),
+        body: JSON.stringify({ campaignId, previewToken: activePreviewToken, marketingClickToken: marketingClickToken.current ?? undefined }),
       });
 
       if (!response.ok) {
@@ -734,14 +754,18 @@ export function CampaignExperience({
   }
 
   async function launchPreparedGame() {
-    if (!drawSession) {
-      await prepareSession("ready");
-      setAutoSpinKey(`spin-${Date.now()}`);
-      return;
-    }
-
-    setStage("ready");
-    setAutoSpinKey(`spin-${drawSession.id}`);
+    if (launchingGame.current) return;
+    launchingGame.current = true;
+    try {
+      await marketingClickRequest.current;
+      if (!drawSession) {
+        await prepareSession("ready");
+        setAutoSpinKey(`spin-${Date.now()}`);
+        return;
+      }
+      setStage("ready");
+      setAutoSpinKey(`spin-${drawSession.id}`);
+    } finally { launchingGame.current = false; }
   }
 
   async function finalizeParticipant() {
@@ -1282,16 +1306,7 @@ export function CampaignExperience({
               href={currentAction.url}
               target="_blank"
               rel="noreferrer"
-              onClick={() => {
-                if (currentAction.kind === "google") {
-                  setActionVisited(true);
-                  trackMarketingClick();
-                  return;
-                }
-
-                setActionVisited(true);
-                trackMarketingClick();
-              }}
+              onClick={trackMarketingClick}
               className="block w-full rounded-[20px] border border-[#f3b229] bg-[#f3b229] px-5 py-4 text-center text-lg font-semibold leading-7 text-[#111827] shadow-[0_12px_22px_rgba(243,178,41,0.28)]"
             >
               {actionLabel(currentAction.kind)}
@@ -1308,7 +1323,7 @@ export function CampaignExperience({
               }
               void launchPreparedGame();
             }}
-            disabled={isLoading}
+            disabled={isLoading || (requiresGoogleClick(campaign.googleClickRequired, currentAction?.kind) && !(isPreview ? actionVisited : marketingClickRecorded))}
             style={actionVisited ? { fontSize: "24px", fontWeight: 700, lineHeight: "28px" } : undefined}
             className={
               actionVisited

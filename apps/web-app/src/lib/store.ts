@@ -1,4 +1,5 @@
 import { conversionRate, globalConversion, isMarketingClick, isPendingGain, effectiveRedemptionDate, marketingVolumes } from "@/lib/metric-rules";
+import { hasLocalGoogleClickAcceptance } from "@/lib/google-click-acceptance";
 import { selectGuaranteedPrize } from "@/lib/guaranteed-draw";
 import {
   createDrawSessionInSupabase,
@@ -604,6 +605,8 @@ function normalizeCampaign(rawCampaign: Campaign | (Partial<Campaign> & Record<s
     title: rawCampaign.title ?? fallback.title,
     subtitle: rawCampaign.subtitle ?? fallback.subtitle,
     goalType,
+    googleClickRequired: rawCampaign.googleClickRequired === true,
+    googleClickAcceptanceId: rawCampaign.googleClickAcceptanceId,
     emailCaptureEnabled:
       typeof rawCampaign.emailCaptureEnabled === "boolean"
         ? rawCampaign.emailCaptureEnabled
@@ -803,6 +806,7 @@ function toPublicCampaign(campaign: Campaign, actions = campaign.actions): Publi
     subtitle: campaign.subtitle,
     goalType: campaign.goalType,
     emailCaptureEnabled: campaign.emailCaptureEnabled,
+    googleClickRequired: campaign.googleClickRequired === true,
     gameType: campaign.gameType,
     ctaLabel: campaign.ctaLabel,
     targetUrl: campaign.targetUrl,
@@ -1665,6 +1669,8 @@ function getCampaignDataViewFromMemory(
   };
 }
 
+const marketingContextBySession = new Map<string, NonNullable<CampaignEvent["metadata"]>>();
+
 function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDrawSessionResult {
   expireDrawSessionsFromMemory();
   const campaign = getCampaign(input.campaignId);
@@ -1672,6 +1678,14 @@ function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDra
   if (!campaign || !campaign.isActive) {
     throw new Error("Campagne indisponible");
   }
+
+  const click = input.marketingClickEventId ? store.events.find(event => event.id === input.marketingClickEventId &&
+    event.campaignId === campaign.id && isMarketingClick(event.eventType)) : undefined;
+  if (input.marketingClickEventId && !click) throw new Error("Clic indisponible");
+  const context: NonNullable<CampaignEvent["metadata"]> = click ? {
+    marketingActionClicked: true, marketingActionKind: click.metadata?.actionKind ?? null,
+    marketingActionId: click.metadata?.actionId ?? null, marketingClickedAt: click.createdAt,
+  } : { marketingActionClicked: false };
 
   const prize = choosePrize(campaign, getCampaignPrizes(campaign.id));
   const session: DrawSession = {
@@ -1684,10 +1698,12 @@ function createDrawSessionFromMemory(input: CreateDrawSessionRequest): CreateDra
   };
 
   store.drawSessions.push(session);
+  marketingContextBySession.set(session.id, context);
   if (campaign.gameType === "wheel") {
     recordEventInMemory(campaign.id, "game_played", undefined, {
       trigger: "session_started",
       sessionId: session.id,
+      ...context,
     });
   }
 
@@ -1979,7 +1995,7 @@ function finalizeDrawSessionFromMemory(input: FinalizeDrawSessionRequest): DrawR
 
   store.leads.push(lead);
   session.status = "completed";
-  recordEventInMemory(campaign.id, "lead_created", lead.id, { sessionId: session.id });
+  recordEventInMemory(campaign.id, "lead_created", lead.id, { sessionId: session.id, ...marketingContextBySession.get(session.id) });
 
   if (prize) {
     recordEventInMemory(campaign.id, "prize_won", lead.id, { prizeId: prize.id });
@@ -2195,6 +2211,8 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
     existing.subtitle = input.subtitle;
     existing.goalType = input.goalType;
     existing.emailCaptureEnabled = input.emailCaptureEnabled;
+    existing.googleClickRequired = input.googleClickRequired ?? existing.googleClickRequired ?? false;
+    existing.googleClickAcceptanceId = input.googleClickAcceptanceId ?? existing.googleClickAcceptanceId;
     existing.ctaLabel = input.ctaLabel;
     existing.successMetric = input.successMetric;
     existing.targetUrl = input.targetUrl;
@@ -2245,6 +2263,8 @@ function updateCampaignSetupInMemory(input: CampaignSetupInput) {
     subtitle: input.subtitle,
     goalType: input.goalType,
     emailCaptureEnabled: input.emailCaptureEnabled,
+    googleClickRequired: input.googleClickRequired ?? false,
+    googleClickAcceptanceId: input.googleClickAcceptanceId,
     ctaLabel: input.ctaLabel,
     successMetric: input.successMetric,
     targetUrl: input.targetUrl,
@@ -2305,6 +2325,8 @@ function duplicateCampaignInMemory(id: string, merchantId = merchantSeed.id) {
   const campaignId = generateId("camp");
   const duplicate: Campaign = {
     ...clone(campaign),
+    googleClickRequired: false,
+    googleClickAcceptanceId: undefined,
     id: campaignId,
     title: `${campaign.title} (copie)`,
     isActive: false,
@@ -2353,10 +2375,14 @@ export async function recordEvent(
   }
 
   if (isMarketingClick(eventType) && typeof metadata?.eventId === "string") {
+    const { actionId, eventId } = metadata;
+    const action = getCampaign(campaignId)?.actions.find(item => item.id === actionId);
+    if (!action) throw new Error("Action indisponible");
+    metadata = { ...metadata, actionKind: action.kind };
     const existing = store.events.find(e => e.campaignId === campaignId && isMarketingClick(e.eventType) &&
-      e.metadata?.eventId === metadata.eventId);
+      e.metadata?.eventId === eventId);
     if (existing) {
-      if (existing.eventType !== eventType || existing.metadata?.actionId !== metadata.actionId) throw new Error("Événement incompatible");
+      if (existing.eventType !== eventType || existing.metadata?.actionId !== actionId) throw new Error("Événement incompatible");
       return clone(existing);
     }
   }
@@ -2382,7 +2408,7 @@ export async function recordDrawSessionParticipation(campaignId: string, session
   const campaign = getCampaign(campaignId);
   if (!campaign?.isActive || campaign.gameType !== "scratch" ||
       session.status !== "pending" || Date.parse(session.expiresAt) <= Date.now()) return false;
-  recordEventInMemory(campaignId, "game_played", undefined, { sessionId, trigger: "first_touch" });
+  recordEventInMemory(campaignId, "game_played", undefined, { sessionId, trigger: "first_touch", ...marketingContextBySession.get(sessionId) });
   return true;
 }
 
@@ -2814,6 +2840,10 @@ export async function saveCampaignSetup(input: CampaignSetupInput) {
     return campaignId;
   }
 
+  const previous = input.id ? getCampaign(input.id) : undefined;
+  const required = input.googleClickRequired ?? previous?.googleClickRequired ?? false;
+  const acceptance = input.googleClickAcceptanceId ?? previous?.googleClickAcceptanceId;
+  if (required && !hasLocalGoogleClickAcceptance(acceptance, input.merchantId)) throw new Error("Acceptez l’avertissement Google avant d’activer cette option.");
   return updateCampaignSetupInMemory(input).id;
 }
 

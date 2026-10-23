@@ -540,6 +540,8 @@ export interface CampaignRewardRules {
 }
 
 export interface Campaign {
+  googleClickRequired?: boolean;
+  googleClickAcceptanceId?: string;
   id: string;
   merchantId: string;
   title: string;
@@ -713,6 +715,7 @@ export interface PublicCampaignPrize {
 export type PublicCampaignPresentation = Omit<CampaignPresentation, "poster">;
 
 export interface PublicCampaign {
+  googleClickRequired?: boolean;
   id: string;
   title: string;
   subtitle: string;
@@ -758,6 +761,10 @@ export interface DrawSession {
 export interface CreateDrawSessionRequest {
   campaignId: string;
   previewToken?: string;
+  marketingClickToken?: string;
+  /** Server-only event resolved from the signed click receipt. */
+  marketingClickEventId?: string;
+  proposedActionId?: string;
 }
 
 export interface CreateDrawSessionResult {
@@ -917,6 +924,8 @@ export interface CampaignDataView {
 }
 
 export interface CampaignSetupInput {
+  googleClickRequired?: boolean;
+  googleClickAcceptanceId?: string;
   id?: string;
   merchantId: string;
   /** Server-only attribution set by the platform-admin campaign endpoint. */

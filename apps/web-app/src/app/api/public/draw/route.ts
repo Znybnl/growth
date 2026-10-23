@@ -22,7 +22,9 @@ import {
 import { captureProductEvent } from "@/lib/product-analytics";
 import { sendRewardEmail } from "@/lib/reward-email";
 import { logSupportEvent } from "@/lib/support-log";
-import { drawForLead, toPublicDrawResult } from "@/lib/store";
+import { drawForLead, toPublicDrawResult, getPublicCampaign } from "@/lib/store";
+import { publicPlayerToken } from "@/lib/participation-token";
+import { requiresGoogleClick } from "@/lib/google-click-policy";
 
 type DrawBody = {
   campaignId: string;
@@ -49,6 +51,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const campaign = await getPublicCampaign(campaignId, publicPlayerToken(request, campaignId));
+    if (requiresGoogleClick(campaign?.googleClickRequired, campaign?.actions[0]?.kind)) {
+      return NextResponse.json({ error: "Ouvrez la page de jeu et cliquez sur « Écrire un avis » pour jouer." }, { status: 403 });
+    }
     const cookieName = getDailyParticipationCookieName(campaignId);
     assertDailyParticipationCookie(request.cookies.get(cookieName)?.value, campaignId);
 

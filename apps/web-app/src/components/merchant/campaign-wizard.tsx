@@ -36,6 +36,7 @@ import {
 import { type ChangeEvent, type ReactNode, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { MarketingActionsStep } from "@/components/merchant/marketing-actions-step";
+import { GoogleClickSetting } from "@/components/merchant/google-click-setting";
 import { useNoMarketingActionConfirmation } from "@/components/merchant/no-marketing-action-dialog";
 import { marketingActionEntry, marketingActionKey, normalizeMarketingActionUrl } from "@/lib/marketing-action-library";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
@@ -527,6 +528,8 @@ function draftFromCampaign(merchant: Merchant, performance: CampaignPerformance)
         : undefined,
     ),
     goalType: campaign.goalType,
+    googleClickRequired: campaign.googleClickRequired,
+    googleClickAcceptanceId: campaign.googleClickAcceptanceId,
     emailCaptureEnabled:
       campaign.emailCaptureEnabled ||
       campaign.actions.some((action) => action.kind === "crm"),
@@ -2303,6 +2306,9 @@ export function CampaignWizard({
                 onChange={actions => { setDraft(current => ({ ...current, actions })); setError(null); }}
                 onLinkSaved={(key, url) => setMarketingLinks(current => ({ ...current, [marketingActionEntry(key).field]: url }))}
               />
+              <GoogleClickSetting merchantId={merchant.id} adminAccountMerchantId={adminAccountMerchantId}
+                required={draft.googleClickRequired} hasGoogle={draft.actions.some(action => action.kind === "google")}
+                onChange={(googleClickRequired, googleClickAcceptanceId) => patchDraft({ googleClickRequired, googleClickAcceptanceId })} />
             </div>
           ) : null}
 

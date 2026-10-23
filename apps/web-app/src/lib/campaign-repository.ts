@@ -566,6 +566,8 @@ function toCampaign(
     emailCaptureEnabled:
       localSettings.emailCaptureEnabled ??
       (row.goal_type === "lead_capture" || actions.some((action) => action.kind === "crm")),
+    googleClickRequired: localSettings.googleClickRequired === true,
+    googleClickAcceptanceId: localSettings.googleClickAcceptanceId,
     ctaLabel: row.cta_label,
     successMetric: row.success_metric,
     targetUrl: row.target_url ?? undefined,
@@ -809,6 +811,7 @@ function toPublicCampaign(
     subtitle: campaign.subtitle,
     goalType: campaign.goalType,
     emailCaptureEnabled: campaign.emailCaptureEnabled,
+    googleClickRequired: campaign.googleClickRequired === true,
     gameType: campaign.gameType,
     ctaLabel: campaign.ctaLabel,
     targetUrl: campaign.targetUrl,
@@ -2001,6 +2004,8 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
       : undefined;
   const localSettings = {
     ...(adminCreation ? { adminCreation } : {}),
+    googleClickRequired: input.googleClickRequired ?? existingCampaignQuery?.data?.campaign_local_settings?.googleClickRequired ?? false,
+    googleClickAcceptanceId: input.googleClickAcceptanceId ?? existingCampaignQuery?.data?.campaign_local_settings?.googleClickAcceptanceId,
     emailCaptureEnabled: input.emailCaptureEnabled,
     buttonTextSizePx: input.presentation.button.textSizePx,
     buttonIsBold: input.presentation.button.isBold,
@@ -2408,9 +2413,11 @@ export async function createDrawSessionInSupabase(
   const sessionId = generateId("session");
   const sessionRpcStartedAt = globalThis.performance.now();
   const { data, error } = await supabase
-    .rpc("create_draw_session", {
+    .rpc("create_draw_session_with_marketing", {
       p_campaign_id: campaign.id,
       p_session_id: sessionId,
+      p_click_event_id: input.marketingClickEventId ?? null,
+      p_proposed_action_id: input.proposedActionId ?? null,
     })
     .single<CreateDrawSessionRpcRow>();
   const sessionRpcMs = Math.round(globalThis.performance.now() - sessionRpcStartedAt);

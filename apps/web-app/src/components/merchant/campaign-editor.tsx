@@ -56,6 +56,7 @@ import { Switch } from "@/components/ui/switch";
 import { DialogShell } from "@/components/ui/dialog";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { useNoMarketingActionConfirmation } from "@/components/merchant/no-marketing-action-dialog";
+import { GoogleClickSetting } from "@/components/merchant/google-click-setting";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -1481,6 +1482,8 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
         : undefined,
     ),
     emailCaptureEnabled: campaign.campaign.emailCaptureEnabled,
+    googleClickRequired: campaign.campaign.googleClickRequired,
+    googleClickAcceptanceId: campaign.campaign.googleClickAcceptanceId,
     gameType: campaign.campaign.gameType,
     ctaLabel: campaign.campaign.ctaLabel,
     isActive: campaign.campaign.isActive,
@@ -2972,6 +2975,9 @@ export function CampaignEditor({
                 />
               ))}
             </div>
+            <GoogleClickSetting merchantId={merchant.id} required={form.googleClickRequired}
+              hasGoogle={form.actions.some(action => action.kind === "google")}
+              onChange={(googleClickRequired, googleClickAcceptanceId) => setForm(current => ({ ...current, googleClickRequired, googleClickAcceptanceId }))} />
           </section>
 
           <section className="okado-card p-6">

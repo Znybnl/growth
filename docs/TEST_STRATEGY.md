@@ -1,5 +1,7 @@
 # Stratégie de test — Okado
 
+Le suivi de clic Google et l’option de clic requis (#638) se vérifient avec `npm run test:google-click -w @okado/web-app` : vraies fonctions SQL de tirage et participation sous PGlite, refus RLS, association du clic, journal d’acceptation et vrais handlers API avec fournisseurs simulés. `e2e/google-click-required.spec.ts` contrôle le Wizard dans MerchantShell à 1280×720, 1280×600 et 390 px, l’annulation/acceptation/sauvegarde, le déblocage sur roue/ticket, la reprise après erreur de clic et les actions facultatives/sociales.
+
 ### Compositions sectorielles — #623
 
 `test:prize-compositions` contrôle25contextes (secteurs, sous-secteurs Beauté et
@@ -18,6 +20,7 @@ Un catalogue malformé produit un état d'erreur avec réessai et création manu
 pas un faux état vide. Les tests vérifient aussi le retour à un catalogue valide
 sans ajout automatique. Le détail montre les conditions proposées et l'achat
 requis selon le même mapping que la copie, avec captures à 1280×720/600 et mobile.
+
 
 ### Tirage 100 % gagnant — #629
 
