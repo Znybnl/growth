@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd(), "../..");
-const patchedVersion = "16.3.8";
+const patchedVersion = "16.4.2";
 const packages = ["web-app", "landing-page"].map((name) => {
   const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, "apps", name, "package.json"), "utf8"));
   return { name, next: manifest.dependencies?.next, eslint: manifest.devDependencies?.["eslint-config-next"] };

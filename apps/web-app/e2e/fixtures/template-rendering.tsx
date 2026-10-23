@@ -44,8 +44,8 @@ function AnalyticsIdentityProof() {
 }
 
 /** Synthetic rendering only: tests intercept every API request, no session bypass. */
-export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText }: {
-  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string;
+export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText, prizeCase }: {
+  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string; prizeCase?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   if (mode.startsWith("cookie-menu")) {
@@ -67,6 +67,13 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
   const color = ink ?? (scratch ? defaultScratchTextColor(templateId) : wheelHeadingColorForTemplateSelection(templateId, "#ffffff"));
   const form = {
     ...halloweenFixture, id: "template-proof-campaign", merchantId: merchant.id,
+    prizes: prizeCase === "headspa" ? [
+      { ...halloweenFixture.prizes[0], id: "discount15", label: "-15% PRESTATION", probability: 15 },
+      { ...halloweenFixture.prizes[0], id: "discount20", label: "-20% PRESTATION", probability: 10 },
+      { ...halloweenFixture.prizes[0], id: "voucher", label: "5€ offert", probability: 10 },
+      { ...halloweenFixture.prizes[0], id: "luxo", label: "une séance de luxopuncture", probability: 5 },
+      { ...halloweenFixture.prizes[0], id: "headspa", label: "un soin headspa INTITION", probability: 5 },
+    ] : halloweenFixture.prizes,
     title: "Jeu synthétique", subtitle: font ? "Une surprise élégante\nvous attend" : "Une surprise\nvous attend", logoText: merchant.companyName,
     gameType: scratch ? "scratch" as const : "wheel" as const,
     accent: { ink: color, paper: "#ffffff", signal: "#b85be5" },

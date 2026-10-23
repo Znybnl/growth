@@ -17,7 +17,8 @@ export function BeautyWheelBackgroundFixture({
   templateId,
   background = "native",
   logoMode = "text",
-}: { mode?: string; templateId: GamePageTemplateId; background?: string; logoMode?: LogoMode }) {
+  prizeCase,
+}: { mode?: string; templateId: GamePageTemplateId; background?: string; logoMode?: LogoMode; prizeCase?: string }) {
   const [selectedTemplate, setSelectedTemplate] = useState(templateId);
   const [selectedBackground, setSelectedBackground] = useState(background);
   const [selectedLogoMode, setSelectedLogoMode] = useState(logoMode);
@@ -32,7 +33,13 @@ export function BeautyWheelBackgroundFixture({
     id: "fixture-wheel-backgrounds",
     subtitle: heading,
     logoText: brand,
-    prizes: selectedTemplate === "beauty-pop" ? [
+    prizes: prizeCase === "headspa" ? [
+      { ...halloweenFixture.prizes[0], id: "discount15", label: "-15% PRESTATION", probability: 15 },
+      { ...halloweenFixture.prizes[0], id: "discount20", label: "-20% PRESTATION", probability: 10 },
+      { ...halloweenFixture.prizes[0], id: "voucher", label: "5€ offert", probability: 10 },
+      { ...halloweenFixture.prizes[0], id: "luxo", label: "une séance de luxopuncture", probability: 5, remainingQuantity: 5 },
+      { ...halloweenFixture.prizes[0], id: "headspa", label: "un soin headspa INTITION", probability: 5, remainingQuantity: 1 },
+    ] : selectedTemplate === "beauty-pop" ? [
       { ...halloweenFixture.prizes[0], id: "pop-gift", label: "CADEAU", probability: 20 },
       { ...halloweenFixture.prizes[0], id: "pop-discount", label: "-10% PROCHAINE VISITE", probability: 20 },
       { ...halloweenFixture.prizes[0], id: "pop-care", label: "SOIN OFFERT", probability: 10 },

@@ -11,7 +11,7 @@ import { dynamicWheelLightSegmentColor } from "@/lib/campaign-defaults";
 import { legibleSegmentTextColor } from "@/lib/color-contrast";
 import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
-import { rosePowderVisualSegments } from "@/lib/wheel-segments";
+import { rosePowderVisualSegments, selectWheelVisualSegments } from "@/lib/wheel-segments";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
 import { enforceMinimumWheelPrizeLabelFontSize } from "@/lib/wheel-labels";
 
@@ -274,9 +274,9 @@ export function WheelOfFortune({
     : isBeautyTemplate
       ? limitBeautyWheelSegments(segments, winningSegmentId)
       : isRoseInstitutTemplate
-        ? segments.slice(0, 8)
+        ? selectWheelVisualSegments(segments, winningSegmentId, 8)
         : isRestaurantPopTemplate
-          ? segments.slice(0, 10)
+          ? selectWheelVisualSegments(segments, winningSegmentId, 10)
           : segments;
   const winningVisualIndex = baseVisualSegments.findIndex(
     (segment) => segment.id === winningSegmentId,

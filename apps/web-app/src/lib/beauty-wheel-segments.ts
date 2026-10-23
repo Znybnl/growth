@@ -1,5 +1,5 @@
 import { beautyWheelTheme, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
-import type { WheelVisualSegment } from "@/lib/wheel-segments";
+import { selectWheelVisualSegments, type WheelVisualSegment } from "@/lib/wheel-segments";
 
 const MAX_BEAUTY_WHEEL_SEGMENTS = 8;
 
@@ -57,21 +57,14 @@ function preferredBeautySegmentColor(
   }
 }
 
-/** Caps only the displayed Beauty sectors and keeps the actual drawn prize visible for the spin. */
+/** Targets eight displayed sectors, but all distinct rewards take priority over that target. */
 export function limitBeautyWheelSegments(
   segments: WheelVisualSegment[],
   winningSegmentId: string,
   maxSegments = MAX_BEAUTY_WHEEL_SEGMENTS,
 ) {
   const cap = Math.max(1, Math.min(MAX_BEAUTY_WHEEL_SEGMENTS, Math.floor(maxSegments)));
-  const visibleSegments = segments.slice(0, cap);
-  const winningSegment = segments.find((segment) => segment.id === winningSegmentId);
-
-  if (!winningSegment || visibleSegments.some((segment) => segment.id === winningSegmentId)) {
-    return visibleSegments;
-  }
-
-  return [...visibleSegments.slice(0, cap - 1), winningSegment];
+  return selectWheelVisualSegments(segments, winningSegmentId, cap);
 }
 
 /** Produces a deterministic palette with no repeated or visually adjacent light-neutral sectors, including the wheel seam. */

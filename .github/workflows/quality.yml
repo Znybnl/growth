@@ -82,6 +82,8 @@ jobs:
         run: npm run verify:source
       - name: Test dependency audit guard
         run: npm run test:dependency-audit -w @okado/web-app
+      - name: Test every configured wheel reward and exact drawn result stays visible
+        run: npm run test:wheel-segments -w @okado/web-app
       - name: Audit production dependencies in both apps
         run: npm run check:dependencies
       - name: Lint web app

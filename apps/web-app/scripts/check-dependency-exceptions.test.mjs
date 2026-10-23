@@ -7,7 +7,7 @@ import vm from "node:vm";
 const source = readFileSync(new URL("./check-dependency-exceptions.mjs", import.meta.url), "utf8")
   .replace(/^import .*;\r?$/gm, "");
 const clean = { vulnerabilities: {}, metadata: { vulnerabilities: { total: 0 } } };
-function run({ audit = clean, status = 0, web = "16.3.8", landing = "16.3.8", eslint = "16.3.8", raw } = {}) {
+function run({ audit = clean, status = 0, web = "16.4.2", landing = "16.4.2", eslint = "16.4.2", raw } = {}) {
   const output = [];
   let code = 0;
   class Exit extends Error {}
@@ -29,14 +29,14 @@ function run({ audit = clean, status = 0, web = "16.3.8", landing = "16.3.8", es
 
 test("audit propre et Next/ESLint corrigés sur les deux applications", () => {
   assert.equal(run().code, 0);
-  assert.match(run().output, /16\.3\.8.*deux applications/);
+  assert.match(run().output, /16\.4\.2.*deux applications/);
 });
 test("ancienne version SaaS refusée même si le registre ne signale rien", () => {
-  assert.equal(run({ web: "16.3.6" }).code, 1);
+  assert.equal(run({ web: "16.3.8" }).code, 1);
 });
 test("ancienne version landing ou désalignement refusé", () => {
-  assert.equal(run({ landing: "16.3.6" }).code, 1);
-  assert.equal(run({ landing: "16.4.2" }).code, 1);
+  assert.equal(run({ landing: "16.3.8" }).code, 1);
+  assert.equal(run({ landing: "16.4.1" }).code, 1);
 });
 test("configuration ESLint désalignée refusée", () => {
   assert.equal(run({ eslint: "16.3.6" }).code, 1);

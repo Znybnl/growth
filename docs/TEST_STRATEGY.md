@@ -1,5 +1,15 @@
 # Stratégie de test — Okado
 
+### Visibilité des lots de roue — #628
+
+`test:wheel-segments` et `wheel-prize-visibility.spec.ts` vérifient que le
+headspa de la reproduction et tous les lots distincts restent présents avant
+le tirage, puis que chaque résultat exact reste visible pour l'animation.
+Les tests unitaires couvrent 1 à 50 lots, libellés identiques, pertes répétées,
+probabilités invalides et absence de mutation. Les rendus des six modèles
+Beauté et d'Éclat sont contrôlés en public/aperçu à 320/390 px, puis le vrai
+wizard/iframe avec les cinq lots à 1280×720/600. Aucune API réelle appelée.
+
 ### Habillage Beauty Pop — #626
 
 `beauty-pop.spec.ts` vérifie les assets WebP, la bibliothèque et les budgets
