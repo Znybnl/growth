@@ -50,6 +50,7 @@ for(const template of ["classic","beauty-scratch-nude"]) {
     });
     await page.route("https://example.test/**",route=>route.fulfill({body:"Destination de test"}));
     await page.goto(`/dev/template-rendering-proof?mode=public-google-required&template=${template}`);
+    await page.clock.install();
     if (template.includes("scratch")) await page.getByLabel("Grattez la carte pour révéler votre cadeau.").click();
     else await page.getByRole("button",{name:/jouer/i}).first().click();
     const dialog=page.getByRole("dialog",{name:"Fenêtre de participation"});
@@ -58,7 +59,17 @@ for(const template of ["classic","beauty-scratch-nude"]) {
     await dialog.getByRole("link",{name:"Écrire un avis"}).click();
     await expect(dialog.getByText(/Le clic n’a pas pu être enregistré/)).toBeVisible();
     await expect(playNow).toHaveCount(0);
+    const successfulClick = page.waitForResponse(response =>
+      response.url().endsWith("/api/public/event") &&
+      response.request().postDataJSON()?.eventType === "review_clicked" &&
+      response.status() === 201,
+    );
     await dialog.getByRole("link",{name:"Écrire un avis"}).click();
+    await successfulClick;
+    await expect(playNow).toHaveCount(0);
+    await page.clock.fastForward(4_999);
+    await expect(playNow).toHaveCount(0);
+    await page.clock.fastForward(1);
     const play=dialog.getByRole("button",{name:"Jouer",exact:true});
     await expect(play).toBeEnabled();
     const session=page.waitForRequest(request=>request.url().endsWith("/api/public/draw/session"));

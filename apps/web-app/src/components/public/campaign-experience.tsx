@@ -477,6 +477,8 @@ export function CampaignExperience({
   const marketingClickToken = useRef<string | null>(null);
   const marketingClickRequest = useRef<Promise<void> | null>(null);
   const [marketingClickRecorded, setMarketingClickRecorded] = useState(false);
+  const [marketingClickDelayElapsed, setMarketingClickDelayElapsed] = useState(false);
+  const marketingClickDelayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const launchingGame = useRef(false);
   const [previewToken, setPreviewToken] = useState<string | null>(initialPreviewToken ?? null);
   const [previewResult, setPreviewResult] = useState<Pick<CreateDrawSessionResult, "prize"> | null>(null);
@@ -503,7 +505,7 @@ export function CampaignExperience({
   const currentAction = campaign.actions[0];
   const googleClickPending =
     requiresGoogleClick(campaign.googleClickRequired, currentAction?.kind) &&
-    !(isPreview ? actionVisited : marketingClickRecorded);
+    !(isPreview ? actionVisited : marketingClickRecorded && marketingClickDelayElapsed);
   const requiresContactCapture = campaign.emailCaptureEnabled;
   const isContactOnlySuccess = stage === "success" && Boolean(drawResult) && !drawResult?.prize;
   const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
@@ -614,6 +616,12 @@ export function CampaignExperience({
     void loadCampaign();
   }, [campaignId, isPreview, previewToken]);
 
+  useEffect(() => () => {
+    if (marketingClickDelayTimer.current !== null) {
+      clearTimeout(marketingClickDelayTimer.current);
+    }
+  }, []);
+
   async function ensurePreviewToken() {
     if (!isPreview) return null;
     if (previewToken) return previewToken;
@@ -685,6 +693,12 @@ export function CampaignExperience({
         if (!response.ok || typeof payload.marketingClickToken !== "string") throw new Error("Clic non enregistré");
         marketingClickToken.current = payload.marketingClickToken;
         setMarketingClickRecorded(true);
+        if (marketingClickDelayTimer.current === null) {
+          marketingClickDelayTimer.current = setTimeout(() => {
+            setMarketingClickDelayElapsed(true);
+            marketingClickDelayTimer.current = null;
+          }, 5_000);
+        }
         setError(null);
       } catch {
         if (requiresGoogleClick(campaign.googleClickRequired, currentAction.kind)) {

@@ -1,6 +1,6 @@
 # Stratégie de test — Okado
 
-Le suivi de clic Google et l’option de clic requis (#638) se vérifient avec `npm run test:google-click -w @okado/web-app` : vraies fonctions SQL de tirage et participation sous PGlite, refus RLS, association du clic, journal d’acceptation et vrais handlers API avec fournisseurs simulés. `e2e/google-click-required.spec.ts` contrôle le Wizard dans MerchantShell à 1280×720, 1280×600 et 390 px, l’annulation/acceptation/sauvegarde, l’absence du bouton « Jouer maintenant » avant le clic, sa disponibilité après clic enregistré, la reprise après erreur et les actions facultatives/sociales. Toute modification du texte accepté incrémente sa version.
+Le suivi de clic Google et l’option de clic requis (#638) se vérifient avec `npm run test:google-click -w @okado/web-app` : vraies fonctions SQL de tirage et participation sous PGlite, refus RLS, association du clic, journal d’acceptation et vrais handlers API avec fournisseurs simulés. `e2e/google-click-required.spec.ts` contrôle le Wizard dans MerchantShell à 1280×720, 1280×600 et 390 px, l’annulation/acceptation/sauvegarde, l’absence du bouton « Jouer maintenant » avant le clic, son absence pendant les 5 secondes suivant un clic enregistré, sa disponibilité à l’échéance, la reprise après erreur et les actions facultatives/sociales. Toute modification du texte accepté incrémente sa version.
 
 ### Compositions sectorielles — #623
 
