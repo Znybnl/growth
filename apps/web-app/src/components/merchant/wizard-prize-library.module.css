@@ -105,6 +105,11 @@
   gap: .75rem;
 }
 
+.compositionGrid .libraryCard {
+  gap: .75rem;
+  padding: .875rem;
+}
+
 @container (min-width: 700px) {
   .compositionGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
