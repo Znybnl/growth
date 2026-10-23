@@ -2,9 +2,9 @@ import { expect, test } from "@playwright/test";
 import { beautyWheelDefaultBackground, BEAUTY_WHEEL_THEMES } from "../src/lib/beauty-wheel-themes";
 import { beautyScratchTemplate } from "../src/lib/beauty-scratch-templates";
 
-for (const [template, scratch] of [["beauty-nude", "beauty-scratch-nude"], ["beauty-botanical", "beauty-scratch-botanical"], ["beauty-editorial", "beauty-scratch-noir-or"], ["beauty-rose", null]] as const) {
+for (const [template, scratch] of [["beauty-nude", "beauty-scratch-nude"], ["beauty-botanical", "beauty-scratch-botanical"], ["beauty-editorial", "beauty-scratch-noir-or"], ["beauty-rose", null], ["beauty-pop", null]] as const) {
   const theme = BEAUTY_WHEEL_THEMES.find((item) => item.id === template)!;
-  const url = scratch ? beautyScratchTemplate(scratch)!.background : "/images/wheel-templates/beauty-rose-satin.webp";
+  const url = scratch ? beautyScratchTemplate(scratch)!.background : `/images/wheel-templates/${template === "beauty-pop" ? "beauty-pop-ribbons" : "beauty-rose-satin"}.webp`;
   test(`${template} : fond du ticket, priorité aux choix manuels, aucun enregistrement implicite`, () => {
     const background = { mode: "color", color: theme.background };
     const original = { ...background };
@@ -50,7 +50,7 @@ for (const [template, scratch] of [["beauty-nude", "beauty-scratch-nude"], ["bea
 }
 
 test("les autres templates ne reçoivent pas le fond Nude ou Botanique", () => {
-  for (const theme of BEAUTY_WHEEL_THEMES.filter((item) => !["beauty-nude", "beauty-botanical", "beauty-rose", "beauty-editorial"].includes(item.id))) {
+  for (const theme of BEAUTY_WHEEL_THEMES.filter((item) => !["beauty-nude", "beauty-botanical", "beauty-rose", "beauty-editorial", "beauty-pop"].includes(item.id))) {
     expect(beautyWheelDefaultBackground(theme.id, { mode: "color", color: theme.background })).toBeNull();
   }
   expect(beautyWheelDefaultBackground("classic", { mode: "color", color: "#ffffff" })).toBeNull();

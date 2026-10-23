@@ -50,12 +50,12 @@ for (const template of templates) {
         expect(labelBox.width).toBeLessThan(buttonBox.width - 4);
         await expect(surface.getByTestId("beauty-logo-rule")).toHaveCount(1);
         const ring = surface.getByTestId("beauty-wheel-rim");
-        await expect(ring.locator("circle")).toHaveCount(2);
-        await expect(ring.locator("circle").first()).toHaveAttribute("stroke", "#ffffff");
+        await expect(ring.locator("circle")).toHaveCount(template === "beauty-pop" ? 4 : 2);
+        if (template !== "beauty-pop") await expect(ring.locator("circle").first()).toHaveAttribute("stroke", "#ffffff");
         await expect(surface.getByTestId("beauty-wheel-colored-rim")).toHaveAttribute("stroke-width", template === "beauty-nude" ? "2.5" : template === "beauty-pop" ? "3.2" : "3");
         const whiteStroke = Number(await ring.locator("circle").first().getAttribute("stroke-width"));
         const colorStroke = Number(await surface.getByTestId("beauty-wheel-colored-rim").getAttribute("stroke-width"));
-        expect((whiteStroke - colorStroke) / 2).toBeCloseTo(2);
+        if (template !== "beauty-pop") expect((whiteStroke - colorStroke) / 2).toBeCloseTo(2);
         const pointer = surface.getByTestId("beauty-wheel-pointer");
         await expect(pointer).toHaveCSS("filter", /drop-shadow/);
         await expect(pointer.getByTestId("beauty-pointer-body")).toHaveAttribute("fill", /url\(#beauty-pointer-/);

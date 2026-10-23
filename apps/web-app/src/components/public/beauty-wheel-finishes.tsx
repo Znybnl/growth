@@ -10,7 +10,7 @@ export function BeautyWheelRim({ color, width, fill }: { color: string; width: n
   </g>;
 }
 
-export function BeautyWheelPointer({ color, path, className }: { color: string; path?: string; className?: string }) {
+export function BeautyWheelPointer({ color, path, className, edgeColor = "#ffffff" }: { color: string; path?: string; className?: string; edgeColor?: string }) {
   const gradientId = `beauty-pointer-${useId().replace(/:/g, "")}`;
   return <svg aria-hidden="true" data-testid="beauty-wheel-pointer" className={className} viewBox="0 0 48 64"
     style={{ filter: "drop-shadow(0 4px 4px rgba(58,43,39,.24))", "--pointer-color": color } as CSSProperties}>
@@ -24,7 +24,7 @@ export function BeautyWheelPointer({ color, path, className }: { color: string; 
     </defs>
     <path data-testid="beauty-pointer-body"
       d={path ?? "M24 2 C35 2 43 10 43 21 C43 34 32 48 24 62 C16 48 5 34 5 21 C5 10 13 2 24 2Z"}
-      fill={`url(#${gradientId})`} stroke="#ffffff" strokeWidth="2.4" strokeLinejoin="round" />
+      fill={`url(#${gradientId})`} stroke={edgeColor} strokeWidth="2.4" strokeLinejoin="round" />
     <path d="M15 15 C18 10 23 9 28 11" fill="none" stroke="#ffffff" strokeOpacity=".72" strokeWidth="1.6" strokeLinecap="round" />
   </svg>;
 }

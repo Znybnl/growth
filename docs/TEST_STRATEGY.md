@@ -1,5 +1,16 @@
 # Stratégie de test — Okado
 
+### Habillage Beauty Pop — #626
+
+`beauty-pop.spec.ts` vérifie les assets WebP, la bibliothèque et les budgets
+de poids, les textes/pointeur sans chevauchement à320/390×740px, les fonds
+manuels et changements de modèle, la rotation indépendante du contour et
+un résultat unique, puis le vrai wizard/iframe à1280×720/600.
+Les suites fonds/finitions Beauté, Éclat, palettes et contrastes sont rejouées.
+Les assertions adaptent uniquement le contour Beauty Pop remplacé par un
+cadre métallique stationnaire ; les autres rendus gardent leurs contrôles.
+Captures inspectées dans [le dossier de validation](design/beauty-pop-626.md).
+
 ### Budget et finitions — #609 phase5
 
 `test:prize-budget` vérifie le cas SFD3,08€/308€, les coûts inconnus/zéro,
