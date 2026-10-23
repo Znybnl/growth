@@ -64,6 +64,8 @@ Référence : [API PostHog — endpoints publics et privés, authentification](h
 | `google_place_search_completed` | recherche Google terminée | `resultCount`, `hasResults` |
 | `google_place_selected` | fiche Google sélectionnée | `hasRating`, `hasReviewCount` |
 | `draw_started` | session de jeu créée | `campaignId`, `gameType` |
+| `game_start_clicked` | clic sur le bouton « Jouer » avant la préparation de la session, aperçu exclu | `campaignId`, `gameType` |
+| `marketing_action_clicked` | clic sur l’action marketing configurée avant le jeu, aperçu exclu | `campaignId`, `gameType`, `actionKind` |
 | `draw_finalized` | participation finalisée | `campaignId`, `gameType` |
 | `prize_redeemed` | lot validé par un marchand | `campaignId`, `leadId` |
 | `marketing_cta_clicked` | clic sur un CTA du site public | `cta`, `location`, `destination`, `page`, UTM sans donnée personnelle |

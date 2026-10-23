@@ -68,6 +68,7 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 - Un lot publiable doit avoir un libellé, une quantité disponible strictement positive et des conditions de retrait cohérentes.
 - SFD Lots #609, §6.3 : la publication exige au moins un lot avec une probabilité de gain strictement positive. Une composition à 0 % peut rester un brouillon incomplet ; elle ne peut pas être publiée.
 - Lorsque « Jeu 100 % gagnant » est activé, la somme des probabilités des lots doit être exactement égale à 100 % au moment de la publication.
+- Décision propriétaire du 23 octobre 2026 — #629 : cocher « Jeu 100 % gagnant » ne modifie pas les chances saisies. Lors du tirage réel dans ce mode, seuls les lots à probabilité strictement positive et stock disponible (ou illimité) sont éligibles. Leur probabilité effective est `probabilité configurée / somme des probabilités éligibles`, sans plancher à 1 %, sans modifier les valeurs en base. Un lot à 0 % ne gagne jamais. Si aucun lot n'est éligible, refuser la nouvelle partie sans créer de session, participation ou gain. Ce mode ne produit pas de perte. Le comportement de prévisualisation, qui peut forcer un gain, est conservé ; le tirage normal ne change pas. Les segments visuels ne participent jamais au tirage.
 - La modification opérationnelle du stock concerne le **stock disponible** ; le stock initial reste la référence de création.
 - Les anomalies de dotation doivent être affichées dans la section concernée avant la publication.
 
