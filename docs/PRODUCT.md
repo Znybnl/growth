@@ -1,5 +1,14 @@
 # Produit — Okado
 
+## Libellés de roue longs — #631
+
+Dans le rendu partagé de la roue, un libellé qui manque de place dans son
+secteur réduit uniquement sa propre taille de police. Les textes qui tiennent
+conservent leur taille de référence. Le calcul utilise les dimensions SVG
+réelles, le dégagement du bouton central, le bord et l'angle du secteur ;
+aucun étirement horizontal ni modification du libellé enregistré, des chances
+ou du tirage. Même composant pour la page de jeu et les aperçus.
+
 ## Refonte Beauty Pop — #626
 
 La roue `beauty-pop` adopte un fond raster rose/fuchsia avec rubans, cadeaux

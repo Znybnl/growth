@@ -14,6 +14,7 @@ import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, i
 import { rosePowderVisualSegments, selectWheelVisualSegments } from "@/lib/wheel-segments";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
 import { enforceMinimumWheelPrizeLabelFontSize } from "@/lib/wheel-labels";
+import { FittedWheelLabel } from "@/components/public/fitted-wheel-label";
 
 type WheelSegment = {
   id: string;
@@ -612,31 +613,24 @@ export function WheelOfFortune({
                       vectorEffect="non-scaling-stroke"
                     />
                   ) : null}
-                  <text
+                  <FittedWheelLabel
+                    lines={labelLines}
+                    baseFontSize={textStyles.fontSize}
+                    lineHeight={textStyles.lineHeight}
+                    initialOffset={textStyles.initialOffset}
+                    radius={isRosePowderTemplate ? 208 : isBeautyTemplate ? 194 : 208}
+                    buttonRadius={SVG_SIZE * (isBeautyPop ? 0.35 : isRosePowderTemplate ? 0.30 : pageTemplate === "beauty-botanical" ? 0.33 : pageTemplate === "beauty-nude" ? 0.315 : isBeautyTemplate ? 0.30 : isRestaurantPopTemplate ? 0.27 : isClassicTemplate || isRoseInstitutTemplate ? 0.28 : 0.192) / 2}
+                    outerRadius={OUTER_RADIUS}
+                    sectorAngle={endAngle - startAngle}
                     x={textPoint.x}
                     y={textPoint.y}
                     fill={textColor}
                     fontFamily={isBeautyTemplate || isRoseInstitutTemplate ? textFontFamily("dm-sans") : "Roboto, sans-serif"}
-                    fontSize={String(textStyles.fontSize)}
                     fontWeight={isBeautyTemplate || isRoseInstitutTemplate ? "600" : "850"}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     transform={`rotate(${isBeautyTemplate || isRoseInstitutTemplate ? uprightRadialTextAngle : radialTextAngle} ${textPoint.x} ${textPoint.y})`}
-                  >
-                    {labelLines.map((line, lineIndex) => (
-                      <tspan
-                        key={`${segment.id}-${line}`}
-                        x={textPoint.x}
-                        dy={
-                          lineIndex === 0
-                            ? `${textStyles.initialOffset}px`
-                            : `${textStyles.lineHeight}px`
-                        }
-                      >
-                        {line}
-                      </tspan>
-                    ))}
-                  </text>
+                  />
                 </g>
               );
             })}
