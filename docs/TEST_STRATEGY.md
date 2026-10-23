@@ -1,6 +1,6 @@
 # Stratégie de test — Okado
 
-Le suivi de clic Google et l’option de clic requis (#638) se vérifient avec `npm run test:google-click -w @okado/web-app` : vraies fonctions SQL de tirage et participation sous PGlite, refus RLS, association du clic, journal d’acceptation et vrais handlers API avec fournisseurs simulés. `e2e/google-click-required.spec.ts` contrôle le Wizard dans MerchantShell à 1280×720, 1280×600 et 390 px, l’annulation/acceptation/sauvegarde, le déblocage sur roue/ticket, la reprise après erreur de clic et les actions facultatives/sociales.
+Le suivi de clic Google et l’option de clic requis (#638) se vérifient avec `npm run test:google-click -w @okado/web-app` : vraies fonctions SQL de tirage et participation sous PGlite, refus RLS, association du clic, journal d’acceptation et vrais handlers API avec fournisseurs simulés. `e2e/google-click-required.spec.ts` contrôle le Wizard dans MerchantShell à 1280×720, 1280×600 et 390 px, l’annulation/acceptation/sauvegarde, l’absence du bouton « Jouer maintenant » avant le clic, sa disponibilité après clic enregistré, la reprise après erreur et les actions facultatives/sociales. Toute modification du texte accepté incrémente sa version.
 
 ### Compositions sectorielles — #623
 
@@ -513,7 +513,7 @@ Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu e
 
 ## Surface opaque du ticket à gratter — #633
 
-`e2e/template-rendering-511.spec.ts` vérifie sur les onze templates que le canvas de jeu contient bien un revêtement opaque avec le motif effectivement peint, et pas seulement une image source chargée. La recette couvre la prévisualisation, le jeu public et la prévisualisation de jeu ; elle ne modifie ni le grattage ni les probabilités.
+`e2e/template-rendering-511.spec.ts` vérifie sur les onze templates que le canvas de jeu contient bien un revêtement opaque avec le motif effectivement peint, et pas seulement une image source chargée. `e2e/game-screen-layout.spec.ts` vérifie aussi visuellement à 963×555 que la texture WebP originale Noir & Or est visible dans l’aperçu avant hydratation, quand le canvas est encore vierge. La recette couvre la prévisualisation, le jeu public et la prévisualisation de jeu ; elle ne modifie ni le grattage ni les probabilités.
 
 ## Catalogue Beauté — #466
 

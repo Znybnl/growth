@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 import { BrandMark } from "@/components/brand-mark";
 import {
@@ -434,6 +435,32 @@ export function ImmersiveScratchTicket({
           data-testid="scratch-ticket-surface"
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
         >
+          {!hasTouched && !revealed ? (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-10 overflow-hidden"
+              data-testid="scratch-foil-first-paint"
+              style={{
+                backgroundColor: coverColor,
+                ...(beautyTheme ? {} : {
+                  backgroundImage: `repeating-linear-gradient(135deg, transparent 0 32px, ${withAlpha(readableTextColor(primary), isSunburst ? "24" : "2e")} 33px 35px), linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 42%, ${coverColor} 72%, ${blendWithWhite(coverColor, isSunburst ? 0.04 : 0.08)} 100%)`,
+                }),
+              }}
+            >
+              {beautyTheme ? (
+                <Image
+                  src={beautyTheme.scratch.texture}
+                  alt=""
+                  fill
+                  sizes="216px"
+                  unoptimized
+                  loading="eager"
+                  className="object-cover"
+                  style={{ opacity: beautyTheme.scratch.textureOpacity }}
+                />
+              ) : null}
+            </div>
+          ) : null}
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"

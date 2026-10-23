@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { assertNoPageOverflow, captureVisualAt1280, rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
+import { scratchVisualTheme, IMMERSIVE_SCRATCH_TEMPLATE_IDS } from "../src/lib/beauty-scratch-templates";
 
 const viewports = [
   { width: 1280, height: 720 },
@@ -59,6 +60,37 @@ test("@visual-1280 ticket : la zone à gratter est alignée sans recouvrir le ti
     } else {
       await page.screenshot({ path: info.outputPath("ticket-beaute-mobile.png"), animations: "disabled" });
     }
+  }
+});
+
+test("@visual-1280 ticket Noir & Or : le motif d’origine est visible dès le premier affichage", async ({ browser }, info) => {
+  const context = await browser.newContext({
+    viewport: { width: 963, height: 555 },
+    javaScriptEnabled: false,
+    baseURL: "http://127.0.0.1:3100",
+  });
+  try {
+    const page = await context.newPage();
+    for (const template of IMMERSIVE_SCRATCH_TEMPLATE_IDS) {
+      await page.goto(`/dev/template-rendering-proof?mode=preview&template=${template}&business=beauty`);
+      const surface = page.getByTestId("scratch-ticket-surface");
+      const firstPaint = surface.getByTestId("scratch-foil-first-paint");
+      await expect(surface).toBeVisible();
+      await expect(firstPaint).toBeVisible();
+      const texturedTheme = scratchVisualTheme(template);
+      if (texturedTheme) {
+        const source = firstPaint.locator("img");
+        await expect(source).toHaveAttribute("src", texturedTheme.scratch.texture);
+        await expect.poll(() => source.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+      } else {
+        await expect(firstPaint).toHaveCSS("background-image", /linear-gradient/);
+      }
+      if (template === "beauty-scratch-noir-or") {
+        await page.screenshot({ path: info.outputPath("noir-or-first-paint-963x555.png"), animations: "disabled" });
+      }
+    }
+  } finally {
+    await context.close();
   }
 });
 
