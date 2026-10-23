@@ -3,11 +3,11 @@ import { assertNoPageOverflow, captureVisualAt1280, rejectAnalyticsForVisualTest
 import { selectWizardStep } from "./helpers/wizard-step";
 
 const suggestions = [
-  { id: "mask", label: "MASQUE OFFERT", description: "Avec un soin visage payant.", estimatedUnitCost: 2 },
-  { id: "hands", label: "SOIN DES MAINS", description: "Un soin découverte.", estimatedUnitCost: 5 },
-  { id: "ritual", label: "RITUEL OFFERT", description: "Avec une prestation payante.", estimatedUnitCost: 10 },
-  { id: "gift", label: "CADEAU SIGNATURE", description: "Sans obligation d’achat.", estimatedUnitCost: 20 },
-].map((item, sortOrder) => ({ ...item, industry: "Beauté", icon: "gift", isActive: true, probability: 10, sortOrder }));
+  { id: "ps-beauty-466-general-1", label: "MASQUE OFFERT", description: "Avec un soin visage payant.", estimatedUnitCost: 2 },
+  { id: "ps-beauty-466-general-5", label: "SOIN DES MAINS", description: "Un soin découverte.", estimatedUnitCost: 5 },
+  { id: "ps-beauty-466-general-7", label: "RITUEL OFFERT", description: "Avec une prestation payante.", estimatedUnitCost: 10 },
+  { id: "ps-beauty-466-general-2", label: "CADEAU SIGNATURE", description: "Sans obligation d’achat.", estimatedUnitCost: 20 },
+].map((item, sortOrder) => ({ ...item, industry: "Beauté", industrySubsector: "Beauté généraliste / multi-activité", icon: "gift", isActive: true, probability: 10, sortOrder }));
 
 test.beforeEach(async ({ page, context, baseURL }) => {
   await rejectAnalyticsForVisualTests(context, baseURL!);
@@ -63,7 +63,7 @@ test("@visual-1280 phase 4 : détail, remplacement confirmé, copie modifiable e
   await editor.getByRole("button", { name: "Enregistrer le lot", exact: true }).click();
   await page.getByTestId("wizard-footer").getByRole("button", { name: "Enregistrer le brouillon", exact: true }).click();
   await expect.poll(() => writes.length).toBe(1);
-  expect(writes[0].prizes.map((prize) => prize.probability)).toEqual([35, 23.33, 11.67]);
+  expect(writes[0].prizes.map((prize) => prize.probability)).toEqual([35, 25, 10]);
   expect(writes[0].prizes[0]).toMatchObject({ label: "MASQUE PERSONNALISÉ", totalQuantity: null, remainingQuantity: null, estimatedUnitCost: 2, purchaseRequired: true });
   expect(writes[0].prizes.every((prize) => typeof prize.id === "string" && prize.id.includes("-composition-") && prize.id.length < 120 && prize.label !== "PERDU")).toBe(true);
   await assertNoPageOverflow(page);
@@ -77,12 +77,12 @@ test("phase 4 : jeu vide, application directe et indépendance des onglets", asy
   await dialog.getByRole("button", { name: "Voir la composition : Généreux", exact: true }).click();
   await dialog.getByRole("button", { name: "Utiliser cette composition", exact: true }).click();
   await expect(dialog).toHaveCount(0);
-  await expect(page.getByTestId("wizard-prize-row")).toHaveCount(4);
+  await expect(page.getByTestId("wizard-prize-row")).toHaveCount(3);
   await expect(page.getByTestId("wizard-losing-probability")).toHaveCount(0);
   await expect(page.getByRole("img", { name: /100 % de chances de gagner et 0 % de chances de perdre/ })).toBeVisible();
   const reopened = await library(page);
   await reopened.getByRole("tab", { name: "Suggestions", exact: true }).click();
-  await expect(reopened.getByRole("button", { name: /Ajouté :/ })).toHaveCount(4);
+  await expect(reopened.getByRole("button", { name: /Ajouté :/ })).toHaveCount(3);
   await reopened.getByRole("tab", { name: "Compositions", exact: true }).click();
   await reopened.getByRole("button", { name: "Voir la composition : Budget maîtrisé", exact: true }).click();
   await reopened.getByRole("button", { name: "Utiliser cette composition", exact: true }).click();
@@ -90,7 +90,7 @@ test("phase 4 : jeu vide, application directe et indépendance des onglets", asy
   await expect(reopened).toBeVisible();
   await expect(reopened.getByRole("button", { name: "Utiliser cette composition", exact: true })).toBeVisible();
   await reopened.getByRole("tab", { name: "Suggestions", exact: true }).click();
-  await expect(page.getByTestId("wizard-prize-row")).toHaveCount(4);
+  await expect(page.getByTestId("wizard-prize-row")).toHaveCount(3);
 });
 
 for (const width of [320, 390]) test(`phase 4 : navigation et confirmation contenues sur mobile ${width}`, async ({ page }, info) => {

@@ -1,5 +1,24 @@
 # Stratégie de test — Okado
 
+### Compositions sectorielles — #623
+
+`test:prize-compositions` contrôle25contextes (secteurs, sous-secteurs Beauté et
+types de restauration), recettes déterministes40/70/100, coûts, conditions,
+copies, données invalides/manquantes/inactives et refus des contextes inconnus.
+Migration testée dans PostgreSQL isolé :35ajouts, idempotence, conservation des
+campagnes et personnalisations, manifeste privé inaccessible à anon, rollback
+ne supprimant que les insertions intactes. `sector-prize-compositions.spec.ts`
+exerce création sans lot, choix explicite, sauvegarde roue/ticket/admin, erreurs
+et vide, avec captures1280×720/600 et320/390px. Les régressions bibliothèque,
+budget et réutilisation restent couvertes ; aucun e-mail ni écriture en production.
+
+Relecture PR #624 : le contrat réseau du catalogue est validé avant rendu
+(enveloppe, types des champs utilisés, valeurs numériques, IDs uniques).
+Un catalogue malformé produit un état d'erreur avec réessai et création manuelle,
+pas un faux état vide. Les tests vérifient aussi le retour à un catalogue valide
+sans ajout automatique. Le détail montre les conditions proposées et l'achat
+requis selon le même mapping que la copie, avec captures à 1280×720/600 et mobile.
+
 ### Tirage 100 % gagnant — #629
 
 `test:guaranteed-draw` exécute les fonctions SQL migrées et leur rollback dans
@@ -12,6 +31,7 @@ sont testés. Les bornes sont déterministes côté JS et un échantillon SQL de
 et l'aide du wizard/éditeur classique à 1280×720/600 et sur mobile. La preview
 produit reste volontairement différente ; ne pas l'utiliser pour mesurer les
 probabilités réelles. Voir [preuves et migration](releases/2026-10-23-guaranteed-draw-629.md).
+
 ### Ajustement local des libellés de roue — #631
 
 `wheel-template-background.spec.ts` conserve le minimum de référence de 25 px

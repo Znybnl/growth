@@ -91,13 +91,26 @@
   background: #f7fbf8;
 }
 
+.libraryCard[data-recommended="true"] {
+  border-color: #b795c4;
+}
+
+.compositionContainer {
+  container-type: inline-size;
+}
+
 .compositionGrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: .75rem;
 }
 
-@media (min-width: 1024px) {
+.compositionGrid .libraryCard {
+  gap: .75rem;
+  padding: .875rem;
+}
+
+@container (min-width: 700px) {
   .compositionGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

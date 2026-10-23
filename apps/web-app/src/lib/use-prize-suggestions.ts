@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Merchant, PrizeSuggestion } from "@/lib/types";
+import { parsePrizeSuggestionCatalog } from "@/lib/prize-suggestion-catalog";
 
 export function usePrizeSuggestionCatalog(merchant: Pick<Merchant, "id" | "industry" | "industrySubsector">) {
   const industry = merchant.industry?.trim() ?? "";
@@ -17,10 +18,10 @@ export function usePrizeSuggestionCatalog(merchant: Pick<Merchant, "id" | "indus
     fetch(`/api/prize-suggestions?${query}`, { cache: "no-store", signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error("Suggestions indisponibles");
-        return (await response.json()) as { suggestions?: PrizeSuggestion[] };
+        return parsePrizeSuggestionCatalog(await response.json());
       })
-      .then((payload) => {
-        if (!controller.signal.aborted) setResult({ scope, suggestions: payload.suggestions ?? [], error: null });
+      .then((suggestions) => {
+        if (!controller.signal.aborted) setResult({ scope, suggestions, error: null });
       })
       .catch(() => {
         if (!controller.signal.aborted) setResult({ scope, suggestions: [], error: "Impossible de charger les suggestions. Réessayez dans un instant." });
