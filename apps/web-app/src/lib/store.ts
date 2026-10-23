@@ -1,5 +1,6 @@
 import { conversionRate, globalConversion, isMarketingClick, isPendingGain, effectiveRedemptionDate, marketingVolumes } from "@/lib/metric-rules";
 import { hasLocalGoogleClickAcceptance } from "@/lib/google-click-acceptance";
+import { selectGuaranteedPrize } from "@/lib/guaranteed-draw";
 import {
   createDrawSessionInSupabase,
   createPreviewParticipationInSupabase,
@@ -920,33 +921,15 @@ function incrementPrize(prize: Prize) {
 }
 
 function choosePrize(campaign: Campaign, prizes: Prize[]) {
+  if (campaign.rewardRules.isWinningEveryTime) {
+    const prize = selectGuaranteedPrize(prizes);
+    decrementPrize(prize);
+    return prize;
+  }
   const available = prizes.filter(isPrizeAvailable);
 
   if (!available.length) {
     return null;
-  }
-
-  if (campaign.rewardRules.isWinningEveryTime) {
-    const weighted = available.filter((prize) => prize.probability > 0);
-    const totalWeight = weighted.reduce((total, prize) => total + prize.probability, 0);
-    if (!weighted.length || totalWeight <= 0) {
-      return null;
-    }
-
-    const roll = Math.random() * totalWeight;
-    let cursor = 0;
-
-    for (const prize of weighted) {
-      cursor += prize.probability;
-
-      if (roll <= cursor) {
-        decrementPrize(prize);
-        return prize;
-      }
-    }
-
-    decrementPrize(weighted[0]);
-    return weighted[0];
   }
 
   const roll = Math.random() * 100;

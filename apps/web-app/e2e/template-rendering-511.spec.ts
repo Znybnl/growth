@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { selectWizardStep } from "./helpers/wizard-step";
-import { BEAUTY_SCRATCH_TEMPLATES } from "../src/lib/beauty-scratch-templates";
+import { BEAUTY_SCRATCH_TEMPLATES, IMMERSIVE_SCRATCH_TEMPLATE_IDS } from "../src/lib/beauty-scratch-templates";
 import { resolveScratchTemplateTextColor } from "../src/lib/campaign-defaults";
 
 async function isolate(page: Page) {
@@ -58,11 +58,10 @@ for (const mode of ["preview", "public", "game-preview"]) {
     await expect(surface).toHaveCSS("background-image", /aurora-retail/);
   });
 
-  test(`${mode} : les neuf tickets n'affichent plus les phrases sous le grattage`, async ({ page }, info) => {
+  test(`${mode} : les onze tickets n'affichent plus les phrases sous le grattage`, async ({ page }, info) => {
     await isolate(page);
     await page.setViewportSize({ width: 390, height: 850 });
-    const templates = [...BEAUTY_SCRATCH_TEMPLATES.map(t => t.id), "scratch-nude-classic", "scratch-vault", "scratch-coral", "scratch-lilac"];
-    for (const template of templates) {
+    for (const template of IMMERSIVE_SCRATCH_TEMPLATE_IDS) {
       await page.goto(url(mode, template, { ink: "#003cb4" }));
       await expect(page.locator("canvas").first()).toBeVisible();
       const ticket = page.getByTestId("scratch-ticket-surface");
@@ -78,6 +77,50 @@ for (const mode of ["preview", "public", "game-preview"]) {
     }
   });
 }
+
+test("game-preview : les textures d’origine des onze tickets sont réellement peintes dans la couche à gratter", async ({ page }, info) => {
+  await isolate(page);
+  await page.setViewportSize({ width: 390, height: 850 });
+
+  for (const template of IMMERSIVE_SCRATCH_TEMPLATE_IDS) {
+    await page.goto(url("game-preview", template));
+    const canvas = page.locator("canvas").first();
+    await expect(canvas).toBeVisible();
+    if (BEAUTY_SCRATCH_TEMPLATES.some((theme) => theme.id === template)) {
+      await expect(canvas).toHaveAttribute("data-foil-loaded", "true");
+    }
+    const cover = await canvas.evaluate((element) => {
+      const context = (element as HTMLCanvasElement).getContext("2d");
+      if (!context) throw new Error("Canvas 2D indisponible");
+      const { width, height } = element as HTMLCanvasElement;
+      const pixels = context.getImageData(0, 0, width, height).data;
+      let maxAdjacentPixelDelta = 0;
+      for (let y = 0; y < height; y += 2) {
+        for (let x = 0; x < width - 1; x += 2) {
+          const index = (y * width + x) * 4;
+          const right = index + 4;
+          maxAdjacentPixelDelta = Math.max(
+            maxAdjacentPixelDelta,
+            Math.abs(pixels[index] - pixels[right]),
+            Math.abs(pixels[index + 1] - pixels[right + 1]),
+            Math.abs(pixels[index + 2] - pixels[right + 2]),
+          );
+        }
+      }
+      return {
+        opaque: [[0.25, 0.25], [0.5, 0.5], [0.75, 0.75]].every(([x, y]) =>
+          context.getImageData(Math.round(width * x), Math.round(height * y), 1, 1).data[3] === 255,
+        ),
+        maxAdjacentPixelDelta,
+      };
+    });
+    expect(cover.opaque, `${template}: le revêtement d’origine doit rester opaque`).toBe(true);
+    expect(cover.maxAdjacentPixelDelta, `${template}: le motif du revêtement doit être peint dans le canvas`).toBeGreaterThan(8);
+    if (template === "beauty-scratch-noir-or") {
+      await page.screenshot({ path: info.outputPath("scratch-noir-or-original-texture.png"), fullPage: true });
+    }
+  }
+});
 
 for (const mode of ["wizard", "editor"]) {
   test(`${mode} : modifier la couleur principale de Bicolore met à jour son fond`, async ({ page }) => {

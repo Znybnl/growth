@@ -38,6 +38,7 @@
     "test:marketing-action-library": "node --experimental-strip-types --test src/lib/marketing-action-library.test.mjs",
     "test:dependency-audit": "node --test scripts/check-dependency-exceptions.test.mjs",
     "test:wheel-segments": "node --experimental-strip-types --test src/lib/wheel-segments.test.mjs",
+    "test:guaranteed-draw": "node --experimental-strip-types --test src/lib/guaranteed-draw.test.mjs src/lib/guaranteed-draw-sql.test.mjs src/lib/guaranteed-draw-api.test.mjs",
     "check:gotomarket": "node scripts/check-gotomarket-config.mjs",
     "check:dependencies": "node scripts/check-dependency-exceptions.mjs",
     "check:supabase": "node scripts/check-supabase-schema.mjs",

@@ -24,6 +24,13 @@ import { issueParticipationToken, verifyMarketingClickToken, publicPlayerToken }
 import { requiresGoogleClick } from "@/lib/google-click-policy";
 import { CreateDrawSessionRequest, CreateDrawSessionResult } from "@/lib/types";
 
+function getErrorMessage(error: unknown) {
+  if (typeof error === "object" && error !== null && "message" in error && typeof error.message === "string") {
+    return error.message;
+  }
+  return "Draw session failed";
+}
+
 export async function POST(request: NextRequest) {
   const preparationStartedAt = performance.now();
   const body = (await request.json()) as CreateDrawSessionRequest;
@@ -165,15 +172,16 @@ export async function POST(request: NextRequest) {
     if (dailyLockClaimed) {
       await releasePersistentDailyParticipationLock(request, campaignId);
     }
+    const errorMessage = getErrorMessage(error);
     logSupportEvent("error", "draw_start_failed", {
       campaignId,
-      error: error instanceof Error ? error.message : "Draw session failed",
+      error: errorMessage,
     });
 
     const retryAfter = getPublicRetryAfter(error);
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Draw session failed",
+        error: errorMessage,
         code: isDailyParticipationError(error) ? "already_played_today" : undefined,
       },
       {

@@ -2,6 +2,19 @@
 
 Le suivi de clic Google et l’option de clic requis (#638) se vérifient avec `npm run test:google-click -w @okado/web-app` : vraies fonctions SQL de tirage et participation sous PGlite, refus RLS, association du clic, journal d’acceptation et vrais handlers API avec fournisseurs simulés. `e2e/google-click-required.spec.ts` contrôle le Wizard dans MerchantShell à 1280×720, 1280×600 et 390 px, l’annulation/acceptation/sauvegarde, le déblocage sur roue/ticket, la reprise après erreur de clic et les actions facultatives/sociales.
 
+### Tirage 100 % gagnant — #629
+
+`test:guaranteed-draw` exécute les fonctions SQL migrées et leur rollback dans
+PGlite, le helper mémoire et le vrai handler de préparation avec infrastructure
+simulée. Exclusion du 0 %, poids fractionnaires, redistribution après épuisement,
+refus atomique sans lot, restitution, droits privés/invoker et retour arrière
+sont testés. Les bornes sont déterministes côté JS et un échantillon SQL de
+10 000 tirages est seedé. Il ne garantit pas un quota exact de gains.
+`guaranteed-draw-rules.spec.ts` contrôle la case sans modification des chances
+et l'aide du wizard/éditeur classique à 1280×720/600 et sur mobile. La preview
+produit reste volontairement différente ; ne pas l'utiliser pour mesurer les
+probabilités réelles. Voir [preuves et migration](releases/2026-10-23-guaranteed-draw-629.md).
+
 ### Ajustement local des libellés de roue — #631
 
 `wheel-template-background.spec.ts` conserve le minimum de référence de 25 px
@@ -477,6 +490,10 @@ La suite `test:admin-campaigns` couvre aussi les vrais handlers de duplication a
 La suite `test:admin-campaigns` vérifie la nouvelle route avec sessions/base simulées et le vrai générateur SVG partagé : refus 401/403 avant lecture, jeu absent/site archivé, erreur de base sans divulgation, bon lien public sans jeton de test, fichier téléchargeable privé, brouillon sans publication et audit technique hors indicateurs marchand. Les tests de rendu/câblage couvrent la liste, le Wizard et sa confirmation. Les permissions HTTP réelles sont ajoutées à `admin-campaign-access.spec.ts`. La fixture `/dev/admin-qr-proof` (404 en production) teste les vrais composants à 320/390/1280 px et le téléchargement d’un fichier synthétique, sans contourner l’authentification serveur.
 
 Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu et Télécharger le QR de diffusion après enregistrement. Scanner le SVG d’un jeu publié doit ouvrir le bon jeu public ; celui d’un brouillon ne le publie pas. Le QR de test reste temporaire et isolé. Aucune campagne réelle n’est modifiée par les tests.
+
+## Surface opaque du ticket à gratter — #633
+
+`e2e/template-rendering-511.spec.ts` vérifie sur les onze templates que le canvas de jeu contient bien un revêtement opaque avec le motif effectivement peint, et pas seulement une image source chargée. La recette couvre la prévisualisation, le jeu public et la prévisualisation de jeu ; elle ne modifie ni le grattage ni les probabilités.
 
 ## Catalogue Beauté — #466
 

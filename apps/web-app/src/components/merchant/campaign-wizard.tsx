@@ -2264,7 +2264,7 @@ export function CampaignWizard({
                     <input type="checkbox" checked={draft.rewardRules.isWinningEveryTime}
                       onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, isWinningEveryTime: event.target.checked } })}
                       className="mt-0.5 h-4 w-4 accent-aubergine" />
-                    <span><span className="block font-semibold">Jeu 100 % gagnant</span><span className="mt-1 block text-xs leading-5 text-[#716b78]">À la publication, les chances doivent totaliser 100 % et au moins un lot doit avoir un stock illimité. Les chances ne sont pas ajustées automatiquement.</span></span>
+                    <span><span className="block font-semibold">Jeu 100 % gagnant</span><span className="mt-1 block text-xs leading-5 text-[#716b78]">À la publication, les chances doivent totaliser 100 % et au moins un lot doit avoir un stock illimité. Cocher cette case ne modifie pas les chances saisies. Pendant le jeu, si un stock est épuisé, ses chances sont réparties proportionnellement entre les lots disponibles à chance positive. Un lot à 0 % ne peut pas être gagné. Sans lot éligible, aucune nouvelle partie ne peut démarrer.</span></span>
                   </label>
                   <label className="flex cursor-pointer items-start gap-3 text-sm text-[#242126]">
                     <input type="checkbox" checked={draft.rewardRules.availableAfterHours > 0}
