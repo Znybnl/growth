@@ -110,6 +110,7 @@ test('vrai Pilotage : essais applicatifs inclus, unité établissement, aucun ap
 test('vrai handler public : action étrangère ou type falsifié refusé, legacy accepté sans fabriquer de partie',async()=>{
   const api=load('./public-api.ts');let calls=0;
   const route=load('../app/api/public/event/route.ts',{
+    '@/lib/participation-token':load('./participation-token.ts'),
     'next/server':{NextResponse:response},'@/lib/public-api':api,
     '@/lib/public-security-store':{assertPersistentPublicRateLimit:async()=>{}},
     '@/lib/store':{getPublicCampaign:async()=>({actions:[{id:'action-test',kind:'instagram'}]}),recordEvent:async()=>{calls++;return {id:'event'}}},

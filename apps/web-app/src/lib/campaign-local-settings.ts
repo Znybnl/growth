@@ -15,6 +15,8 @@ import {
 } from "@/lib/supabase";
 
 type CampaignLocalSettings = {
+  googleClickRequired?: boolean;
+  googleClickAcceptanceId?: string;
   emailCaptureEnabled?: boolean;
   buttonTextSizePx?: number;
   buttonIsBold?: boolean;

@@ -10,6 +10,7 @@ import {
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { getPublicCampaign, recordEvent } from "@/lib/store";
 import { EventType } from "@/lib/types";
+import { issueMarketingClickToken, publicPlayerToken } from "@/lib/participation-token";
 
 type EventBody = {
   campaignId: string;
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
 
   try {
     const campaignId = body.campaignId.trim();
-    const campaign = await getPublicCampaign(campaignId);
+    const campaign = await getPublicCampaign(campaignId, publicPlayerToken(request, campaignId));
     if (!campaign) {
       return NextResponse.json({ error: "Animation introuvable" }, { status: 404 });
     }
@@ -60,7 +61,9 @@ export async function POST(request: Request) {
       sanitizePublicMetadata(body.metadata),
     );
 
-    return NextResponse.json({ event }, { status: 201 });
+    const marketingClickToken = isClick && typeof body.metadata?.actionId === "string" && typeof body.metadata?.eventId === "string"
+      ? issueMarketingClickToken(campaignId, event.id, body.metadata.actionId) : undefined;
+    return NextResponse.json({ event, marketingClickToken }, { status: 201, headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const retryAfter = getPublicRetryAfter(error);
 

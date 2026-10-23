@@ -168,6 +168,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     const empty = mode.includes("empty");
     const fixture: CampaignPerformance = { ...performance, merchant: target,
       campaign: { ...performance.campaign, actions: empty ? [] : [
+        ...(mode === "wizard-actions-google" ? [{ id: "google-fixture", kind: "google" as const, label: "Écrire un avis", url: target.googleReviewUrl }] : []),
         { id: "legacy-instagram", kind: "instagram", label: "Notre compte personnalisé",
           url: mode === "wizard-actions-invalid" ? "http://instagram.com/fixture" : target.instagramUrl },
         { id: "legacy-website", kind: "custom", label: "Visiter le site", url: target.websiteUrl },
@@ -175,9 +176,13 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
           label: "Prendre rendez-vous", url: target.appointmentUrl }] : []),
       ] } };
     if (mode === "editor-actions-empty") return <CampaignEditor merchant={target} initialCampaign={fixture} deferInlineAssets />;
-    return <CampaignWizard merchant={target} initialCampaign={fixture}
+    const wizard = <CampaignWizard merchant={target} initialCampaign={fixture}
       {...(mode === "wizard-actions-admin" ? { adminAccountMerchantId: "fixture-account",
         adminSaveEndpoint: "/api/admin/merchants/fixture-account/locations/template-proof-merchant/campaigns/setup" } : {})} />;
+    if (mode === "wizard-actions-google") return <MerchantShell merchant={target} user={{ id: "fixture-user", merchantId: merchant.id,
+      role: "owner", firstName: "Camille", lastName: "Test", email: "fixture@example.test", password: "", createdAt: merchant.createdAt }}
+      locations={[{ merchant: target, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>{wizard}</MerchantShell>;
+    return wizard;
   }
   if (mode === "poster-defaults") return <MerchantShell merchant={merchant} user={{ id: "poster-default-user", merchantId: merchant.id,
     role: "owner", firstName: "Camille", lastName: "Test", email: "poster@example.test", password: "", createdAt: merchant.createdAt }}
@@ -196,6 +201,9 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
     <PosterEditor campaign={performance.campaign} prizes={performance.prizes} />
   </MerchantShell>;
+  if (mode.startsWith("public-google")) return <CampaignExperience campaignId={form.id} initialCampaign={{ ...publicCampaign,
+    googleClickRequired: mode !== "public-google-optional", emailCaptureEnabled: false,
+    actions: [{ id: "google-fixture", kind: mode === "public-google-other" ? "instagram" : "google", label: "Écrire un avis", url: "https://example.test/action" }] }} />;
   if (mode === "public" || mode === "live") return <CampaignExperience campaignId={form.id} initialCampaign={publicCampaign} />;
   if (mode === "game-preview") return <CampaignExperience campaignId={form.id} initialCampaign={publicCampaign} isPreview previewToken="fixture-only" />;
   if (mode === "wizard") return <CampaignWizard merchant={merchant} initialCampaign={performance} />;

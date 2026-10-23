@@ -65,6 +65,8 @@ Contrat, limites, migration et retour arrière : [livraison #498](releases/consi
 
 ### Comptage des participations — #496
 
+Complément #638 : le clic existant reçoit une capacité HMAC courte, qui permet à la route de préparation de rattacher l’événement enregistré à la session exacte. La RPC privée `create_draw_session_with_marketing` enveloppe la transaction de tirage existante ; le contexte est figé sur les événements métier, puis lu par la vue privée `campaign_participation_marketing` sans modifier les compteurs canoniques. Le réglage de campagne référence une acceptation versionnée dans `google_click_warning_acceptances`, validée par trigger. [Migration, contrôles et rollback](releases/2026-10-23-google-click-638.md).
+
 La vue privée `campaign_participations` (security_invoker, SELECT service_role uniquement) dédoublonne les événements `game_played` et les contacts historiques finalisés par identité de session, puis de lead quand le lien manque. La date retenue est la première preuve de jeu, pas la date ultérieure du formulaire. Il n'y a ni nouvelle collecte de données personnelles ni réécriture historique. Les archives et durées de conservation existantes sont inchangées.
 
 La roue enregistre déjà l'événement côté serveur dans sa transaction de préparation. Le ticket appelle `/api/public/draw/played` au premier grattage avec une capacité HMAC courte délivrée seulement pour une vraie session. La RPC privée verrouille la session et enregistre l'événement au plus une fois, sans gain, stock, contact ou e-mail. Une capacité de preview est d'un autre type et ne peut pas être réutilisée. L'API d'événements arbitraires refuse toujours `game_played`.

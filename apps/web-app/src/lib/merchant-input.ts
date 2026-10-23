@@ -560,6 +560,8 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
     subtitle: normalizeMultiline(payload.subtitle, 240),
     goalType,
     emailCaptureEnabled,
+    googleClickRequired: typeof payload.googleClickRequired === "boolean" ? payload.googleClickRequired : undefined,
+    googleClickAcceptanceId: normalizeString(payload.googleClickAcceptanceId, 120) || undefined,
     ctaLabel: normalizeString(payload.ctaLabel, 80),
     successMetric: normalizeString(payload.successMetric, 80),
     targetUrl: normalizeUrl(payload.targetUrl) || undefined,

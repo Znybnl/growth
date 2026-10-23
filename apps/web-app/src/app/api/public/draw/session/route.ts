@@ -16,11 +16,12 @@ import {
   releasePersistentDailyParticipationLock,
 } from "@/lib/public-security-store";
 import { captureProductEvent } from "@/lib/product-analytics";
-import { createDrawSession } from "@/lib/store";
+import { createDrawSession, getPublicCampaign } from "@/lib/store";
 import { createPreviewDrawSession } from "@/lib/store";
 import { issuePreviewSessionToken, verifyPreviewAccessToken } from "@/lib/preview-token";
 import { logSupportEvent } from "@/lib/support-log";
-import { issueParticipationToken } from "@/lib/participation-token";
+import { issueParticipationToken, verifyMarketingClickToken, publicPlayerToken } from "@/lib/participation-token";
+import { requiresGoogleClick } from "@/lib/google-click-policy";
 import { CreateDrawSessionRequest, CreateDrawSessionResult } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -93,12 +94,25 @@ export async function POST(request: NextRequest) {
     });
     const rateLimitMs = Math.round(performance.now() - rateLimitStartedAt);
 
+    const campaign = await getPublicCampaign(campaignId, publicPlayerToken(request, campaignId));
+    if (!campaign) return NextResponse.json({ error: "Animation introuvable." }, { status: 404 });
+    const click = typeof body.marketingClickToken === "string"
+      ? verifyMarketingClickToken(body.marketingClickToken, campaignId) : null;
+    const proposedAction = campaign.actions[0];
+    const validClick = click && click.actionId === proposedAction?.id;
+    if (requiresGoogleClick(campaign.googleClickRequired, proposedAction?.kind) && !validClick) {
+      return NextResponse.json({ error: "Cliquez sur « Écrire un avis » avant de jouer. Vous n’avez aucune obligation de publier un avis.", code: "google_click_required" }, { status: 403 });
+    }
+    if (body.marketingClickToken && !validClick) {
+      return NextResponse.json({ error: "Le clic a expiré. Ouvrez à nouveau l’action avant de jouer." }, { status: 400 });
+    }
     const dailyLockStartedAt = performance.now();
     await assertPersistentDailyParticipationLock(request, campaignId);
     const dailyLockMs = Math.round(performance.now() - dailyLockStartedAt);
     dailyLockClaimed = true;
     const sessionStartedAt = performance.now();
-    const result = (await createDrawSession({ campaignId })) as CreateDrawSessionResult;
+    const result = (await createDrawSession({ campaignId, marketingClickEventId: validClick ? click.eventId : undefined,
+      proposedActionId: proposedAction?.id })) as CreateDrawSessionResult;
     const sessionCreationMs = Math.round(performance.now() - sessionStartedAt);
     const preparationMs = Math.round(performance.now() - preparationStartedAt);
     logSupportEvent("info", "draw_started", {

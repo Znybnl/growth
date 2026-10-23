@@ -71,7 +71,9 @@ for (const [table, columns] of [
   ["leads", "id,campaign_id,redemption_code"],
   ["prizes", "id,campaign_id,remaining_quantity"],
   ["campaign_events", "id,campaign_id,event_type"],
-  ["draw_sessions", "id,campaign_id,status"],
+  ["draw_sessions", "id,campaign_id,status,marketing_click_context"],
+  ["google_click_warning_acceptances", "id,merchant_id,actor_user_id,accepted_at,warning_version,warning_text,campaign_id"],
+  ["campaign_participation_marketing", "campaign_id,participation_id,marketing_action_clicked,marketing_action_kind"],
   ["campaign_participations", "campaign_id,participation_id,created_at"],
   ["campaign_effective_redemptions", "lead_id,campaign_id,redeemed_at"],
   ["campaign_actions", "id,campaign_id,position"],
@@ -103,6 +105,8 @@ for (const [table, columns] of [
   ["reward_reminder_jobs", "id"],
   ["reward_reminder_runner", "singleton"],
   ["campaign_participations", "campaign_id"],
+  ["google_click_warning_acceptances", "id"],
+  ["campaign_participation_marketing", "campaign_id"],
   ["campaign_effective_redemptions", "lead_id"],
   ["archived_leads", "id"],
   ["archived_campaign_events", "id"],
@@ -121,6 +125,7 @@ for (const [name,args] of [
   ["get_merchant_metric_details", {p_merchant_id:"schema-probe-no-merchant"}],
   ["get_platform_operational_metrics", {}],
   ["record_marketing_click", {p_campaign_id:"schema-probe-no-campaign",p_event_id:"probe",p_event_type:"social_clicked",p_action_id:"probe",p_session_id:"probe"}],
+  ["create_draw_session_with_marketing", {p_campaign_id:"schema-probe-no-campaign",p_session_id:"probe",p_click_event_id:null,p_proposed_action_id:null}],
 ]) {
   const {error}=await supabasePublic.rpc(name,args);
   if(error?.code!=="42501")throw new Error(`La RPC ${name} doit être privée.`);

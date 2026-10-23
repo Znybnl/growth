@@ -86,7 +86,7 @@ Un même indicateur utilise la même source et la même formule à périmètre �
 - La collecte d'e-mail avant le jeu est une option indépendante des actions marketing. Elle ne doit jamais être traitée comme une action de visite.
 - L'objectif choisi lors de la création sert uniquement à proposer une configuration initiale des actions. Après publication, sa modification ne doit pas écraser les actions configurées.
 - Décision propriétaire #553 : le Wizard masque ce choix et utilise `review_prompt` (« Obtenir des avis ») pour les nouveaux jeux. Une édition conserve l'objectif, les actions et la collecte e-mail enregistrés ; aucune conversion de campagne ni action sans URL renseignée n'est déclenchée par ce masquage.
-- Une invitation à laisser un avis doit rester indépendante : elle ne conditionne ni l'accès au jeu ni l'attribution d'un lot.
+- Décision propriétaire du 23 octobre 2026 (#638), validation juridique confirmée par le propriétaire : le marchand peut exiger le **clic** sur l’action Google proposée avant le jeu, option désactivée par défaut. L’activation exige l’acceptation explicite d’un avertissement versionné sur les règles Google et les restrictions possibles, enregistrée avec le marchand, l’utilisateur et l’horodatage serveur. La publication, le contenu et la note d’un avis ne sont jamais contrôlés ni exigés. Les autres actions et l’absence d’action Google n’imposent aucun clic. Chaque participation nouvelle conserve son contexte de clic et le type d’action serveur ; l’historique sans preuve reste inconnu.
 
 ## Prévisualisation
 
