@@ -2,6 +2,16 @@ import { BackgroundLibraryAsset } from "@/lib/types";
 
 export const builtInBackgroundAssets: BackgroundLibraryAsset[] = [
   {
+    id: "builtin-wheel-beauty-pop-ribbons",
+    label: "Beauty Pop — rubans roses",
+    category: "Beauté & bien-être",
+    imageUrl: "/images/wheel-templates/beauty-pop-ribbons.webp",
+    thumbnailUrl: "/images/wheel-templates/beauty-pop-ribbons-thumb.webp",
+    source: "built-in",
+    width: 941,
+    height: 1672,
+  },
+  {
     id: "builtin-aurora-retail",
     label: "Aurora Retail",
     category: "Retail",

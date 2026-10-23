@@ -4,16 +4,36 @@ export type WheelVisualSegment = {
   tone: "win" | "lose";
 };
 
-/** Rose poudré shows up to eight evenly sampled slices; keep the actual result visible. */
-export function rosePowderVisualSegments(segments: WheelVisualSegment[], winningSegmentId: string): WheelVisualSegment[] {
-  if (segments.length <= 8) return segments;
-
-  const visible = Array.from({ length: 8 }, (_, index) => segments[Math.floor(index * segments.length / 8)]);
-  if (visible.some((segment) => segment.id === winningSegmentId)) return visible;
-
+/** Presentation only: never hide a distinct reward to meet a visual sector target. */
+export function selectWheelVisualSegments(
+  segments: WheelVisualSegment[],
+  winningSegmentId: string,
+  targetCount = 8,
+): WheelVisualSegment[] {
+  if (!segments.length) return [];
+  const baseId = (segment: WheelVisualSegment) => segment.id.replace(/-visual-\d+$/, "");
+  const required = new Map<string, WheelVisualSegment>();
+  for (const segment of segments) {
+    if (!required.has(baseId(segment))) required.set(baseId(segment), segment);
+  }
   const winner = segments.find((segment) => segment.id === winningSegmentId);
-  if (winner) visible[3] = winner;
+  if (winner) required.set(baseId(winner), winner);
+  const target = Number.isFinite(targetCount) ? Math.max(1, Math.floor(targetCount)) : 8;
+  const count = Math.min(segments.length, Math.max(target, required.size));
+  const visible = segments.slice(0, count);
+  const requiredIds = new Set([...required.values()].map((segment) => segment.id));
+  for (const segment of required.values()) {
+    if (visible.some((item) => item.id === segment.id)) continue;
+    // Only replace a repeated visual copy, never another required reward/result.
+    const replaceAt = visible.findLastIndex((item) => !requiredIds.has(item.id));
+    if (replaceAt >= 0) visible[replaceAt] = segment;
+  }
   return visible;
+}
+
+/** Rose poudré targets eight sectors, retaining every reward and the exact result. */
+export function rosePowderVisualSegments(segments: WheelVisualSegment[], winningSegmentId: string): WheelVisualSegment[] {
+  return selectWheelVisualSegments(segments, winningSegmentId, 8);
 }
 
 type WheelPrizeInput = {
