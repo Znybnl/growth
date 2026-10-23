@@ -6,7 +6,7 @@ import { DialogShell } from "@/components/ui/dialog";
 import type { PrizeSuggestion } from "@/lib/types";
 import type { ReusablePrize } from "@/lib/reusable-prizes";
 import { useReusablePrizes } from "@/lib/use-reusable-prizes";
-import { buildPrizeCompositions, type PrizeComposition } from "@/lib/prize-compositions";
+import { buildPrizeCompositions, type PrizeComposition, type PrizeCompositionContext } from "@/lib/prize-compositions";
 import { WizardPrizeCompositions } from "./wizard-prize-compositions";
 import { isPrizeCostKnown } from "@/lib/prize-budget";
 import styles from "./wizard-prize-library.module.css";
@@ -16,8 +16,10 @@ const percent = (value: number) => new Intl.NumberFormat("fr-FR", { maximumFract
 type LibraryEntry = PrizeSuggestion & { previous?: ReusablePrize };
 
 export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability, activityLabel, isLoading, error, onRetry, onAdd, onClose,
-  previousPrizesEndpoint, excludeCampaignId, isPreviousAdded, onReuse, configuredPrizeCount, onApplyComposition, winningEveryTime = false, initialTab = "suggestions" }: {
+  previousPrizesEndpoint, excludeCampaignId, isPreviousAdded, onReuse, configuredPrizeCount, onApplyComposition, compositionContext, initialCompositionId, winningEveryTime = false, initialTab = "suggestions" }: {
   suggestions: PrizeSuggestion[];
+  compositionContext?: PrizeCompositionContext;
+  initialCompositionId?: string;
   addedIds: ReadonlySet<string>;
   remainingProbability: number;
   activityLabel?: string;
@@ -36,8 +38,8 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
   initialTab?: "suggestions" | "mine" | "compositions";
 }) {
   const [tab, setTab] = useState<"suggestions" | "mine" | "compositions">(initialTab);
-  const compositions = useMemo(() => buildPrizeCompositions(suggestions), [suggestions]);
-  const [compositionId, setCompositionId] = useState<string | null>(null);
+  const compositions = useMemo(() => buildPrizeCompositions(suggestions, compositionContext), [suggestions, compositionContext]);
+  const [compositionId, setCompositionId] = useState<string | null>(initialCompositionId ?? null);
   const [confirmReplacement, setConfirmReplacement] = useState(false);
   const selectedComposition = compositions.find((item) => item.id === compositionId) ?? null;
   const previous = useReusablePrizes(previousPrizesEndpoint, tab === "mine", excludeCampaignId);

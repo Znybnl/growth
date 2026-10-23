@@ -5,7 +5,8 @@ import { usePrizeSuggestionCatalog } from "@/lib/use-prize-suggestions";
 import { isSuggestionInPrizes, suggestedWizardPrizeId } from "@/lib/wizard-prize-suggestions";
 import { WizardPrizeLibrary } from "@/components/merchant/wizard-prize-library";
 import { copyReusablePrize, isReusablePrizeAdded, type ReusablePrize } from "@/lib/reusable-prizes";
-import { copyPrizeComposition, type PrizeComposition } from "@/lib/prize-compositions";
+import { buildPrizeCompositions, copyPrizeComposition, type PrizeComposition } from "@/lib/prize-compositions";
+import { WizardPrizeCompositions } from "@/components/merchant/wizard-prize-compositions";
 import { isPrizeCostKnown, prizeRuleErrors } from "@/lib/prize-budget";
 import { WizardPrizeBudget } from "@/components/merchant/wizard-prize-budget";
 
@@ -355,17 +356,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
       participationIntervalDays: 1,
       isWinningEveryTime: false,
     },
-    prizes: [
-      {
-        id: "wizard-prize-1",
-        label: "-10% PROCHAINE VISITE",
-        totalQuantity: null,
-        probability: 50,
-        estimatedUnitCost: merchant.defaultPrizeCost ?? 5,
-        purchaseRequired: false,
-        usageConditions: "",
-      },
-    ],
+    prizes: [],
   };
 }
 
@@ -900,10 +891,12 @@ export function CampaignWizard({
   const actionEnabled = true;
   const prizeCatalog = usePrizeSuggestionCatalog(merchant);
   const prizeSuggestions = prizeCatalog.suggestions;
+  const starterCompositions = useMemo(() => buildPrizeCompositions(prizeSuggestions, merchant), [prizeSuggestions, merchant]);
   const [prizeSuggestionScope] = useState(createWizardPrizeId);
   const reusedPrizeCopies = useRef(new Map<string, string>());
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [libraryInitialTab, setLibraryInitialTab] = useState<"suggestions" | "mine" | "compositions">("suggestions");
+  const [libraryCompositionId, setLibraryCompositionId] = useState<string>();
   const [prizeEditor, setPrizeEditor] = useState<PrizeEditorState | null>(null);
   const [pendingDeletePrize, setPendingDeletePrize] = useState<{ id?: string; index: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -1276,6 +1269,7 @@ export function CampaignWizard({
   }
 
   function openPrizeLibrary(tab: typeof libraryInitialTab = "suggestions") {
+    setLibraryCompositionId(undefined);
     setLibraryInitialTab(tab);
     setError(null);
     setSuggestionsOpen(true);
@@ -2108,6 +2102,13 @@ export function CampaignWizard({
 
           {step.id === "prizes" ? (
             <div className="mt-7 space-y-5" data-testid="wizard-prizes-step">
+              {!draft.prizes.length ? <section data-testid="wizard-starter-compositions" className="rounded-[14px] border border-[#e8e2ea] bg-white p-4 sm:p-5">
+                <h3 className="text-base font-semibold">Choisissez votre point de départ</h3>
+                <p className="mb-4 mt-2 text-sm leading-5 text-[#716b78]">Aucun lot n’est ajouté automatiquement. Vérifiez les offres disponibles chez vous, puis personnalisez-les.</p>
+                {prizeCatalog.isLoading ? <p role="status" className="inline-flex items-center gap-2 text-sm"><Loader2 className="size-4 animate-spin" aria-hidden="true" />Chargement des compositions…</p>
+                  : prizeCatalog.error ? <div role="alert" className="text-sm"><p>{prizeCatalog.error}</p><button type="button" onClick={prizeCatalog.retry} className="okado-secondary-action mt-3 px-3">Réessayer</button></div>
+                  : <WizardPrizeCompositions compositions={starterCompositions} selected={null} confirming={false} winningEveryTime={draft.rewardRules.isWinningEveryTime} onSelect={(id) => { openPrizeLibrary("compositions"); setLibraryCompositionId(id); }} onBack={() => {}} />}
+              </section> : null}
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-sm leading-5 text-[#716b78]">Choisissez les récompenses et définissez les chances de les gagner.</p>
@@ -3003,6 +3004,8 @@ export function CampaignWizard({
       {suggestionsOpen ? <WizardPrizeLibrary
         key={merchant.id}
         initialTab={libraryInitialTab}
+        initialCompositionId={libraryCompositionId}
+        compositionContext={merchant}
         suggestions={prizeSuggestions}
         addedIds={new Set(prizeSuggestions.filter((suggestion) => isSuggestionInPrizes(suggestion, draft.prizes)).map((suggestion) => suggestion.id))}
         remainingProbability={100 - totalProbability}
