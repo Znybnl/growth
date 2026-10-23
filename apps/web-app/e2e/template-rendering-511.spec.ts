@@ -79,6 +79,47 @@ for (const mode of ["preview", "public", "game-preview"]) {
   });
 }
 
+test("game-preview : la surface à gratter est opaque et colorée avant le premier geste pour chaque template", async ({ page }) => {
+  await isolate(page);
+  await page.setViewportSize({ width: 390, height: 850 });
+  const templates = [...BEAUTY_SCRATCH_TEMPLATES.map(t => t.id), "scratch-nude-classic", "scratch-vault", "scratch-coral", "scratch-lilac"];
+
+  for (const template of templates) {
+    await page.goto(url("game-preview", template));
+    const canvas = page.locator("canvas").first();
+    await expect(canvas).toBeVisible();
+    const pixels = await canvas.evaluate((element) => {
+      const context = (element as HTMLCanvasElement).getContext("2d");
+      if (!context) throw new Error("Canvas 2D indisponible");
+      const { width, height } = element as HTMLCanvasElement;
+      return [[0.25, 0.25], [0.5, 0.5], [0.75, 0.75]].map(([x, y]) =>
+        [...context.getImageData(Math.round(width * x), Math.round(height * y), 1, 1).data],
+      );
+    });
+    expect(pixels.every((pixel) => pixel[3] === 255), `${template}: la couche doit être opaque`).toBe(true);
+    expect(new Set(pixels.map((pixel) => pixel.slice(0, 3).join(","))).size, `${template}: le rendu doit avoir sa couleur/texture, pas une surface vide`).toBeGreaterThan(1);
+  }
+});
+
+test("la surface à gratter garde une apparence opaque avant l’hydratation", async ({ browser }, info) => {
+  const page = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 850 } });
+  try {
+    const templates = [...BEAUTY_SCRATCH_TEMPLATES.map(t => t.id), "scratch-nude-classic", "scratch-vault", "scratch-coral", "scratch-lilac"];
+    for (const template of templates) {
+      await page.goto(url("game-preview", template));
+      const fallback = page.getByTestId("scratch-cover-fallback");
+      await expect(fallback, `${template}: le fallback SSR doit être présent tant que le canvas n’est pas initialisé`).toBeVisible();
+      await expect(fallback).toHaveCSS("background-color", /rgb\(/);
+      await expect(fallback).toHaveCSS("background-image", /linear-gradient/);
+      if (template === "beauty-scratch-noir-or") {
+        await page.screenshot({ path: info.outputPath("scratch-noir-or-before-hydration.png"), fullPage: true });
+      }
+    }
+  } finally {
+    await page.close();
+  }
+});
+
 for (const mode of ["wizard", "editor"]) {
   test(`${mode} : modifier la couleur principale de Bicolore met à jour son fond`, async ({ page }) => {
     await isolate(page);

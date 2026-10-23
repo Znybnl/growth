@@ -476,6 +476,10 @@ La suite `test:admin-campaigns` vérifie la nouvelle route avec sessions/base si
 
 Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu et Télécharger le QR de diffusion après enregistrement. Scanner le SVG d’un jeu publié doit ouvrir le bon jeu public ; celui d’un brouillon ne le publie pas. Le QR de test reste temporaire et isolé. Aucune campagne réelle n’est modifiée par les tests.
 
+## Surface opaque du ticket à gratter — #633
+
+`e2e/template-rendering-511.spec.ts` vérifie pour les neuf templates que la couche canvas est opaque et colorée avant le premier geste, et que le rendu serveur garde une surface colorée/texturée avant l’hydratation JavaScript. La recette couvre la prévisualisation, le jeu public et la prévisualisation de jeu ; elle ne modifie ni le grattage ni les probabilités.
+
 ## Catalogue Beauté — #466
 
 `npm run test:beauty-catalog -w @okado/web-app` vérifie les six catégories et les 61 lignes, le mapping condition/achat, le repli général, les alias, les personnalisations, la session API et l'absence de cache. La migration et son retour arrière sont exécutés réellement dans PostgreSQL embarqué PGlite (dépendance de test uniquement) : conservation des lots et des autres secteurs, contraintes conditionnelles, RLS, réexécution et protection des modifications administratives. Aucun accès Supabase pour ces tests.

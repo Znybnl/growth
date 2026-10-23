@@ -178,6 +178,7 @@ export function ImmersiveScratchTicket({
   const revealedRef = useRef(false);
   const scratchStartedRef = useRef(false);
   const checksRef = useRef(0);
+  const [coverPainted, setCoverPainted] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [hasTouched, setHasTouched] = useState(false);
   const isVault = template === "scratch-vault";
@@ -223,6 +224,8 @@ export function ImmersiveScratchTicket({
   const resolvedHeadingFontClass = headingFontClass || beautyTheme?.fontClass || (isLilac ? "font-fredoka" : "font-display");
   const displayHeadline = headline?.trim() || DEFAULT_SCRATCH_SUBTITLE;
   const instruction = "Grattez la carte pour révéler votre cadeau.";
+  const coverColor = beautyTheme?.scratch.base ?? (isVault ? "#171d38" : isConfetti ? "#71364a" : primary);
+  const coverHighlight = beautyTheme?.scratch.highlight ?? (isSunburst ? blendWithWhite(coverColor, 0.2) : blendWithWhite(coverColor, 0.34));
 
   const surfaceClass = beautyTheme
     ? "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
@@ -241,11 +244,12 @@ export function ImmersiveScratchTicket({
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
+    setCoverPainted(false);
     if (beautyTheme) canvas.dataset.foilLoaded = "false";
 
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    const cover = beautyTheme?.scratch.base ?? (isVault ? "#171d38" : isConfetti ? "#71364a" : primary);
-    const highlight = beautyTheme?.scratch.highlight ?? (isSunburst ? blendWithWhite(cover, 0.2) : blendWithWhite(cover, 0.34));
+    const cover = coverColor;
+    const highlight = coverHighlight;
     if (beautyTheme?.id === "beauty-scratch-nude" || beautyTheme?.id === "scratch-nude-classic") {
       gradient.addColorStop(0, "#c4a675");
       gradient.addColorStop(0.24, "#ead8b2");
@@ -296,12 +300,13 @@ export function ImmersiveScratchTicket({
       }
       context.restore();
     }
+    setCoverPainted(true);
     checksRef.current = 0;
     revealedRef.current = false;
     scratchStartedRef.current = false;
     setRevealed(false);
     setHasTouched(false);
-  }, [beautyTheme, isConfetti, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
+  }, [beautyTheme, coverColor, coverHighlight, isConfetti, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   useEffect(() => {
     if (!beautyTheme) return;
@@ -428,6 +433,17 @@ export function ImmersiveScratchTicket({
           data-testid="scratch-ticket-surface"
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
         >
+          {!coverPainted ? (
+            <div
+              aria-hidden="true"
+              data-testid="scratch-cover-fallback"
+              className="pointer-events-none absolute inset-0 z-10"
+              style={{
+                backgroundColor: coverColor,
+                backgroundImage: "linear-gradient(135deg, rgba(255,255,255,.2), transparent 48%, rgba(0,0,0,.12)), repeating-linear-gradient(135deg, rgba(255,255,255,.16) 0 1px, transparent 1px 15px)",
+              }}
+            />
+          ) : null}
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
