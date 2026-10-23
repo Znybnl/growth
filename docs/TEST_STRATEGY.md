@@ -478,7 +478,7 @@ Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu e
 
 ## Surface opaque du ticket à gratter — #633
 
-`e2e/template-rendering-511.spec.ts` vérifie pour les neuf templates que la couche canvas est opaque et colorée avant le premier geste, et que le rendu serveur garde une surface colorée/texturée avant l’hydratation JavaScript. La recette couvre la prévisualisation, le jeu public et la prévisualisation de jeu ; elle ne modifie ni le grattage ni les probabilités.
+`e2e/template-rendering-511.spec.ts` vérifie sur les onze templates que le canvas de jeu contient bien un revêtement opaque avec le motif effectivement peint, et pas seulement une image source chargée. La recette couvre la prévisualisation, le jeu public et la prévisualisation de jeu ; elle ne modifie ni le grattage ni les probabilités.
 
 ## Catalogue Beauté — #466
 

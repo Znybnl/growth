@@ -178,7 +178,6 @@ export function ImmersiveScratchTicket({
   const revealedRef = useRef(false);
   const scratchStartedRef = useRef(false);
   const checksRef = useRef(0);
-  const [coverPainted, setCoverPainted] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [hasTouched, setHasTouched] = useState(false);
   const isVault = template === "scratch-vault";
@@ -244,7 +243,6 @@ export function ImmersiveScratchTicket({
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
-    setCoverPainted(false);
     if (beautyTheme) canvas.dataset.foilLoaded = "false";
 
     const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -300,33 +298,36 @@ export function ImmersiveScratchTicket({
       }
       context.restore();
     }
-    setCoverPainted(true);
+
+    let cancelled = false;
+    if (beautyTheme) {
+      const texture = new window.Image();
+      texture.onload = () => {
+        if (cancelled) return;
+        const currentContext = canvasRef.current?.getContext("2d");
+        if (!currentContext) return;
+        currentContext.save();
+        currentContext.globalCompositeOperation = "source-over";
+        currentContext.globalAlpha = beautyTheme.scratch.textureOpacity;
+        currentContext.drawImage(texture, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        currentContext.restore();
+        canvas.dataset.foilLoaded = "true";
+      };
+      texture.onerror = () => {
+        if (!cancelled) canvas.dataset.foilLoaded = "error";
+      };
+      texture.src = beautyTheme.scratch.texture;
+    }
+
     checksRef.current = 0;
     revealedRef.current = false;
     scratchStartedRef.current = false;
     setRevealed(false);
     setHasTouched(false);
-  }, [beautyTheme, coverColor, coverHighlight, isConfetti, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
-
-  useEffect(() => {
-    if (!beautyTheme) return;
-    const canvas = canvasRef.current;
-    const texture = new window.Image();
-    texture.onload = () => {
-      const context = canvas?.getContext("2d");
-      if (!canvas || !context) return;
-      context.save();
-      context.globalCompositeOperation = "source-over";
-      context.globalAlpha = beautyTheme.scratch.textureOpacity;
-      context.drawImage(texture, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      context.restore();
-      canvas.dataset.foilLoaded = "true";
-    };
-    texture.src = beautyTheme.scratch.texture;
     return () => {
-      texture.onload = null;
+      cancelled = true;
     };
-  }, [beautyTheme, primary, resultLabel]);
+  }, [beautyTheme, coverColor, coverHighlight, isConfetti, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   function reveal() {
     if (revealedRef.current) return;
@@ -433,17 +434,6 @@ export function ImmersiveScratchTicket({
           data-testid="scratch-ticket-surface"
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
         >
-          {!coverPainted ? (
-            <div
-              aria-hidden="true"
-              data-testid="scratch-cover-fallback"
-              className="pointer-events-none absolute inset-0 z-10"
-              style={{
-                backgroundColor: coverColor,
-                backgroundImage: "linear-gradient(135deg, rgba(255,255,255,.2), transparent 48%, rgba(0,0,0,.12)), repeating-linear-gradient(135deg, rgba(255,255,255,.16) 0 1px, transparent 1px 15px)",
-              }}
-            />
-          ) : null}
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
