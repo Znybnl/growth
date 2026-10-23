@@ -8,8 +8,10 @@ résolu à l'affichage ; une image manuelle ou une couleur de fond personnalisé
 reste prioritaire et n'est pas propagée aux autres modèles. Les nouveaux choix
 proposent Bodoni, un titre fuchsia et un logo/sous-titre prune. Les polices,
 couleurs et espacements déjà mémorisés restent prioritaires ; aucun jeu n'est
-réécrit en base. Le bouton brillant reste sans icône, les pictogrammes de lots
-proviennent de Lucide, et le contour lumineux reste fixe pendant la rotation.
+réécrit en base. Le bouton brillant et les segments restent sans icône.
+Les libellés utilisent la présentation radiale des autres roues Beauté ;
+le sous-titre est resserré au centre, loin des rubans latéraux.
+Le contour lumineux reste fixe pendant la rotation.
 Le tirage, les lots configurés, les probabilités et le retrait sont inchangés.
 [Référence, provenance et vérifications](design/beauty-pop-626.md).
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import { Flower2, Gift, Percent, Star, X } from "lucide-react";
 import { BeautyPopRim } from "./beauty-pop-rim";
 import { HalloweenWheelVisual } from "@/components/public/halloween-wheel-art";
 import { halloweenWheelVisualSegments } from "@/lib/halloween-wheel-theme";
@@ -545,7 +544,6 @@ export function WheelOfFortune({
               const endAngle = startAngle + segmentAngle - (isRosePowderTemplate || isBeautyTemplate ? 0 : 2.4);
               const midAngle = startAngle + (endAngle - startAngle) / 2;
               const textPoint = polarToCartesian(isRosePowderTemplate ? 208 : isBeautyTemplate ? 194 : 208, midAngle);
-              const PopIcon = segment.tone === "lose" ? X : /%/.test(segment.label) ? Percent : /soin|massage|prestation/i.test(segment.label) ? Flower2 : /surprise/i.test(segment.label) ? Star : Gift;
               const radialTextAngle = midAngle + 90;
               const uprightRadialTextAngle = radialTextAngle > 90 && radialTextAngle < 270
                 ? radialTextAngle - 180
@@ -563,7 +561,6 @@ export function WheelOfFortune({
                 }
               }
               textStyles.fontSize = enforceMinimumWheelPrizeLabelFontSize(textStyles.fontSize);
-              if (isBeautyPop) textStyles.fontSize = Math.min(textStyles.fontSize, 22);
               if (labelLines.length > 1) {
                 textStyles.lineHeight = Math.max(
                   textStyles.lineHeight,
@@ -615,17 +612,16 @@ export function WheelOfFortune({
                       vectorEffect="non-scaling-stroke"
                     />
                   ) : null}
-                  {isBeautyPop ? <PopIcon aria-hidden="true" x={textPoint.x-21} y={textPoint.y-49} width="42" height="42" color={segment.tone === "lose" ? "#a37c99" : /soin|massage/i.test(segment.label) ? "#9c5d1c" : colors.loseColor} strokeWidth={1.8} /> : null}
                   <text
                     x={textPoint.x}
-                    y={textPoint.y + (isBeautyPop ? 20 : 0)}
+                    y={textPoint.y}
                     fill={textColor}
                     fontFamily={isBeautyTemplate || isRoseInstitutTemplate ? textFontFamily("dm-sans") : "Roboto, sans-serif"}
                     fontSize={String(textStyles.fontSize)}
                     fontWeight={isBeautyTemplate || isRoseInstitutTemplate ? "600" : "850"}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    transform={isBeautyPop ? undefined : `rotate(${isBeautyTemplate || isRoseInstitutTemplate ? uprightRadialTextAngle : radialTextAngle} ${textPoint.x} ${textPoint.y})`}
+                    transform={`rotate(${isBeautyTemplate || isRoseInstitutTemplate ? uprightRadialTextAngle : radialTextAngle} ${textPoint.x} ${textPoint.y})`}
                   >
                     {labelLines.map((line, lineIndex) => (
                       <tspan

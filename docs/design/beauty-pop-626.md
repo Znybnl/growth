@@ -20,17 +20,34 @@ Pas de copie de l'heure, de la batterie ou de l'encoche de la référence.
   de graisse 800 pour Beauty Pop : le réglage du marchand est respecté.
 - Secteurs rose/ivoire/champagne en dégradé, contour métallique avec 24 points
   lumineux, pointeur fuchsia bordé d'or, disque JOUER brillant sans icône.
-- Cadre et lumières placés hors du conteneur en rotation. Pictogrammes Lucide
-  (Gift, Percent, Flower2, Star, X), pas de nouveaux dessins d'icônes.
+- Cadre et lumières placés hors du conteneur en rotation. Après retour
+  propriétaire : aucun pictogramme dans les segments, libellés centrés avec
+  l'orientation radiale et la police DM Sans communes aux autres roues Beauté.
+- Sous-titre centré à80% de son conteneur, plafonné à26ch, pour dégager les
+  éléments latéraux du fond sans réduire sa taille de police.
 - Miniature harmonisée. Dans l'aperçu compact, suppression de la double
   réduction du titre et des espacements, et ancrage de la roue après le texte
   plutôt que remontée par translation : le pointeur ne couvre plus le sous-titre.
 
-Écarts assumés : les pictogrammes restent vectoriels et lisibles, pas des
-illustrations 3D intégrées dans une image. Les libellés, pertes et dispositions
+Écarts assumés : les pictogrammes de la référence sont retirés à la demande
+du propriétaire. Les libellés, pertes et dispositions
 reflètent les vrais lots du jeu, pas la distribution illustrative de la référence.
 Le rendu s'adapte à la hauteur utile du navigateur plutôt qu'à un plein écran
 de smartphone simulé. Ne pas présenter la fidélité comme une mesure objective.
+
+### Ajustement après retour propriétaire
+
+Le sous-titre passe de30ch à80% du conteneur, avec un plafond26ch, sans
+réduction de police. Les textes de lots retrouvent le même ancrage, orientation
+radiale et calcul de taille que les autres roues Beauté ; décalage sous icône
+et plafonnement de taille spécifiques retirés. Aucun pictogramme de segment
+ou import Lucide correspondant ne subsiste dans la roue. Le fond, les dorures,
+le pointeur et le bouton ne changent pas. Les tests contrôlent la largeur
+effective, l'absence de pictogrammes et l'orientation des huit libellés.
+Les8tests dédiés et77tests de finitions/thèmes ont été rejoués avec succès.
+Captures public/aperçu mobile et vrai wizard1280×720/600 inspectées puis mises
+à jour : sous-titre recentré loin des rubans et libellés sans icône, sans
+chevauchement avec le pointeur. Aucun réglage utilisateur ni asset de fond changé.
 
 ## Assets et provenance
 

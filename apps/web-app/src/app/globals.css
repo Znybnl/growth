@@ -1835,7 +1835,9 @@ button:disabled,
 .okado-preview-surface[data-template-id="beauty-pop"] .okado-wheel-subtitle {
   font-size: calc(clamp(0.94rem, 3.8vw, 1.08rem) + 2px);
   font-weight: 500;
-  max-width: 30ch;
+  width: 80%;
+  max-width: 26ch;
+  margin-inline: auto;
   line-height: 1.22;
 }
 

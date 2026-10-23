@@ -42,6 +42,16 @@ for(const mode of ["public","preview"]) for(const width of [320,390]) {
     const wheel=(await surface.getByTestId("game-wheel-frame").boundingBox())!;
     expect(wheel.y).toBeGreaterThan(heading.y+heading.height);
     const secondary=(await surface.locator(".okado-wheel-subtitle").boundingBox())!;
+    const subtitleContainer=(await surface.locator(".okado-wheel-subtitle").evaluate(node=>node.parentElement!.getBoundingClientRect().width));
+    expect(secondary.width).toBeLessThanOrEqual(subtitleContainer*.81);
+    const rotor=surface.getByTestId("beauty-pop-rotor");
+    await expect(rotor.locator("svg.lucide")).toHaveCount(0);
+    const labels=rotor.locator("text");
+    await expect(labels).toHaveCount(8);
+    for(const label of await labels.all()) {
+      await expect(label).toHaveAttribute("transform",/^rotate\(/);
+      await expect(label).toHaveAttribute("font-family","var(--font-dm-sans), sans-serif");
+    }
     const pointer=(await surface.getByTestId("beauty-wheel-pointer").boundingBox())!;
     expect(pointer.y).toBeGreaterThanOrEqual(secondary.y+secondary.height);
     await assertNoPageOverflow(page);await page.evaluate(()=>document.fonts.ready);
