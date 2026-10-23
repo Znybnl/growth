@@ -384,4 +384,3 @@ $$;
 
 drop function public.select_guaranteed_campaign_prize(text);
 commit;
-

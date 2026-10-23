@@ -360,4 +360,3 @@ revoke all on function public.draw_campaign_prize_and_create_lead(text,text,text
 grant execute on function public.create_draw_session(text,text) to service_role;
 grant execute on function public.draw_campaign_prize_and_create_lead(text,text,text,text,boolean) to service_role;
 commit;
-
