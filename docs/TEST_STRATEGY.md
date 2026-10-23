@@ -1,5 +1,17 @@
 # Stratégie de test — Okado
 
+### Tirage 100 % gagnant — #629
+
+`test:guaranteed-draw` exécute les fonctions SQL migrées et leur rollback dans
+PGlite, le helper mémoire et le vrai handler de préparation avec infrastructure
+simulée. Exclusion du 0 %, poids fractionnaires, redistribution après épuisement,
+refus atomique sans lot, restitution, droits privés/invoker et retour arrière
+sont testés. Les bornes sont déterministes côté JS et un échantillon SQL de
+10 000 tirages est seedé. Il ne garantit pas un quota exact de gains.
+`guaranteed-draw-rules.spec.ts` contrôle la case sans modification des chances
+et l'aide du wizard/éditeur classique à 1280×720/600 et sur mobile. La preview
+produit reste volontairement différente ; ne pas l'utiliser pour mesurer les
+probabilités réelles. Voir [preuves et migration](releases/2026-10-23-guaranteed-draw-629.md).
 ### Ajustement local des libellés de roue — #631
 
 `wheel-template-background.spec.ts` conserve le minimum de référence de 25 px
