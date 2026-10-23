@@ -25,6 +25,8 @@ node_modules
 !apps/web-app/public/images/scratch-templates/*.webp
 # Native Rose poudré wheel artwork must also be packaged on Vercel.
 !apps/web-app/public/images/wheel-templates/beauty-rose-satin.webp
+# Beauty Pop artwork and its lightweight library thumbnail.
+!apps/web-app/public/images/wheel-templates/beauty-pop-ribbons*.webp
 # Keep the production asset required by the Elegance poster preview and PNG.
 !apps/web-app/public/backgrounds/premium-poster-backdrop.png
 # Keep the production asset required by the Botanique poster preview and PNG.

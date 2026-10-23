@@ -1,5 +1,14 @@
 # Règles métier — Okado
 
+## Représentation des lots sur la roue — #628
+
+Chaque lot éligible (libellé renseigné, probabilité positive) doit être représenté
+au moins une fois, ainsi que la perte lorsqu'elle existe. La cible visuelle de
+secteurs ne doit jamais masquer un lot distinct : réduire les répétitions, puis
+augmenter le nombre de secteurs si nécessaire. Le résultat exact du tirage reste
+présent pour l'animation. Cette présentation ne modifie ni chances réelles,
+stocks, tirages ou résultats enregistrés. Décision propriétaire du 23 octobre 2026.
+
 Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne remplace pas un avis juridique. Toute évolution du consentement, des données personnelles, des avis Google ou des règles de retrait doit être validée par le propriétaire avant implémentation.
 
 ## Consultation administrative des établissements — #475

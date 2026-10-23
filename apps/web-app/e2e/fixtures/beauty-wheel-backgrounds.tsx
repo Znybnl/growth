@@ -17,19 +17,34 @@ export function BeautyWheelBackgroundFixture({
   templateId,
   background = "native",
   logoMode = "text",
-}: { mode?: string; templateId: GamePageTemplateId; background?: string; logoMode?: LogoMode }) {
+  prizeCase,
+}: { mode?: string; templateId: GamePageTemplateId; background?: string; logoMode?: LogoMode; prizeCase?: string }) {
   const [selectedTemplate, setSelectedTemplate] = useState(templateId);
   const [selectedBackground, setSelectedBackground] = useState(background);
   const [selectedLogoMode, setSelectedLogoMode] = useState(logoMode);
   const [clicks, setClicks] = useState(0);
   const [finished, setFinished] = useState(0);
+  const [heading, setHeading] = useState(templateId === "beauty-pop" ? "Jouez & gagnez" : "Tournez la roue\net tentez de gagner !");
+  const [brand, setBrand] = useState(templateId === "beauty-pop" ? "L’Institut" : "VOTRE ÉTABLISSEMENT");
   const theme = beautyWheelTheme(selectedTemplate);
   const legacy = selectedTemplate === "beauty-editorial" && selectedBackground === "legacy";
   const form = {
     ...halloweenFixture,
     id: "fixture-wheel-backgrounds",
-    subtitle: "Tournez la roue\net tentez de gagner !",
-    logoText: "VOTRE ÉTABLISSEMENT",
+    subtitle: heading,
+    logoText: brand,
+    prizes: prizeCase === "headspa" ? [
+      { ...halloweenFixture.prizes[0], id: "discount15", label: "-15% PRESTATION", probability: 15 },
+      { ...halloweenFixture.prizes[0], id: "discount20", label: "-20% PRESTATION", probability: 10 },
+      { ...halloweenFixture.prizes[0], id: "voucher", label: "5€ offert", probability: 10 },
+      { ...halloweenFixture.prizes[0], id: "luxo", label: "une séance de luxopuncture", probability: 5, remainingQuantity: 5 },
+      { ...halloweenFixture.prizes[0], id: "headspa", label: "un soin headspa INTITION", probability: 5, remainingQuantity: 1 },
+    ] : selectedTemplate === "beauty-pop" ? [
+      { ...halloweenFixture.prizes[0], id: "pop-gift", label: "CADEAU", probability: 20 },
+      { ...halloweenFixture.prizes[0], id: "pop-discount", label: "-10% PROCHAINE VISITE", probability: 20 },
+      { ...halloweenFixture.prizes[0], id: "pop-care", label: "SOIN OFFERT", probability: 10 },
+      { ...halloweenFixture.prizes[0], id: "pop-surprise", label: "SURPRISE", probability: 10 },
+    ] : halloweenFixture.prizes,
     logoMode: selectedLogoMode,
     logoUrl: selectedLogoMode === "image" ? "/images/scratch-templates/beauty-nude-elegance.webp" : undefined,
     presentation: {
@@ -43,7 +58,7 @@ export function BeautyWheelBackgroundFixture({
         imageUrl: selectedBackground === "image" ? "/images/scratch-templates/beauty-lilas-soin-doux.webp" : undefined,
       },
       wheel: theme ? wheelPaletteForTemplate(theme.id, halloweenFixture.presentation.wheel) : { ...halloweenFixture.presentation.wheel, rimColor: "#ffffff", loseColor: "#f3a4c4", alternateLoseColor: "#fff9fb" },
-      layout: { ...halloweenFixture.presentation.layout, templateId: selectedTemplate, wheelSubtitle: "Des surprises vous attendent" },
+      layout: { ...halloweenFixture.presentation.layout, templateId: selectedTemplate, wheelSubtitle: selectedTemplate === "beauty-pop" ? "De belles surprises vous attendent lors de votre prochaine visite !" : "Des surprises vous attendent" },
     },
   };
   const merchant = { id: "fixture-merchant", companyName: "VOTRE ÉTABLISSEMENT", logoText: "VOTRE ÉTABLISSEMENT" } as Merchant;
@@ -66,6 +81,8 @@ export function BeautyWheelBackgroundFixture({
       <FittedWizardPhone><WizardPhoneFrame><CampaignLivePreview merchant={merchant} preview={preview} compact flushTop /></WizardPhoneFrame></FittedWizardPhone>
     )}
     <div style={{ padding: 16, background: "white", color: "black" }}>
+      <label>Titre de test<input value={heading} onChange={(event)=>setHeading(event.target.value)} /></label>
+      <label>Nom de test<input value={brand} onChange={(event)=>setBrand(event.target.value)} /></label>
       <label>Template de test<select value={selectedTemplate} onChange={(event) => setSelectedTemplate(event.target.value as GamePageTemplateId)}>
         {["beauty-nude", "beauty-botanical", "beauty-rose", "beauty-pop", "beauty-editorial", "beauty-tech", "rose-institut", "classic"].map((id) => <option key={id} value={id}>{id}</option>)}
       </select></label>

@@ -3,7 +3,8 @@ import { BEAUTY_WHEEL_THEMES, beautyWheelBackground, beautyWheelDefaultBackgroun
 import Image from "next/image";
 import { buildBeautyWheelSegmentColors } from "@/lib/beauty-wheel-segments";
 import { BeautyLogoRule, BeautyWheelPointer } from "@/components/public/beauty-wheel-finishes";
-import { beautyCenterFinish, beautyCenterRelief } from "@/lib/beauty-wheel-finishes";
+import { beautyCenterFinish, beautyCenterRelief, beautyPopCenterFinish, beautyPopCenterRelief } from "@/lib/beauty-wheel-finishes";
+import { BeautyPopRim } from "@/components/public/beauty-pop-rim";
 import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { textFontFamily } from "@/lib/format";
 import type { GamePageTemplateId } from "@/lib/types";
@@ -16,7 +17,7 @@ function BeautyWheelThumbnail({ theme }: { theme: BeautyTheme }) {
   const wedgeStops = colors
     .map((color, index) => `${color} ${index * 45}deg ${(index + 1) * 45}deg`)
     .join(", ");
-  const ringColor = theme.id === "beauty-editorial" ? "#b99a68" : theme.id === "beauty-rose" ? "#b95f75" : theme.primary;
+  const ringColor = theme.id === "beauty-pop" ? "#d99c50" : theme.id === "beauty-editorial" ? "#b99a68" : theme.id === "beauty-rose" ? "#b95f75" : theme.primary;
   const centerTextColor = theme.id === "beauty-rose" ? "#b95f75" : beautyWheelButtonTextColor(theme.id, theme.primary);
   const centerBackground = theme.id === "beauty-rose" ? "#fffdfc" : wheelButtonBackgroundForWhiteText(theme.primary, centerTextColor);
 
@@ -24,7 +25,7 @@ function BeautyWheelThumbnail({ theme }: { theme: BeautyTheme }) {
     <div
       aria-hidden="true"
       className="absolute -bottom-5 right-[-0.8rem] z-10 grid size-32 place-items-center rounded-full border-[3px] p-[3px]"
-      style={{ borderColor: ringColor, backgroundColor: theme.secondary, outline: "2px solid white", boxShadow: `0 8px 22px color-mix(in srgb, ${theme.primary} 22%, transparent)` }}
+      style={{ borderColor: ringColor, backgroundColor: theme.secondary, outline: theme.id === "beauty-pop" ? "none" : "2px solid white", boxShadow: `0 8px 22px color-mix(in srgb, ${theme.primary} 22%, transparent)` }}
     >
       <div
         className="relative size-full rounded-full"
@@ -33,12 +34,13 @@ function BeautyWheelThumbnail({ theme }: { theme: BeautyTheme }) {
         <div
           data-testid="beauty-thumbnail-center"
           className="absolute left-1/2 top-1/2 flex size-[2.7rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-[8px] font-semibold tracking-[0.025em]"
-          style={{ background: beautyCenterFinish(centerBackground), color: centerTextColor, fontFamily: textFontFamily("dm-sans"), ...beautyCenterRelief(theme.id === "beauty-editorial" ? ringColor : theme.primary) }}
+          style={{ background: theme.id === "beauty-pop" ? beautyPopCenterFinish(centerBackground) : beautyCenterFinish(centerBackground), color: centerTextColor, fontFamily: textFontFamily("dm-sans"), ...(theme.id === "beauty-pop" ? beautyPopCenterRelief(ringColor) : beautyCenterRelief(theme.id === "beauty-editorial" ? ringColor : theme.primary)) }}
         >
           <span>JOUER</span>
         </div>
       </div>
-      <BeautyWheelPointer color={ringColor} className="absolute left-1/2 -top-2 h-7 w-5 -translate-x-1/2 overflow-visible" />
+      {theme.id === "beauty-pop" ? <BeautyPopRim color={ringColor} /> : null}
+      <BeautyWheelPointer color={theme.id === "beauty-pop" ? theme.primary : ringColor} edgeColor={theme.id === "beauty-pop" ? ringColor : undefined} className="absolute left-1/2 -top-2 z-30 h-7 w-5 -translate-x-1/2 overflow-visible" />
     </div>
   );
 }
@@ -93,11 +95,11 @@ export function BeautyWheelTemplateGallery({
           return <GameTemplateCard key={theme.id} label={theme.name} description={theme.tagline}
             selected={selectedTemplateId === theme.id} onSelect={() => onSelect(theme.id)}>
             <div className={`relative h-full overflow-hidden px-4 pt-3 ${theme.id === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
-              style={{ backgroundColor: theme.background, backgroundImage: nativeBackground ? "none" : beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}>
+              style={{ position: "relative", backgroundColor: theme.background, backgroundImage: nativeBackground ? "none" : beautyWheelBackground(theme.id, theme.background, theme.primary), color: theme.text }}>
               {nativeBackground ? <Image src={nativeBackground} alt="" fill sizes="320px" data-template-art={theme.id} className="pointer-events-none object-cover" /> : <BeautyThumbnailDecor theme={theme} />}
               <div data-testid="beauty-thumbnail-logo" className="relative z-10 min-h-[20px] max-w-[56%] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]" style={{ color: beautyWheelLogoColor(theme.id) }}>Votre établissement<BeautyLogoRule color={beautyWheelLogoColor(theme.id)} /></div>
               <div data-testid="template-sample-heading" className="relative z-10 mt-3 max-w-[44%] text-[18px] font-bold leading-[1.08]" style={{ fontFamily: textFontFamily(theme.font) }}>Jouez &amp;<br />gagnez</div>
-              <div data-testid="template-sample-subtitle" className="relative z-10 mt-2 max-w-[44%] text-[8px] leading-[1.35] opacity-90">De belles surprises vous attendent lors de votre prochaine visite</div>
+              <div data-testid="template-sample-subtitle" className="relative z-10 mt-2 max-w-[44%] text-[8px] leading-[1.35] opacity-90" style={theme.id === "beauty-pop" ? { color: beautyWheelLogoColor(theme.id) } : undefined}>De belles surprises vous attendent lors de votre prochaine visite</div>
               <BeautyWheelThumbnail theme={theme} />
             </div>
           </GameTemplateCard>;
