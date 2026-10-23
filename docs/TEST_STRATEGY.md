@@ -12,6 +12,14 @@ sont testés. Les bornes sont déterministes côté JS et un échantillon SQL de
 et l'aide du wizard/éditeur classique à 1280×720/600 et sur mobile. La preview
 produit reste volontairement différente ; ne pas l'utiliser pour mesurer les
 probabilités réelles. Voir [preuves et migration](releases/2026-10-23-guaranteed-draw-629.md).
+### Ajustement local des libellés de roue — #631
+
+`wheel-template-background.spec.ts` conserve le minimum de référence de 25 px
+et teste son exception locale lorsqu'un texte ne tient pas. Les contrôles de
+`wheel-prize-visibility.spec.ts` vérifient le lot long, sa réduction et son
+dégagement par rapport au bouton, sans réduction de PERDU, à 320/390 px,
+ainsi que le vrai wizard/iframe à 1280×720/600. Les suites Beauty Pop, thèmes
+et finitions sont conservées. Aucun changement de moteur ou de données.
 
 ### Visibilité des lots de roue — #628
 

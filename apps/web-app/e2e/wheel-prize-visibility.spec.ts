@@ -21,6 +21,18 @@ for (const template of ["beauty-nude", "beauty-botanical", "beauty-rose", "beaut
           expect(texts.some(text => fragments.every(fragment => text.includes(fragment)))).toBe(true);
         }
         expect(texts.some(text => /PERDU|DOMMAGE/.test(text))).toBe(true);
+        const short = labels.filter({ hasText: /^PERDU$/ }).first();
+        await expect(short).toHaveAttribute("font-size", (await short.getAttribute("data-base-font-size"))!);
+        if (template === "beauty-nude") {
+          const long = labels.filter({ hasText: /LUXOPUNCTURE/ });
+          await expect.poll(async () => Number(await long.getAttribute("font-size"))).toBeLessThan(25);
+          const metrics = await long.evaluate(node => {
+            const text = node as SVGTextElement;
+            return {width:text.getBBox().width,radius:Number(text.dataset.labelRadius),button:Number(text.dataset.buttonRadius)};
+          });
+          expect(metrics.radius - metrics.width / 2).toBeGreaterThanOrEqual(metrics.button + 5);
+          await expect(long).not.toHaveAttribute("textLength", /.+/);
+        }
         await assertNoPageOverflow(page);
         if (template === "beauty-nude") await page.screenshot({ path: info.outputPath(`headspa-${mode}-${width}.png`), fullPage: true });
       }
@@ -37,6 +49,8 @@ test("@visual-1280 Nude : tous les lots dans le vrai cadre du wizard à 1280×72
     const labels = dialog.frameLocator("iframe").getByTestId("game-wheel-frame").locator("svg text");
     await expect(labels).toHaveCount(8);
     expect((await labels.allTextContents()).some(text => text.includes("HEADSPA"))).toBe(true);
+    await expect.poll(async () => Number(await labels.filter({hasText:/LUXOPUNCTURE/}).getAttribute("font-size"))).toBeLessThan(25);
+    await expect(labels.filter({hasText:/^PERDU$/}).first()).toHaveAttribute("font-size","25");
     await captureVisualAt1280(page, info, "nude-wizard", height);
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("wizard-footer").getByRole("button", { name: /Enregistrer/ })).toBeEnabled();
