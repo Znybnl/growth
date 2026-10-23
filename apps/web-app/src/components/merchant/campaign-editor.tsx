@@ -4645,6 +4645,7 @@ export function CampaignEditor({
                   />
                   Jeu 100% gagnant
                 </label>
+                <p className="text-xs leading-5 text-[#716b78]">Cocher cette case ne modifie pas les chances saisies. Pendant le jeu, si un stock est épuisé, ses chances sont réparties proportionnellement entre les lots disponibles à chance positive. Un lot à 0 % ne peut pas être gagné. Sans lot éligible, aucune nouvelle partie ne peut démarrer.</p>
               </div>
             </div>
 
