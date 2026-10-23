@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { BrandMark } from "@/components/brand-mark";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CocoricoWheel } from "@/components/public/cocorico-wheel";
@@ -657,6 +658,11 @@ export function CampaignExperience({
 
   function trackMarketingClick() {
     if (!currentAction || isPreview) return;
+    captureClientProductEvent("marketing_action_clicked", {
+      campaignId,
+      gameType: campaign.gameType,
+      actionKind: currentAction.kind,
+    });
     marketingVisitId.current ??= crypto.randomUUID();
     void trackEvent(currentAction.kind === "google" ? "review_clicked" : "social_clicked", undefined, {
       actionId: currentAction.id,
@@ -1293,7 +1299,15 @@ export function CampaignExperience({
           ) : null}
           <button
             type="button"
-            onClick={() => void launchPreparedGame()}
+            onClick={() => {
+              if (!isPreview) {
+                captureClientProductEvent("game_start_clicked", {
+                  campaignId,
+                  gameType: campaign.gameType,
+                });
+              }
+              void launchPreparedGame();
+            }}
             disabled={isLoading}
             style={actionVisited ? { fontSize: "24px", fontWeight: 700, lineHeight: "28px" } : undefined}
             className={

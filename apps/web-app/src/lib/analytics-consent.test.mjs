@@ -356,3 +356,47 @@ test("e-mail du profil : compte connecté, déduplication et changement d'adress
   analytics.identifyMerchantForAnalytics("merchant-primary", "user-fixture", "merchant-third", "refused@example.test");
   assert.equal(state.identities.length, 3);
 });
+
+test("clics jeu et action marketing : événements minimisés et soumis au consentement analytics", async () => {
+  const jar = browser();
+  const consent = await import("./analytics-consent.ts");
+  const analytics = await import("./client-product-analytics.ts");
+  const properties = { campaignId: "campaign-fixture", gameType: "wheel" };
+
+  analytics.captureClientProductEvent("marketing_action_clicked", {
+    ...properties,
+    actionKind: "google",
+  });
+  analytics.captureClientProductEvent("game_start_clicked", properties);
+  assert.equal(state.events.length, 0, "aucun clic n'est transmis sans consentement");
+
+  jar.set(consent.ANALYTICS_CONSENT_COOKIE, encodeURIComponent(JSON.stringify({
+    version: consent.ANALYTICS_CONSENT_VERSION,
+    choice: "accepted",
+    decidedAt: Date.now(),
+  })));
+  analytics.captureClientProductEvent("marketing_action_clicked", {
+    ...properties,
+    actionKind: "google",
+  });
+  analytics.captureClientProductEvent("game_start_clicked", properties);
+
+  assert.deepEqual(state.events.map(([event]) => event), [
+    "marketing_action_clicked",
+    "game_start_clicked",
+  ]);
+  assert.deepEqual(state.events[0][1], {
+    ...properties,
+    actionKind: "google",
+    source: "client",
+    trackingVersion: "v1",
+    environment: "local",
+  });
+  assert.deepEqual(state.events[1][1], {
+    ...properties,
+    source: "client",
+    trackingVersion: "v1",
+    environment: "local",
+  });
+  assert.doesNotMatch(JSON.stringify(state.events), /email|actionUrl|actionLabel|sessionId/);
+});
