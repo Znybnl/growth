@@ -16,12 +16,14 @@ for (const [width,height] of [[1280,720],[1280,600],[390,844]]) {
     await expect(toggle).not.toBeChecked();
     let acceptances=0;
     await page.route("**/api/merchant/google-click-acceptance",async route=>{
-      expect(route.request().postDataJSON()).toMatchObject({accepted:true,version:"2026-10-23-v1",locationId:"template-proof-merchant"});
+      expect(route.request().postDataJSON()).toMatchObject({accepted:true,version:"2026-10-23-v2",locationId:"template-proof-merchant"});
       acceptances++; await route.fulfill({status:201,json:{acceptanceId:"receipt-fixture"}});
     });
     await toggle.click();
     const dialog=page.getByRole("dialog",{name:"Activer le clic Google requis ?"});
-    await expect(dialog).toContainText("restrictions");
+    await expect(dialog).not.toContainText("restrictions");
+    await expect(dialog).toContainText("peut contrevenir aux règles de Google.");
+    await expect(dialog).toContainText("Okado ne peut vérifier ni la publication ni le contenu d’un avis.");
     await expect(dialog).toContainText("aucune obligation de publier un avis");
     await page.screenshot({path:`test-results/google-click-warning-${width}x${height}.png`,fullPage:false});
     await dialog.getByRole("button",{name:"Annuler"}).click();
@@ -51,12 +53,13 @@ for(const template of ["classic","beauty-scratch-nude"]) {
     if (template.includes("scratch")) await page.getByLabel("Grattez la carte pour révéler votre cadeau.").click();
     else await page.getByRole("button",{name:/jouer/i}).first().click();
     const dialog=page.getByRole("dialog",{name:"Fenêtre de participation"});
-    const play=dialog.getByRole("button",{name:/Jouer/});
-    await expect(play).toBeDisabled();
+    const playNow=dialog.getByRole("button",{name:"Jouer maintenant",exact:true});
+    await expect(playNow).toHaveCount(0);
     await dialog.getByRole("link",{name:"Écrire un avis"}).click();
     await expect(dialog.getByText(/Le clic n’a pas pu être enregistré/)).toBeVisible();
-    await expect(play).toBeDisabled();
+    await expect(playNow).toHaveCount(0);
     await dialog.getByRole("link",{name:"Écrire un avis"}).click();
+    const play=dialog.getByRole("button",{name:"Jouer",exact:true});
     await expect(play).toBeEnabled();
     const session=page.waitForRequest(request=>request.url().endsWith("/api/public/draw/session"));
     await play.click();
@@ -70,6 +73,6 @@ for(const mode of ["public-google-optional","public-google-other"]) {
     await page.route("**/api/public/campaign/**",route=>route.fulfill({json:{campaign:{actions:[{id:"google-fixture",kind,url:"https://example.test/action"}]}}}));
     await page.goto(`/dev/template-rendering-proof?mode=${mode}&template=classic`);
     await page.getByRole("button",{name:/jouer/i}).first().click();
-    await expect(page.getByRole("dialog").getByRole("button",{name:"Jouer maintenant"})).toBeEnabled();
+    await expect(page.getByRole("dialog").getByRole("button",{name:"Jouer maintenant"})).toBeVisible();
   });
 }

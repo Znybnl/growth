@@ -501,6 +501,9 @@ export function CampaignExperience({
   // The public API exposes only the marketing action for the current visit.
   // E-mail capture is a separate, optional pre-game step.
   const currentAction = campaign.actions[0];
+  const googleClickPending =
+    requiresGoogleClick(campaign.googleClickRequired, currentAction?.kind) &&
+    !(isPreview ? actionVisited : marketingClickRecorded);
   const requiresContactCapture = campaign.emailCaptureEnabled;
   const isContactOnlySuccess = stage === "success" && Boolean(drawResult) && !drawResult?.prize;
   const scratchLabel = previewResult?.prize?.label ?? "Perdu :(";
@@ -1312,7 +1315,8 @@ export function CampaignExperience({
               {actionLabel(currentAction.kind)}
             </a>
           ) : null}
-          <button
+          {!googleClickPending ? (
+            <button
             type="button"
             onClick={() => {
               if (!isPreview) {
@@ -1323,7 +1327,7 @@ export function CampaignExperience({
               }
               void launchPreparedGame();
             }}
-            disabled={isLoading || (requiresGoogleClick(campaign.googleClickRequired, currentAction?.kind) && !(isPreview ? actionVisited : marketingClickRecorded))}
+            disabled={isLoading}
             style={actionVisited ? { fontSize: "24px", fontWeight: 700, lineHeight: "28px" } : undefined}
             className={
               actionVisited
@@ -1338,7 +1342,8 @@ export function CampaignExperience({
               : actionVisited || !currentAction
                 ? "Jouer"
                 : "Jouer maintenant"}
-          </button>
+            </button>
+          ) : null}
         </div>
         {error ? (
           <div className="mt-4 rounded-[18px] bg-[#fff1f0] px-4 py-3 text-sm text-[#b42318]">
