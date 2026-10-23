@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CookiePreferences } from "@/components/privacy/cookie-preferences";
-import { Inter, Roboto_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import { cn } from "@/lib/utils";
 import { SiteFooter, SiteHeader } from "@/components/marketing/site-navigation";
@@ -10,12 +10,6 @@ import "./globals.css";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  display: "swap",
-});
-
-const robotoMono = Roboto_Mono({
-  subsets: ["latin"],
-  variable: "--font-roboto-mono",
   display: "swap",
 });
 
@@ -36,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={cn("h-full font-sans", inter.variable, robotoMono.variable)}
+      className={cn("h-full font-sans", inter.variable)}
     >
       <body className="min-h-full">
         <SiteHeader />
