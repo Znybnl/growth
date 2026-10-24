@@ -1,5 +1,13 @@
 # Stratégie de test — Okado
 
+`e2e/wizard-published-save.spec.ts` (#645) vérifie les commandes d’un jeu publié
+dans MerchantShell à 1280×720, 1280×600 et 390×844, les sauvegardes marchand/admin
+pour roue et ticket, l’erreur serveur avec reprise, la conservation des lots et
+actions, le brouillon et la première publication sans rechargement. Les
+sauvegardes directes, avant prévisualisation et avant navigation appliquent les
+validations complètes aux jeux actifs ; le statut publié reste conservé. Les
+API sont interceptées, sans écriture ni partie réelle.
+
 Régression #643 : les tests SQL de `test:google-click` créent les acceptations
 avec `GOOGLE_CLICK_WARNING_VERSION` et le texte exportés par l’application.
 Ils vérifient la migration depuis v1, le refus de v2 avant correction, son

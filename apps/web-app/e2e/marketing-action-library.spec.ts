@@ -284,8 +284,9 @@ for (const width of [320, 390, 768, 1440]) {
   test(`${width}px : cartes et popin sans débordement, focus/Escape et lisibilité`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
-    await openActions(page);
-    await page.getByRole("main").screenshot({ path: info.outputPath(`actions-${width}.png`) });
+    // Match the real workspace padding used by the sticky wizard toolbar.
+    await openActions(page, "wizard-actions-google");
+    await page.getByTestId("wizard-form").screenshot({ path: info.outputPath(`actions-${width}.png`) });
     await page.getByRole("button", { name: "Ajouter une action", exact: true }).click();
     await expect(library(page)).toBeVisible();
     const box = await library(page).boundingBox();
