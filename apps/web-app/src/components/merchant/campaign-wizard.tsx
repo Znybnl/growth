@@ -937,7 +937,7 @@ export function CampaignWizard({
       : initialDraft);
   });
   const isDirty = lastSavedDraftSnapshot !== JSON.stringify(draft);
-  const saveActionLabel = draft.isActive ? "Enregistrer" : "Enregistrer le brouillon";
+  const saveActionLabel = draft.isActive ? "Enregistrer les modifications" : "Enregistrer le brouillon";
   const [pendingNavigation, setPendingNavigation] = useState<PendingWizardNavigation | null>(null);
   const [isSavingBeforeNavigation, setIsSavingBeforeNavigation] = useState(false);
   const wheelTemplateState = useRef<NonNullable<CampaignSetupInput["presentation"]["layout"]["wheelTemplateStyles"]>>(
@@ -1422,31 +1422,28 @@ export function CampaignWizard({
       onError?: (message: string) => void;
     },
   ): Promise<string | null> {
+    const targetIsActive = mode === "publish" || draft.isActive;
     const invalidRule = Object.values(prizeRuleErrors(draft.rewardRules))[0];
     if (invalidRule) {
       setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === "prizes"));
       setError(invalidRule);
+      options?.onError?.(invalidRule);
       return null;
     }
     if (totalProbability > 100.0001) {
       setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === "prizes"));
       setError(null);
+      options?.onError?.("Le total des probabilités ne peut pas dépasser 100 %.");
       return null;
     }
-    const isPublishing = mode === "publish";
-    const errorsToShow = isPublishing ? collectErrors(draft, actionEnabled) : [];
+    const errorsToShow = targetIsActive ? collectErrors(draft, actionEnabled) : [];
     if (errorsToShow.length) {
       const first = errorsToShow[0];
       setError(first.step === "prizes" && prizeValidationMessages.length ? null : first.message);
       setStepIndex(WIZARD_STEPS.findIndex((item) => item.id === first.step));
+      options?.onError?.(first.message);
       return null;
     }
-
-    const targetIsActive = isPublishing
-      ? true
-      : isEditing || (adminSaveEndpoint && draft.id)
-        ? draft.isActive
-        : false;
     if (saveRequestInFlightRef.current) return null;
     if (targetIsActive && !draft.actions.length && !await confirmNoMarketingAction()) return null;
     saveRequestInFlightRef.current = true;
@@ -1645,10 +1642,10 @@ export function CampaignWizard({
             <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">
               Retour aux jeux
             </Link>
-            <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className="okado-secondary-action px-4 text-sm disabled:opacity-50">
-              {saveActionLabel}
+            <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className={`${draft.isActive ? "okado-filled-action" : "okado-secondary-action"} px-4 text-sm disabled:opacity-50`}>
+              {isSaving ? "Enregistrement…" : saveActionLabel}
             </button>
-            {isEditing || stepIndex === WIZARD_STEPS.length - 1 ? (
+            {!draft.isActive && (isEditing || stepIndex === WIZARD_STEPS.length - 1) ? (
               <button type="button" onClick={() => void saveCampaign("publish")} disabled={isSaving} className="okado-filled-action px-4 text-sm disabled:opacity-50">
                 {isSaving ? "Enregistrement…" : "Publier"}
               </button>
@@ -1667,6 +1664,7 @@ export function CampaignWizard({
                 : `Créer un jeu pour ${merchant.companyName}`
               : "Créer une campagne"}
           </h1>
+          {draft.isActive ? <p className="mt-2 text-sm leading-6 text-ash">Les modifications enregistrées sont immédiatement visibles sur le jeu en ligne.</p> : null}
         </div>
       </section>
 
@@ -2969,7 +2967,7 @@ export function CampaignWizard({
                 type="button"
                 onClick={() => void saveCampaign("save")}
                 disabled={isSaving}
-                className="okado-secondary-action px-4 text-sm disabled:opacity-50"
+                className={`${draft.isActive ? "okado-filled-action" : "okado-secondary-action"} px-4 text-sm disabled:opacity-50`}
               >
                 {isSaving ? "Enregistrement…" : saveActionLabel}
               </button>
@@ -2982,7 +2980,7 @@ export function CampaignWizard({
                   Continuer
                   <ChevronRight className="h-4 w-4" />
                 </button>
-              ) : (
+              ) : !draft.isActive ? (
                 <button
                   type="button"
                   onClick={() => void saveCampaign("publish")}
@@ -2992,7 +2990,7 @@ export function CampaignWizard({
                   {isSaving ? "Publication…" : "Publier la campagne"}
                   <Check className="h-4 w-4" />
                 </button>
-              )}
+              ) : null}
             </div>
           </div>
         </main>

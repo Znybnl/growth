@@ -28,6 +28,15 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 
 ## Cycle de vie d'un jeu
 
+- Décision propriétaire du 24 octobre 2026 (#645) : dans le Wizard d’un jeu
+  publié, une seule action « Enregistrer les modifications » remplace le couple
+  Enregistrer/Publier. La sauvegarde applique les validations de publication et
+  met immédiatement à jour le jeu en ligne, en conservant son statut. Cela
+  s’applique aussi aux sauvegardes avant prévisualisation ou navigation, et dès
+  la première publication sans rechargement. Un brouillon conserve les actions
+  distinctes « Enregistrer le brouillon » et « Publier ». Aucune version de
+  travail séparée du jeu publié n’est créée.
+
 - L’administration peut télécharger le QR de diffusion d’un jeu marchand depuis Pilotage et l’éditeur dédié (issue #470), après vérification serveur de son rôle et du contexte du jeu. Le téléchargement ne publie pas un brouillon, n’ajoute pas de jeton de prévisualisation et ne modifie pas les indicateurs du marchand. Un QR de brouillon est identifié comme à diffuser après publication.
 
 - Un jeu peut être enregistré en **brouillon**, même incomplet.
