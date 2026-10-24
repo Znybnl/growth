@@ -86,6 +86,8 @@ jobs:
         run: npm run test:wheel-segments -w @okado/web-app
       - name: Test guaranteed draw weights, stock and private SQL functions
         run: npm run test:guaranteed-draw -w @okado/web-app
+      - name: Test Google click acceptance versions, API and private SQL controls
+        run: npm run test:google-click -w @okado/web-app
       - name: Audit production dependencies in both apps
         run: npm run check:dependencies
       - name: Lint web app

@@ -1,5 +1,14 @@
 # Stratégie de test — Okado
 
+Régression #643 : les tests SQL de `test:google-click` créent les acceptations
+avec `GOOGLE_CLICK_WARNING_VERSION` et le texte exportés par l’application.
+Ils vérifient la migration depuis v1, le refus de v2 avant correction, son
+acceptation après correction, la conservation des preuves historiques et des
+contrôles de marchand/jeu, le refus des versions inconnues, la réactivation et
+le rollback. Cette suite est exécutée dans le Quality gate à chaque PR.
+Tout changement de version de l’avertissement doit être accompagné de la
+migration de compatibilité correspondante avant livraison.
+
 Le suivi de clic Google et l’option de clic requis (#638) se vérifient avec `npm run test:google-click -w @okado/web-app` : vraies fonctions SQL de tirage et participation sous PGlite, refus RLS, association du clic, journal d’acceptation et vrais handlers API avec fournisseurs simulés. `e2e/google-click-required.spec.ts` contrôle le Wizard dans MerchantShell à 1280×720, 1280×600 et 390 px, l’annulation/acceptation/sauvegarde, l’absence du bouton « Jouer maintenant » avant le clic, son absence pendant les 5 secondes suivant un clic enregistré, sa disponibilité à l’échéance, la reprise après erreur et les actions facultatives/sociales. Toute modification du texte accepté incrémente sa version.
 
 ### Compositions sectorielles — #623
