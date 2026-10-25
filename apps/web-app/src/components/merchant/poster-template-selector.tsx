@@ -1,5 +1,6 @@
 import { GameType, PosterTemplateId } from "@/lib/types";
 import {
+  getBotanicalPosterQrLayout,
   getPosterTemplate,
   POSTER_TEMPLATE_CHOICES,
   PosterTemplateConfig,
@@ -259,6 +260,7 @@ export function PosterTemplateSelector({
             ? getPosterTemplate("classic-wheel")
             : template;
           const footerAction = gameType === "wheel" ? "Jouez" : "Grattez";
+          const botanicalQr = visualTemplate.id === "botanical-wheel" ? getBotanicalPosterQrLayout(visualTemplate) : null;
 
           return (
             <div
@@ -340,7 +342,7 @@ export function PosterTemplateSelector({
                       </g>)}
                     </g>
                   </svg>
-                ) : visualTemplate.id === "botanical-wheel" ? (
+                ) : visualTemplate.id === "botanical-wheel" && botanicalQr ? (
                   <svg viewBox="0 0 794 1123" className="h-full w-full" aria-hidden="true">
                     <image href="/backgrounds/botanical-poster-backdrop.png" width="794" height="1123" />
                     <text x="72" y="104" fontSize="22" letterSpacing="4" fill="#153a35">Votre établissement</text>
@@ -349,10 +351,10 @@ export function PosterTemplateSelector({
                       <tspan x="72">Scannez, jouez,</tspan><tspan x="72" dy="52">récupérez votre</tspan><tspan x="72" dy="52">cadeau !</tspan>
                     </text>
                     <g data-testid="botanical-thumbnail-qr">
-                      <rect x="445" y="480" width="306" height="316" rx="24" fill="white" stroke="#9eafa0" strokeWidth="2" />
-                      {qrDataUrl ? <image href={qrDataUrl} x="470" y="505" width="256" height="256" /> : <QrCode x="470" y="505" width="256" height="256" color="#111" strokeWidth="1.5" />}
-                      <rect x="420" y="790" width="356" height="62" rx="20" fill="#718578" stroke="white" strokeWidth="4" />
-                      <text x="598" y="828" textAnchor="middle" fontSize="18" fontWeight="700" fill="white">SCANNEZ POUR JOUER</text>
+                      <rect x={botanicalQr.frame.x} y={botanicalQr.frame.y} width={botanicalQr.frame.size} height={botanicalQr.frame.size} rx="28" fill="white" stroke="#9eafa0" strokeWidth="3" />
+                      {qrDataUrl ? <image href={qrDataUrl} x={botanicalQr.image.x} y={botanicalQr.image.y} width={botanicalQr.image.size} height={botanicalQr.image.size} /> : <QrCode x={botanicalQr.image.x} y={botanicalQr.image.y} width={botanicalQr.image.size} height={botanicalQr.image.size} color="#111" strokeWidth="1.5" />}
+                      <rect x={botanicalQr.label.x} y={botanicalQr.label.y} width={botanicalQr.label.width} height={botanicalQr.label.height} rx="24" fill="#718578" stroke="white" strokeWidth="5" />
+                      <text x={botanicalQr.label.x + botanicalQr.label.width / 2} y={botanicalQr.label.y + botanicalQr.label.height / 2 + 8} textAnchor="middle" fontSize="22" fontWeight="700" fill="white">SCANNEZ POUR JOUER</text>
                     </g>
                     <g data-testid="botanical-thumbnail-footer">
                       <rect y="944" width="794" height="179" fill="#fbf8f2" fillOpacity="0.96" />
