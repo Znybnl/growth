@@ -97,6 +97,7 @@ const measuredPages = new Set([
   "/blog/attirer-nouvelles-clientes-institut-beaute",
   "/blog/faire-revenir-cliente-apres-premiere-visite-institut-beaute",
   "/blog/journee-decouverte-magasin-optique",
+  "/blog/remplir-heures-creuses-institut-beaute",
 ]);
 
 export function safeAnalyticsPage(pathname: string) {
