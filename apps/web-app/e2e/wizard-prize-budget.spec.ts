@@ -59,7 +59,7 @@ test("@visual-1280 phase 5 : exemple SFD, budget réactif, coût inconnu et sais
   await page.getByTestId("wizard-footer").getByRole("button", { name: "Enregistrer le brouillon", exact: true }).click();
   await expect.poll(() => writes.length).toBe(1);
   expect(writes[0].prizes.find((item) => item.label === "MASQUE")).toMatchObject({ estimatedUnitCost: 0, estimatedUnitCostKnown: false });
-  const savedDialog = page.getByRole("dialog").filter({ hasText: "prêt" });
+  const savedDialog = page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true });
   await expect(savedDialog).toBeVisible();
   await expect(savedDialog.getByRole("button", { name: "Fermer la confirmation d’enregistrement", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");

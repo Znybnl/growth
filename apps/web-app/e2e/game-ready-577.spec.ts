@@ -118,7 +118,7 @@ for (const template of ["beauty-nude", "beauty-scratch-nude"]) for (const admin 
       route.fulfill({ contentType: "text/html", body: "<html><body>Aperçu synthétique isolé</body></html>" }));
     await page.goto(`/dev/template-rendering-proof?mode=wizard-responsive-${mode}${admin ? "-admin" : ""}&template=${template}`);
     await expect.poll(() => page.locator(".okado-wizard").evaluate(el => getComputedStyle(el).getPropertyValue("--wizard-toolbar-height").trim())).not.toBe("");
-    const save = page.getByTestId("wizard-save-toolbar").getByRole("button", { name: mode.includes("published") ? "Enregistrer" : "Enregistrer le brouillon", exact: true });
+    const save = page.getByTestId("wizard-save-toolbar").getByRole("button", { name: mode.includes("published") ? "Enregistrer les modifications" : "Enregistrer le brouillon", exact: true });
     await save.click();
     const dialog = page.getByRole("dialog");
     await expect(dialog.getByRole("button", { name: "Télécharger le QR code", exact: true })).toBeEnabled();
