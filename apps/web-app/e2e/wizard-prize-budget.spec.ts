@@ -130,7 +130,7 @@ for (const template of ["classic", "scratch-nude-classic"]) test(`phase 5 : jeu 
   const writes: Array<{ isActive: boolean; gameType: string; prizes: Array<{ probability: number; totalQuantity: null; estimatedUnitCostKnown?: boolean }> }> = [];
   await page.route("**/api/campaigns/setup", (route) => { writes.push(route.request().postDataJSON()); return route.fulfill({ json: { campaign: { id: "template-proof-campaign" } } }); });
   await open(page, 1280, "wizard-responsive-edit-published", template);
-  await page.getByTestId("wizard-footer").getByRole("button", { name: "Enregistrer", exact: true }).click();
+  await page.getByTestId("wizard-footer").getByRole("button", { name: "Enregistrer les modifications", exact: true }).click();
   await expect.poll(() => writes.length).toBe(1);
   expect(writes[0]).toMatchObject({ isActive: true, gameType: template.includes("scratch") ? "scratch" : "wheel" });
   expect(writes[0].prizes[0]).toMatchObject({ probability: 50, totalQuantity: null, estimatedUnitCostKnown: false });
