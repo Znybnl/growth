@@ -575,7 +575,7 @@ export function getPosterSubtitleLayout(
   const isBotanicalEditorial = template.id === "botanical-editorial-poster";
   const isEditorialTemplate = template.id === "pastel-editorial-wheel";
   const isIvoryTemplate = template.id === "ivory-editorial-wheel";
-  let fontSize = isIvoryTemplate ? template.supportingTextFontSize ?? 24 : isBotanicalEditorial || isEditorialTemplate ? 28 : template.backdropAsset ? 24 : 25;
+  let fontSize = isIvoryTemplate ? template.supportingTextFontSize ?? 24 : template.id === "botanical-wheel" ? template.supportingTextFontSize ?? 22 : isBotanicalEditorial || isEditorialTemplate ? 28 : template.backdropAsset ? 24 : 25;
   let lineHeight = isIvoryTemplate ? template.supportingTextLineHeight ?? 32 : fontSize * (isEditorialTemplate ? 1.5 : 1.42);
   const letterSpacing = isIvoryTemplate
     ? template.supportingTextLetterSpacing ?? 1.2
@@ -1066,7 +1066,7 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
       </g>
       <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
         <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="${template.ctaCornerRadius ?? 24}" fill="${accent}" stroke="#ffffff" stroke-width="${template.ctaBorderWidth ?? 7}"/>
-        <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 9}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="27" font-weight="900" letter-spacing="0.5">Scannez pour jouer</text>
+        <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 9}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="27" font-weight="900" letter-spacing="0.5">SCANNEZ POUR JOUER</text>
       </g>
     `;
   }

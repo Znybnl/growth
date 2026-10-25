@@ -1,5 +1,28 @@
 # Affiches Botanique / Élégance — #625
 
+## Complément propriétaire — Classique et Botanique
+
+Demande du 25 octobre 2026, intégrée à la même PR :
+
+- Classique : texte principal à40px par défaut (création, choix du modèle,
+  paramètres absents dans l’éditeur et export). Une taille déjà enregistrée,
+  y compris42px, reste explicite et n’est pas écrasée.
+- Classique : « SCANNEZ POUR JOUER » en majuscules ; position verticale du
+  bandeau838→824, soit16,6unités après le cadre QR au lieu de30,6, sans toucher
+  au QR ni à sa zone de silence. Roue716→728 (+12vers le bas). La miniature
+  bénéficie des mêmes changements grâce au renderer partagé.
+- Botanique : espace titre/sous-titre augmenté de8unités (minimum30→38) ;
+  corps secondaire24→22. Largeur360 et géométrie QR précédente conservées.
+- Élégance et Botanique éditorial ne reçoivent aucun ajustement supplémentaire.
+- Tests : composition6scénarios, valeurs initiales4 ; E2E étendu à6variantes
+  (Classique/Botanique/Élégance × roue/ticket), export identique à l’aperçu,
+  QR de Botanique et Classique vérifiés module par module aux tailles A4/A5.
+  Captures1280×720/600 et390px inspectées ; tests6/6+4/4+6/6, contrôles
+  source, lint (4avertissements préexistants hors périmètre) et build réussis.
+
+Ce complément remplace seulement la conservation du corps secondaire Botanique
+annoncée dans l’analyse initiale ci-dessous, conformément au retour propriétaire.
+
 ## Rendu et cause
 
 Contrôle avant correction dans le vrai éditeur : le texte secondaire Botanique

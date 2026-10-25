@@ -157,7 +157,7 @@ export function createPosterSettingsDefaults(input: {
     backgroundImageUrl: input.backgroundImageUrl ?? "",
     headline: input.headline ?? "",
     headlineTextColor: input.headlineTextColor ?? "#ffffff",
-    headlineFontSizePx: input.headlineFontSizePx ?? 42,
+    headlineFontSizePx: input.headlineFontSizePx ?? (getPosterTemplate(input.templateId).id === "soft-gradient-wheel" ? 40 : 42),
     headlineFontFamily: input.headlineFontFamily ?? "geogrotesque",
     wheel: {
       ...input.wheel,

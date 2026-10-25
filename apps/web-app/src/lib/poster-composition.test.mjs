@@ -13,13 +13,13 @@ function fixture(id,gameType="wheel",logoMode="text",text="De belles surprises v
   return {campaign,poster,template};
 }
 
-test("Botanique réduit à360 et Élégance élargit à360 sans modifier police, corps, couleurs ou saisie",() => {
+test("Botanique et Élégance gardent360 de largeur, avec le corps Botanique affiné à22",() => {
   for(const id of ["botanical-wheel","premium-wheel"]) for(const game of ["wheel","scratch"]) for(const logo of ["text","image","none"]) {
     const f=fixture(id,game,logo);
     const before=structuredClone(f);
     const layout=getPosterSubtitleLayout(f.campaign,f.poster,f.template);
     assert.equal(layout.maxWidth,360);
-    assert.equal(layout.fontSize,24);
+    assert.equal(layout.fontSize,id === "botanical-wheel" ? 22 : 24);
     assert.match(layout.family,/Inter/);
     assert.equal(layout.lines.join(" "),f.campaign.presentation.layout.wheelSubtitle);
     const svg=buildPosterSvg({...f,prizes:[],qrDataUrl:"data:image/png;base64,qr-fixture"});
@@ -27,6 +27,32 @@ test("Botanique réduit à360 et Élégance élargit à360 sans modifier police,
     assert.doesNotMatch(svg.match(/<g data-poster-subtitle="true">([\s\S]*?)<\/g>/)?.[0] ?? "",/textLength|lengthAdjust/);
     assert.deepEqual(f,before);
     assert.equal(getPosterSubtitleLayout(f.campaign,{...f.poster,posterSubtitleEnabled:false},f.template),null);
+  }
+});
+
+test("Botanique espace le sous-titre de8 unités supplémentaires sans toucher au titre",() => {
+  const f=fixture("botanical-wheel");
+  const layout=getPosterSubtitleLayout(f.campaign,f.poster,f.template);
+  const before=getPosterSubtitleLayout(f.campaign,f.poster,{...f.template,subtitleSpacingAdjustmentPx:0});
+  assert.equal(layout.headlineGap,38);
+  assert.equal(layout.top-before.top,8);
+  assert.equal(layout.fontSize,22);
+  assert.equal(layout.lines.join(" "),f.campaign.presentation.layout.wheelSubtitle);
+});
+
+test("Classique : taille initiale40, CTA majuscule rapproché et roue abaissée de12",() => {
+  const f=fixture("classic-wheel");
+  assert.equal(f.template.headlineFontSizePx,40);
+  assert.equal(f.template.wheelY,728);
+  assert.equal(f.template.ctaY,824);
+  const gap=f.template.ctaY-(f.template.qrY+f.template.qrSize+18);
+  assert.ok(gap>=16 && gap<31);
+  for(const gameType of ["wheel","scratch"]) {
+    const svg=buildPosterSvg({...f,campaign:{...f.campaign,gameType},prizes:[],qrDataUrl:"QR-FIXTURE"});
+    assert.match(svg,/>SCANNEZ POUR JOUER<\/text>/);
+    assert.doesNotMatch(svg,/>Scannez pour jouer<\/text>/);
+    assert.match(svg,/translate\(359 824\)/);
+    if(gameType==="wheel") assert.match(svg,/<circle cx="272" cy="728"/);
   }
 });
 
