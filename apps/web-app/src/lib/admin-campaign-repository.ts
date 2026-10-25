@@ -110,13 +110,15 @@ export async function getAdminDuplicationAccounts(adminEmail: string, query = ""
   if (!isSupabaseConfigured()) throw new Error("La base de données n’est pas configurée.");
   const safePage = Number.isSafeInteger(page) && page > 0 ? Math.min(page, 100_000) : 1;
   let request = getSupabaseAdmin().from("merchants")
-    .select("id,company_name,city,merchant_users!inner(id)")
+    // Notifications also relate merchants to users. Select the account FK,
+    // never the notification-recipient relationship (PostgREST PGRST201).
+    .select("id,company_name,city,merchant_users!merchant_users_merchant_id_fkey!inner(id)")
     .eq("location_status", "active")
     .order("company_name").order("id");
   if (query.trim()) request = request.ilike("company_name", `%${query.trim().replace(/[\\%_]/g, "\\$&")}%`);
   const offset = (safePage - 1) * ADMIN_CAMPAIGNS_PAGE_SIZE;
   const result = await request.range(offset, offset + ADMIN_CAMPAIGNS_PAGE_SIZE);
-  if (result.error) throw new Error("Lecture des comptes marchands impossible.");
+  if (result.error) throw new Error("Lecture des comptes marchands impossible.", { cause: { code: result.error.code } });
   return {
     accounts: (result.data ?? []).slice(0, ADMIN_CAMPAIGNS_PAGE_SIZE).map((row) => ({
       id: row.id, companyName: row.company_name, city: row.city,

@@ -3,6 +3,9 @@ import { expect, type Page } from "@playwright/test";
 /** Same access rules, two accessible presentations according to workspace width. */
 export async function selectWizardStep(page: Page, index: number) {
   const wizard = page.locator(".okado-wizard");
+  // Mobile SSR already says "narrow". Wait for the existing layout effect so
+  // selectOption cannot run before React has attached the change handler.
+  await expect.poll(() => wizard.evaluate(node => node.style.getPropertyValue("--wizard-toolbar-height"))).not.toBe("");
   const width = (await wizard.boundingBox())!.width;
   await expect(wizard).toHaveAttribute("data-layout", width >= 1200 ? "wide" : width >= 900 ? "compact" : "narrow");
   const select = page.getByRole("combobox", { name: "Étape de création" });

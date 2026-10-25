@@ -21,6 +21,8 @@ export function AdminDuplicateCampaignDialog({ campaignId, onClose }: { campaign
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [created, setCreated] = useState<CreatedDraft[]>([]);
   const savingRef = useRef(false);
 
@@ -28,7 +30,7 @@ export function AdminDuplicateCampaignDialog({ campaignId, onClose }: { campaign
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       setLoading(true);
-      setError(null);
+      setLoadError(null);
       try {
         const params = account ? new URLSearchParams({ merchantId: account.id }) : new URLSearchParams({ q: query, page: String(page) });
         const response = await fetch(`${endpoint}?${params}`, { signal: controller.signal });
@@ -40,14 +42,15 @@ export function AdminDuplicateCampaignDialog({ campaignId, onClose }: { campaign
       } catch (reason) {
         if (!controller.signal.aborted) {
           setDestinations([]);
-          setError(reason instanceof Error ? reason.message : "Destinataires indisponibles.");
+          setHasNextPage(false);
+          setLoadError(reason instanceof Error ? reason.message : "Destinataires indisponibles.");
         }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
     }, account ? 0 : 200);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [account, endpoint, page, query]);
+  }, [account, endpoint, page, query, loadAttempt]);
 
   function chooseAccount(value: Destination | null) {
     setLoading(true);
@@ -99,6 +102,7 @@ export function AdminDuplicateCampaignDialog({ campaignId, onClose }: { campaign
     </label>}
     <div className="mt-4 max-h-[min(35vh,320px)] space-y-2 overflow-y-auto" aria-busy={loading}>
       {loading ? <p role="status" className="flex items-center gap-2 py-5 text-sm text-ash"><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Chargement…</p>
+        : loadError ? <StatusNotice tone="danger"><p>{loadError}</p><button type="button" onClick={() => { setLoading(true); setLoadAttempt((value) => value + 1); }} className="mt-2 font-semibold underline">Réessayer</button></StatusNotice>
         : destinations.length === 0 ? <StatusNotice tone="info">{account ? "Aucun établissement disponible." : "Aucun compte ne correspond à cette recherche."}</StatusNotice>
           : destinations.map((destination) => account ? <label key={destination.id} className="flex items-center gap-3 rounded-[10px] border border-fog bg-white px-3 py-3 text-sm">
             <input type="checkbox" className="size-4 accent-aubergine" checked={selected.includes(destination.id)} disabled={saving || created.some(({ locationId }) => locationId === destination.id)} onChange={(event) => setSelected((current) => event.target.checked ? [...current, destination.id] : current.filter((id) => id !== destination.id))} />
@@ -107,18 +111,18 @@ export function AdminDuplicateCampaignDialog({ campaignId, onClose }: { campaign
             <span className="block font-semibold text-carbon">{destination.companyName}</span><span className="text-xs text-ash">{destination.city}</span>
           </button>)}
     </div>
-    {!account ? <nav aria-label="Pagination des marchands" className="mt-3 flex items-center justify-end gap-3 text-sm">
+    {!account && !loading && !loadError ? <nav aria-label="Pagination des marchands" className="mt-3 flex items-center justify-end gap-3 text-sm">
       {page > 1 ? <button type="button" onClick={() => { setLoading(true); setPage(page - 1); }} className="text-aubergine underline">Précédent</button> : null}<span className="text-ash">Page {page}</span>
       {hasNextPage ? <button type="button" onClick={() => { setLoading(true); setPage(page + 1); }} className="text-aubergine underline">Suivant</button> : null}
-    </nav> : <label className="mt-5 flex items-start gap-3 text-sm text-carbon">
+    </nav> : account ? <label className="mt-5 flex items-start gap-3 text-sm text-carbon">
       <input type="checkbox" checked={adaptMerchantIdentity} disabled={saving} onChange={(event) => setAdaptMerchantIdentity(event.target.checked)} className="mt-1 size-4 accent-aubergine" />
       <span><span className="font-semibold">Utiliser le logo et les liens du destinataire</span><span className="mt-1 block text-xs leading-5 text-ash">{adaptMerchantIdentity ? "Les actions sans lien configuré sont retirées. L’expéditeur et l’adresse de réponse sont adaptés au commerce. Le design, les textes et les lots restent ceux du modèle." : "Les logo, liens et réglages d’e-mail du modèle seront conservés : vérifiez-les avant publication."}</span></span>
-    </label>}
+    </label> : null}
     {created.length ? <StatusNotice tone="success" className="mt-4"><p className="font-semibold">{created.length} brouillon(s) créé(s)</p><ul className="mt-2 space-y-1">{created.map((copy) => <li key={copy.id}><Link href={`/admin/campaigns/${encodeURIComponent(copy.id)}/edit`} className="underline">Modifier le jeu · {copy.companyName}</Link></li>)}</ul></StatusNotice> : null}
     {error ? <StatusNotice tone="danger" className="mt-4">{error}</StatusNotice> : null}
     <div className="mt-6 flex flex-col-reverse gap-3 border-t border-fog pt-5 sm:flex-row sm:justify-end">
       <button type="button" disabled={saving} onClick={onClose} className="okado-secondary-action px-4 text-sm">Fermer</button>
-      <button type="button" onClick={() => void duplicate()} disabled={!account || !selected.length || selected.length > 20 || saving || loading} className="okado-filled-action gap-2 px-4 text-sm disabled:opacity-50">{saving ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Duplication…</> : "Créer les brouillons"}</button>
+      <button type="button" onClick={() => void duplicate()} disabled={!account || !selected.length || selected.length > 20 || saving || loading || Boolean(loadError)} className="okado-filled-action gap-2 px-4 text-sm disabled:opacity-50">{saving ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Duplication…</> : "Créer les brouillons"}</button>
     </div>
   </DialogShell>;
 }

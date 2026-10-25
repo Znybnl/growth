@@ -1,5 +1,13 @@
 # Stratégie de test — Okado
 
+`e2e/wizard-published-save.spec.ts` (#645) vérifie les commandes d’un jeu publié
+dans MerchantShell à 1280×720, 1280×600 et 390×844, les sauvegardes marchand/admin
+pour roue et ticket, l’erreur serveur avec reprise, la conservation des lots et
+actions, le brouillon et la première publication sans rechargement. Les
+sauvegardes directes, avant prévisualisation et avant navigation appliquent les
+validations complètes aux jeux actifs ; le statut publié reste conservé. Les
+API sont interceptées, sans écriture ni partie réelle.
+
 Régression #643 : les tests SQL de `test:google-click` créent les acceptations
 avec `GOOGLE_CLICK_WARNING_VERSION` et le texte exportés par l’application.
 Ils vérifient la migration depuis v1, le refus de v2 avant correction, son
@@ -510,6 +518,19 @@ Rejouer `admin-campaign-access.spec.ts` sur le serveur local pour le refus HTTP 
 
 ## Duplication administrative vers un marchand — #469
 
+Régression #619 : le sélecteur de comptes qualifie la relation
+`merchant_users_merchant_id_fkey`, indépendamment du chemin ajouté par les
+préférences de notifications. `test:admin-campaigns` simule les deux relations,
+vérifie le périmètre des comptes, la pagination au-delà de 50, le succès vide,
+les refus administratifs et la journalisation technique sans message brut.
+`admin-campaign-duplication.spec.ts` couvre l’erreur initiale sans faux résultat
+vide ni pagination, Réessayer sans création implicite, les échecs de recherche
+et d’établissements, la conservation du filtre et du compte, ainsi que les
+captures à 1280×720, 1280×600, 390×844 et 320×740.
+Un contrôle distant `limit(0)` a confirmé PGRST201 avant qualification et HTTP200
+après qualification, sans lecture de coordonnées ni écriture. Il ne remplace
+pas la recette authentifiée après déploiement autorisé.
+
 La suite `test:admin-campaigns` couvre aussi les vrais handlers de duplication avec base/session/stockage simulés : source appartenant à l’établissement actif de l’admin, cibles associées au compte, sites archivés, refus 401/403/404, sélection invalide, brouillons sans historique/stock consommé, adaptation facultative de l’identité et des liens, audit et erreur partielle. Les helpers réels de copie des médias sont testés avec un bucket simulé (propriété/origine, dédoublonnage et indépendance de stockage).
 
 `e2e/admin-campaign-duplication.spec.ts` exerce les vrais composants à 320/390/1280 px : menu admin vs marchand, recherche/pagination, sélection, option d’identité, création et liens, affichage des échecs partiels, non-répétition et absence d’erreur d’hydratation. Les requêtes de cette fixture synthétique `/dev/admin-duplication-proof` sont interceptées ; aucun accès administrateur n’est accordé par la fixture, qui renvoie 404 en production. `admin-campaign-access.spec.ts` teste les refus HTTP réels. Recette propriétaire : depuis une campagne de l’établissement administrateur, dupliquer vers un compte pilote de test, vérifier ses données/logo/liens/affiche et son stock initial, puis ouvrir le brouillon depuis Pilotage. La source doit rester inchangée ; aucun test ne modifie un commerce réel.
@@ -539,6 +560,14 @@ Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu e
 
 ## Catalogue Beauté — #466
 
+Évolution #477 : `test:beauty-catalog` vérifie l’union des six bibliothèques pour
+le généraliste explicite, les ajouts futurs, actifs/inactifs, homonymes et IDs
+dupliqués, sans modifier les profils, autres secteurs ou replis historiques.
+`general-beauty-catalog.spec.ts` couvre les deux éditeurs et les deux jeux, les
+conditions/coûts/chances et le lot existant conservés, ainsi que le changement
+de contexte et les captures1280×600/390px. Les API sont interceptées et aucune
+écriture n’est autorisée ; la fixture reste limitée au développement.
+
 `npm run test:beauty-catalog -w @okado/web-app` vérifie les six catégories et les 61 lignes, le mapping condition/achat, le repli général, les alias, les personnalisations, la session API et l'absence de cache. La migration et son retour arrière sont exécutés réellement dans PostgreSQL embarqué PGlite (dépendance de test uniquement) : conservation des lots et des autres secteurs, contraintes conditionnelles, RLS, réexécution et protection des modifications administratives. Aucun accès Supabase pour ces tests.
 
 `e2e/beauty-catalog.spec.ts` utilise les vrais éditeurs et l'onboarding sur une fixture synthétique, avec interception des API et blocage des écritures : les six bibliothèques dans les deux parcours, conditions modifiables, conservation d'un lot existant, chargements concurrents et affichage à 320/390/1280 px. `/dev/beauty-catalog-proof` est inaccessible en production. L'audit préalable `scripts/audit-beauty-catalog.mjs` est en lecture seule et ne retourne que des compteurs, sans identité d'établissement ni secret.
@@ -558,6 +587,18 @@ Compléments #473/#484 : les tests du handler/DAL vérifient les options multipl
 `npm run test:social-metadata -w @okado/web-app` couvre roue et ticket à gratter, l'association établissement/promesse, le sous-titre propre au jeu en description et les replis lorsque des champs sont vides. Un smoke test HTTP sur le HTML initial vérifie `title`, Open Graph et Twitter, puisque les robots de partage doivent lire ces métadonnées sans exécuter le JavaScript.
 
 ## Compte rendu attendu
+
+### Composition des affiches Botanique / Élégance — #625
+
+`test:poster-composition` vérifie les largeurs, la conservation des textes et
+polices, les variantes roue/ticket et logo texte/image/aucun, le centrage du QR
+et son bandeau séparé, ainsi que Botanique éditorial inchangé.
+`poster-composition-625.spec.ts` exerce le véritable éditeur dans MerchantShell,
+ses miniatures et son PNG téléchargé identique à l’aperçu. Captures à1280×720,
+1280×600 et390px ; données fictives et API interceptées. Tous les modules du QR
+Botanique sont comparés à la matrice encodant l’URL publique attendue, à la
+résolution A4 puis après réduction A5 ; ce n’est pas un test d’impression ni
+un scan optique par smartphone. Aucun jeu réel enregistré.
 
 ### Réception des webhooks Resend — #573
 

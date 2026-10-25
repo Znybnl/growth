@@ -152,7 +152,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     headline: "#050644",
     headlineStroke: "#ffffff",
     headlineTextColor: "#050644",
-    headlineFontSizePx: 50,
+    headlineFontSizePx: 40,
     qrFrame: "#1b04b8",
     logoVariant: "lined",
     wheelX: 238,
@@ -193,13 +193,13 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     qrFrame: "#2100b8",
     logoVariant: "badge",
     wheelX: 272,
-    wheelY: 716,
+    wheelY: 728,
     wheelRadius: 247,
     qrX: 408,
     qrY: 512,
     qrSize: 277.4,
     ctaX: 359,
-    ctaY: 838,
+    ctaY: 824,
     ctaWidth: 390,
     ctaHeight: 68,
     ctaRotation: 0,
@@ -290,6 +290,7 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     colorsCustomizable: false,
     headlineX: 284,
     headlineMaxWidth: 500,
+    subtitleMaxWidth: 360,
     headlineBlockBottom: 430,
     headlineLogoGapPx: 10,
     headlineFontWeight: 500,
@@ -339,6 +340,8 @@ export const POSTER_TEMPLATES: PosterTemplateConfig[] = [
     colorsCustomizable: false,
     headlineX: 72,
     headlineMaxWidth: 548,
+    subtitleMaxWidth: 360,
+    subtitleSpacingAdjustmentPx: 8,
     headlineLogoGapPx: 30,
     headlineFontWeight: 500,
     headlineItalic: false,
@@ -607,4 +610,18 @@ export function getPosterTemplate(
     : normalizedId;
 
   return POSTER_TEMPLATE_CONFIGS[motifTemplateId] ?? POSTER_TEMPLATE_CONFIGS["classic-wheel"];
+}
+
+/** Shared by the Botanical artwork and its thumbnail. Center against the
+ * actual white square, and keep the separate CTA below it, not over its edge. */
+export function getBotanicalPosterQrLayout(template: PosterTemplateConfig) {
+  const frame = { x: template.qrX - 18, y: template.qrY - 18, size: template.qrSize + 36 };
+  const imageSize = template.qrSize - 26;
+  const image = { x: frame.x + (frame.size - imageSize) / 2,
+    y: frame.y + (frame.size - imageSize) / 2, size: imageSize };
+  const label = { width: template.inlineQrLabelWidth ?? frame.size,
+    height: template.inlineQrLabelHeight ?? 70,
+    x: template.ctaX ?? frame.x,
+    y: Math.max(template.ctaY ?? 0, frame.y + frame.size + (template.inlineQrLabelGap ?? 18)) };
+  return { frame, image, label };
 }

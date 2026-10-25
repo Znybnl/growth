@@ -34,6 +34,14 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
   disponible seulement après publication sont indiqués. L’ouverture ne compte
   pas comme un téléchargement. L’accès au QR de test reste dans le Wizard.
   La fréquence de cette confirmation n’est pas modifiée.
+- Décision propriétaire du 24 octobre 2026 (#645) : dans le Wizard d’un jeu
+  publié, une seule action « Enregistrer les modifications » remplace le couple
+  Enregistrer/Publier. La sauvegarde applique les validations de publication et
+  met immédiatement à jour le jeu en ligne, en conservant son statut. Cela
+  s’applique aussi aux sauvegardes avant prévisualisation ou navigation, et dès
+  la première publication sans rechargement. Un brouillon conserve les actions
+  distinctes « Enregistrer le brouillon » et « Publier ». Aucune version de
+  travail séparée du jeu publié n’est créée.
 
 - L’administration peut télécharger le QR de diffusion d’un jeu marchand depuis Pilotage et l’éditeur dédié (issue #470), après vérification serveur de son rôle et du contexte du jeu. Le téléchargement ne publie pas un brouillon, n’ajoute pas de jeton de prévisualisation et ne modifie pas les indicateurs du marchand. Un QR de brouillon est identifié comme à diffuser après publication.
 
@@ -70,6 +78,17 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 - Le catalogue de suggestions est indépendant des lots déjà enregistrés dans les jeux. Sa refonte ne modifie aucun lot, gain, stock, coût, condition ou probabilité existant (issue #466, décision propriétaire du 6 octobre 2026).
 - Les six sous-secteurs Beauté sont : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa, Soins visage & corps. Les anciennes catégories ambiguës ne sont conservées que si un établissement ou une suggestion les utilise ; aucune reclassification automatique. Les suggestions personnalisées restent intactes.
 - Les probabilités de bibliothèque sont des valeurs individuelles proposées, pas une distribution à normaliser. Seuls les lots choisis entrent dans le calcul du jeu.
+- Décision propriétaire du 25 octobre 2026 (#477) : le sous-secteur explicitement
+  Beauté généraliste / multi-activité accède aux suggestions actives des six
+  bibliothèques Beauté et aux suggestions générales non classées déjà accessibles.
+  L’union conserve les valeurs et dédoublonne par identifiant, pas par libellé.
+  Les autres profils, le repli sans sous-secteur/ancien profil et les recettes
+  métier conservent leur périmètre. Aucun profil ou lot enregistré n’est modifié.
+- Complément propriétaire #477 : dans cette union généraliste, Suggestions peut
+  être filtré par sous-secteur, avec Tous par défaut et les suggestions non
+  classées accessibles séparément. Filtre local identique dans les deux éditeurs,
+  sans modifier le profil, les lots ajoutés, Mes lots ou les compositions.
+  Fermeture ou changement de contexte réinitialise la sélection sur Tous.
 - À l'ajout d'une suggestion Beauté, sa condition suggérée préremplit les conditions d'utilisation. « Achat requis pour le retrait » est activé lorsque cette condition impose une prestation payante ou une nouvelle pose ; une réduction à tarif normal ou un cadeau autonome ne l'active pas. Ces réglages restent modifiables, sans recalcul rétroactif sur les lots existants.
 
 - Un lot publiable doit avoir un libellé, une quantité disponible strictement positive et des conditions de retrait cohérentes.

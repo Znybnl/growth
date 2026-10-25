@@ -102,12 +102,16 @@ jobs:
         run: npm run test:preview-qr -w @okado/web-app
       - name: Test new poster defaults and retained template choices
         run: npm run test:poster-defaults -w @okado/web-app
+      - name: Test poster subtitle layout and centered Botanical QR
+        run: npm run test:poster-composition -w @okado/web-app
       - name: Test merchant gain notifications and RLS
         run: npm run test:gain-notifications -w @okado/web-app
       - name: Test Resend webhook signatures and storage errors
         run: npm run test:resend-webhook -w @okado/web-app
       - name: Test Beauty suggestion catalog and migration
         run: npm run test:beauty-catalog -w @okado/web-app
+      - name: Test general Beauty catalog presentation filters
+        run: npm run test:prize-suggestion-filters -w @okado/web-app
       - name: Test reusable prize scope and independent copies
         run: npm run test:reusable-prizes -w @okado/web-app
       - name: Test activity prize compositions and independent copies

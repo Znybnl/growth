@@ -139,7 +139,7 @@ export async function createCampaignPosterSvg(
         backgroundImageUrl: "",
         headline: campaign.subtitle,
         headlineTextColor: "#1b2842",
-        headlineFontSizePx: 50,
+        headlineFontSizePx: getPosterTemplate("classic-wheel").headlineFontSizePx,
         headlineFontFamily: "geogrotesque",
         wheel: {
           ...getPosterTemplate("classic-wheel").wheel,
