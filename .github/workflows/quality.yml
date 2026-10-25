@@ -90,6 +90,8 @@ jobs:
         run: npm run test:google-click -w @okado/web-app
       - name: Audit production dependencies in both apps
         run: npm run check:dependencies
+      - name: Audit development tooling without exceptions
+        run: npm run check:dependencies:all
       - name: Lint web app
         run: npm run lint:web
       - name: Test analytics consent in both apps and server capture
