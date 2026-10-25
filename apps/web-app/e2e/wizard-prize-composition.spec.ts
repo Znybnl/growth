@@ -106,7 +106,7 @@ test("@visual-1280 phase 1 : dépasser provisoirement 100 %, ajuster en ligne pu
   const table = page.getByTestId("wizard-prize-table");
   const rules = page.getByTestId("wizard-prize-rules");
   const header = table.getByTestId("wizard-prize-table-header");
-  for (const name of ["Chance", "Stock", "Coût"]) {
+  for (const name of ["Chance", "Stock", "Coût de revient"]) {
     await expect(header.getByText(name, { exact: true })).toHaveCSS("text-align", "left");
   }
   expect(Math.abs((await header.getByText("Chance", { exact: true }).boundingBox())!.x - (await table.getByRole("spinbutton").first().boundingBox())!.x)).toBeLessThan(1);
