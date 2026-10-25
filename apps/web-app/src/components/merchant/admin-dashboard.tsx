@@ -1,0 +1,163 @@
+import Link from "next/link";
+import { AdminEstablishmentProfileButton } from "@/components/merchant/admin-establishment-profile-button";
+import type { SaasAdminOverview } from "@/lib/admin-repository";
+import { AdminLastSignInCell } from "@/components/merchant/admin-last-sign-in-cell";
+import { formatDateTime } from "@/lib/format";
+import { MetricCard, PageHeader, ResponsiveTable } from "@/components/ui/workspace";
+import { StatusBadge as SharedStatusBadge } from "@/components/ui/status-badge";
+import { AdminTrialExtensionButton } from "@/components/merchant/admin-trial-extension-button";
+import { canExtendMerchantTrial, getAdminSubscriptionDisplay } from "@/lib/admin-trial";
+
+export function AdminDashboard({ overview, query = "" }: { overview: SaasAdminOverview; query?: string }) {
+  return (
+    <div className="w-full space-y-6 px-1 pb-8">
+      <PageHeader
+        eyebrow="Administration"
+        title="Pilotage de la plateforme"
+        description="Suivez les comptes marchands, les campagnes produit et les alertes qui demandent une action."
+        actions={
+          <>
+          <Link href="/admin/campaigns" className="okado-secondary-action okado-compact-action px-4 text-sm">
+            Jeux des marchands
+          </Link>
+          <Link href="/admin/prize-suggestions" className="okado-secondary-action okado-compact-action px-4 text-sm">
+            Gérer les suggestions de lots
+          </Link>
+          </>
+        }
+      />
+
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding terminés`} />
+        <MetricCard label="Établissements avec accès actif" value={overview.totals.activeSubscriptions} detail="Essais valides et abonnements actifs" />
+        <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} contacts collectés`} />
+        <MetricCard label="Gains à suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
+      </section>
+
+      <section className="okado-card border-[#fecdd3] bg-[#fff7f7] p-5">
+        <p className="okado-label text-[#be123c]">E-mails à surveiller</p>
+        <p className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-[#9f1239]">
+          {overview.totals.failedRewardEmails}
+        </p>
+        <p className="mt-2 text-sm text-[#9f1239]">
+          E-mails de gain en échec, bounce ou plainte à analyser depuis la Supervision.
+        </p>
+      </section>
+
+      <section>
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="okado-label">Utilisateurs</p>
+            <h2 className="okado-section-title mt-2">Comptes marchands</h2>
+          </div>
+          <form className="flex w-full gap-2 sm:w-auto" action="/admin">
+            <input
+              name="q"
+              defaultValue={query}
+              placeholder="Commerce, nom ou e-mail"
+              className="h-10 min-w-0 flex-1 px-3 text-sm sm:w-72"
+            />
+            <button type="submit" className="okado-secondary-action okado-compact-action px-4 text-sm">Rechercher</button>
+          </form>
+        </div>
+
+        <ResponsiveTable className="mt-5">
+          <table className="okado-data-table okado-admin-table w-full text-left text-sm">
+            <thead className="okado-table-header">
+              <tr>
+                <th className="px-3 py-3 font-medium">Utilisateur</th>
+                <th className="px-3 py-3 font-medium">Commerce</th>
+                <th className="px-3 py-3 font-medium">Inscription</th>
+                <th className="px-3 py-3 font-medium">Dernière connexion</th>
+                <th className="px-3 py-3 font-medium">Parcours</th>
+                <th className="px-3 py-3 font-medium">Abonnement</th>
+                  <th className="px-3 py-3 font-medium">Activité</th>
+                  <th className="px-3 py-3 font-medium">Alertes</th>
+                  <th className="px-3 py-3 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#eef2f7]">
+              {overview.users.map((user) => {
+                const subscriptionDisplay = getAdminSubscriptionDisplay(
+                  user.subscriptionStatus,
+                  user.trialEndDate,
+                  user.subscriptionCancelAtPeriodEnd,
+                  user.subscriptionCurrentPeriodEnd,
+                );
+                const canExtendTrial = canExtendMerchantTrial(
+                  user.subscriptionStatus,
+                  user.trialEndDate,
+                  user.subscriptionCancelAtPeriodEnd,
+                  user.stripeSubscriptionId,
+                );
+
+                return <tr key={user.id} className="text-graphite">
+                  <td className="px-3 py-4">
+                    <div className="min-w-0 break-words">
+                    <p className="font-medium">{`${user.firstName} ${user.lastName}`.trim()}</p>
+                    <p className="mt-1 break-all text-xs text-ash">{user.email}</p>
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 font-medium">{user.merchantName}</td>
+                  <td className="px-3 py-4 text-ash">{formatDateTime(user.createdAt)}</td>
+                  <td className="px-3 py-4 text-ash"><AdminLastSignInCell value={user.lastSignIn} /></td>
+                  <td className="px-3 py-4">
+                    <span className={`okado-status-badge ${user.onboardingCompleted ? "okado-status-active" : "okado-status-muted"}`}>
+                      {user.onboardingCompleted ? "Terminé" : "À finaliser"}
+                    </span>
+                  </td>
+                  <td className="px-3 py-4">
+                    {canExtendTrial && user.trialEndDate ? (
+                      <AdminTrialExtensionButton
+                        merchantId={user.merchantId}
+                        subscriptionStatus={user.subscriptionStatus}
+                        trialEndDate={user.trialEndDate}
+                        subscriptionCancelAtPeriodEnd={user.subscriptionCancelAtPeriodEnd}
+                        initialDisplay={subscriptionDisplay}
+                        canExtend={canExtendTrial}
+                      />
+                    ) : (
+                      <SharedStatusBadge tone={subscriptionDisplay.tone}>
+                        {subscriptionDisplay.label}
+                      </SharedStatusBadge>
+                    )}
+                  </td>
+                  <td className="px-3 py-4 text-ash">{user.campaignCount} jeu(x) · {user.leadCount} contact(s)</td>
+                  <td className="px-3 py-4">
+                    {user.lowStockCount || user.exhaustedStockCount || user.failedEmailCount ? (
+                      <span className="text-xs font-medium text-[#a15c00]">
+                        {[
+                          user.lowStockCount ? `${user.lowStockCount} stock(s) faible(s)` : "",
+                          user.exhaustedStockCount ? `${user.exhaustedStockCount} stock(s) épuisé(s)` : "",
+                          user.failedEmailCount ? `${user.failedEmailCount} e-mail(s)` : "",
+                        ].filter(Boolean).join(" · ")}
+                      </span>
+                    ) : <span className="text-xs text-ash">Aucune</span>}
+                  </td>
+                  <td className="px-3 py-4">
+                    <div className="flex flex-wrap gap-2">
+                      <AdminEstablishmentProfileButton merchantId={user.merchantId} userId={user.id} />
+                      <Link
+                        href={`/admin/campaigns?merchantId=${encodeURIComponent(user.merchantId)}`}
+                        className="okado-primary-action okado-compact-action whitespace-nowrap px-3 text-xs"
+                      >
+                        Voir les jeux
+                      </Link>
+                      <Link
+                        href={`/admin/campaigns/new?merchantId=${encodeURIComponent(user.merchantId)}`}
+                        className="okado-secondary-action okado-compact-action whitespace-nowrap px-3 text-xs"
+                      >
+                        Créer un jeu
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              })}
+            </tbody>
+          </table>
+          {!overview.users.length ? <p className="px-3 py-8 text-sm text-ash">Aucun utilisateur ne correspond a votre recherche.</p> : null}
+        </ResponsiveTable>
+      </section>
+    </div>
+  );
+}

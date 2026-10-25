@@ -15,6 +15,16 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 
 La fiche dans Pilotage est réservée à l’administration de la plateforme et consultable uniquement en lecture seule. Chaque site présenté est résolu via les associations existantes du compte, sans modifier le site actif de la session. La réponse serveur utilise une liste explicite de champs : coordonnées, identité, liens marketing et paramètres non secrets. Aucun PIN, empreinte/chiffrement de PIN, jeton, mot de passe ou identifiant privé Stripe n’est transmis. Le navigateur ne mémorise pas ces profils dans un stockage persistant et la réponse HTTP est privée et non mise en cache.
 
+### Dernière connexion dans Pilotage — #411
+
+Chaque ligne affiche la dernière connexion réussie de son utilisateur, fournie
+par Supabase Auth, et non la date d'inscription ou la dernière visite d'une page.
+La date est affichée dans le fuseau du navigateur. Une absence explicitement
+confirmée donne « Jamais connecté » ; une donnée manquante, ambiguë ou inaccessible
+donne « Indisponible ». Lecture administrative côté serveur uniquement, sans
+modifier les sessions ni transmettre les identifiants internes Auth. Voir
+[la livraison et les limites](releases/2026-10-25-admin-last-sign-in-411.md).
+
 ## Autorité et périmètre
 
 - Pierre-Henri BRUNELLE est l'administrateur de la plateforme et l'unique valideur des PR, merges et déploiements en production.
