@@ -478,6 +478,166 @@ export const blogPosts: BlogPost[] = [
     ],
   },
   {
+    path: "/blog/attirer-nouvelles-clientes-institut-beaute",
+    source: [
+      references.localVisibility,
+      {
+        label: "Google Business Profile — ajouter un lien de réservation",
+        href: "https://support.google.com/business/answer/6218037?hl=fr",
+      },
+      {
+        label: "Google — demander des avis authentiques, sans récompense",
+        href: "https://support.google.com/business/answer/3474122?hl=fr",
+      },
+      {
+        label: "CNIL — prospection électronique auprès des prospects et clients",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "Bpifrance Création — faire connaître son activité",
+        href: "https://bpifrance-creation.fr/moments-de-vie/comment-faire-connaitre-mon-activite-mon-entreprise",
+      },
+      references.pricing,
+    ],
+    title: "Comment attirer de nouvelles clientes dans un institut de beauté ?",
+    seoTitle: "Attirer de nouvelles clientes dans un institut de beauté",
+    description:
+      "Fiche Google, avis, réservation, recommandations et partenariats : un plan pratique pour faire connaître un institut et convertir l’intérêt en premier rendez-vous.",
+    eyebrow: "Acquisition beauté",
+    intro:
+      "Pour attirer de nouvelles clientes, un institut doit être visible près de sa zone, expliquer clairement ses soins et rendre la première réservation simple. Commencez par les personnes qui recherchent déjà une prestation, rassurez-les avec des informations et des preuves authentiques, puis testez un canal complémentaire à la fois.",
+    answer:
+      "Mettez d’abord à jour votre fiche Google et vos pages de soins, facilitez la prise de rendez-vous et demandez des avis authentiques sans contrepartie. Élargissez ensuite la découverte avec des recommandations, des partenaires locaux ou un contenu social utile. Suivez demandes, nouveaux rendez-vous et présences séparément : une vue, un clic ou un scan ne prouve pas l’acquisition d’une cliente.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-25",
+    updatedAt: "2026-10-25",
+    reviewedAt: "2026-10-25",
+    readingTime: "12 min de lecture",
+    image: "/images/blog/attirer-nouvelles-clientes-institut-beaute.webp",
+    imageAlt: "Une esthéticienne accueille une nouvelle cliente dans son institut",
+    ctaLabel: "Découvrir Okado pour un institut de beauté",
+    ctaHref: "/instituts-beaute",
+    sections: [
+      {
+        title: "Définissez quelle nouvelle cliente vous souhaitez accueillir",
+        paragraphs: [
+          "« Attirer plus de clientes » est trop large pour choisir un canal. Partez d’une prestation que vous souhaitez faire connaître, de la zone dans laquelle une cliente peut raisonnablement venir et de la capacité réellement disponible. Un institut spécialisé dans les ongles ne répond pas aux mêmes recherches ni aux mêmes questions qu’un spa ou qu’une activité de soins du visage.",
+          "Notez le besoin visé, le soin correspondant, son prix et sa durée, les disponibilités, puis les questions reçues avant une première visite : accès, stationnement, déroulement, réservation ou personne qui réalisera le soin. Ces réponses guideront votre fiche, votre page web et vos publications. Évitez de créer une promotion avant de savoir ce que la personne ne comprend pas ou ne trouve pas.",
+        ],
+        items: [
+          "Objectif : par exemple faire découvrir un soin du visage précis, et non « gagner en visibilité » sans autre définition.",
+          "Public local : les personnes qui peuvent effectivement rejoindre l’institut, selon son emplacement ou sa zone de déplacement.",
+          "Action attendue : consulter les détails, poser une question, appeler ou réserver un premier rendez-vous.",
+          "Mesure finale : rendez-vous d’une nouvelle cliente effectivement honoré, avec le canal déclaré ou le lien utilisé.",
+        ],
+      },
+      {
+        title: "Rendez l’institut trouvable et compréhensible sur Google",
+        paragraphs: [
+          "Revendiquer et vérifier la fiche Google Business Profile de l’établissement. Contrôlez le nom réel, la catégorie la plus précise disponible, l’adresse ou la zone desservie, les horaires, le téléphone, le site et les services. Ajoutez des photos récentes et authentiques du lieu, de l’équipe ou des prestations, puis corrigez les informations dès qu’elles changent. N’ajoutez pas de mots-clés au nom de l’établissement s’ils n’en font pas partie dans la réalité.",
+          "Google décrit le classement local par la pertinence, la distance et la notoriété. Compléter la fiche aide les personnes à comprendre l’offre, mais ne permet ni de choisir sa position, ni d’acheter une meilleure place dans les résultats naturels. Concentrez votre page web sur les soins réellement proposés : description, durée, prix ou façon de les obtenir, localisation et prochaine étape. Une page utile par spécialité peut répondre mieux qu’une page locale dupliquée pour chaque quartier.",
+          "Si l’option est disponible sur la fiche, ajoutez le lien direct de réservation et testez-le depuis un téléphone. Google permet d’ajouter des liens d’action, mais leur disponibilité peut dépendre du profil et de la catégorie. Le lien doit aboutir sur le bon agenda ou la bonne page, avec un chemin lisible jusqu’au rendez-vous ; ne promettez pas un bouton qui n’apparaît pas sur toutes les fiches.",
+        ],
+        table: {
+          caption: "Contrôle rapide du parcours local avant de communiquer",
+          headers: ["Point de contact", "À vérifier", "Indicateur utile"],
+          rows: [
+            ["Fiche Google", "Nom, catégorie, coordonnées, horaires, services et photos exacts", "Appels, clics vers le site ou la réservation, selon les statistiques disponibles"],
+            ["Page du soin", "Prestation, durée, tarif, lieu, questions pratiques et réservation", "Demandes ou réservations depuis cette page"],
+            ["Prise de rendez-vous", "Disponibilités, étapes, confirmation et fonctionnement sur mobile", "Réservations commencées puis confirmées"],
+          ],
+        },
+      },
+      {
+        title: "Transformez la découverte en première réservation",
+        paragraphs: [
+          "Une cliente qui découvre un institut doit pouvoir comprendre rapidement ce qui est fait, pour qui, combien de temps cela prend et comment réserver. Décrivez les prestations avec les mots utilisés par votre clientèle, sans promesse de résultat esthétique ou de santé. Affichez les informations pratiques et le tarif lorsque vous pouvez le faire clairement ; si un devis ou un échange préalable est nécessaire, expliquez comment l’obtenir.",
+          "Sur une page ou un profil social, vérifiez le parcours complet : le bouton mène-t-il au bon soin ? reste-t-il facile d’identifier une disponibilité ? la personne sait-elle si la demande est confirmée ou si l’institut doit la rappeler ? Faites ce test sur smartphone, comme une nouvelle cliente qui ne connaît pas l’équipe. Chaque étape manuelle supplémentaire peut être nécessaire, mais doit être annoncée plutôt que cachée.",
+          "Une offre de première visite peut lever une hésitation si le prix est réellement le frein. Comparez aussi une consultation d’orientation, une découverte d’une prestation ou une option définie à une remise : elles n’ont pas les mêmes coûts ni la même valeur pour la cliente. Précisez le soin, le prix, la durée, la période, le nombre de places si la limite est réelle et les conditions. En France, une annonce de réduction doit respecter les règles applicables, dont la référence au prix le plus bas pratiqué pendant les 30 jours précédents ; vérifiez le cas exact avant publication.",
+        ],
+      },
+      {
+        title: "Rassurez avec des preuves authentiques, jamais achetées",
+        paragraphs: [
+          "Des photos récentes du lieu et des prestations aident à se représenter l’expérience. Demandez une autorisation appropriée avant de publier une cliente reconnaissable ou un avant/après, respectez son choix et ne diffusez pas d’information sur son rendez-vous ou son soin sans accord. Décrivez exactement ce que montre l’image ; elle ne doit pas suggérer un résultat garanti.",
+          "Après une expérience réelle, vous pouvez inviter chaque cliente à déposer un avis honnête, sans sélectionner uniquement celles que vous pensez satisfaites. Google interdit d’offrir une réduction, un cadeau ou un service en échange d’un avis, d’une modification ou d’un retrait. Répondez avec tact, ne divulguez pas de détails sur la personne et proposez de poursuivre une situation individuelle en privé. Un avis reste le témoignage de son auteur, pas une garantie que chaque nouvelle cliente vivra la même expérience.",
+        ],
+      },
+      {
+        title: "Activez recommandations et partenariats à l’échelle du quartier",
+        paragraphs: [
+          "Le bouche-à-oreille peut faire découvrir un institut par une personne de confiance, mais son volume et son calendrier sont difficiles à prévoir. Si vous créez un parrainage, écrivez une règle facile à expliquer : qui recommande qui, à quel moment l’avantage s’applique, ce qu’il coûte, sa date de validité et si la nouvelle cliente doit réserver une prestation particulière. Un avantage n’est pas automatiquement rentable ; mesurez les premières visites honorées et le coût réellement remis.",
+          "Choisissez un partenaire dont la clientèle et la zone se recoupent sans confusion sur les rôles : coiffeur, boutique, hôtel ou activité locale complémentaire, selon les profils réellement visés. Commencez par une opération limitée — présentation réciproque, événement ou support commun — et attribuez à chaque partenaire un lien ou un code distinct. Convenez à l’avance de qui répond aux demandes, finance les avantages et suit les résultats.",
+          "Ne transmettez pas à un partenaire les noms, e-mails ou numéros de vos clientes pour qu’il les démarche. Si une communication électronique commune implique des coordonnées, définissez au préalable qui collecte quelle autorisation et pour quels destinataires ; le plus simple est souvent de laisser la personne intéressée contacter elle-même chaque professionnel. Les règles CNIL dépendent du canal et de la finalité, pas seulement du fait que les deux commerces soient voisins.",
+        ],
+      },
+      {
+        title: "Utilisez les réseaux sociaux pour répondre aux hésitations",
+        paragraphs: [
+          "Choisissez le réseau où votre clientèle est réellement présente, puis publiez des formats que l’équipe peut tenir dans la durée : présentation d’un soin, explication du déroulement, réponses à une question fréquente, aperçu des locaux ou disponibilité d’un rendez-vous. Une publication doit aider à décider ; poster tous les jours ou accumuler des abonnés n’est pas en soi un objectif d’acquisition.",
+          "Pour un mois d’essai, vous pouvez par exemple préparer quatre publications — une par semaine — autour d’un seul soin : à qui il s’adresse selon les informations validées, comment se déroule le rendez-vous, ce qu’il faut prévoir et comment réserver. Ce rythme est une hypothèse d’organisation, pas une fréquence optimale démontrée. Utilisez un lien dédié si vous souhaitez compter les visites et notez séparément les réservations puis les rendez-vous honorés.",
+          "Ne réutilisez pas les visuels de clientes, les témoignages ou les messages privés comme preuve publique sans autorisation. Évitez également de transformer un conseil esthétique en diagnostic médical ou de promettre une efficacité que vous ne pouvez pas établir.",
+        ],
+      },
+      {
+        title: "Testez la publicité ou Okado seulement si le parcours s’y prête",
+        paragraphs: [
+          "La publicité locale peut accélérer la diffusion d’une offre, mais elle ne corrige pas une page imprécise ou un agenda impossible à réserver. Commencez par un budget plafonné, une zone réaliste, une prestation et une page de destination. Vérifiez que l’annonce ne promet pas plus que la prestation réellement disponible. Arrêtez ou ajustez le test si le coût par rendez-vous honoré dépasse le seuil que votre activité peut absorber.",
+          "Okado peut compléter une journée découverte, un partenariat ou une animation à l’accueil : une roue ou un ticket à gratter sur smartphone s’ouvre via QR code, avec les lots et leurs conditions préparés par l’institut. C’est un support pour participer à une animation, pas un service de référencement, un moteur de réservation, un CRM ou un système de parrainage. Il ne prouve pas qu’une personne a réservé, est venue ou a acheté ; les scans, parties, contacts, gains et retraits restent des étapes différentes.",
+          "Si l’animation recueille des coordonnées, expliquez la finalité et séparez le choix de prospection de la participation et du gain. Un e-mail nécessaire à la remise d’un lot ne vaut pas inscription marketing. Pour les règles de prospection par e-mail ou SMS, consultez la source CNIL citée et adaptez le parcours à votre situation.",
+        ],
+      },
+      {
+        title: "Cas fictif : calculez ce qu’a coûté une première visite honorée",
+        paragraphs: [
+          "Exemple entièrement fictif, sans données d’un institut réel : l’« Institut Lueur » teste une campagne locale pendant quatre semaines avec 120 € de budget publicitaire. Le lien suivi reçoit 60 visites. Six personnes demandent un renseignement, quatre réservent un premier soin et trois viennent effectivement. Ces volumes décrivent le scénario ; ils ne constituent ni un taux de conversion attendu ni une preuve que la publicité explique seule chaque rendez-vous.",
+          "Supposons ensuite, uniquement pour illustrer un calcul, que chaque première visite rapporte 68 € sur une base comptable commune, et déclenche 8 € de produits, 25 € de temps de travail valorisé et 2 € de frais variables. La contribution estimée par visite est 68 − 8 − 25 − 2 = 33 €. Pour trois rendez-vous honorés, elle est de 99 €. Après les 120 € de publicité, le solde est −21 €, avant les charges fixes et les impôts éventuels. Le coût média par première visite honorée est de 120 ÷ 3 = 40 €.",
+          "Dans ce scénario, la première prestation seule ne couvre pas le budget média selon ces hypothèses. Cela ne dit pas si une campagne réelle serait rentable : il faudrait vérifier les montants, les nouvelles clientes, le temps réellement consacré, les réservations annulées et d’éventuelles visites ultérieures observées — sans les présumer. Remplacez chaque valeur par vos coûts et comparez des périodes équivalentes avant de reconduire l’investissement.",
+        ],
+        table: {
+          caption: "Parcours fictif de l’Institut Lueur, chiffres hypothétiques",
+          headers: ["Étape", "Volume ou calcul", "Lecture prudente"],
+          rows: [
+            ["Budget média", "120 €", "Dépense du test, hors temps de préparation"],
+            ["Visites du lien", "60", "Visites mesurées par le lien suivi, pas nécessairement des clientes uniques"],
+            ["Demandes / réservations", "6 demandes / 4 réservations", "Étapes distinctes ; contrôler les doublons et annulations"],
+            ["Premiers rendez-vous honorés", "3", "Coût média estimé : 120 € ÷ 3 = 40 € par visite"],
+            ["Contribution après média", "3 × (68 € − 8 € − 25 € − 2 €) − 120 € = −21 €", "Avant charges fixes ; aucun retour ultérieur supposé"],
+          ],
+        },
+      },
+      {
+        title: "Plan de test : améliorez un passage à la fois",
+        paragraphs: [
+          "Pendant quatre semaines, gardez un seul objectif — par exemple obtenir des premiers rendez-vous pour un soin — et modifiez un seul levier principal. Commencez par relever l’état actuel, puis notez chaque semaine les demandes, réservations, annulations, présences, coût publicitaire ou avantage remis et source déclarée. Le délai doit être adapté au rythme de réservation de vos clientes ; quatre semaines ne sont pas une norme universelle.",
+          "À la fin, cherchez où le parcours se bloque : la fiche n’amène-t-elle pas de clics vers le site ? la page reçoit-elle des visites mais peu de demandes ? les demandes deviennent-elles des réservations ? les nouvelles clientes viennent-elles ? Cette lecture aide à choisir la suite, mais de faibles volumes ne permettent pas d’attribuer un changement à une seule action avec certitude.",
+        ],
+        items: [
+          "Semaine 1 : relevez les informations, la page, les liens, la capacité et le nombre de nouveaux rendez-vous honorés.",
+          "Semaine 2 : corrigez un frein concret, par exemple un lien de réservation inadapté ou une page de soin incomplète.",
+          "Semaine 3 : testez un seul canal complémentaire avec lien ou code dédié, sans partager de coordonnées entre partenaires.",
+          "Semaine 4 : rapprochez coût, demandes, réservations, présences et retours observés ; décidez de continuer, modifier ou arrêter.",
+        ],
+      },
+      {
+        title: "Questions fréquentes",
+        paragraphs: [
+          "Question : comment attirer des clientes près de mon institut ? Réponse : commencez par une fiche Google exacte, une page qui décrit vos soins et un lien de contact ou de réservation qui fonctionne. Ajoutez ensuite recommandations et partenariats de quartier adaptés à votre capacité.",
+          "Question : faut-il proposer une réduction pour une première visite ? Réponse : pas nécessairement. Une information plus claire, une réservation plus simple ou une découverte bien définie peut lever l’hésitation. Si vous annoncez une baisse de prix en France, vérifiez les règles de référence et affichez les conditions exactes.",
+          "Question : comment demander des avis sans enfreindre les règles de Google ? Réponse : invitez les clientes à partager leur expérience honnête, sans avantage, sans ne solliciter que les personnes satisfaites et sans demander une note précise. Répondez sans révéler d’informations privées.",
+          "Question : une animation Okado fait-elle venir de nouvelles clientes ? Réponse : pas à elle seule. Elle peut soutenir une opération de découverte que l’institut diffuse auprès d’un public pertinent ; la réservation, la présence et l’éventuelle nouvelle visite doivent être vérifiées séparément.",
+        ],
+      },
+    ],
+    related: [
+      "/instituts-beaute",
+      "/blog/animation-commerciale-institut-beaute",
+      "/blog/attirer-clients-commerce-local",
+      "/guides/lots-institut-beaute",
+      "/comment-ca-marche",
+    ],
+  },
+  {
     path: "/blog/jeu-concours-ou-promotion",
     source: [references.lottery, references.pricing],
     title: "Jeu-concours ou promotion : quelle stratégie choisir ?",
