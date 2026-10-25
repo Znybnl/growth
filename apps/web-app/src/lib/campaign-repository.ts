@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { measureServerStage } from "@/lib/server-performance";
 import { readAllRows } from "@/lib/paginated-read";
+import { preparePrizeReuseSettings } from "@/lib/reusable-prize-repository";
 import { conversionRate, globalConversion, isMarketingClick, isPendingGain, effectiveRedemptionDate, marketingVolumes } from "@/lib/metric-rules";
 import { participationDates } from "@/lib/participation-metrics";
 import {
@@ -2002,6 +2003,10 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     : storedAdminCreation && typeof storedAdminCreation === "object" && !Array.isArray(storedAdminCreation)
       ? storedAdminCreation
       : undefined;
+  const reuseSettings = await preparePrizeReuseSettings(input.merchantId, campaignId,
+    atomicPrizes.map((prize, index) => ({ id: prize.id, reusedFromPrizeId: input.prizes[index]?.reusedFromPrizeId })),
+    existingCampaignQuery?.data?.campaign_local_settings?.prizeSettings,
+  );
   const localSettings = {
     ...(adminCreation ? { adminCreation } : {}),
     googleClickRequired: input.googleClickRequired ?? existingCampaignQuery?.data?.campaign_local_settings?.googleClickRequired ?? false,
@@ -2028,6 +2033,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
         {
           usageConditions: input.prizes[index]?.usageConditions?.trim() || undefined,
           estimatedUnitCostKnown: input.prizes[index]?.estimatedUnitCostKnown === false ? false : undefined,
+          ...reuseSettings[prize.id],
         },
       ]),
     ),

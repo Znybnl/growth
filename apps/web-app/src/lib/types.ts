@@ -961,5 +961,7 @@ export interface CampaignSetupInput {
     estimatedUnitCostKnown?: boolean;
     purchaseRequired?: boolean;
     usageConditions?: string;
+    /** Source selected in Mes lots; its reuse date is assigned by the server on save. */
+    reusedFromPrizeId?: string;
   }>;
 }

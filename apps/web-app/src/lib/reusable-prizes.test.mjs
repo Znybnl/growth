@@ -25,7 +25,7 @@ registerHooks({ resolve(name, context, next) {
 } });
 const { GET } = await import("../app/api/merchant/prize-library/route.ts");
 const { GET: adminGET } = await import("../app/api/admin/merchants/[merchantId]/locations/[locationId]/prize-library/route.ts");
-const { getReusablePrizes } = await import("./reusable-prize-repository.ts");
+const { getReusablePrizes, preparePrizeReuseSettings } = await import("./reusable-prize-repository.ts");
 const { copyReusablePrize, isReusablePrizeAdded } = await import("./reusable-prizes.ts");
 let state;
 const row = (id, site = "site-a", campaign = "game-old", date = "2026-10-01T10:00:00Z") => ({
@@ -42,9 +42,10 @@ beforeEach(() => {
   state.db = { from(table) {
     assert.equal(table, "prizes"); const read = { filters: [] }; state.reads.push(read);
     const query = {
-      select(fields, options) { read.fields = fields; assert.equal(options.count, "exact"); return query; },
+      select(fields, options) { read.fields = fields; if(options) assert.equal(options.count, "exact"); return query; },
       eq(key, value) { read.filters.push([key, value]); return query; },
       neq(key, value) { read.exclude = [key, value]; return query; },
+      in(key, values) { read.ids = values; return query; },
       order(key) { assert.equal(key, "id"); return query; },
       range(offset, end) { read.offset = offset; read.end = end; return query; },
       async returns() {
@@ -53,6 +54,7 @@ beforeEach(() => {
         const cap = state.cap ?? 500;
         return { data: state.rows.slice(read.offset, Math.min(read.end + 1, read.offset + cap)), count: state.rows.length, error: null };
       },
+      then(resolve) { return Promise.resolve({ data: state.rows.filter(r=>!read.ids || read.ids.includes(r.id)), error: state.fail ? {message:"private"}:null }).then(resolve); },
     }; return query;
   } };
 });
@@ -99,7 +101,7 @@ test("projection minimale, conditions conservées, aucun stock restant, média o
   assert.ok(!JSON.stringify(prizes).includes("remaining"));
   assert.ok(state.reads[0].fields.includes("prize_settings:campaign_local_settings->prizeSettings"));
   assert.ok(!state.reads[0].fields.includes("remaining_quantity"));
-  assert.deepEqual(state.reads[0].exclude, ["campaign_id", "game-current"]);
+  assert.equal(state.reads[0].exclude, undefined); // Current reuse evidence is read, its prizes stay excluded from the DTO.
 });
 
 test("tri récent, doublons exacts seulement et pagination au-delà du plafond PostgREST", async () => {
@@ -120,6 +122,7 @@ test("copie indépendante, stock initial restauré, doublon empêché après per
   const b = copyReusablePrize(prize, "wizard-prize-b", 10, 12);
   assert.notEqual(a.id, b.id);
   assert.equal(a.remainingQuantity, 9);
+  assert.equal(a.reusedFromPrizeId, prize.id);
   assert.equal(b.remainingQuantity, 12);
   assert.equal(b.purchaseRequired, true);
   assert.equal(b.usageConditions, prize.usageConditions);
@@ -128,6 +131,35 @@ test("copie indépendante, stock initial restauré, doublon empêché après per
   assert.equal(isReusablePrizeAdded(prize, []), false);
   assert.deepEqual(state.rows, snapshot);
   assert.ok(copyReusablePrize({ ...prize, id: "x".repeat(120) }, "wizard-prize-1790000000000-test12", 10, 12).id.length <= 120);
+});
+
+test("réutilisation sauvegardée dans le jeu courant : source remontée, copie exclue et dédoublonnage récent", async () => {
+  const source = row("source");
+  const recent = {...row("recent", "site-a", "other", "2026-10-20T10:00:00Z"), label:"Autre lot"};
+  const copy = row("copy", "site-a", "current");
+  copy.campaigns.prize_settings.copy = {reusedFromPrizeId:"source",reusedAt:"2026-10-25T12:00:00+02:00"};
+  const foreign = row("foreign", "site-b");
+  foreign.campaigns.prize_settings.foreign = {reusedFromPrizeId:"recent",reusedAt:"2099-01-01T00:00:00Z"};
+  state.rows=[source,recent,copy,foreign];
+  const items=await getReusablePrizes("site-a","current");
+  assert.deepEqual(items.map(x=>x.id),["source","recent"]);
+  assert.equal(items[0].lastUsedAt,"2026-10-25T10:00:00.000Z");
+  assert.equal(items[1].lastUsedAt,recent.created_at);
+});
+
+test("horodatage serveur seulement, source autorisée et date stable à la sauvegarde suivante", async () => {
+  state.rows=[row("source")];
+  const before=Date.now();
+  const settings=await preparePrizeReuseSettings("site-a","current",[{id:"copy",reusedFromPrizeId:"source"}]);
+  assert.ok(Date.parse(settings.copy.reusedAt)>=before);
+  const reads=state.reads.length;
+  const again=await preparePrizeReuseSettings("site-a","current",[{id:"copy"}],settings);
+  assert.deepEqual(again,settings);
+  assert.equal(state.reads.length,reads);
+  assert.deepEqual(await preparePrizeReuseSettings("site-a","current",[]),{});
+  await assert.rejects(preparePrizeReuseSettings("site-a","current",[{id:"bad",reusedFromPrizeId:"missing"}]),/plus disponible/);
+  state.rows=[row("foreign","site-b")];
+  await assert.rejects(preparePrizeReuseSettings("site-a","current",[{id:"bad",reusedFromPrizeId:"foreign"}]),/plus disponible/);
 });
 
 test("données invalides / PERDU exclus et panne générique sans fuite", async () => {

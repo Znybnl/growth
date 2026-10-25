@@ -24,7 +24,7 @@ export function reusablePrizeKey(prize: PrizeFields) {
 }
 
 export function deduplicateReusablePrizes(prizes: ReusablePrize[]) {
-  const sorted = [...prizes].sort((a, b) => b.lastUsedAt.localeCompare(a.lastUsedAt) || a.id.localeCompare(b.id));
+  const sorted = [...prizes].sort((a, b) => Date.parse(b.lastUsedAt) - Date.parse(a.lastUsedAt) || a.id.localeCompare(b.id));
   const unique = new Map<string, ReusablePrize>();
   for (const prize of sorted) {
     const key = reusablePrizeKey(prize);
@@ -42,6 +42,7 @@ export function copyReusablePrize(prize: ReusablePrize, scope: string, probabili
   return {
     // Never concatenate an old ID: recursively copied IDs would exceed the API's 120-character limit.
     id: `${scope}-previous-${crypto.randomUUID()}`,
+    reusedFromPrizeId: prize.id,
     label: prize.label,
     probability,
     estimatedUnitCost: prize.estimatedUnitCost,
