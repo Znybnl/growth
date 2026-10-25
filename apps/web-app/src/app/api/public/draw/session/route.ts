@@ -31,9 +31,46 @@ function getErrorMessage(error: unknown) {
   return "Draw session failed";
 }
 
+type PreparationStage = "parse" | "rateLimit" | "campaignLookup" | "dailyLock" | "sessionCreation" | "analytics" | "releaseLock";
+type PreparationTiming = {
+  mode: "unknown" | "preview" | "production";
+  stage: PreparationStage;
+  stages: Partial<Record<PreparationStage, number>>;
+};
+
+async function measure<T>(timing: PreparationTiming, stage: PreparationStage, work: () => Promise<T>): Promise<T> {
+  timing.stage = stage;
+  const startedAt = performance.now();
+  try {
+    return await work();
+  } finally {
+    timing.stages[stage] = Math.round(performance.now() - startedAt);
+  }
+}
+
+// One operational measurement per request, including refusals and failures.
+// No player/campaign/session identifiers, tokens, URLs or request bodies.
 export async function POST(request: NextRequest) {
+  const startedAt = performance.now();
+  const timing: PreparationTiming = { mode: "unknown", stage: "parse", stages: {} };
+  let status = 500;
+  try {
+    const response = await prepareDrawSession(request, timing);
+    status = response.status;
+    return response;
+  } finally {
+    console.info(JSON.stringify({
+      event: "okado.draw_preparation", schemaVersion: 1, mode: timing.mode,
+      status, totalMs: Math.round(performance.now() - startedAt),
+      lastStage: timing.stage, stages: timing.stages,
+    }));
+  }
+}
+
+async function prepareDrawSession(request: NextRequest, timing: PreparationTiming) {
   const preparationStartedAt = performance.now();
-  const body = (await request.json()) as CreateDrawSessionRequest;
+  const body = (await measure(timing, "parse", () => request.json())) as CreateDrawSessionRequest;
+  timing.mode = body.previewToken ? "preview" : "production";
   const campaignId = body.campaignId?.trim() ?? "";
   const previewClaims = body.previewToken
     ? verifyPreviewAccessToken(body.previewToken, campaignId)
@@ -53,15 +90,15 @@ export async function POST(request: NextRequest) {
   try {
     if (previewClaims) {
       const rateLimitStartedAt = performance.now();
-      await assertPersistentPublicRateLimit(request, {
+      await measure(timing, "rateLimit", () => assertPersistentPublicRateLimit(request, {
         key: `preview-draw-session:${campaignId}`,
         limit: 60,
         windowMs: 60 * 1000,
-      });
+      }));
       const rateLimitMs = Math.round(performance.now() - rateLimitStartedAt);
 
       const sessionStartedAt = performance.now();
-      const result = await createPreviewDrawSession({ campaignId });
+      const result = await measure(timing, "sessionCreation", () => createPreviewDrawSession({ campaignId }));
       const sessionCreationMs = Math.round(performance.now() - sessionStartedAt);
       const previewSessionToken = issuePreviewSessionToken({
         campaignId,
@@ -94,14 +131,14 @@ export async function POST(request: NextRequest) {
     assertDailyParticipationCookie(request.cookies.get(cookieName)?.value, campaignId);
 
     const rateLimitStartedAt = performance.now();
-    await assertPersistentPublicRateLimit(request, {
+    await measure(timing, "rateLimit", () => assertPersistentPublicRateLimit(request, {
       key: `draw-session:${campaignId}`,
       limit: 12,
       windowMs: 60 * 1000,
-    });
+    }));
     const rateLimitMs = Math.round(performance.now() - rateLimitStartedAt);
 
-    const campaign = await getPublicCampaign(campaignId, publicPlayerToken(request, campaignId));
+    const campaign = await measure(timing, "campaignLookup", () => getPublicCampaign(campaignId, publicPlayerToken(request, campaignId)));
     if (!campaign) return NextResponse.json({ error: "Animation introuvable." }, { status: 404 });
     const click = typeof body.marketingClickToken === "string"
       ? verifyMarketingClickToken(body.marketingClickToken, campaignId) : null;
@@ -114,12 +151,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Le clic a expiré. Ouvrez à nouveau l’action avant de jouer." }, { status: 400 });
     }
     const dailyLockStartedAt = performance.now();
-    await assertPersistentDailyParticipationLock(request, campaignId);
+    await measure(timing, "dailyLock", () => assertPersistentDailyParticipationLock(request, campaignId));
     const dailyLockMs = Math.round(performance.now() - dailyLockStartedAt);
     dailyLockClaimed = true;
     const sessionStartedAt = performance.now();
-    const result = (await createDrawSession({ campaignId, marketingClickEventId: validClick ? click.eventId : undefined,
-      proposedActionId: proposedAction?.id })) as CreateDrawSessionResult;
+    const result = (await measure(timing, "sessionCreation", () => createDrawSession({ campaignId, marketingClickEventId: validClick ? click.eventId : undefined,
+      proposedActionId: proposedAction?.id }))) as CreateDrawSessionResult;
     const sessionCreationMs = Math.round(performance.now() - sessionStartedAt);
     const preparationMs = Math.round(performance.now() - preparationStartedAt);
     logSupportEvent("info", "draw_started", {
@@ -133,7 +170,7 @@ export async function POST(request: NextRequest) {
       sessionCreationMs,
     });
     const analyticsStartedAt = performance.now();
-    await captureProductEvent("draw_started", `public:${result.campaign.id}`, {
+    await measure(timing, "analytics", () => captureProductEvent("draw_started", `public:${result.campaign.id}`, {
       campaignId: result.campaign.id,
       gameType: result.campaign.gameType,
       hasPrize: Boolean(result.prize),
@@ -141,7 +178,7 @@ export async function POST(request: NextRequest) {
       rateLimitMs,
       dailyLockMs,
       sessionCreationMs,
-    });
+    }));
     logSupportEvent("info", "draw_preparation_timing", {
       campaignId: result.campaign.id,
       sessionId: result.session.id,
@@ -170,7 +207,7 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     if (dailyLockClaimed) {
-      await releasePersistentDailyParticipationLock(request, campaignId);
+      await measure(timing, "releaseLock", () => releasePersistentDailyParticipationLock(request, campaignId));
     }
     const errorMessage = getErrorMessage(error);
     logSupportEvent("error", "draw_start_failed", {
