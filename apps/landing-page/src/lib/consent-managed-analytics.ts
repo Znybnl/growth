@@ -94,6 +94,7 @@ const measuredPages = new Set([
   "/blog/portes-ouvertes-salle-sport",
   "/blog/organiser-degustation-epicerie-fine",
   "/blog/animation-magasin-velos-journee-decouverte",
+  "/blog/attirer-nouvelles-clientes-institut-beaute",
 ]);
 
 export function safeAnalyticsPage(pathname: string) {
