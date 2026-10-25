@@ -100,7 +100,7 @@ export const blogPosts: BlogPost[] = [
           "Défi photo ou mise en scène en boutique, sans conditionner une récompense à un avis public.",
           "Offre sur un créneau calme pour mieux répartir le flux de visites.",
           "Animation en caisse qui propose une prochaine visite plutôt qu’une remise illimitée.",
-          "Journée thématique liée à votre activité et à un produit réellement disponible.",
+          "Journée thématique liée à un produit disponible, par exemple une découverte de montures et accessoires en magasin d’optique ([guide pratique](/blog/journee-decouverte-magasin-optique)).",
           "Programme ambassadeur présenté comme une invitation, avec des règles et un consentement explicites.",
           "Échantillonnage ou découverte d’un format réduit, si le stock et les conditions le permettent.",
           "Opération saisonnière avec une durée, une dotation et une date de fin visibles.",
@@ -4759,12 +4759,12 @@ export const blogPosts: BlogPost[] = [
     title: "Comment organiser une journée découverte dans un magasin d’optique ?",
     seoTitle: "Journée découverte chez un opticien : idées et organisation",
     description:
-      "Organisez une journée découverte en magasin d’optique : thème, présentation de montures, équipe, communication locale, cadre professionnel et bilan pratique.",
+      "Journée découverte en magasin d’optique : idées de thème, déroulé, invitation locale et indicateurs pour faire le bilan sans promesse de ventes.",
     eyebrow: "Opticiens et commerce local",
     intro:
-      "Une journée découverte en magasin d’optique peut aider les visiteurs à mieux connaître les montures, les matières, les accessoires et les services réellement proposés par l’équipe. Elle fonctionne comme un rendez-vous de boutique, pas comme une consultation : choisissez un thème limité, préservez le temps de conseil et annoncez clairement ce que les visiteurs pourront découvrir.",
+      "Pour animer un magasin d’optique, organisez une découverte concrète des montures, accessoires ou services réellement proposés. Le rendez-vous doit rester une présentation de boutique, pas une consultation : choisissez un thème limité, préservez les échanges individuels et annoncez clairement ce que les visiteurs pourront découvrir.",
     answer:
-      "Choisissez une famille de produits et un public précis, préparez quelques démonstrations fondées sur les informations des fabricants, puis organisez un créneau qui ne désorganise ni l’accueil ni les rendez-vous. Séparez la présentation commerciale de toute question individuelle de santé visuelle, communiquez les conditions d’accès et mesurez les visites, échanges et demandes sans attribuer automatiquement les ventes à l’événement.",
+      "Choisissez une famille de montures ou d’accessoires et un public, préparez un déroulé court à partir des références disponibles, puis désignez une personne pour l’animation et une autre pour l’accueil si l’activité le permet. Annoncez horaires et conditions d’accès. Gardez les questions individuelles de correction hors de la présentation collective et mesurez les présences et demandes sans les assimiler à des ventes.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-25",
     updatedAt: "2026-10-25",
@@ -4789,6 +4789,14 @@ export const blogPosts: BlogPost[] = [
         href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
       },
       {
+        label: "CNIL — minimiser les données collectées",
+        href: "https://www.cnil.fr/fr/minimiser-les-donnees-collectees",
+      },
+      {
+        label: "CNIL — déterminer une durée de conservation des données",
+        href: "https://www.cnil.fr/fr/passer-laction/les-durees-de-conservation-des-donnees",
+      },
+      {
         label: "DGCCRF — annonces de réduction de prix",
         href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir",
       },
@@ -4804,6 +4812,7 @@ export const blogPosts: BlogPost[] = [
           "Une invitation comme « journée de l’optique » reste difficile à se représenter. Préférez un thème visible en boutique : découvrir les formes de montures, comparer des matériaux à partir des fiches produit, présenter des accessoires, ou montrer comment l’équipe entretient et ajuste une monture dans le cadre de ses services. Ne retenez que les sujets que le magasin peut réellement préparer et expliquer.",
           "Définissez aussi à qui s’adresse le rendez-vous : personnes qui cherchent une monture, parents accompagnant un enfant, clients curieux d’une nouvelle collection ou visiteurs qui veulent connaître les services de l’atelier. Ce choix guide les exemples, le nombre de places et le ton de l’annonce ; il ne justifie pas de collecter des informations de santé pour segmenter les invités.",
           "Pour construire une trame, notez une phrase de promesse, trois objets à présenter et les questions de boutique auxquelles l’équipe sait répondre. Les informations techniques doivent correspondre aux modèles réellement montrés et aux documents disponibles, pas être généralisées à toutes les montures ou à tous les verres.",
+          "Trois formats à adapter au magasin : une présentation temporaire d’une collection invitée, si une marque ou un créateur peut participer ; une comparaison de matières et de finitions appuyée sur les fiches des références ; ou une démonstration d’entretien et des services d’atelier réellement proposés. Dans chaque cas, montrez les produits disponibles et annoncez ce qui nécessite ensuite un échange individuel.",
         ],
         items: [
           "Montures : formes, matériaux, finitions et différences observables entre les références présentes.",
@@ -4818,6 +4827,16 @@ export const blogPosts: BlogPost[] = [
           "Un parcours simple suffit : accueil et présentation du thème, découverte de quelques modèles, questions générales, puis orientation vers un échange individuel si la personne en a besoin. Indiquez à l’équipe qui anime et qui prend le relais. Une réservation peut aider à dimensionner les places, mais annoncez également si les visiteurs sans inscription peuvent venir.",
           "Exemple fictif à adapter : un samedi, deux séquences de 30 minutes à 10 h 30 et 15 h, limitées à six personnes chacune, avec 15 minutes entre les groupes pour remettre les montures en place. Une personne anime chaque séquence et une autre garde l’accueil courant. Ces nombres illustrent une organisation ; ils ne constituent ni une jauge recommandée pour tous les magasins, ni une estimation de fréquentation.",
         ],
+        table: {
+          caption: "Exemple fictif de déroulé pour une séquence de 30 minutes",
+          headers: ["Temps", "Séquence", "À préparer"],
+          rows: [
+            ["0–3 min", "Accueillir et rappeler le thème", "Durée, espace et règles de circulation"],
+            ["3–15 min", "Présenter trois ou quatre modèles", "Références présentes et fiches fabricant"],
+            ["15–24 min", "Comparer les formes et finitions", "Montures accessibles et miroir"],
+            ["24–30 min", "Questions générales et clôture", "Relais séparé pour les demandes individuelles"],
+          ],
+        },
         items: [
           "Sélectionner à l’avance les références, accessoires et fiches fabricant à présenter.",
           "Préparer une table ou un présentoir identifié, sans déplacer les produits nécessaires aux rendez-vous.",
@@ -4828,9 +4847,9 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Maintenir une frontière nette avec la santé visuelle",
         paragraphs: [
-          "Une journée de découverte commerciale n’est ni un examen de vue ni un diagnostic. Présentez des produits et des services généraux, sans interpréter une ordonnance, évaluer les symptômes d’un visiteur ou lui recommander une correction personnalisée pendant une animation. Si une question porte sur sa vision, son ordonnance ou une gêne, l’équipe la reprend dans le cadre professionnel adapté ou l’oriente vers le professionnel de santé concerné.",
-          "Cette limite est importante car le [Code de la santé publique encadre la délivrance et certaines adaptations de verres correcteurs](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047568701). L’article décrit des compétences et conditions précises ; il ne faut pas en déduire qu’une animation autorise un acte individuel, ni transformer cette page en guide médical. En cas d’incertitude sur le périmètre professionnel ou une formulation, faites relire le programme par un opticien responsable avant publication.",
-          "N’utilisez pas non plus une collecte de contacts pour recueillir des données sur la santé ou l’ordonnance. Pour suivre une réservation, demandez seulement les informations nécessaires à cette réservation et dites à quoi elles servent. Une inscription à l’événement ne vaut pas, à elle seule, accord général pour recevoir des offres ultérieures.",
+          "Une journée de découverte commerciale n’est ni un examen de vue ni un diagnostic. Ne demandez pas à l’animateur de commenter une ordonnance, d’évaluer des symptômes ou de proposer une correction personnalisée au milieu d’une présentation collective. Si un visiteur soulève une question individuelle, interrompez le format commercial et reprenez-la à part, dans le cadre professionnel applicable ; orientez vers un médecin ou un autre professionnel de santé lorsque la situation le nécessite.",
+          "La frontière ne signifie pas que l’opticien n’a aucun rôle sur les équipements correcteurs : le [Code de la santé publique prévoit des conditions encadrées pour leur délivrance et certaines adaptations de prescription](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047568701). Ces compétences ne se déduisent pas d’une animation et ne sont pas détaillées ici. Faites valider par l’opticien responsable les démonstrations et les réponses prévues, surtout si elles touchent à une situation individuelle.",
+          "Pour une simple réservation, ne demandez pas de détails sur la santé ou l’ordonnance. La [CNIL recommande de limiter les informations collectées à celles qui sont nécessaires à la finalité annoncée](https://www.cnil.fr/fr/minimiser-les-donnees-collectees) et de [déterminer une durée de conservation adaptée à cette finalité](https://www.cnil.fr/fr/passer-laction/les-durees-de-conservation-des-donnees). Dites à quoi servent les coordonnées, puis supprimez-les ou anonymisez-les lorsqu’elles ne sont plus utiles, sauf autre obligation applicable. Une inscription à l’événement ne vaut pas, à elle seule, accord général pour recevoir des offres ultérieures.",
         ],
       },
       {
@@ -4838,6 +4857,7 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "L’annonce doit répondre immédiatement aux questions pratiques : quoi découvrir, où, quand, combien de temps, entrée libre ou sur réservation, nombre de places et éventuel tarif. Si une référence est présentée uniquement sur commande ou si une démonstration dépend de la disponibilité d’un membre de l’équipe, précisez-le avant le déplacement. Évitez les formulations qui promettent un résultat visuel ou un conseil individuel gratuit si ce n’est pas le format proposé.",
           "La fiche d’établissement Google permet de publier un post de type événement avec titre et dates ; la documentation explique où il peut apparaître sur la Recherche et Maps. Vous pouvez [créer un post événementiel Google](https://support.google.com/business/answer/7342169?hl=fr), puis vérifier qu’il est bien indiqué « En ligne » et corriger les horaires si le programme change. Cette publication est un canal de communication, pas une garantie de visibilité ou de participation.",
+          "Modèle d’invitation à compléter : « Découverte de [thème ou famille de montures], le [date] de [heure] à [heure] chez [nom et adresse]. Au programme : présentation de [éléments réellement prévus]. [Entrée libre / réservation conseillée ou obligatoire, modalités et éventuel tarif]. » Remplacez chaque champ avant publication et retirez toute promesse de disponibilité qui n’a pas été confirmée.",
           "Relayer l’invitation en vitrine, sur le site et dans les réseaux sociaux du magasin. Pour un e-mail ou SMS, distinguez le message nécessaire à une réservation de la prospection commerciale. La [CNIL détaille les règles des communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles) : pour les particuliers, le principe est le consentement préalable à la prospection, sous réserve des exceptions applicables. N’ajoutez donc pas automatiquement les inscrits à une liste marketing ; séparez cette finalité et son choix.",
         ],
       },
@@ -4853,7 +4873,7 @@ export const blogPosts: BlogPost[] = [
         title: "Mesurer l’intérêt sans inventer un retour sur investissement",
         paragraphs: [
           "Choisissez les indicateurs avant la journée et utilisez des dénominateurs compréhensibles : inscriptions, personnes effectivement venues, participants aux séquences, demandes d’information produit et rendez-vous demandés. Ne mélangez pas ces étapes. Une inscription n’est pas une visite, une question n’est pas une intention d’achat, et une vente observée le jour même n’est pas automatiquement causée par l’événement.",
-          "Exemple fictif de bilan : 12 places réservées, 9 personnes présentes, 7 échanges sur les montures et 3 demandes de rendez-vous. Le magasin peut constater que trois rendez-vous ont été demandés, mais pas conclure que l’événement a produit trois ventes ni qu’il a augmenté la fidélité. Notez aussi le temps d’équipe, les références montrées, les imprévus et les questions auxquelles le format collectif n’a pas répondu.",
+          "Exemple fictif de bilan : 12 réservations confirmées, 9 personnes présentes, 7 échanges sur les montures et 3 demandes de rendez-vous. Le taux de présence descriptif est de 9 ÷ 12 = 75 % ; les demandes de rendez-vous représentent 3 ÷ 9 = 33 % des personnes présentes. Ces ratios décrivent seulement cet exemple : ce ne sont ni des objectifs sectoriels ni une preuve de vente ou de fidélité causée par l’événement. Notez aussi le temps d’équipe, les références montrées et les imprévus.",
           "Pour comparer deux éditions, gardez une méthode identique et consignez les différences de jour, horaires, météo, équipe et disponibilité des produits. Le guide [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) explique comment séparer participation, contact, retrait et vente. Pour l’aménagement et la circulation, consultez aussi [l’expérience client en boutique](/blog/experience-client-boutique) ; les principes de [découverte en magasin de vêtements](/blog/animation-boutique-vetements) peuvent inspirer la mise en scène, mais doivent être adaptés aux produits d’optique.",
         ],
       },
