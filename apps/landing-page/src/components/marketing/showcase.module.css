@@ -7,7 +7,7 @@
 .note { color: #69616c; font-size: 12px; line-height: 1.8; }
 .link { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; font-size: 14px; font-weight: 650; color: #6c00f6; text-decoration: underline; text-underline-offset: 4px; }
 .link:focus-visible, .carousel:focus-visible, .specialtyPanel:focus-visible, .carouselControls button:focus-visible, .modelButton:focus-visible, .dialog button:focus-visible, .tabs button:focus-visible { outline: 2px solid #6c00f6; outline-offset: 5px; }
-.hero { width: min(100% - 40px, 1080px); display: grid; grid-template-columns: minmax(0, 1fr) 260px; align-items: center; gap: 64px; padding-block: 48px 0; margin-bottom: 32px; }
+.hero { width: min(100% - 40px, 1080px); display: grid; grid-template-columns: minmax(0, 1fr) 260px; align-items: center; gap: 64px; padding-block: 80px 56px; border-bottom: 1px solid #e8e0e8; margin-bottom: 32px; }
 .hero h1 { margin: 0; font-size: clamp(40px, 4.1vw, 56px); line-height: 1.08; letter-spacing: -.055em; font-weight: 700; text-wrap: balance; }
 .hero h1 em { color: #6c00f6; font-style: normal; }
 .heroCopy > p { margin-top: 16px; max-width: 720px; font-size: 17px; line-height: 1.7; color: #645d69; }
@@ -106,7 +106,7 @@
 .beautyHero > .phone { justify-self: center; width: 230px; transform: rotate(3deg); }
 @media (max-width: 1023px) { .hero { gap: 32px; } .giftGrid { gap: 32px; } .modelArt .phone { width: 170px; } }
 @media (max-width: 767px) {
-  .section { padding-block: 54px; } .hero { width: calc(100% - 32px); grid-template-columns: 1fr; padding-block: 32px 0; margin-bottom: 24px; gap: 24px; }
+  .section { padding-block: 54px; } .hero { width: calc(100% - 32px); grid-template-columns: 1fr; padding-block: 48px 32px; margin-bottom: 24px; gap: 24px; }
   .hero h1 { max-width: 580px; font-size: clamp(36px, 8vw, 50px); } .heroCopy > p { font-size: 16px; }
   .demo { padding-inline: 16px; padding-bottom: 20px; } .carousel { gap: 16px; } .modelCard { flex-basis: 80%; max-width: 300px; } .modelArt .phone { width: 190px; }
   .sectionTop { gap: 18px; align-items: start; flex-wrap: wrap; } .sectionTop > div:first-child { flex-basis: 100%; } .carouselControls { gap: 8px; }
