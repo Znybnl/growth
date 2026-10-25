@@ -63,6 +63,12 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 - Le catalogue de suggestions est indépendant des lots déjà enregistrés dans les jeux. Sa refonte ne modifie aucun lot, gain, stock, coût, condition ou probabilité existant (issue #466, décision propriétaire du 6 octobre 2026).
 - Les six sous-secteurs Beauté sont : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa, Soins visage & corps. Les anciennes catégories ambiguës ne sont conservées que si un établissement ou une suggestion les utilise ; aucune reclassification automatique. Les suggestions personnalisées restent intactes.
 - Les probabilités de bibliothèque sont des valeurs individuelles proposées, pas une distribution à normaliser. Seuls les lots choisis entrent dans le calcul du jeu.
+- Décision propriétaire du 25 octobre 2026 (#477) : le sous-secteur explicitement
+  Beauté généraliste / multi-activité accède aux suggestions actives des six
+  bibliothèques Beauté et aux suggestions générales non classées déjà accessibles.
+  L’union conserve les valeurs et dédoublonne par identifiant, pas par libellé.
+  Les autres profils, le repli sans sous-secteur/ancien profil et les recettes
+  métier conservent leur périmètre. Aucun profil ou lot enregistré n’est modifié.
 - À l'ajout d'une suggestion Beauté, sa condition suggérée préremplit les conditions d'utilisation. « Achat requis pour le retrait » est activé lorsque cette condition impose une prestation payante ou une nouvelle pose ; une réduction à tarif normal ou un cadeau autonome ne l'active pas. Ces réglages restent modifiables, sans recalcul rétroactif sur les lots existants.
 
 - Un lot publiable doit avoir un libellé, une quantité disponible strictement positive et des conditions de retrait cohérentes.

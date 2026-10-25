@@ -48,12 +48,15 @@ function fixture(merchant: Merchant): CampaignPerformance {
 export function BeautyCatalogProof() {
   const [subsector, setSubsector] = useState<string>(BEAUTY_SUBSECTOR_OPTIONS[0]);
   const [mode, setMode] = useState("wizard");
+  const [gameType, setGameType] = useState<"wheel" | "scratch">("wheel");
   const merchant: Merchant = { id: "catalog-merchant-fixture", companyName: "Institut de test",
     logoText: "Institut de test", industry: "Beauté", industrySubsector: subsector,
     onboardingCompleted: true, createdAt };
   const initialCampaign = fixture(merchant);
+  initialCampaign.campaign.gameType = gameType;
   return <main className="p-4">
     <div className="mb-5 flex flex-wrap gap-4">
+      <label>Type de jeu de test <select aria-label="Type de jeu de test" value={gameType} onChange={(event) => setGameType(event.target.value as "wheel" | "scratch")}><option value="wheel">Roue</option><option value="scratch">Ticket</option></select></label>
       <label>Interface <select aria-label="Interface" value={mode} onChange={(event) => setMode(event.target.value)}>
         <option value="wizard">Wizard</option><option value="classic">Classique</option>
         <option value="profile">Profil</option><option value="admin">Catalogue administrateur</option>
@@ -62,8 +65,8 @@ export function BeautyCatalogProof() {
         {beautySubsectorOptions("Institut & soins", "Ongles & cils").map((value) => <option key={value}>{value}</option>)}
       </select></label>
     </div>
-    {mode === "wizard" ? <CampaignWizard merchant={merchant} initialCampaign={initialCampaign} /> : null}
-    {mode === "classic" ? <CampaignEditor merchant={merchant} initialCampaign={initialCampaign} deferInlineAssets /> : null}
+    {mode === "wizard" ? <CampaignWizard key={gameType} merchant={merchant} initialCampaign={initialCampaign} /> : null}
+    {mode === "classic" ? <CampaignEditor key={gameType} merchant={merchant} initialCampaign={initialCampaign} deferInlineAssets /> : null}
     {mode === "profile" ? <OnboardingFlow key={subsector} merchant={merchant} /> : null}
     {mode === "admin" ? <PrizeSuggestionsManager initialSuggestions={catalog.map((item) => ({
       ...item, icon: item.icon as PrizeSuggestion["icon"], isActive: true, createdAt, updatedAt: createdAt,
