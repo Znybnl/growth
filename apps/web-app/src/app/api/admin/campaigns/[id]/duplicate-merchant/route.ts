@@ -25,20 +25,29 @@ async function sourceContext(params: RouteProps["params"]) {
 }
 
 export async function GET(request: Request, { params }: RouteProps) {
+  let stage = "source";
   try {
     const source = await sourceContext(params);
     if (source.error) return source.error;
     const query = new URL(request.url).searchParams;
     const accountId = query.get("merchantId");
     if (accountId) {
+      stage = "locations";
       const locations = await getAdminCampaignLocations(accountId);
-      if (!locations.length) return NextResponse.json({ error: "Compte marchand introuvable." }, { status: 404 });
+      if (!locations.length) return NextResponse.json({ error: "Compte marchand introuvable." }, { status: 404, headers: noStore });
       return NextResponse.json({ locations: locations.filter(({ id }) => id !== source.context.targetLocationId)
         .map(({ id, companyName, city }) => ({ id, companyName, city })) }, { headers: noStore });
     }
+    stage = "accounts";
     return NextResponse.json(await getAdminDuplicationAccounts(source.session.user.email, query.get("q") ?? "", Number(query.get("page") ?? 1)), { headers: noStore });
-  } catch {
-    return NextResponse.json({ error: "Impossible de charger les marchands destinataires." }, { status: 500 });
+  } catch (error) {
+    const cause = error instanceof Error ? error.cause : null;
+    const code = cause && typeof cause === "object" && "code" in cause ? cause.code : null;
+    // Only a technical SQL/PostgREST code: no raw message, search or recipient data.
+    logSupportEvent("error", "admin_duplication_destinations_failed", {
+      stage, databaseCode: typeof code === "string" && /^(?:[0-9A-Z]{5}|PGRST\d{3})$/.test(code) ? code : undefined,
+    });
+    return NextResponse.json({ error: "Impossible de charger les marchands destinataires." }, { status: 500, headers: noStore });
   }
 }
 
