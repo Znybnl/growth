@@ -649,21 +649,25 @@ export const blogPosts: BlogPost[] = [
         label: "Google Business Profile — ajouter un lien de réservation à sa fiche",
         href: "https://support.google.com/business/answer/6218037?hl=fr",
       },
+      {
+        label: "CNIL — minimiser les données collectées",
+        href: "https://www.cnil.fr/fr/minimiser-les-donnees-collectees",
+      },
     ],
     title: "Comment faire revenir une cliente après sa première visite en institut ?",
     seoTitle: "Faire revenir une cliente après sa première visite en institut",
     description:
-      "Conseils concrets pour favoriser une deuxième visite en institut : prochaine étape, réservation, suivi utile, relance conforme et indicateurs réalistes.",
+      "Comment favoriser une deuxième visite en institut : réservation simple, suivi utile, relance conforme et mesure des rendez-vous honorés.",
     eyebrow: "Fidélisation beauté",
     intro:
-      "La deuxième visite ne se gagne pas avec une remise automatique. Elle se prépare en prolongeant l’expérience du premier rendez-vous : une prochaine étape pertinente, une réservation facile si la cliente le souhaite et un suivi qui lui est réellement utile.",
+      "Après un premier soin, une cliente sait-elle quoi faire ensuite, peut-elle reprendre rendez-vous facilement et l’institut saura-t-il vérifier qu’elle est revenue ? Ces trois questions aident à construire un parcours utile, sans supposer qu’une cliente doit revenir ni qu’une remise la fera revenir.",
     answer:
       "À la fin du premier soin, expliquez la prochaine étape seulement si elle a du sens pour la cliente, proposez de réserver sans pression et laissez une façon simple de reprendre rendez-vous. Séparez les rappels nécessaires au service des messages promotionnels, puis mesurez les rendez-vous effectivement honorés plutôt que les seules réservations.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-25",
     updatedAt: "2026-10-25",
     reviewedAt: "2026-10-25",
-    readingTime: "8 min de lecture",
+    readingTime: "10 min de lecture",
     image: "/images/blog/faire-revenir-cliente-premiere-visite-institut.webp",
     imageAlt: "Une esthéticienne échange avec une cliente à la fin de son premier rendez-vous",
     ctaLabel: "Découvrir Okado pour un institut de beauté",
@@ -672,9 +676,10 @@ export const blogPosts: BlogPost[] = [
       {
         title: "La deuxième visite se prépare pendant la première",
         paragraphs: [
-          "Une cliente revient plus facilement lorsqu’elle a vécu une prestation conforme à ce qui lui avait été annoncé, sait quoi faire ensuite et peut reprendre rendez-vous sans friction. Il n’existe toutefois ni délai ni fréquence universels : le rythme dépend du soin, des préférences de la personne, de son budget et de son expérience. Ne transformez pas une recommandation professionnelle en obligation de revenir.",
+          "La possibilité d’une deuxième visite dépend de plusieurs éléments concrets : la prestation correspondait-elle à ce qui avait été annoncé, la cliente sait-elle quoi faire ensuite et peut-elle reprendre rendez-vous sans friction ? Il n’existe ni délai ni fréquence universels : le rythme dépend du soin, des préférences de la personne, de son budget et de son expérience. Ne transformez pas une recommandation professionnelle en obligation de revenir.",
           "À la fin du rendez-vous, demandez d’abord si elle souhaite un conseil pour la suite. Si un autre soin ou un entretien peut être pertinent, expliquez pourquoi et dans quel horizon cela pourrait se discuter, sans promettre de résultat esthétique ou de santé. Si aucune prochaine visite n’est nécessaire, n’en inventez pas une pour remplir l’agenda.",
           "Le but n’est pas de verrouiller une réservation avant le départ. C’est de permettre à la cliente de choisir en connaissance de cause : réserver maintenant, réfléchir, ou reprendre contact plus tard.",
+          "Ce sujet est différent du remplissage d’un créneau calme : si votre problème principal est une période de faible fréquentation, consultez aussi le guide pour [animer une période creuse dans un commerce local](/blog/animer-periode-creuse-commerce-local). Ici, le point de départ est une première prestation déjà réalisée.",
         ],
       },
       {
@@ -694,7 +699,7 @@ export const blogPosts: BlogPost[] = [
         title: "Rendez la reprise de rendez-vous facile",
         paragraphs: [
           "Après une première visite, la cliente ne devrait pas avoir à rechercher le nom exact du soin ou à recommencer une longue conversation pour connaître les disponibilités. Un lien direct vers le bon service ou l’agenda, des horaires à jour et des instructions de réservation visibles réduisent les étapes inutiles. Testez le parcours sur téléphone, jusqu’à la confirmation ou à la demande de rappel.",
-          "Si l’option est disponible pour votre établissement, Google Business Profile permet d’ajouter un lien de prise de rendez-vous à la fiche. Vérifiez que le lien ouvre bien votre outil, affiche la prestation concernée et permet de terminer la démarche. Cette fonctionnalité aide à accéder à la réservation ; elle ne garantit ni visibilité supplémentaire ni retour de la cliente.",
+          "Si l’option est disponible pour votre établissement, [Google Business Profile permet d’ajouter un lien de prise de rendez-vous](https://support.google.com/business/answer/6218037?hl=fr) à la fiche. Vérifiez que le lien ouvre bien votre outil, affiche la prestation concernée et permet de terminer la démarche. Cette fonctionnalité aide à accéder à la réservation ; elle ne garantit ni visibilité supplémentaire ni retour de la cliente.",
           "Dans votre outil de rendez-vous, distinguez les statuts utiles : première visite honorée, prochain rendez-vous pris, rendez-vous déplacé ou annulé, puis seconde visite honorée. Une réservation future n’est pas encore une visite réalisée. Un agenda papier peut suffire à petite échelle si l’équipe tient la même méthode de suivi.",
         ],
       },
@@ -703,7 +708,7 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Un message de suivi n’a d’intérêt que s’il répond à une attente réelle : transmettre une information pratique promise, vérifier que la cliente a trouvé les instructions communiquées, ou l’aider à retrouver le lien de réservation qu’elle a demandé. Convenez du canal lorsqu’il s’agit d’un échange individuel et ne partez pas du principe qu’un e-mail laissé pour recevoir une confirmation autorise des offres ultérieures.",
           "Évitez une cadence générique du type « relancer tout le monde après deux semaines ». Choisissez le moment d’un éventuel contact en fonction de la prestation, de l’échéance annoncée et de la préférence exprimée. Si aucune information utile n’est attendue, ne créez pas un message juste pour occuper une case dans un calendrier marketing.",
-          "La CNIL distingue les messages nécessaires à l’exécution d’un service, le suivi relationnel sans finalité promotionnelle directe et la prospection commerciale. Un message devient promotionnel par son objectif réel, même si son objet l’appelle « suivi ». Pour les particuliers, la prospection par e-mail ou SMS requiert en principe un accord préalable ; l’exception client existant est encadrée : prestation déjà achetée, offres similaires de la même entreprise, information et opposition facile à la collecte comme dans chaque message. En cas de doute sur votre situation, vérifiez la règle applicable avant l’envoi.",
+          "La [CNIL distingue les messages nécessaires à l’exécution d’un service, le suivi relationnel sans finalité promotionnelle directe et la prospection commerciale](https://www.cnil.fr/fr/communication-electronique-quelles-regles). Un message devient promotionnel par son objectif réel, même si son objet l’appelle « suivi ». Pour les particuliers, la prospection par e-mail ou SMS requiert en principe un accord préalable ; l’exception client existant est encadrée : prestation déjà achetée, offres similaires de la même entreprise, information et opposition facile à la collecte comme dans chaque message. En cas de doute sur votre situation, vérifiez la règle applicable avant l’envoi.",
         ],
         items: [
           "Séparez la confirmation ou l’information de service des offres et invitations commerciales.",
@@ -724,8 +729,9 @@ export const blogPosts: BlogPost[] = [
         title: "Mesurez les visites, pas seulement les intentions",
         paragraphs: [
           "Choisissez une fenêtre d’observation cohérente avec le soin et annoncez-la dans votre analyse. Une prestation d’entretien rapproché et un soin ponctuel ne se comparent pas avec le même délai. Si vous retenez 60 jours pour un test, présentez ce choix comme une fenêtre de mesure interne, pas comme une norme du secteur.",
-          "Exemple entièrement fictif : sur 40 premières visites effectivement réalisées pendant un mois, 18 clientes réservent un autre rendez-vous avant de partir. Le taux de réservation immédiate est de 18 ÷ 40, soit 45 %. À la fin d’une fenêtre de 60 jours choisie pour ce test, 14 de ces 40 clientes ont effectivement réalisé une deuxième visite : le taux de retour observé est alors de 14 ÷ 40, soit 35 %. Les chiffres servent à illustrer le calcul ; ils ne prédisent pas les résultats d’un institut.",
-          "Les deux pourcentages répondent à des questions différentes. Le premier mesure une intention matérialisée par une réservation ; le second, une visite ultérieure observée. À côté, notez les annulations et déplacements, le type de soin, la période, les créneaux disponibles et la méthode de comptage. Sans comparaison fiable, parlez d’un constat et non d’un effet causé par une remise, un message ou Okado.",
+          "Exemple entièrement fictif : une cohorte comprend 40 clientes dont la première visite a été honorée pendant un mois. Parmi elles, 18 réservent une nouvelle date avant de partir : 18 ÷ 40 = 45 % de réservations immédiates. Pour mesurer le retour, laissez ensuite à chacune 60 jours complets après sa première visite et attendez que la dernière fenêtre soit terminée. Dans cet exemple, 14 sur 40 ont réalisé une deuxième visite dans leur fenêtre : 14 ÷ 40 = 35 % de retours observés. Ces chiffres illustrent le calcul ; ils ne prédisent pas les résultats d’un institut.",
+          "Les deux pourcentages répondent à des questions différentes : réserver avant de partir n’est pas la même chose que revenir, et une cliente peut aussi réserver plus tard. Notez les annulations et déplacements, le type de soin, la période, les créneaux disponibles et la méthode de comptage. Sans comparaison fiable, parlez d’un constat et non d’un effet causé par une remise, un message ou Okado.",
+          "Pour ce suivi, ne créez pas un fichier marketing plus détaillé que nécessaire : date de première visite, statut de réservation et présence peuvent suffire au calcul. Gardez les informations opérationnelles du soin dans l’outil prévu à cet effet et évitez de les recopier dans une liste de prospection. La [CNIL recommande de limiter les données collectées à ce qui est nécessaire](https://www.cnil.fr/fr/minimiser-les-donnees-collectees) ; certaines informations révélant l’état de santé relèvent en outre d’un régime particulier, à qualifier selon leur nature et leur usage.",
         ],
         items: [
           "Premières visites honorées : dénominateur de la cohorte suivie.",
@@ -748,6 +754,20 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        title: "Checklist avant de lancer le suivi",
+        paragraphs: [
+          "Avant d’appliquer la démarche à une cohorte de premières visites, vérifiez ces points avec l’équipe :",
+        ],
+        items: [
+          "La prochaine étape est proposée seulement si elle est adaptée au soin et souhaitée par la cliente.",
+          "Le lien, les tarifs, les horaires et le parcours de réservation ont été testés sur téléphone.",
+          "Les informations de service sont séparées des offres commerciales ; les préférences de prospection sont recueillies et respectées selon les règles applicables.",
+          "Les données suivies sont limitées au nécessaire ; les notes opérationnelles ou révélant la santé ne sont pas copiées dans une liste marketing sans cadre approprié.",
+          "La cohorte, le dénominateur et la fenêtre d’observation sont définis avant le test ; une réservation n’est pas comptée comme une présence.",
+          "Les annulations, contraintes de capacité et avantages remis seront pris en compte ; aucun résultat causal ou taux de référence ne sera extrapolé de ce seul test.",
+        ],
+      },
+      {
         title: "Questions fréquentes",
         paragraphs: [
           "Faut-il toujours proposer un prochain rendez-vous à la fin d’un soin ? Non. Faites-le si la prestation et les souhaits de la cliente le justifient ; laissez-la repartir sans pression si elle préfère décider plus tard.",
@@ -763,6 +783,7 @@ export const blogPosts: BlogPost[] = [
       "/blog/attirer-nouvelles-clientes-institut-beaute",
       "/blog/fideliser-clients-sans-programme-points",
       "/blog/faire-revenir-clients-animation",
+      "/blog/animer-periode-creuse-commerce-local",
     ],
   },
   {
