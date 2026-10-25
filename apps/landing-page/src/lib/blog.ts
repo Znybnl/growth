@@ -17,6 +17,38 @@ const references = {
     label: "DGCCRF — annonces de réduction de prix en France",
     href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir",
   },
+  electronicMarketing2026: {
+    label: "CNIL — communications électroniques aux prospects et clients (10 juin 2026)",
+    href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+  },
+  googleBusinessPosts: {
+    label: "Google Business Profile — créer des posts, offres et événements",
+    href: "https://support.google.com/business/answer/7342169?hl=fr",
+  },
+  beautyIndustry: {
+    label: "Bpifrance Création / CNEP — Se lancer dans l’esthétique (2022)",
+    href: "https://www.cnep-france.fr/UPB/wp-content/uploads/2024/12/2022-SE-LANCER-DANS-L-ESTHETIQUE-BPI-FRANCE-.pdf",
+  },
+  beautyDigitalRetention: {
+    label: "Les Nouvelles Esthétiques — fidéliser avec le digital (2026)",
+    href: "https://www.nouvelles-esthetiques.com/articles/metier/au-quotidien/5-conseils-pour-fideliser-vos-clients-en-institut-de-beaute-avec-le-digital-5080",
+  },
+  bookingTreatwell: {
+    label: "Treatwell Connect — gestion de salon et créneaux",
+    href: "https://www.treatwell.fr/partenaires/solutions/logiciel-de-gestion/",
+  },
+  bookingFresha: {
+    label: "Fresha — planification pour les salons",
+    href: "https://www.fresha.com/fr/for-business/features/scheduling",
+  },
+  crmBrevo: {
+    label: "Brevo — segmenter ses contacts",
+    href: "https://help.brevo.com/hc/fr/articles/5175058666386-G%C3%A9rer-vos-segments",
+  },
+  googleReviews: {
+    label: "Google Maps — règles sur les avis et les avantages en contrepartie",
+    href: "https://support.google.com/contributionpolicy/answer/7400114?hl=fr",
+  },
   contrast: {
     label: "W3C — comprendre le contraste des textes numériques (en anglais)",
     href: "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
@@ -475,6 +507,158 @@ export const blogPosts: BlogPost[] = [
       "/ticket-a-gratter",
       "/roue-de-la-fortune",
       "/tarifs",
+    ],
+  },
+  {
+    path: "/blog/remplir-heures-creuses-institut-beaute",
+    title: "Comment remplir les heures creuses d’un institut de beauté sans brader ses soins ?",
+    seoTitle: "Institut de beauté : remplir les heures creuses sans brader",
+    source: [
+      references.beautyIndustry,
+      references.beautyDigitalRetention,
+      references.bookingTreatwell,
+      references.bookingFresha,
+      references.googleBusinessPosts,
+      references.googleReviews,
+      references.crmBrevo,
+      references.electronicMarketing2026,
+      references.pricing,
+    ],
+    description:
+      "Créneaux calmes, offres ciblées, parrainage, partenaires, fidélité et CRM : un plan concret pour un institut, sans remise permanente ni promesse de remplissage.",
+    eyebrow: "Gestion & marketing beauté",
+    intro:
+      "Pour mieux utiliser les heures creuses d’un institut, repérez d’abord les créneaux où l’équipe dispose réellement de capacité. Ajustez ensuite le planning, la visibilité ou l’offre à ces horaires précis. Une baisse de prix n’est qu’un levier parmi d’autres : mesurez les rendez-vous honorés et leur coût avant de la reconduire.",
+    answer:
+      "Commencez par comparer plusieurs semaines de réservations et d’absences, puis choisissez un seul créneau, une prestation et une action à tester. Essayez d’abord la visibilité locale, la liste d’attente ou un format adapté ; si vous proposez une réduction, limitez-la à une capacité disponible et écrivez clairement son prix, ses dates et ses conditions. Comparez ensuite les réservations honorées, le temps mobilisé et la marge estimée au même créneau.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-25",
+    updatedAt: "2026-10-25",
+    reviewedAt: "2026-10-25",
+    readingTime: "11 min de lecture",
+    ctaLabel: "Découvrir Okado pour un institut de beauté",
+    ctaHref: "/instituts-beaute",
+    sections: [
+      {
+        title: "Confirmez d’abord qu’il s’agit bien d’un créneau creux",
+        paragraphs: [
+          "Un agenda qui semble vide aujourd’hui n’indique pas forcément une baisse de demande : les clientes peuvent réserver plus tard, certaines plages peuvent être bloquées pour les pauses ou la préparation, et les annulations ne sont pas la même chose qu’un manque régulier de réservations. Regardez plusieurs semaines comparables, par jour et tranche horaire, puis distinguez les rendez-vous pris, honorés, annulés et non honorés.",
+          "Faites ce relevé par cabine, personne et grande famille de prestations. Une plage libre de 30 minutes n’est pas exploitable pour un soin qui en demande 60, nettoyage compris. Tenez compte des temps de préparation, de désinfection, des pauses et des compétences disponibles : une cabine vide n’est pas toujours une capacité réellement vendable.",
+          "Pour un premier diagnostic, un tableau sur quatre semaines peut suffire à faire apparaître une hypothèse ; ce n’est pas un seuil statistique. Notez les exceptions (congés, travaux, météo, fêtes, panne) et comparez les mêmes jours plutôt qu’une semaine atypique à une autre.",
+        ],
+        items: [
+          "Créneau réellement réservable et durée nette disponible.",
+          "Prestation et capacité de la personne qui peut la réaliser.",
+          "Rendez-vous pris, honorés, annulés et absences, séparément.",
+          "Prix encaissé, coût des produits, temps de travail et éventuels frais de plateforme.",
+          "Origine connue de la réservation, sans attribuer une visite à un canal faute de preuve.",
+        ],
+      },
+      {
+        title: "Choisissez le levier selon la cause et le coût",
+        paragraphs: [
+          "Ne commencez pas systématiquement par une remise. Un créneau peu réservé parce qu’il est mal visible demande une action différente d’un rendez-vous annulé à la dernière minute, d’un soin trop long pour l’intervalle disponible ou d’une période de demande plus faible. Le tableau ci-dessous aide à choisir un premier test ; il ne prédit pas son résultat.",
+        ],
+        table: {
+          caption: "Leviers pour travailler un créneau moins demandé",
+          headers: ["Levier", "À essayer quand…", "À vérifier avant diffusion", "Signal à suivre"],
+          rows: [
+            ["Planning et capacité", "Les disponibilités sont difficiles à trouver ou le format ne tient pas dans les trous d’agenda.", "Durée de prestation, préparation, pauses et capacité réelle.", "Temps occupé et rendez-vous honorés sur cette plage."],
+            ["Visibilité locale", "Les clientes ignorent qu’un créneau ou une prestation est disponible.", "Fiche Google à jour, lien de réservation, dates et horaires exacts.", "Clics vers la réservation et réservations attribuées avec une méthode constante."],
+            ["Offre ciblée", "Une prestation précise peut être proposée à une audience et une capacité définies.", "Coût, prix de référence si réduction annoncée, conditions et validité.", "Réservations honorées, coût de l’avantage et marge estimée."],
+            ["Parrainage ou partenariat", "La clientèle actuelle ou des commerces voisins peuvent faire connaître l’institut.", "Règles simples, capacité d’accueil, attribution et absence de partage de contacts non prévu.", "Nouvelles clientes venues et coût de chaque avantage remis."],
+            ["Fidélité et suivi", "Des clientes satisfaites ont une raison pertinente de reprendre rendez-vous.", "Fréquence réelle des soins, avantage soutenable, préférences et autorisations de contact.", "Réservations répétées observées sur une période définie."],
+          ],
+        },
+      },
+      {
+        title: "Optimisez les disponibilités avant de changer les prix",
+        paragraphs: [
+          "Adaptez d’abord le planning à ce que votre institut sait délivrer : rendez-vous en ligne accessibles, durées réalistes, temps de remise en état, offres de réservation groupées lorsque les prestations s’y prêtent, ou créneaux libérés proposés à une liste d’attente volontaire. Gardez les pauses et le temps de préparation : les supprimer peut déplacer le problème vers la qualité ou la fatigue de l’équipe.",
+          "Des outils de réservation comme Treatwell Connect ou Fresha présentent, parmi leurs fonctions, la gestion de rendez-vous, les rappels et la liste d’attente. Ce sont des exemples à comparer, pas des recommandations universelles : examinez le coût total, les commissions éventuelles, la provenance des réservations, les conditions d’export des données et la facilité de changer d’outil avant de vous engager.",
+          "Le yield management consiste à ajuster la disponibilité et parfois les conditions commerciales selon la demande et la capacité. Dans un institut indépendant, sa version la plus simple peut être de réserver à l’avance une petite capacité aux créneaux calmes, de rendre visibles des prestations courtes compatibles ou de proposer une option découverte définie. Évitez les changements de tarifs opaques : affichez le prix et les conditions avant la réservation et gardez une grille facile à expliquer. Ce n’est pas nécessaire de faire varier tous les prix heure par heure.",
+        ],
+      },
+      {
+        title: "Testez une offre ciblée sans installer une remise permanente",
+        paragraphs: [
+          "Si le prix constitue réellement un frein, choisissez une prestation, un créneau, une durée et une capacité maximum. Une offre peut viser un soin découverte, un créneau du mardi après-midi ou une option complémentaire, mais ne réduisez pas indistinctement le tarif de toutes les prestations. Calculez d’abord le coût de la main-d’œuvre et des produits, les frais de réservation et le nombre de places que vous pouvez délivrer sans dégrader le service.",
+          "Une réduction n’est pas toujours préférable à une valeur ajoutée : un diagnostic, une finition, un mini-produit ou quelques minutes supplémentaires peuvent mieux correspondre à votre positionnement. Indiquez si l’offre nécessite une réservation, un achat associé, une première visite ou un jour particulier ; précisez le début, la fin, le nombre de places si la capacité est réellement limitée et la procédure de réservation. N’annoncez pas de fausse urgence.",
+          "En France, la DGCCRF rappelle qu’une annonce de réduction de prix doit se référer au prix le plus bas pratiqué pendant les 30 jours précédant la réduction. Vérifiez les règles applicables à la forme exacte de votre offre et faites apparaître ses conditions sans ambiguïté. Un tarif spécial soumis à des conditions ne doit pas être présenté comme une baisse ouverte à toutes les clientes.",
+          "Un forfait ou une cure peut aider à planifier plusieurs rendez-vous, mais engage l’institut sur la durée, la capacité et les conditions d’utilisation. Avant de le proposer, vérifiez que le calendrier reste tenable, que les prestations comprises sont précises et que le prix total est compréhensible. Une carte prépayée ou une prestation offerte n’est pas un créneau rempli tant que le rendez-vous n’a pas lieu.",
+        ],
+      },
+      {
+        title: "Activez le parrainage et les partenariats sans complexifier l’accueil",
+        paragraphs: [
+          "Le parrainage fonctionne mieux comme une invitation simple que comme un règlement à rallonge. Par exemple, une cliente satisfaite peut remettre à une proche une carte avec un avantage découverte valable sur une prestation et une plage clairement indiquées ; l’avantage de la marraine peut être déclenché après la première prestation honorée de sa proche. Ce scénario est à adapter aux coûts et à la capacité de l’institut, pas une formule de rendement garantie.",
+          "Écrivez qui peut participer, quand l’avantage est acquis, sur quelles prestations il s’applique, s’il est cumulable et comment il est utilisé. Laissez la proche prendre contact elle-même plutôt que de transmettre ses coordonnées à l’institut sans qu’elle l’ait demandé. Ne conditionnez jamais un avantage à un avis Google : Google interdit les récompenses échangées contre des avis et la sollicitation sélective d’avis positifs.",
+          "Un partenariat local peut réunir des activités complémentaires fréquentées par la même clientèle : institut et studio de yoga, boutique de vêtements ou coiffeur, par exemple. Définissez un échange concret (affiche et carte réciproques, découverte lors d’un événement, avantage limité), qui remet quoi, les dates et le nombre de personnes que chaque établissement peut accueillir. Utilisez un code distinct ou une question neutre à la réservation pour repérer l’origine ; ne partagez pas les fichiers de clientes entre partenaires par défaut.",
+        ],
+      },
+      {
+        title: "Choisissez entre carte de fidélité et attention ponctuelle",
+        paragraphs: [
+          "Une carte à tampons ou à points peut convenir lorsque les clientes reviennent à un rythme régulier et que l’équipe peut enregistrer chaque passage sans erreur. Une attention ponctuelle peut être plus simple si vous souhaitez tester une nouvelle prestation ou remercier une cliente à un moment précis. Les deux systèmes représentent un coût : estimez les récompenses qui pourraient être réclamées et l’effet sur les rendez-vous déjà prévus avant de fixer un seuil.",
+          "Écrivez les prestations concernées, le nombre de visites ou de points, la durée de validité, les exclusions et la façon de consulter son solde. Ne changez pas les règles en cours de route sans informer les participantes. Suivez les avantages utilisés et les visites réellement honorées ; un compte créé ou une carte distribuée ne prouve pas une fidélité.",
+          "Un outil de réservation ou de gestion peut déjà proposer des fiches clientes ou des fonctions de fidélité. Vérifiez les capacités, la portabilité et le coût dans la documentation du fournisseur. Okado ne gère pas de programme de points : sa roue ou son ticket est une animation ponctuelle qui peut offrir un avantage défini par l’institut.",
+        ],
+      },
+      {
+        title: "Rendez l’offre visible sur Google et les réseaux sociaux",
+        paragraphs: [
+          "Mettez à jour la fiche Google de l’établissement : horaires, services, lien de réservation et coordonnées doivent être exacts. Un post peut annoncer une nouveauté, une offre ou un événement avec ses dates et horaires ; Google précise que les posts anciens peuvent être archivés après six mois lorsqu’aucune période ne les maintient actifs. Retirez ou corrigez une annonce dès que les places ou la période ne sont plus disponibles.",
+          "Sur Instagram ou Facebook, publiez un message concret : prestation, durée, prix, créneau, personne qui la réalise, adresse et lien direct pour réserver. Une photo de cabine, d’équipe ou de résultat ne doit être publiée qu’avec les autorisations nécessaires. Un post « il reste deux places jeudi à 14 h pour un soin de 30 minutes à tel prix » est plus actionnable qu’une annonce vague sur une promotion.",
+          "Des exemples de logiciels de réservation et de CRM comme Treatwell, Fresha ou Brevo peuvent aider à organiser planning, segments ou campagnes selon leur offre actuelle. Un outil ne rend pas, à lui seul, une communication pertinente ou autorisée. Avant de choisir, comparez le tarif total, la propriété et l’export des données, les commissions, les désabonnements et les fonctions effectivement incluses dans votre formule.",
+        ],
+      },
+      {
+        title: "Utilisez votre CRM et les coordonnées avec une finalité claire",
+        paragraphs: [
+          "Un fichier de réservation peut aider à comprendre les habitudes de rendez-vous et à éviter les messages hors sujet. Segmentez sur des critères utiles et peu intrusifs : type de prestation réservée, créneau préféré si la cliente l’a indiqué, ou choix de recevoir les actualités. Ne créez pas de catégories révélant des informations de santé ou des caractéristiques sensibles pour déclencher une promotion.",
+          "Distinguez les messages nécessaires au rendez-vous (confirmation, modification ou rappel) des messages destinés à promouvoir une offre. La CNIL rappelle que la prospection électronique auprès de particuliers repose en principe sur un consentement préalable. L’exception pour certains clients existants est encadrée : même entreprise, produits ou services similaires, information et possibilité d’opposition simple au moment de la collecte et dans chaque message. La simple participation à un jeu ou la détention d’une adresse e-mail ne vaut pas consentement marketing.",
+          "Préparez un message court avec un seul appel à l’action, une date de fin réelle et un moyen facile de ne plus recevoir d’offres. Évitez les envois répétés à toute la base. Pour les contacts d’un partenaire ou d’une marraine, laissez la personne intéressée vous écrire ou recueillez séparément les autorisations nécessaires ; n’importez pas un carnet d’adresses transmis par un tiers.",
+        ],
+      },
+      {
+        title: "Le rôle d’une animation Okado sur un créneau calme",
+        paragraphs: [
+          "Okado peut servir à créer une animation ponctuelle autour d’un créneau ou d’une prestation : une roue de la fortune ou un ticket à gratter personnalisé s’ouvre après le scan d’un QR code. L’institut choisit ses lots et leurs conditions ; un lot peut, par exemple, être un complément de soin sur réservation à une date compatible avec l’agenda. Une affiche à l’accueil, un support remis après une visite ou une publication datée peuvent faire connaître l’opération.",
+          "Okado n’est ni un agenda de réservation, ni un CRM, ni un automate de relance, ni une carte à points. L’outil permet de configurer le jeu et de suivre les étapes disponibles, mais ne réserve pas automatiquement un rendez-vous et ne diffuse pas une campagne de prospection aux participantes. L’e-mail nécessaire à un gain reste distinct d’un accord pour recevoir des offres. N’associez jamais le jeu à un avis Google.",
+          "Pour un exemple opérationnel adapté au secteur, consultez [la page Okado pour les instituts de beauté](/instituts-beaute), les [idées d’animations en institut](/blog/animation-commerciale-institut-beaute), le [guide des lots](/guides/lots-institut-beaute) et le [guide de mesure des scans, participations et retraits](/guides/mesurer-jeu-qr-code). Un scan, une partie, un lot retiré et un rendez-vous honoré sont des étapes différentes ; aucun nombre de scans ne prouve, à lui seul, que l’animation a rempli l’agenda.",
+        ],
+      },
+      {
+        title: "Lancez un test de quatre semaines, puis décidez",
+        paragraphs: [
+          "Choisissez une plage disponible et une action, plutôt que de modifier en même temps prix, posts, fidélité et planning. Préparez une petite capacité que l’équipe peut réellement servir et gardez une comparaison avec le même jour et la même tranche horaire. Une période de quatre semaines est un exemple de test organisationnel, pas une durée universelle : adaptez-la au délai de réservation de vos soins.",
+        ],
+        items: [
+          "Semaine 1 : relevez les réservations, absences, durées, coûts et disponibilités sur des plages comparables.",
+          "Semaine 2 : choisissez une plage, une prestation, une audience et un seul levier ; fixez capacité, coût maximum et conditions.",
+          "Semaine 3 : diffusez l’information sur un canal principal ; utilisez un code ou un lien si vous devez distinguer son origine.",
+          "Semaine 4 : comptez les demandes, réservations et rendez-vous honorés, le coût de l’avantage et le temps passé ; comparez avec le contexte de départ.",
+          "Décidez de garder, modifier ou arrêter l’action. Ne reconduisez pas automatiquement une réduction si elle déplace des réservations qui auraient eu lieu au tarif habituel.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur les heures creuses en institut",
+        paragraphs: [
+          "Faut-il baisser les prix pour remplir les créneaux ? Non. Vérifiez d’abord la visibilité, les durées, les disponibilités et la liste d’attente. Si vous testez une réduction, limitez-la à une capacité définie et annoncez clairement prix et conditions.",
+          "Quel outil peut aider à organiser les rendez-vous ? Des solutions comme Treatwell Connect ou Fresha proposent des fonctions de réservation et de planning. Comparez les frais, commissions, conditions de réservation, accès aux données et fonctions disponibles dans votre formule avant de choisir.",
+          "Une offre ou une animation garantit-elle des rendez-vous ? Non. Elle peut faire connaître une disponibilité ou donner une raison de réserver, mais seule l’observation des rendez-vous honorés permet de savoir ce qui s’est passé. Un jeu ou un clic ne prouve pas une visite.",
+          "Puis-je envoyer une offre à toutes les clientes de mon fichier ? Pas automatiquement. Qualifiez le message et vérifiez les règles CNIL de prospection électronique, la base applicable, l’information donnée et la possibilité d’opposition. Une adresse collectée pour un rendez-vous ou un gain n’est pas, à elle seule, une autorisation marketing.",
+          "Une carte de fidélité est-elle nécessaire ? Non. Elle ajoute des règles et un coût de récompense. Une invitation ponctuelle, une réservation anticipée ou un partenariat local peuvent être testés sans créer un programme récurrent.",
+        ],
+      },
+    ],
+    related: [
+      "/instituts-beaute",
+      "/blog/animer-periode-creuse-commerce-local",
+      "/blog/animation-commerciale-institut-beaute",
+      "/guides/lots-institut-beaute",
+      "/guides/mesurer-jeu-qr-code",
+      "/guides/collecte-email-jeu",
     ],
   },
   {
