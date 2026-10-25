@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createDefaultPosterSettings } from "./campaign-defaults.ts";
-import { normalizePosterSettings } from "./poster-utils.ts";
+import { createPosterSettingsDefaults, normalizePosterSettings } from "./poster-utils.ts";
 
 const merchant = { id: "fixture", companyName: "Institut de test", logoText: "Institut de test", createdAt: "2026-10-19" };
 
@@ -21,7 +21,15 @@ test("other sectors and missing industry keep Classic with the campaign primary 
     assert.equal(poster.templateId, "classic-wheel");
     assert.equal(poster.wheel.winColor, "#123456");
     assert.equal(poster.headlineFontFamily, "geogrotesque");
+    assert.equal(poster.headlineFontSizePx, 40);
   }
+});
+
+test("Classic default40 never overwrites an explicit saved font size", () => {
+  const defaults=createDefaultPosterSettings(merchant);
+  assert.equal(createPosterSettingsDefaults({wheel:defaults.wheel}).headlineFontSizePx,40);
+  assert.equal(normalizePosterSettings({...defaults,headlineFontSizePx:54},defaults).headlineFontSizePx,54);
+  assert.equal(createPosterSettingsDefaults({wheel:defaults.wheel,headlineFontSizePx:47}).headlineFontSizePx,47);
 });
 
 test("a previously selected Classic poster and its custom text remain selected for Beauty", () => {

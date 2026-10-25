@@ -655,7 +655,7 @@ export function createDefaultPosterSettings(
       backgroundColor: beauty ? template.background : "#ffffff",
       headline: "Scannez, jouez, récupérez votre cadeau !",
       headlineTextColor: beauty ? template.headlineTextColor : DEFAULT_WHEEL_PRIMARY_COLOR,
-      headlineFontSizePx: beauty ? template.headlineFontSizePx : 42,
+      headlineFontSizePx: template.headlineFontSizePx,
       headlineFontFamily: beauty ? template.headlineFontFamily ?? "geogrotesque" : "geogrotesque",
       wheel: beauty ? { ...template.wheel } : {
         ...template.wheel,

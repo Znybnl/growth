@@ -575,6 +575,18 @@ Compléments #473/#484 : les tests du handler/DAL vérifient les options multipl
 
 ## Compte rendu attendu
 
+### Composition des affiches Botanique / Élégance — #625
+
+`test:poster-composition` vérifie les largeurs, la conservation des textes et
+polices, les variantes roue/ticket et logo texte/image/aucun, le centrage du QR
+et son bandeau séparé, ainsi que Botanique éditorial inchangé.
+`poster-composition-625.spec.ts` exerce le véritable éditeur dans MerchantShell,
+ses miniatures et son PNG téléchargé identique à l’aperçu. Captures à1280×720,
+1280×600 et390px ; données fictives et API interceptées. Tous les modules du QR
+Botanique sont comparés à la matrice encodant l’URL publique attendue, à la
+résolution A4 puis après réduction A5 ; ce n’est pas un test d’impression ni
+un scan optique par smartphone. Aucun jeu réel enregistré.
+
 ### Réception des webhooks Resend — #573
 
 `npm run test:resend-webhook -w @okado/web-app` utilise le vrai SDK avec signatures HMAC synthétiques : en-têtes Svix, compatibilité historique complète sans mélange/repli abusif, corps brut UTF-8, signature incorrecte, horodatage périmé/futur, JSON invalide, secret absent et panne de stockage. Les événements invalides ne sont jamais persistés ; les erreurs ne divulguent pas les détails internes.

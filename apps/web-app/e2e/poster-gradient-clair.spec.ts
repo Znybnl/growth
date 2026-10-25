@@ -75,7 +75,7 @@ test("Gradient clair est la première variante de Classique et garde le même ap
     expect(thumbnailSvg).toContain("Votre établissement");
     expect(thumbnailSvg).toContain("Des cadeaux à gagner dans votre</text><text");
     expect(thumbnailSvg).toContain(">établissement.</text>");
-    expect(thumbnailSvg).toContain("Scannez pour jouer");
+    expect(thumbnailSvg).toContain("SCANNEZ POUR JOUER");
     expect(thumbnailSvg).toContain('data-poster-footer="editorial-steps"');
     expect(thumbnailSvg).not.toContain('translate(28 954)');
     expect(thumbnailSvg).toContain(">2. JOUEZ</text>");

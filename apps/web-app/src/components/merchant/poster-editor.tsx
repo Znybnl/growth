@@ -266,7 +266,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
         backgroundImageUrl: "",
         headline: campaign.subtitle,
         headlineTextColor: campaignGainColor,
-        headlineFontSizePx: 50,
+        headlineFontSizePx: getPosterTemplate("classic-wheel").headlineFontSizePx,
         headlineFontFamily: campaign.presentation.poster?.headlineFontFamily ?? "geogrotesque",
         wheel: {
           ...POSTER_TEMPLATES[0].wheel,

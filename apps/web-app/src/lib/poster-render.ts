@@ -4,10 +4,10 @@ import {
   defaultWheelSubtitleSpacingForTemplate,
   limitCampaignSubtitleLines,
 } from "@/lib/campaign-defaults";
-import { getPosterLogoTextFontSizePx, getPosterLogoTopY, getPosterTemplate, PosterTemplateConfig } from "@/lib/poster-templates";
+import { getBotanicalPosterQrLayout, getPosterLogoTextFontSizePx, getPosterLogoTopY, getPosterTemplate, type PosterTemplateConfig } from "@/lib/poster-templates";
 import { resolvePosterLogoSource } from "@/lib/poster-logo-source";
 import { getPosterFontAsset, getPosterSubtitleFont } from "@/lib/poster-fonts";
-import { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
+import type { Campaign, CampaignPosterSettings, Prize, TextFont } from "@/lib/types";
 
 const A4_WIDTH = 794;
 const A4_HEIGHT = 1123;
@@ -575,19 +575,23 @@ export function getPosterSubtitleLayout(
   const isBotanicalEditorial = template.id === "botanical-editorial-poster";
   const isEditorialTemplate = template.id === "pastel-editorial-wheel";
   const isIvoryTemplate = template.id === "ivory-editorial-wheel";
-  let fontSize = isIvoryTemplate ? template.supportingTextFontSize ?? 24 : isBotanicalEditorial || isEditorialTemplate ? 28 : template.backdropAsset ? 24 : 25;
+  let fontSize = isIvoryTemplate ? template.supportingTextFontSize ?? 24 : template.id === "botanical-wheel" ? template.supportingTextFontSize ?? 22 : isBotanicalEditorial || isEditorialTemplate ? 28 : template.backdropAsset ? 24 : 25;
   let lineHeight = isIvoryTemplate ? template.supportingTextLineHeight ?? 32 : fontSize * (isEditorialTemplate ? 1.5 : 1.42);
   const letterSpacing = isIvoryTemplate
     ? template.supportingTextLetterSpacing ?? 1.2
     : isBotanicalEditorial ? template.subtitleLetterSpacing ?? 4 : isEditorialTemplate ? 3.2 : 0.28;
   const isPremiumTemplate = template.id === "premium-wheel";
   const width = isPremiumTemplate
-    ? Math.min(template.qrSize, A4_WIDTH - template.qrX - 24)
+    ? Math.min(template.subtitleMaxWidth ?? template.qrSize, A4_WIDTH - template.qrX - 24)
     : isBotanicalEditorial
       ? template.subtitleMaxWidth ?? 620
     : Math.min(template.subtitleMaxWidth ?? template.headlineMaxWidth ?? 620, A4_WIDTH - 48);
   let lines = isIvoryTemplate
     ? wrapIvorySubtitle(text.toLocaleUpperCase("fr-FR"), width, fontSize, letterSpacing)
+    : template.id === "botanical-wheel"
+      // The narrower left column can wrap into more visual lines. Keep the
+      // complete copy instead of silently dropping text at the old 3-line cap.
+      ? splitLines(text, clamp(Math.floor(width / (fontSize * 0.54)), 16, 52))
     : posterSubtitleLines(text, width, fontSize, isBotanicalEditorial ? template.subtitleMaxCharactersPerLine : undefined);
   let textHeight = fontSize + Math.max(0, lines.length - 1) * lineHeight;
   const configuredHeadlineGap = clampCampaignSpacingPx(
@@ -1018,20 +1022,16 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
     const qrLabelFontSize = 20;
 
     if (botanicalQr) {
-      const labelWidth = template.inlineQrLabelWidth ?? cardWidth;
-      const labelHeight = template.inlineQrLabelHeight ?? 70;
-      const labelGap = template.inlineQrLabelGap ?? 18;
-      const cardHeight = template.qrSize + 36;
-      const qrContent = template.qrSize - 26;
-      const labelX = template.ctaX ?? template.qrX - (labelWidth - cardWidth) / 2;
-      const labelY = template.ctaY ?? template.qrY + cardHeight + labelGap;
+      const { frame, image, label } = getBotanicalPosterQrLayout(template);
+      const labelWidth = label.width;
+      const labelHeight = label.height;
 
       return `
-        <g filter="url(#posterShadow)" transform="translate(${template.qrX} ${template.qrY})">
-          <rect x="-18" y="-18" width="${cardWidth}" height="${cardHeight}" rx="28" fill="#ffffff" stroke="${template.qrFrame}" stroke-width="3"/>
-          <image href="${escapeXml(qrDataUrl)}" x="5" y="5" width="${qrContent}" height="${qrContent}"/>
+        <g filter="url(#posterShadow)">
+          <rect x="${frame.x}" y="${frame.y}" width="${frame.size}" height="${frame.size}" rx="28" fill="#ffffff" stroke="${template.qrFrame}" stroke-width="3"/>
+          <image href="${escapeXml(qrDataUrl)}" x="${image.x}" y="${image.y}" width="${image.size}" height="${image.size}"/>
         </g>
-        <g filter="url(#posterShadow)" transform="translate(${labelX} ${labelY})">
+        <g filter="url(#posterShadow)" transform="translate(${label.x} ${label.y})">
           <rect width="${labelWidth}" height="${labelHeight}" rx="24" fill="${template.inlineQrLabelBackground ?? template.accent}" stroke="#ffffff" stroke-width="5"/>
           <text x="${labelWidth / 2}" y="${labelHeight / 2 + 8}" text-anchor="middle" fill="${template.inlineQrLabelTextColor ?? "#ffffff"}" font-family="${SAFE_FONT}" font-size="22" font-weight="800" letter-spacing="0.4" textLength="${labelWidth - 34}" lengthAdjust="spacingAndGlyphs">SCANNEZ POUR JOUER</text>
         </g>
@@ -1066,7 +1066,7 @@ function renderQrAndCta(qrDataUrl: string, template: PosterTemplateConfig) {
       </g>
       <g filter="url(#posterShadow)" transform="translate(${template.ctaX} ${ctaY}) rotate(${template.ctaRotation} ${template.ctaWidth / 2} ${template.ctaHeight / 2})">
         <rect width="${template.ctaWidth}" height="${template.ctaHeight}" rx="${template.ctaCornerRadius ?? 24}" fill="${accent}" stroke="#ffffff" stroke-width="${template.ctaBorderWidth ?? 7}"/>
-        <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 9}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="27" font-weight="900" letter-spacing="0.5">Scannez pour jouer</text>
+        <text x="${template.ctaWidth / 2}" y="${template.ctaHeight / 2 + 9}" text-anchor="middle" fill="#ffffff" font-family="${SAFE_FONT}" font-size="27" font-weight="900" letter-spacing="0.5">SCANNEZ POUR JOUER</text>
       </g>
     `;
   }
