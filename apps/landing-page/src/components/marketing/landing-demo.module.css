@@ -25,6 +25,11 @@
   --demo-stage: #eee8ef;
 }
 .explorer { max-width: 1080px; margin: 48px auto 0; }
+.explorerCompact { margin-top: 0; }
+.compactToolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-bottom: 20px; }
+.compactToolbar .heading { flex: 1 1 320px; margin: 0; text-align: left; }
+.compactToolbar .heading h2 { margin: 0; font-size: clamp(24px, 2vw, 28px); font-weight: 650; line-height: 1.2; letter-spacing: -.035em; color: #24142a; }
+.compactToolbar .sectorChoices { justify-content: flex-start; margin: 0; }
 .explorer .demo { margin-top: 0; }
 .anchor { display: block; height: 0; scroll-margin-top: 155px; }
 .sectorChoices { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 auto 28px; }

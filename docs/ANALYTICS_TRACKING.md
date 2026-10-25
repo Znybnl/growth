@@ -236,7 +236,8 @@ pas une mesure d’amélioration commerciale. Aucun rapport privé ni automatisa
 n’est créé ou modifié par ce changement.
 
 Le site réutilise `marketing_cta_clicked` avec des valeurs éditoriales fixes :
-`cta=view_demo` pour l’ancre de démo du hero, `model_preview` pour l’ouverture
+`cta=view_demo` pour l’ancre de démo des pages sectorielles (retirée du hero
+de l’accueil par #647, dont la démo suit directement l’introduction), `model_preview` pour l’ouverture
 d’un modèle, `explore_sector` pour une carte métier, `select_specialty` pour le
 choix d’un onglet Beauté et `sector_demo` pour sa destination de démo.
 `location` identifie le bloc et `variant` le modèle ou le secteur sélectionné.

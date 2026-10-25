@@ -30,7 +30,7 @@ export default function IndexPage() {
   return <main id="contenu" className={styles.home}>
     <PageSchema path="/" name="Okado — jeux par QR code" faqs={faqs} />
     <HomeHero />
-    <section id="demo" aria-label="Démonstration interactive" className={styles.demo}><DemoExplorer /></section>
+    <section id="demo" aria-label="Démonstration interactive" className={styles.demo}><DemoExplorer compact /></section>
     <TemplateGallery multisector />
     <GiftSuggestions />
     <SectorExamples />

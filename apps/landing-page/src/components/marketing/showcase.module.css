@@ -7,44 +7,18 @@
 .note { color: #69616c; font-size: 12px; line-height: 1.8; }
 .link { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; font-size: 14px; font-weight: 650; color: #6c00f6; text-decoration: underline; text-underline-offset: 4px; }
 .link:focus-visible, .carousel:focus-visible, .specialtyPanel:focus-visible, .carouselControls button:focus-visible, .modelButton:focus-visible, .dialog button:focus-visible, .tabs button:focus-visible { outline: 2px solid #6c00f6; outline-offset: 5px; }
-.hero { display: grid; grid-template-columns: 1.07fr 1fr; align-items: center; gap: 32px; padding-block: 66px 42px; }
-.hero h1 { margin-top: 20px; font-size: clamp(40px, 4.7vw, 64px); line-height: 1.06; letter-spacing: -.055em; font-weight: 700; text-wrap: balance; }
+.hero { width: min(100% - 40px, 1080px); display: grid; grid-template-columns: minmax(0, 1fr) 260px; align-items: center; gap: 64px; padding-block: 80px 56px; border-bottom: 1px solid #e8e0e8; margin-bottom: 32px; }
+.hero h1 { margin: 0; font-size: clamp(40px, 4.1vw, 56px); line-height: 1.08; letter-spacing: -.055em; font-weight: 700; text-wrap: balance; }
 .hero h1 em { color: #6c00f6; font-style: normal; }
-.heroCopy > p:not(.eyebrow):not(.note) { margin-top: 24px; max-width: 520px; font-size: 17px; line-height: 1.8; color: #645d69; }
-.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-.reassurance { margin-top: 18px; font-size: 12px; font-weight: 550; line-height: 1.9; color: #5b5361; }
-.benefits { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 22px; font-size: 12px; font-weight: 600; }
-.benefits li { display: flex; align-items: center; gap: 7px; }
-.benefits svg { width: 17px; color: #6c00f6; }
-.heroVisual { min-width: 0; }
+.heroCopy > p { margin-top: 16px; max-width: 720px; font-size: 17px; line-height: 1.7; color: #645d69; }
+.heroSignup { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.heroSignup p { max-width: 32ch; font-size: 13px; line-height: 1.6; color: #645d69; }
 .beautyIntro { width: min(100% - 40px, 1100px); margin-inline: auto; padding-block: 28px 12px; }
 .beautyIntroTitle { max-width: 1000px; margin-top: 12px; font-size: clamp(34px, 4vw, 52px); font-weight: 700; line-height: 1.08; letter-spacing: -.045em; text-wrap: balance; }
 .beautyDemo > div { margin-top: 16px; }
-.journey { position: relative; height: 520px; max-width: 540px; margin: auto; isolation: isolate; }
-.journey::before { position: absolute; content: ""; inset: 15% 0 9%; border: 1px solid #e9ddea; border-radius: 50%; background: #f5edf5; z-index: -1; }
 .phone { position: relative; width: 220px; max-width: 100%; border: 6px solid #302b31; border-radius: 30px; background: #302b31; box-shadow: 0 14px 28px #2c193d12; overflow: hidden; }
 .phone img { display: block; width: 100%; height: auto; border-radius: 23px; }
-.journeyPlay { position: absolute; width: 210px; left: 50%; top: 25px; transform: translateX(-50%) rotate(-3deg); z-index: 2; }
-.journeyPlay .phone { width: 100%; }
-.journeyPoster, .journeyReward { position: absolute; width: 160px; height: 285px; top: 105px; box-shadow: 0 10px 22px #2c193d14; text-align: center; display: flex; flex-direction: column; align-items: center; }
-.journeyPoster { left: 0; transform: rotate(-5deg); padding: 18px 14px 15px; border: 1px solid #ded7c9; border-radius: 5px; background: linear-gradient(160deg, #fffefb, #f5f0e5); box-shadow: 0 16px 28px #2c193d1c, inset 0 0 0 5px #fffdf7; gap: 9px; }
-.journeyReward { right: 0; transform: rotate(8deg); padding: 15px 12px 13px; border: 1px solid #d8c59a; border-radius: 7px; background: linear-gradient(155deg, #fffdf7, #f3ead5); color: #3d4936; }
-.journeyPoster .posterBrand { display: flex; align-items: center; gap: 5px; color: #365442; font-family: Georgia, serif; font-size: 12px; font-weight: 700; }
-.posterBrand svg { color: #607b50; }
-.posterKicker { margin-top: 5px; color: #766c5e; font-size: 7px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
-.posterHeadline { color: #2f4637; font-family: Georgia, serif; font-size: 18px; line-height: 1.15; }
-.posterCopy { max-width: 110px; color: #665f55; font-size: 9px; line-height: 1.45; }
-.posterQr { display: grid; place-items: center; width: 60px; height: 60px; margin-top: auto; border: 1px solid #e4dfd4; background: #fff; color: #273e32; }
-.posterAction { color: #fffdf7; background: #365442; padding: 5px 8px; font-size: 7px; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
-.rewardHeader { width: 100%; display: flex; justify-content: space-between; gap: 5px; padding-bottom: 8px; border-bottom: 1px solid #d8c59a; color: #766b52; font-size: 6px; font-weight: 750; letter-spacing: .08em; }
-.rewardIcon { display: grid; place-items: center; width: 40px; height: 40px; margin-top: 13px; border: 1px solid #d8c59a; border-radius: 50%; color: #856638; background: #fffaf0; }
-.journeyReward strong { margin-top: 11px; font-family: Georgia, serif; font-size: 19px; line-height: 1.1; color: #365442; }
-.journeyReward small { margin-top: 9px; font-size: 9px; line-height: 1.45; color: #645d69; }
-.rewardFooter { width: 100%; margin-top: auto; padding-top: 8px; border-top: 1px solid #d8c59a; color: #365442; font-size: 7px; font-weight: 700; line-height: 1.4; letter-spacing: .02em; }
-.journeySteps { position: absolute; inset: auto 0 0; display: flex; justify-content: space-around; font-size: 11px; font-weight: 650; color: #5b4360; }
-.journeySteps span { display: flex; gap: 8px; align-items: center; }
-.journeySteps b { border: 1px solid #ddcde5; border-radius: 50%; width: 22px; height: 22px; display: grid; place-items: center; font-size: 10px; }
-.demo { padding: 30px 20px 55px; scroll-margin-top: 150px; }
+.demo { padding: 0 20px 55px; scroll-margin-top: 150px; }
 .sectionTop { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
 .sectionTop .heading { margin-top: 14px; }
 .carouselControls { display: flex; gap: 8px; }
@@ -130,13 +104,10 @@
 .specialtyPanel .link { margin-top: 16px; }
 .beautyHero { display: grid; grid-template-columns: 1.3fr .7fr; gap: 40px; align-items: center; }
 .beautyHero > .phone { justify-self: center; width: 230px; transform: rotate(3deg); }
-@media (max-width: 1023px) { .hero { gap: 24px; } .journey { height: 420px; } .journeyPoster, .journeyReward { width: 133px; height: 248px; top: 100px; } .journeyPoster { padding: 14px 10px 12px; gap: 7px; } .posterHeadline { font-size: 15px; } .posterQr { width: 48px; height: 48px; } .posterQr svg { width: 39px; } .posterAction { font-size: 7px; } .journeyPlay { width: 185px; } .journeyReward { right: 0; } .giftGrid { gap: 32px; } .modelArt .phone { width: 170px; } }
+@media (max-width: 1023px) { .hero { gap: 32px; } .giftGrid { gap: 32px; } .modelArt .phone { width: 170px; } }
 @media (max-width: 767px) {
-  .section { padding-block: 54px; } .hero { grid-template-columns: 1fr; padding-block: 38px 10px; gap: 24px; }
-  .hero h1 { max-width: 580px; font-size: clamp(36px, 8vw, 50px); } .heroCopy > p:not(.eyebrow):not(.note) { font-size: 16px; line-height: 1.8; margin-top: 20px; }
-  .actions { margin-top: 22px; gap: 10px; } .actions a { font-size: 14px; padding-inline: 16px; }
-  .journey { height: 385px; max-width: 440px; } .journeyPlay { width: 178px; top: 14px; } .journeyPoster, .journeyReward { width: 132px; height: 238px; top: 68px; } .journeyPoster { padding: 13px 9px 11px; gap: 6px; } .posterHeadline { font-size: 14px; } .posterCopy { font-size: 8px; } .posterQr { width: 44px; height: 44px; } .posterQr svg { width: 36px; } .journeyReward { padding: 14px 9px 10px; } .journeyReward strong { font-size: 15px; }
-  .benefits { gap: 12px 17px; font-size: 11px; } .reassurance { font-size: 11px; }
+  .section { padding-block: 54px; } .hero { width: calc(100% - 32px); grid-template-columns: 1fr; padding-block: 48px 32px; margin-bottom: 24px; gap: 24px; }
+  .hero h1 { max-width: 580px; font-size: clamp(36px, 8vw, 50px); } .heroCopy > p { font-size: 16px; }
   .demo { padding-inline: 16px; padding-bottom: 20px; } .carousel { gap: 16px; } .modelCard { flex-basis: 80%; max-width: 300px; } .modelArt .phone { width: 190px; }
   .sectionTop { gap: 18px; align-items: start; flex-wrap: wrap; } .sectionTop > div:first-child { flex-basis: 100%; } .carouselControls { gap: 8px; }
   .giftGrid, .sectorGrid, .trackingGrid, .pricing, .specialtyPanel, .beautyHero { grid-template-columns: 1fr; } .library { padding: 22px; }
@@ -144,9 +115,5 @@
   .pricing { padding: 26px; gap: 30px; } .finalCta { flex-direction: column; align-items: start; padding: 28px; } .finalCta .heading { font-size: 27px; }
   .specialtyPanel { gap: 24px; padding: 22px; } .specialtyPanel h3 { font-size: 25px; } .specialtyArt .phone { width: 195px; } .beautyHero > .phone { width: 190px; margin-block: 12px; }
 }
-@media (max-width: 359px) { .container { width: calc(100% - 32px); } .hero h1 { font-size: 35px; } .journey { height: 350px; } .journeyPlay { width: 156px; } .journeyPoster, .journeyReward { width: 118px; height: 220px; } .journeyPoster { gap: 5px; padding: 12px 7px 9px; } .posterBrand { font-size: 10px; } .posterKicker { font-size: 6px; } .posterHeadline { font-size: 13px; } .posterCopy { max-width: 95px; font-size: 7px; } .posterQr { width: 38px; height: 38px; } .posterQr svg { width: 32px; } .posterAction { font-size: 6px; } .journeyReward { padding: 22px 10px 12px; } .journeySteps { font-size: 10px; } .journeySteps span { gap: 5px; } .modelArt .phone { width: 175px; } .sectorCard { grid-template-columns: 95px 1fr; } .sectorArt .phone { width: 100px; } .sectionTop { align-items: start; } }
+@media (max-width: 359px) { .container { width: calc(100% - 32px); } .hero h1 { font-size: 35px; } .modelArt .phone { width: 175px; } .sectorCard { grid-template-columns: 95px 1fr; } .sectorArt .phone { width: 100px; } .sectionTop { align-items: start; } }
 @media (prefers-reduced-motion: reduce) { .home *, .carousel { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
-/* Keep the three labels below the complete, rotated portrait phone. */
-@media (min-width: 768px) and (max-width: 1023px) { .journey { height: 470px; } }
-@media (max-width: 767px) { .journey { height: 430px; } }
-@media (max-width: 359px) { .journey { height: 400px; } }
