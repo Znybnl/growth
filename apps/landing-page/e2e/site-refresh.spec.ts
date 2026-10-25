@@ -23,22 +23,26 @@ test("les modèles se parcourent et l’aperçu se referme au clavier sans appel
     await expect.poll(() => carousel.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
     await gallery.getByRole("button", { name: "Modèles précédents" }).click();
     await expect.poll(() => carousel.evaluate(element => element.scrollLeft)).toBeLessThanOrEqual(5);
-    const opener = gallery.getByRole("button", { name: "Voir le modèle Nude Élégance — Ticket à gratter", exact: true });
-    await opener.click();
-    const dialog = page.getByRole("dialog", { name: "Nude Élégance" });
-    await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText("Exemple fictif");
-    const close = dialog.getByRole("button", { name: "Fermer l’aperçu du modèle" });
-    await expect(close).toBeFocused();
-    await page.keyboard.press("Tab");
-    // Native dialogs may allow a stop in browser chrome. The page behind the
-    // modal must stay inert; do not require the browser's own UI to be trapped.
-    expect(await page.evaluate(() => document.activeElement === document.body || Boolean(document.activeElement?.closest("dialog")))).toBe(true);
-    await page.keyboard.press("Shift+Tab");
-    await expect(close).toBeFocused();
-    await page.keyboard.press("Escape");
-    await expect(dialog).not.toBeVisible();
-    await expect(opener).toBeFocused();
+    for (const [name, type] of [["Nude Élégance", "Ticket à gratter"], ["Beauty Pop", "Roue de la fortune"]]) {
+      const opener = gallery.getByRole("button", { name: `Voir le modèle ${name} — ${type}`, exact: true });
+      await opener.click();
+      const dialog = page.getByRole("dialog", { name, exact: true });
+      await expect(dialog).toBeVisible();
+      await expect(dialog).toContainText("Exemple fictif");
+      await expect.poll(() => dialog.locator("img").evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+      const close = dialog.getByRole("button", { name: "Fermer l’aperçu du modèle" });
+      await expect(close).toBeFocused();
+      await page.keyboard.press("Tab");
+      // Native dialogs may allow a stop in browser chrome. The page behind the
+      // modal must stay inert; do not require the browser's own UI to be trapped.
+      expect(await page.evaluate(() => document.activeElement === document.body || Boolean(document.activeElement?.closest("dialog")))).toBe(true);
+      await page.keyboard.press("Shift+Tab");
+      await expect(close).toBeFocused();
+      if (name === "Beauty Pop" && path === "/") await page.screenshot({ path: info.outputPath("beauty-pop-dialog.png") });
+      await page.keyboard.press("Escape");
+      await expect(dialog).not.toBeVisible();
+      await expect(opener).toBeFocused();
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
     if (path === "/") await gallery.screenshot({ path: info.outputPath("models.png"), style: "header.sticky { visibility: hidden !important; }" });
   }

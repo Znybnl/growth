@@ -79,6 +79,31 @@ Le rollback applicatif retire l'habillage ; il ne nécessite aucun rollback SQL.
 
 ## Vérifications
 
+### Exemple du site vitrine — #652, 25 octobre 2026
+
+`apps/landing-page/public/images/game-beauty-pop.webp` est recapturé avec le
+renderer courant de `CampaignExperience`, via la fixture de développement
+`/dev/beauty-wheel-backgrounds?mode=marketing&template=beauty-pop`.
+Ce mode conserve l’enseigne fictive Maison Botanique et « Une surprise / vous
+attend », mais utilise la typographie Bodoni, les couleurs et le fond natifs
+du modèle, sans les anciennes surcharges de la capture marketing générique.
+Les lots illustratifs viennent de la fixture Beauty Pop ; aucun jeu réel.
+Le rendu public est capturé sans bandeau de prévisualisation ni indicateur Next.js.
+
+Capture 390 × 844 avec facteur 2, puis conversion Sharp WebP qualité 80,
+effort 6 : **780 × 1688, 79 630 octets**. Même fichier partagé par la carte,
+la popin d’agrandissement et les autres utilisations marketing de Beauty Pop.
+
+Recette reproductible : démarrer le SaaS local en développement ; définir
+`PLAYWRIGHT_BASE_URL` vers ce serveur et `MARKETING_CAPTURE_TEMPLATE=beauty-pop`,
+puis exécuter dans `apps/web-app` :
+`npm run test:e2e -- game-screen-layout --grep "game screens marketing"`.
+Le PNG `game-beauty-pop.png` est produit dans les résultats Playwright avant
+conversion en WebP. La recette bloque les sorties HTTPS et intercepte toutes
+les API ; elle attend le fond et les polices, vérifie le titre fuchsia/Bodoni,
+les 24 lumières et l’absence de chevauchement sous-titre/pointeur. La route
+de fixture conserve son HTTP 404 en production. Aucun moteur de jeu modifié.
+
 `beauty-pop.spec.ts` : fond/miniature réellement décodables et budgets de poids,
 présence dans la bibliothèque et packaging, captures publiques/aperçu à320/390px
 et hauteur740px, bouton visible, titre et sous-titre distincts du pointeur,

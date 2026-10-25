@@ -24,8 +24,8 @@ export function BeautyWheelBackgroundFixture({
   const [selectedLogoMode, setSelectedLogoMode] = useState(logoMode);
   const [clicks, setClicks] = useState(0);
   const [finished, setFinished] = useState(0);
-  const [heading, setHeading] = useState(templateId === "beauty-pop" ? "Jouez & gagnez" : "Tournez la roue\net tentez de gagner !");
-  const [brand, setBrand] = useState(templateId === "beauty-pop" ? "L’Institut" : "VOTRE ÉTABLISSEMENT");
+  const [heading, setHeading] = useState(mode === "marketing" ? "Une surprise\nvous attend" : templateId === "beauty-pop" ? "Jouez & gagnez" : "Tournez la roue\net tentez de gagner !");
+  const [brand, setBrand] = useState(mode === "marketing" ? "Maison Botanique" : templateId === "beauty-pop" ? "L’Institut" : "VOTRE ÉTABLISSEMENT");
   const theme = beautyWheelTheme(selectedTemplate);
   const legacy = selectedTemplate === "beauty-editorial" && selectedBackground === "legacy";
   const form = {
@@ -69,7 +69,7 @@ export function BeautyWheelBackgroundFixture({
     prizes: form.prizes.map((prize) => ({ ...prize, id: prize.id!, remainingQuantity: prize.remainingQuantity ?? null, purchaseRequired: prize.purchaseRequired ?? false })),
   };
   const preview = buildCampaignLivePreviewModel(form, merchant);
-  if (mode === "public") return <CampaignExperience campaignId={publicCampaign.id} initialCampaign={publicCampaign} isPreview previewToken="fixture-only-token" />;
+  if (mode === "public" || mode === "marketing") return <CampaignExperience campaignId={publicCampaign.id} initialCampaign={publicCampaign} isPreview={mode !== "marketing"} previewToken={mode === "marketing" ? undefined : "fixture-only-token"} />;
   if (mode === "interaction") return <main style={{ width: 390, height: 500 }}>
     <WheelOfFortune accent={form.accent} wheelStyle={form.presentation.wheel} pageTemplate={selectedTemplate as ComponentProps<typeof WheelOfFortune>["pageTemplate"]}
       segments={preview.previewSegments} winningSegmentId={preview.winningSegmentId} buttonStyle={form.presentation.button}

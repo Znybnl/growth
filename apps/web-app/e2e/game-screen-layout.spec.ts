@@ -94,9 +94,11 @@ test("@visual-1280 ticket Noir & Or : le motif d’origine est visible dès le p
   }
 });
 
-test("game screens marketing : captures joueur réelles sur données synthétiques", async ({ browser }, info) => {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-  await context.route("**/api/public/campaign/template-proof-campaign*", route => route.fulfill({ json: { campaign: { actions: [] } } }));
+test("game screens marketing : captures joueur réelles sur données synthétiques", async ({ browser, baseURL }, info) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  await rejectAnalyticsForVisualTests(context, baseURL!);
+  await context.route(/https:\/\//, route => route.abort());
+  await context.route("**/api/**", route => route.fulfill({ json: { campaign: { actions: [] } } }));
   const page = await context.newPage();
   const models = [
     ["beauty-scratch-nude", "beauty", "game-nude-elegance"],
@@ -114,28 +116,46 @@ test("game screens marketing : captures joueur réelles sur données synthétiqu
     "beauty-scratch-botanical": "#334b38",
     "beauty-scratch-noir-or": "#f2e4c5",
     "beauty-scratch-lilas": "#44314d",
-    "beauty-pop": "#49313e",
+    "beauty-pop": "#e60062",
     "beauty-editorial": "#4c3b24",
     "beauty-nude": "#48382b",
     classic: "#ffffff",
     "scratch-confetti": "#3c3045",
   };
   const wheelButtons: Partial<Record<(typeof models)[number][0], { background: string; text: string }>> = {
-    "beauty-pop": { background: "#c52f68", text: "#fff7fa" },
     "beauty-editorial": { background: "#171614", text: "#f4dfaa" },
     "beauty-nude": { background: "#8a6937", text: "#fff9ee" },
   };
 
   try {
+    if (process.env.MARKETING_CAPTURE_TEMPLATE) {
+      expect(models.some(([template]) => template === process.env.MARKETING_CAPTURE_TEMPLATE)).toBe(true);
+    }
     for (const [template, business, asset] of models) {
+      if (process.env.MARKETING_CAPTURE_TEMPLATE && process.env.MARKETING_CAPTURE_TEMPLATE !== template) continue;
       const ink = encodeURIComponent(headingColors[template]);
       const button = wheelButtons[template];
       const buttonQuery = button ? `&button=${encodeURIComponent(button.background)}&buttonText=${encodeURIComponent(button.text)}` : "";
       const backgroundQuery = business === "retail" ? "&background=studio" : "";
-      await page.goto(`/dev/template-rendering-proof?mode=live&template=${template}&business=${business}&ink=${ink}${buttonQuery}${backgroundQuery}`);
+      // Beauty Pop uses the current native palette/font/artwork, rather than
+      // the overrides retained by the older generic marketing fixture.
+      await page.goto(template === "beauty-pop"
+        ? "/dev/beauty-wheel-backgrounds?mode=marketing&template=beauty-pop"
+        : `/dev/template-rendering-proof?mode=live&template=${template}&business=${business}&ink=${ink}${buttonQuery}${backgroundQuery}`);
       await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
       const surface = page.locator(".okado-public-experience");
       await expect(surface.locator(template.includes("scratch") ? "h2" : "h1")).toBeVisible();
+      if (template === "beauty-pop") {
+        await expect(surface).not.toContainText("Mode prévisualisation");
+        const art = surface.locator('img[data-template-art="beauty-pop"]');
+        await expect.poll(() => art.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+        await expect(surface.locator("h1")).toHaveCSS("color", "rgb(230, 0, 98)");
+        await expect(surface.locator("h1")).toHaveCSS("font-family", /Bodoni/);
+        await expect(surface.getByTestId("beauty-pop-stationary-rim").locator(".okado-beauty-pop-bulb")).toHaveCount(24);
+        const secondary = (await surface.locator(".okado-wheel-subtitle").boundingBox())!;
+        const pointer = (await surface.getByTestId("beauty-wheel-pointer").boundingBox())!;
+        expect(pointer.y).toBeGreaterThanOrEqual(secondary.y + secondary.height);
+      }
       if (template.includes("scratch")) {
         const ticket = surface.getByTestId("scratch-ticket-surface");
         const foil = ticket.locator("canvas");
