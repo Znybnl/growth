@@ -70,7 +70,9 @@ test("le ticket se gratte au pointeur et les liens directs survivent au recharge
   await demo.getByRole("button", { name: "Jouer", exact: true }).click();
   await demo.getByRole("button", { name: "Jouer maintenant" }).click();
   const canvas = demo.getByTestId("demo-scratch");
-  await canvas.scrollIntoViewIfNeeded();
+  // Wait for the layout to settle after closing the action panel before
+  // calculating the coordinates of the real pointer gesture.
+  await canvas.hover();
   const bounds = (await canvas.boundingBox())!;
   await page.mouse.move(bounds.x + 15, bounds.y + 20);
   await page.mouse.down();
@@ -134,16 +136,15 @@ test("changer d’activité annule la rotation et respecte l’historique", asyn
   await expect(demo.getByTestId("demo-phone")).toContainText("Le bistro");
 });
 
-test("@visual-1280 repères du hero dégagés et sélecteur accessible", async ({ page }, info) => {
+test("@visual-1280 hero compact et sélecteur accessible", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "Une seule matrice visuelle.");
   for (const width of [320, 390, 768, 1280, 1440]) {
     await page.setViewportSize({ width, height: 720 });
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
     const hero = page.getByRole("region", { name: /Donnez à vos clients/ });
-    const phone = (await hero.locator("img").boundingBox())!;
-    const label = (await hero.locator('[class*="journeySteps"] > span').nth(1).boundingBox())!;
-    expect(label.y, `${width}: label under the full phone`).toBeGreaterThan(phone.y + phone.height + 6);
+    await expect(hero.locator("img, figure")).toHaveCount(0);
+    await expect(hero.getByRole("link")).toHaveCount(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await page.screenshot({ path: info.outputPath(`home-${width}.png`) });
     await page.goto("/#demo-retail");

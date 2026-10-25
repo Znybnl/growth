@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, ChartNoAxesCombined, Gift, Leaf, Palette, QrCode } from "lucide-react";
-import { commerceModel, gameModels, heroModel, restaurantModel } from "@/lib/marketing-examples";
+import { ArrowRight } from "lucide-react";
+import { commerceModel, gameModels, restaurantModel } from "@/lib/marketing-examples";
 import { APP_URL } from "@/lib/site";
 import { GamePreview } from "./game-preview";
 import { PrimaryButton } from "./primary-button";
@@ -9,40 +9,13 @@ import styles from "./showcase.module.css";
 export function HomeHero() {
   return <section className={`${styles.container} ${styles.hero}`} aria-labelledby="home-hero-title">
     <div className={styles.heroCopy}>
-      <p className={styles.eyebrow}>Jeux interactifs & fidélisation</p>
       <h1 id="home-hero-title">Donnez à vos clients une bonne raison de <em>revenir.</em></h1>
-      <p>Une roue de la fortune ou un ticket à gratter à votre image. Vos clients scannent un QR code, jouent sur leur téléphone et peuvent gagner un cadeau à utiliser lors d’une prochaine visite.</p>
-      <div className={styles.actions}>
-        <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="hero">Essayer gratuitement</PrimaryButton>
-        <PrimaryButton href="#demo" trackingName="view_demo" trackingLocation="hero" appearance="secondary">Voir la démo</PrimaryButton>
-      </div>
-      <p className={styles.reassurance}>30 jours gratuits · Sans carte bancaire · Sans engagement</p><p className={styles.note}>Puis 20 € HT/mois. Les lots restent à votre charge.</p>
-      <ul aria-label="Les points forts d’Okado" className={styles.benefits}>
-        <li><Palette aria-hidden="true" />Jeux personnalisables</li><li><Gift aria-hidden="true" />Lots maîtrisés</li><li><ChartNoAxesCombined aria-hidden="true" />Retraits suivis</li>
-      </ul>
+      <p>Une roue de la fortune ou un ticket à gratter à votre image. Vos clients scannent, jouent et peuvent gagner un cadeau à utiliser lors d’une prochaine visite.</p>
     </div>
-    <figure className={styles.heroVisual}>
-      <div className={styles.journey}>
-        <div className={styles.journeyPoster} aria-hidden="true">
-          <span className={styles.posterBrand}><Leaf size={15} />Maison Botanique</span>
-          <span className={styles.posterKicker}>Une attention pour vous</span>
-          <strong className={styles.posterHeadline}>Une surprise<br />vous attend.</strong>
-          <span className={styles.posterCopy}>À découvrir lors de votre prochaine visite.</span>
-          <span className={styles.posterQr}><QrCode size={48} strokeWidth={1.5} /></span>
-          <span className={styles.posterAction}>Scannez pour jouer</span>
-        </div>
-        <div className={styles.journeyPlay}><GamePreview model={heroModel} eager /></div>
-        <div className={styles.journeyReward} aria-hidden="true">
-          <div className={styles.rewardHeader}><span>MAISON BOTANIQUE</span><span>VOTRE CADEAU</span></div>
-          <span className={styles.rewardIcon}><Gift size={22} strokeWidth={1.5} /></span>
-          <strong>Un masque<br />offert.</strong>
-          <small>Avec un soin visage payant.</small>
-          <span className={styles.rewardFooter}>Votre gain confirmé par e-mail</span>
-        </div>
-        <div className={styles.journeySteps} aria-hidden="true"><span><b>1</b>Scanne</span><span><b>2</b>Joue</span><span><b>3</b>Découvre</span></div>
-      </div>
-      <figcaption className={`${styles.note} text-center mt-4`}>Parcours illustré avec un vrai rendu de jeu. Exemple fictif.</figcaption>
-    </figure>
+    <div className={styles.heroSignup}>
+      <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="hero">Essayer gratuitement</PrimaryButton>
+      <p>30 jours sans carte bancaire, sans engagement.</p>
+    </div>
   </section>;
 }
 
