@@ -100,7 +100,7 @@ export const blogPosts: BlogPost[] = [
           "Défi photo ou mise en scène en boutique, sans conditionner une récompense à un avis public.",
           "Offre sur un créneau calme pour mieux répartir le flux de visites.",
           "Animation en caisse qui propose une prochaine visite plutôt qu’une remise illimitée.",
-          "Journée thématique liée à votre activité et à un produit réellement disponible.",
+          "Journée thématique liée à un produit disponible, par exemple une découverte de montures et accessoires en magasin d’optique ([guide pratique](/blog/journee-decouverte-magasin-optique)).",
           "Programme ambassadeur présenté comme une invitation, avec des règles et un consentement explicites.",
           "Échantillonnage ou découverte d’un format réduit, si le stock et les conditions le permettent.",
           "Opération saisonnière avec une durée, une dotation et une date de fin visibles.",
@@ -634,7 +634,156 @@ export const blogPosts: BlogPost[] = [
       "/blog/animation-commerciale-institut-beaute",
       "/blog/attirer-clients-commerce-local",
       "/guides/lots-institut-beaute",
+      "/blog/faire-revenir-cliente-apres-premiere-visite-institut-beaute",
       "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/faire-revenir-cliente-apres-premiere-visite-institut-beaute",
+    source: [
+      {
+        label: "CNIL — communications électroniques aux prospects et clients : quelles règles respecter ?",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "Google Business Profile — ajouter un lien de réservation à sa fiche",
+        href: "https://support.google.com/business/answer/6218037?hl=fr",
+      },
+      {
+        label: "CNIL — minimiser les données collectées",
+        href: "https://www.cnil.fr/fr/minimiser-les-donnees-collectees",
+      },
+    ],
+    title: "Comment faire revenir une cliente après sa première visite en institut ?",
+    seoTitle: "Faire revenir une cliente après sa première visite en institut",
+    description:
+      "Comment favoriser une deuxième visite en institut : réservation simple, suivi utile, relance conforme et mesure des rendez-vous honorés.",
+    eyebrow: "Fidélisation beauté",
+    intro:
+      "Après un premier soin, une cliente sait-elle quoi faire ensuite, peut-elle reprendre rendez-vous facilement et l’institut saura-t-il vérifier qu’elle est revenue ? Ces trois questions aident à construire un parcours utile, sans supposer qu’une cliente doit revenir ni qu’une remise la fera revenir.",
+    answer:
+      "À la fin du premier soin, expliquez la prochaine étape seulement si elle a du sens pour la cliente, proposez de réserver sans pression et laissez une façon simple de reprendre rendez-vous. Séparez les rappels nécessaires au service des messages promotionnels, puis mesurez les rendez-vous effectivement honorés plutôt que les seules réservations.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-25",
+    updatedAt: "2026-10-25",
+    reviewedAt: "2026-10-25",
+    readingTime: "10 min de lecture",
+    image: "/images/blog/faire-revenir-cliente-premiere-visite-institut.webp",
+    imageAlt: "Une esthéticienne échange avec une cliente à la fin de son premier rendez-vous",
+    ctaLabel: "Découvrir Okado pour un institut de beauté",
+    ctaHref: "/instituts-beaute",
+    sections: [
+      {
+        title: "La deuxième visite se prépare pendant la première",
+        paragraphs: [
+          "La possibilité d’une deuxième visite dépend de plusieurs éléments concrets : la prestation correspondait-elle à ce qui avait été annoncé, la cliente sait-elle quoi faire ensuite et peut-elle reprendre rendez-vous sans friction ? Il n’existe ni délai ni fréquence universels : le rythme dépend du soin, des préférences de la personne, de son budget et de son expérience. Ne transformez pas une recommandation professionnelle en obligation de revenir.",
+          "À la fin du rendez-vous, demandez d’abord si elle souhaite un conseil pour la suite. Si un autre soin ou un entretien peut être pertinent, expliquez pourquoi et dans quel horizon cela pourrait se discuter, sans promettre de résultat esthétique ou de santé. Si aucune prochaine visite n’est nécessaire, n’en inventez pas une pour remplir l’agenda.",
+          "Le but n’est pas de verrouiller une réservation avant le départ. C’est de permettre à la cliente de choisir en connaissance de cause : réserver maintenant, réfléchir, ou reprendre contact plus tard.",
+          "Ce sujet est différent du remplissage d’un créneau calme : si votre problème principal est une période de faible fréquentation, consultez aussi le guide pour [animer une période creuse dans un commerce local](/blog/animer-periode-creuse-commerce-local). Ici, le point de départ est une première prestation déjà réalisée.",
+        ],
+      },
+      {
+        title: "Terminez le premier rendez-vous par une proposition simple",
+        paragraphs: [
+          "Un échange bref et cohérent vaut mieux qu’un script commercial. Résumez le soin réalisé, répondez aux questions, puis proposez une prochaine étape uniquement lorsqu’elle est adaptée. Laissez toujours une sortie claire : la cliente peut refuser ou décider plus tard sans devoir se justifier.",
+          "Par exemple : « Si vous souhaitez poursuivre, on peut regarder ensemble une date qui vous convient. Sinon, vous pourrez reprendre rendez-vous quand vous le voudrez ; je vous laisse le lien et les informations du soin. » Adaptez cette phrase au service réellement rendu et aux habitudes de l’institut.",
+        ],
+        items: [
+          "Vérifiez que la cliente a compris ce qui a été fait et les conseils utiles après le rendez-vous.",
+          "N’évoquez une prochaine séance que si elle correspond à son besoin et à vos recommandations professionnelles.",
+          "Proposez un rendez-vous sans pression, avec la durée, le tarif et les disponibilités connus.",
+          "Si elle préfère attendre, indiquez une façon simple de retrouver le bon service et de réserver plus tard.",
+        ],
+      },
+      {
+        title: "Rendez la reprise de rendez-vous facile",
+        paragraphs: [
+          "Après une première visite, la cliente ne devrait pas avoir à rechercher le nom exact du soin ou à recommencer une longue conversation pour connaître les disponibilités. Un lien direct vers le bon service ou l’agenda, des horaires à jour et des instructions de réservation visibles réduisent les étapes inutiles. Testez le parcours sur téléphone, jusqu’à la confirmation ou à la demande de rappel.",
+          "Si l’option est disponible pour votre établissement, [Google Business Profile permet d’ajouter un lien de prise de rendez-vous](https://support.google.com/business/answer/6218037?hl=fr) à la fiche. Vérifiez que le lien ouvre bien votre outil, affiche la prestation concernée et permet de terminer la démarche. Cette fonctionnalité aide à accéder à la réservation ; elle ne garantit ni visibilité supplémentaire ni retour de la cliente.",
+          "Dans votre outil de rendez-vous, distinguez les statuts utiles : première visite honorée, prochain rendez-vous pris, rendez-vous déplacé ou annulé, puis seconde visite honorée. Une réservation future n’est pas encore une visite réalisée. Un agenda papier peut suffire à petite échelle si l’équipe tient la même méthode de suivi.",
+        ],
+      },
+      {
+        title: "Faites un suivi utile, pas une relance automatique",
+        paragraphs: [
+          "Un message de suivi n’a d’intérêt que s’il répond à une attente réelle : transmettre une information pratique promise, vérifier que la cliente a trouvé les instructions communiquées, ou l’aider à retrouver le lien de réservation qu’elle a demandé. Convenez du canal lorsqu’il s’agit d’un échange individuel et ne partez pas du principe qu’un e-mail laissé pour recevoir une confirmation autorise des offres ultérieures.",
+          "Évitez une cadence générique du type « relancer tout le monde après deux semaines ». Choisissez le moment d’un éventuel contact en fonction de la prestation, de l’échéance annoncée et de la préférence exprimée. Si aucune information utile n’est attendue, ne créez pas un message juste pour occuper une case dans un calendrier marketing.",
+          "La [CNIL distingue les messages nécessaires à l’exécution d’un service, le suivi relationnel sans finalité promotionnelle directe et la prospection commerciale](https://www.cnil.fr/fr/communication-electronique-quelles-regles). Un message devient promotionnel par son objectif réel, même si son objet l’appelle « suivi ». Pour les particuliers, la prospection par e-mail ou SMS requiert en principe un accord préalable ; l’exception client existant est encadrée : prestation déjà achetée, offres similaires de la même entreprise, information et opposition facile à la collecte comme dans chaque message. En cas de doute sur votre situation, vérifiez la règle applicable avant l’envoi.",
+        ],
+        items: [
+          "Séparez la confirmation ou l’information de service des offres et invitations commerciales.",
+          "Conservez la preuve et la portée du choix marketing selon le canal ; le refus ne doit pas empêcher la prestation demandée.",
+          "Donnez un moyen simple de s’opposer aux messages promotionnels et respectez immédiatement ce choix.",
+          "Ne transmettez pas les coordonnées à un partenaire pour qu’il démarche la cliente.",
+        ],
+      },
+      {
+        title: "Ne faites pas de la remise la raison systématique de revenir",
+        paragraphs: [
+          "Une réduction peut attirer l’attention, mais elle a un coût et peut habituer la clientèle à attendre le prochain code. Avant de la proposer, vérifiez qu’elle correspond à un objectif précis, que les conditions sont compréhensibles et que l’institut peut l’honorer sans dégrader le service ou sa marge.",
+          "D’autres attentions peuvent être plus cohérentes : une option clairement définie, une découverte adaptée, une disponibilité mieux présentée ou un avantage ponctuel lié à un moment précis. Le bénéfice doit rester réel, limité et facultatif. Ne créez pas une urgence artificielle et n’annoncez pas une valeur ou une économie qui n’est pas vérifiable.",
+          "Si vous organisez une animation Okado, une roue ou un ticket à gratter peut donner une raison ludique de découvrir une offre de l’institut. Préparez les lots, les conditions et leur validité avant de diffuser le QR code. Cela ne remplace ni l’agenda ni le CRM : un scan, une participation ou un gain ne prouve pas qu’une seconde visite a eu lieu. L’adresse utilisée pour transmettre un gain ne vaut pas inscription à une prospection commerciale.",
+        ],
+      },
+      {
+        title: "Mesurez les visites, pas seulement les intentions",
+        paragraphs: [
+          "Choisissez une fenêtre d’observation cohérente avec le soin et annoncez-la dans votre analyse. Une prestation d’entretien rapproché et un soin ponctuel ne se comparent pas avec le même délai. Si vous retenez 60 jours pour un test, présentez ce choix comme une fenêtre de mesure interne, pas comme une norme du secteur.",
+          "Exemple entièrement fictif : une cohorte comprend 40 clientes dont la première visite a été honorée pendant un mois. Parmi elles, 18 réservent une nouvelle date avant de partir : 18 ÷ 40 = 45 % de réservations immédiates. Pour mesurer le retour, laissez ensuite à chacune 60 jours complets après sa première visite et attendez que la dernière fenêtre soit terminée. Dans cet exemple, 14 sur 40 ont réalisé une deuxième visite dans leur fenêtre : 14 ÷ 40 = 35 % de retours observés. Ces chiffres illustrent le calcul ; ils ne prédisent pas les résultats d’un institut.",
+          "Les deux pourcentages répondent à des questions différentes : réserver avant de partir n’est pas la même chose que revenir, et une cliente peut aussi réserver plus tard. Notez les annulations et déplacements, le type de soin, la période, les créneaux disponibles et la méthode de comptage. Sans comparaison fiable, parlez d’un constat et non d’un effet causé par une remise, un message ou Okado.",
+          "Pour ce suivi, ne créez pas un fichier marketing plus détaillé que nécessaire : date de première visite, statut de réservation et présence peuvent suffire au calcul. Gardez les informations opérationnelles du soin dans l’outil prévu à cet effet et évitez de les recopier dans une liste de prospection. La [CNIL recommande de limiter les données collectées à ce qui est nécessaire](https://www.cnil.fr/fr/minimiser-les-donnees-collectees) ; certaines informations révélant l’état de santé relèvent en outre d’un régime particulier, à qualifier selon leur nature et leur usage.",
+        ],
+        items: [
+          "Premières visites honorées : dénominateur de la cohorte suivie.",
+          "Réservations prises avant le départ : indicateur d’intention, pas de présence.",
+          "Deuxièmes visites honorées dans la fenêtre définie : indicateur de retour observé.",
+          "Annulations, absences, changements de créneau et retours hors fenêtre : contexte à conserver.",
+          "Coût des avantages et temps d’équipe : éléments utiles avant de reconduire le dispositif.",
+        ],
+      },
+      {
+        title: "Un plan de mise en place sur quatre semaines",
+        paragraphs: [
+          "Commencez par une méthode légère que l’équipe peut tenir. Le but du premier mois est de repérer les frictions du parcours et de fiabiliser les définitions, pas de prouver une fidélité de long terme sur un petit échantillon.",
+        ],
+        items: [
+          "Semaine 1 — Choisissez un type de première visite et définissez ce qui compte comme rendez-vous honoré, réservation suivante et seconde visite.",
+          "Semaine 2 — Testez la conversation de fin de rendez-vous et vérifiez le lien de réservation sur téléphone. Ne changez qu’un élément du parcours.",
+          "Semaine 3 — Recueillez uniquement les retours utiles à l’expérience. N’envoyez aucune offre électronique sans base adaptée et choix respecté.",
+          "Semaine 4 — Examinez réservations, présences, annulations et contraintes de capacité. Gardez, corrigez ou arrêtez le test ; suivez la cohorte jusqu’à la fin de sa fenêtre avant d’annoncer un taux de retour.",
+        ],
+      },
+      {
+        title: "Checklist avant de lancer le suivi",
+        paragraphs: [
+          "Avant d’appliquer la démarche à une cohorte de premières visites, vérifiez ces points avec l’équipe :",
+        ],
+        items: [
+          "La prochaine étape est proposée seulement si elle est adaptée au soin et souhaitée par la cliente.",
+          "Le lien, les tarifs, les horaires et le parcours de réservation ont été testés sur téléphone.",
+          "Les informations de service sont séparées des offres commerciales ; les préférences de prospection sont recueillies et respectées selon les règles applicables.",
+          "Les données suivies sont limitées au nécessaire ; les notes opérationnelles ou révélant la santé ne sont pas copiées dans une liste marketing sans cadre approprié.",
+          "La cohorte, le dénominateur et la fenêtre d’observation sont définis avant le test ; une réservation n’est pas comptée comme une présence.",
+          "Les annulations, contraintes de capacité et avantages remis seront pris en compte ; aucun résultat causal ou taux de référence ne sera extrapolé de ce seul test.",
+        ],
+      },
+      {
+        title: "Questions fréquentes",
+        paragraphs: [
+          "Faut-il toujours proposer un prochain rendez-vous à la fin d’un soin ? Non. Faites-le si la prestation et les souhaits de la cliente le justifient ; laissez-la repartir sans pression si elle préfère décider plus tard.",
+          "Quand relancer une cliente qui n’a pas repris rendez-vous ? Il n’existe pas de délai universel. Vérifiez d’abord qu’un message est attendu et utile, puis adaptez son moment au service et à la préférence exprimée. Une proposition commerciale par e-mail ou SMS doit respecter les règles de prospection applicables.",
+          "Une réservation compte-t-elle comme une cliente revenue ? Non. Suivez séparément le rendez-vous réservé, déplacé, annulé et effectivement honoré.",
+          "Faut-il offrir une réduction pour faire revenir une cliente ? Pas nécessairement. Une réservation plus simple, une expérience cohérente ou une prochaine étape adaptée peuvent suffire. Si vous accordez un avantage, calculez son coût et écrivez ses conditions avant de communiquer.",
+          "Okado peut-il mesurer les clientes qui reviennent ? Okado suit les étapes du jeu et les résultats liés à l’animation, selon les données disponibles. Pour vérifier qu’une cliente a réellement honoré une seconde prestation, rapprochez le rendez-vous de votre agenda ou de votre outil métier, selon une méthode appropriée et conforme à vos obligations.",
+        ],
+      },
+    ],
+    related: [
+      "/instituts-beaute",
+      "/blog/attirer-nouvelles-clientes-institut-beaute",
+      "/blog/fideliser-clients-sans-programme-points",
+      "/blog/faire-revenir-clients-animation",
+      "/blog/animer-periode-creuse-commerce-local",
     ],
   },
   {
@@ -4601,6 +4750,161 @@ export const blogPosts: BlogPost[] = [
     related: [
       "/blog/animation-lancement-nouveau-produit",
       "/blog/jeu-concours-ou-promotion",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
+  {
+    path: "/blog/journee-decouverte-magasin-optique",
+    title: "Comment organiser une journée découverte dans un magasin d’optique ?",
+    seoTitle: "Journée découverte chez un opticien : idées et organisation",
+    description:
+      "Journée découverte en magasin d’optique : idées de thème, déroulé, invitation locale et indicateurs pour faire le bilan sans promesse de ventes.",
+    eyebrow: "Opticiens et commerce local",
+    intro:
+      "Pour animer un magasin d’optique, organisez une découverte concrète des montures, accessoires ou services réellement proposés. Le rendez-vous doit rester une présentation de boutique, pas une consultation : choisissez un thème limité, préservez les échanges individuels et annoncez clairement ce que les visiteurs pourront découvrir.",
+    answer:
+      "Choisissez une famille de montures ou d’accessoires et un public, préparez un déroulé court à partir des références disponibles, puis désignez une personne pour l’animation et une autre pour l’accueil si l’activité le permet. Annoncez horaires et conditions d’accès. Gardez les questions individuelles de correction hors de la présentation collective et mesurez les présences et demandes sans les assimiler à des ventes.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-25",
+    updatedAt: "2026-10-25",
+    reviewedAt: "2026-10-25",
+    readingTime: "8 min de lecture",
+    image: "/images/blog/journee-decouverte-magasin-optique.webp",
+    imageAlt:
+      "Un opticien présente plusieurs montures à une cliente dans une boutique indépendante",
+    ctaLabel: "Découvrir le fonctionnement d’Okado",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Légifrance — Code de la santé publique, délivrance et adaptation des verres correcteurs",
+        href: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047568701",
+      },
+      {
+        label: "Google Business Profile — publier un événement sur sa fiche d’établissement",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "CNIL — communications électroniques et prospection commerciale",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "CNIL — minimiser les données collectées",
+        href: "https://www.cnil.fr/fr/minimiser-les-donnees-collectees",
+      },
+      {
+        label: "CNIL — déterminer une durée de conservation des données",
+        href: "https://www.cnil.fr/fr/passer-laction/les-durees-de-conservation-des-donnees",
+      },
+      {
+        label: "DGCCRF — annonces de réduction de prix",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir",
+      },
+      {
+        label: "DGCCRF — loteries publicitaires et pratiques commerciales",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
+      },
+    ],
+    sections: [
+      {
+        title: "Choisir un thème assez précis pour être utile",
+        paragraphs: [
+          "Une invitation comme « journée de l’optique » reste difficile à se représenter. Préférez un thème visible en boutique : découvrir les formes de montures, comparer des matériaux à partir des fiches produit, présenter des accessoires, ou montrer comment l’équipe entretient et ajuste une monture dans le cadre de ses services. Ne retenez que les sujets que le magasin peut réellement préparer et expliquer.",
+          "Définissez aussi à qui s’adresse le rendez-vous : personnes qui cherchent une monture, parents accompagnant un enfant, clients curieux d’une nouvelle collection ou visiteurs qui veulent connaître les services de l’atelier. Ce choix guide les exemples, le nombre de places et le ton de l’annonce ; il ne justifie pas de collecter des informations de santé pour segmenter les invités.",
+          "Pour construire une trame, notez une phrase de promesse, trois objets à présenter et les questions de boutique auxquelles l’équipe sait répondre. Les informations techniques doivent correspondre aux modèles réellement montrés et aux documents disponibles, pas être généralisées à toutes les montures ou à tous les verres.",
+          "Trois formats à adapter au magasin : une présentation temporaire d’une collection invitée, si une marque ou un créateur peut participer ; une comparaison de matières et de finitions appuyée sur les fiches des références ; ou une démonstration d’entretien et des services d’atelier réellement proposés. Dans chaque cas, montrez les produits disponibles et annoncez ce qui nécessite ensuite un échange individuel.",
+        ],
+        items: [
+          "Montures : formes, matériaux, finitions et différences observables entre les références présentes.",
+          "Accessoires : étuis, cordons ou produits d’entretien, avec leurs usages et consignes fabricant.",
+          "Services de boutique : étapes pratiques de prise en charge, entretien ou ajustage, selon ce que l’établissement propose réellement.",
+        ],
+      },
+      {
+        title: "Organiser une découverte sans interrompre l’activité",
+        paragraphs: [
+          "Avant de fixer la date, regardez les rendez-vous, la disponibilité de l’équipe, l’espace de circulation et le nombre de modèles à portée de main. Une personne doit rester disponible pour l’accueil habituel ; si toute l’équipe est mobilisée par l’animation, réduisez la jauge ou choisissez un format plus court. Gardez la caisse, l’accès aux présentoirs et les zones de confidentialité dégagés.",
+          "Un parcours simple suffit : accueil et présentation du thème, découverte de quelques modèles, questions générales, puis orientation vers un échange individuel si la personne en a besoin. Indiquez à l’équipe qui anime et qui prend le relais. Une réservation peut aider à dimensionner les places, mais annoncez également si les visiteurs sans inscription peuvent venir.",
+          "Exemple fictif à adapter : un samedi, deux séquences de 30 minutes à 10 h 30 et 15 h, limitées à six personnes chacune, avec 15 minutes entre les groupes pour remettre les montures en place. Une personne anime chaque séquence et une autre garde l’accueil courant. Ces nombres illustrent une organisation ; ils ne constituent ni une jauge recommandée pour tous les magasins, ni une estimation de fréquentation.",
+        ],
+        table: {
+          caption: "Exemple fictif de déroulé pour une séquence de 30 minutes",
+          headers: ["Temps", "Séquence", "À préparer"],
+          rows: [
+            ["0–3 min", "Accueillir et rappeler le thème", "Durée, espace et règles de circulation"],
+            ["3–15 min", "Présenter trois ou quatre modèles", "Références présentes et fiches fabricant"],
+            ["15–24 min", "Comparer les formes et finitions", "Montures accessibles et miroir"],
+            ["24–30 min", "Questions générales et clôture", "Relais séparé pour les demandes individuelles"],
+          ],
+        },
+        items: [
+          "Sélectionner à l’avance les références, accessoires et fiches fabricant à présenter.",
+          "Préparer une table ou un présentoir identifié, sans déplacer les produits nécessaires aux rendez-vous.",
+          "Prévoir une durée, une jauge et un rôle pour chaque personne de l’équipe.",
+          "Définir comment proposer un échange ultérieur lorsque la question dépasse la démonstration collective.",
+        ],
+      },
+      {
+        title: "Maintenir une frontière nette avec la santé visuelle",
+        paragraphs: [
+          "Une journée de découverte commerciale n’est ni un examen de vue ni un diagnostic. Ne demandez pas à l’animateur de commenter une ordonnance, d’évaluer des symptômes ou de proposer une correction personnalisée au milieu d’une présentation collective. Si un visiteur soulève une question individuelle, interrompez le format commercial et reprenez-la à part, dans le cadre professionnel applicable ; orientez vers un médecin ou un autre professionnel de santé lorsque la situation le nécessite.",
+          "La frontière ne signifie pas que l’opticien n’a aucun rôle sur les équipements correcteurs : le [Code de la santé publique prévoit des conditions encadrées pour leur délivrance et certaines adaptations de prescription](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047568701). Ces compétences ne se déduisent pas d’une animation et ne sont pas détaillées ici. Faites valider par l’opticien responsable les démonstrations et les réponses prévues, surtout si elles touchent à une situation individuelle.",
+          "Pour une simple réservation, ne demandez pas de détails sur la santé ou l’ordonnance. La [CNIL recommande de limiter les informations collectées à celles qui sont nécessaires à la finalité annoncée](https://www.cnil.fr/fr/minimiser-les-donnees-collectees) et de [déterminer une durée de conservation adaptée à cette finalité](https://www.cnil.fr/fr/passer-laction/les-durees-de-conservation-des-donnees). Dites à quoi servent les coordonnées, puis supprimez-les ou anonymisez-les lorsqu’elles ne sont plus utiles, sauf autre obligation applicable. Une inscription à l’événement ne vaut pas, à elle seule, accord général pour recevoir des offres ultérieures.",
+        ],
+      },
+      {
+        title: "Inviter localement avec un programme exact",
+        paragraphs: [
+          "L’annonce doit répondre immédiatement aux questions pratiques : quoi découvrir, où, quand, combien de temps, entrée libre ou sur réservation, nombre de places et éventuel tarif. Si une référence est présentée uniquement sur commande ou si une démonstration dépend de la disponibilité d’un membre de l’équipe, précisez-le avant le déplacement. Évitez les formulations qui promettent un résultat visuel ou un conseil individuel gratuit si ce n’est pas le format proposé.",
+          "La fiche d’établissement Google permet de publier un post de type événement avec titre et dates ; la documentation explique où il peut apparaître sur la Recherche et Maps. Vous pouvez [créer un post événementiel Google](https://support.google.com/business/answer/7342169?hl=fr), puis vérifier qu’il est bien indiqué « En ligne » et corriger les horaires si le programme change. Cette publication est un canal de communication, pas une garantie de visibilité ou de participation.",
+          "Modèle d’invitation à compléter : « Découverte de [thème ou famille de montures], le [date] de [heure] à [heure] chez [nom et adresse]. Au programme : présentation de [éléments réellement prévus]. [Entrée libre / réservation conseillée ou obligatoire, modalités et éventuel tarif]. » Remplacez chaque champ avant publication et retirez toute promesse de disponibilité qui n’a pas été confirmée.",
+          "Relayer l’invitation en vitrine, sur le site et dans les réseaux sociaux du magasin. Pour un e-mail ou SMS, distinguez le message nécessaire à une réservation de la prospection commerciale. La [CNIL détaille les règles des communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles) : pour les particuliers, le principe est le consentement préalable à la prospection, sous réserve des exceptions applicables. N’ajoutez donc pas automatiquement les inscrits à une liste marketing ; séparez cette finalité et son choix.",
+        ],
+      },
+      {
+        title: "Préférer une découverte à une remise permanente",
+        paragraphs: [
+          "Le contenu de la journée peut être l’avantage : voir des modèles rarement sortis, comparer des finitions, échanger avec l’équipe ou comprendre les services de l’atelier. Si vous choisissez une offre, définissez son objet, sa durée, les références concernées, les limites de stock et les conditions avant de la communiquer. Une remise n’est pas nécessaire pour donner une raison de passer en boutique.",
+          "En cas d’annonce de réduction de prix, vérifiez la règle applicable au produit et à la formule retenue. La [DGCCRF rappelle que le prix antérieur annoncé correspond en principe au prix le plus bas pratiqué par le professionnel dans les 30 jours précédant la réduction](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir). Ne réutilisez pas un pourcentage ou un prix barré d’une précédente campagne sans contrôler la situation actuelle.",
+          "Un jeu promotionnel peut être ajouté comme animation facultative, avec un règlement et une dotation définis avant diffusion. Consultez les repères de la [DGCCRF sur les loteries publicitaires](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees) pour vérifier les règles applicables au dispositif concret. Okado peut servir à proposer un jeu par QR code ; ce n’est ni un système de réservation ou de dossier client, ni un essayage virtuel ou un outil de diagnostic. [Voir le fonctionnement d’Okado](/comment-ca-marche) et comparez ce format à une simple démonstration si celle-ci répond déjà à l’objectif.",
+        ],
+      },
+      {
+        title: "Mesurer l’intérêt sans inventer un retour sur investissement",
+        paragraphs: [
+          "Choisissez les indicateurs avant la journée et utilisez des dénominateurs compréhensibles : inscriptions, personnes effectivement venues, participants aux séquences, demandes d’information produit et rendez-vous demandés. Ne mélangez pas ces étapes. Une inscription n’est pas une visite, une question n’est pas une intention d’achat, et une vente observée le jour même n’est pas automatiquement causée par l’événement.",
+          "Exemple fictif de bilan : 12 réservations confirmées, 9 personnes présentes, 7 échanges sur les montures et 3 demandes de rendez-vous. Le taux de présence descriptif est de 9 ÷ 12 = 75 % ; les demandes de rendez-vous représentent 3 ÷ 9 = 33 % des personnes présentes. Ces ratios décrivent seulement cet exemple : ce ne sont ni des objectifs sectoriels ni une preuve de vente ou de fidélité causée par l’événement. Notez aussi le temps d’équipe, les références montrées et les imprévus.",
+          "Pour comparer deux éditions, gardez une méthode identique et consignez les différences de jour, horaires, météo, équipe et disponibilité des produits. Le guide [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) explique comment séparer participation, contact, retrait et vente. Pour l’aménagement et la circulation, consultez aussi [l’expérience client en boutique](/blog/experience-client-boutique) ; les principes de [découverte en magasin de vêtements](/blog/animation-boutique-vetements) peuvent inspirer la mise en scène, mais doivent être adaptés aux produits d’optique.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une journée découverte chez un opticien",
+        paragraphs: [
+          "Quel thème choisir pour une journée découverte en magasin d’optique ? Choisissez une famille de montures, une présentation de matériaux ou d’accessoires, ou une explication des services réellement disponibles. Le sujet doit tenir dans le temps prévu et s’appuyer sur les produits et informations que le magasin peut montrer.",
+          "Faut-il obligatoirement proposer une réduction ? Non. Une présentation de collection, une démonstration d’entretien ou un échange avec l’équipe peuvent constituer le cœur de l’événement. Si une réduction est choisie, vérifiez les règles d’annonce et détaillez les conditions avant de publier.",
+          "Peut-on donner un conseil personnalisé sur la vue pendant l’événement ? L’événement collectif ne doit pas servir de diagnostic ni remplacer le parcours professionnel correspondant. Les questions individuelles sur l’ordonnance, la correction ou la santé visuelle doivent être prises en charge dans le cadre adapté par un professionnel compétent.",
+          "Comment annoncer la journée ? Affichez le thème, l’adresse, la date, les horaires, le format d’accès et les limites de place. Une publication événementielle sur la fiche Google, une vitrine et les canaux habituels du magasin peuvent se compléter, sans garantir de fréquentation.",
+          "Un jeu QR peut-il enregistrer des rendez-vous ou des informations de santé ? Non. Ne présentez pas Okado comme un agenda, un dossier optique ou un outil de diagnostic. Gardez les réservations et les données éventuellement nécessaires dans les outils et parcours adaptés, et séparés du jeu.",
+        ],
+      },
+      {
+        title: "Checklist avant de communiquer",
+        paragraphs: ["Validez ces points avec la personne responsable et l’équipe :"],
+        items: [
+          "Le thème, le public et l’objectif correspondent aux produits et services réellement proposés.",
+          "Les modèles et informations de présentation sont vérifiés à partir des références et documents disponibles.",
+          "La durée, la jauge, les rôles et l’espace préservent l’accueil et les rendez-vous habituels.",
+          "L’équipe sait distinguer présentation produit, question individuelle et sujet de santé visuelle.",
+          "L’annonce donne l’adresse, la date, les horaires, le format, le tarif éventuel et les limites d’accès.",
+          "Une remise ou un jeu éventuel a des conditions définies et vérifiées avant publication.",
+          "La réservation, les messages de service et la prospection restent des finalités distinctes.",
+          "Le bilan distingue personnes venues, échanges, demandes et ventes observées sans attribution automatique.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animation-boutique-vetements",
+      "/blog/experience-client-boutique",
       "/blog/mesurer-animation-commerciale",
       "/comment-ca-marche",
     ],

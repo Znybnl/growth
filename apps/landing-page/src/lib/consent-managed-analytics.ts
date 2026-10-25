@@ -95,6 +95,8 @@ const measuredPages = new Set([
   "/blog/organiser-degustation-epicerie-fine",
   "/blog/animation-magasin-velos-journee-decouverte",
   "/blog/attirer-nouvelles-clientes-institut-beaute",
+  "/blog/faire-revenir-cliente-apres-premiere-visite-institut-beaute",
+  "/blog/journee-decouverte-magasin-optique",
 ]);
 
 export function safeAnalyticsPage(pathname: string) {
