@@ -34,7 +34,7 @@ export function AdminQrProof() {
       </div>
       <CampaignSavedDialog
         open={open} campaignId={admin ? "admin-qr-fixture" : "merchant-qr-fixture"} adminTargetName={admin ? "Commerce de test" : undefined}
-        isActive={active} adminIsActive={active} onClose={() => setOpen(false)} onPreview={() => {}} onPreviewQr={() => {}}
+        isActive={active} adminIsActive={active} onClose={() => setOpen(false)} onPreview={() => setOpen(false)}
       />
     </div>
     </MerchantShell>

@@ -63,14 +63,12 @@ for (const admin of [true, false]) {
     await page.route("**/api/**/qr*", route => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"/>' }));
     await page.goto("/dev/admin-qr-proof");
     await page.getByRole("button", { name: admin ? "Confirmation d’enregistrement" : "Confirmation marchand", exact: true }).click();
-    await page.getByRole("dialog").getByRole("button", { name: "Télécharger le QR code de diffusion", exact: true }).click();
     await expect(page.getByRole("dialog")).toHaveCount(1);
-    await expect(page.getByRole("dialog", { name: "QR code de diffusion" })).toBeVisible();
     await expect(page.getByRole("dialog").getByAltText("QR code de diffusion du jeu")).toBeVisible();
-    await expect(page.getByRole("dialog")).toContainText("Brouillon : ne diffusez ce QR code");
-    await page.keyboard.press("Escape");
-    await expect(page.getByRole("dialog")).toHaveCount(1);
+    await expect(page.getByRole("dialog")).toContainText("Ce QR donnera accès au jeu après publication.");
     await expect(page.getByRole("dialog")).toContainText(admin ? "Le brouillon est prêt" : "Votre jeu est enregistré");
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
   });
 }
 
@@ -216,6 +214,8 @@ test("QR : fermer une préparation lente ne laisse pas réapparaître la popin",
   await page.goto("/dev/admin-qr-proof");
   await page.getByRole("button", { name: "QR marchand", exact: true }).click();
   await expect(page.getByRole("dialog").getByRole("status")).toContainText("Préparation");
+  // Visible markup can precede the modal's focus/keyboard effect by one frame.
+  await expect(page.getByRole("button", { name: "Fermer le téléchargement", exact: true })).toBeFocused();
   await page.keyboard.press("Escape");
   release();
   await page.waitForTimeout(200);

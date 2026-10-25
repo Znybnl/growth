@@ -288,7 +288,7 @@ test("contrats de câblage UI : preview, QR et logo admin sans modifier le parco
   assert.match(wizard,/<AdminCampaignQrDownload campaignId=\{draft.id\} isActive=\{draft.isActive\}/);
   assert.match(wizard,/Le QR de diffusion n’ouvre le jeu qu’après sa publication/);
   const confirmation = readFileSync(new URL("components/merchant/campaign-saved-dialog.tsx",src),"utf8");
-  assert.match(confirmation,/<CampaignQrDownloadDialog/);
+  assert.match(confirmation,/<CampaignQrPanel/);
   assert.ok(confirmation.includes('admin={Boolean(adminTargetName)}'));
 });
 

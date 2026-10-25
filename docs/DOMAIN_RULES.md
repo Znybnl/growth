@@ -28,6 +28,12 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 
 ## Cycle de vie d'un jeu
 
+- Confirmation après sauvegarde — #577 : l’aperçu isolé est l’action principale,
+  le QR de diffusion est visible et son téléchargement reste explicite.
+  Un brouillon peut exporter son QR sans être publié ; son statut et l’accès
+  disponible seulement après publication sont indiqués. L’ouverture ne compte
+  pas comme un téléchargement. L’accès au QR de test reste dans le Wizard.
+  La fréquence de cette confirmation n’est pas modifiée.
 - Décision propriétaire du 24 octobre 2026 (#645) : dans le Wizard d’un jeu
   publié, une seule action « Enregistrer les modifications » remplace le couple
   Enregistrer/Publier. La sauvegarde applique les validations de publication et

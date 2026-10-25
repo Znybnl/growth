@@ -903,6 +903,12 @@ export function CampaignWizard({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const saveRequestInFlightRef = useRef(false);
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
+  function restoreSavedDialogFocus() {
+    // Modal teardown first restores its own trigger, which may now be detached.
+    // Return to the stable save action after confirmation → preview transitions.
+    window.requestAnimationFrame(() => saveButtonRef.current?.focus({ preventScroll: true }));
+  }
   const [previewSaveDialogOpen, setPreviewSaveDialogOpen] = useState(false);
   const [previewSaveError, setPreviewSaveError] = useState<string | null>(null);
   const [isSavingBeforePreview, setIsSavingBeforePreview] = useState(false);
@@ -1642,7 +1648,7 @@ export function CampaignWizard({
             <Link href="/campaigns" prefetch={false} className="okado-secondary-action px-4 text-sm">
               Retour aux jeux
             </Link>
-            <button type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className={`${draft.isActive ? "okado-filled-action" : "okado-secondary-action"} px-4 text-sm disabled:opacity-50`}>
+            <button ref={saveButtonRef} type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className={`${draft.isActive ? "okado-filled-action" : "okado-secondary-action"} px-4 text-sm disabled:opacity-50`}>
               {isSaving ? "Enregistrement…" : saveActionLabel}
             </button>
             {!draft.isActive && (isEditing || stepIndex === WIZARD_STEPS.length - 1) ? (
@@ -3139,7 +3145,10 @@ export function CampaignWizard({
           open
           campaignId={savedPreviewCampaignId}
           previewPath={adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(savedPreviewCampaignId)}/preview?embed=1` : undefined}
-          onClose={() => setSavedPreviewCampaignId(null)}
+          onClose={() => {
+            setSavedPreviewCampaignId(null);
+            restoreSavedDialogFocus();
+          }}
         />
       ) : null}
       {savedCampaignId ? (
@@ -3149,14 +3158,13 @@ export function CampaignWizard({
           isActive={draft.isActive}
           adminTargetName={adminSaveEndpoint ? merchant.companyName : undefined}
           adminIsActive={adminSaveEndpoint ? draft.isActive : undefined}
-          onClose={() => setSavedCampaignId(null)}
+          onClose={() => {
+            setSavedCampaignId(null);
+            restoreSavedDialogFocus();
+          }}
           onPreview={() => {
             setSavedPreviewCampaignId(savedCampaignId);
             setSavedCampaignId(null);
-          }}
-          onPreviewQr={() => {
-            setSavedCampaignId(null);
-            setQrPreviewOpen(true);
           }}
         />
       ) : null}

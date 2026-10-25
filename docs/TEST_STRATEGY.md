@@ -535,6 +535,19 @@ La suite `test:admin-campaigns` couvre aussi les vrais handlers de duplication a
 
 `e2e/admin-campaign-duplication.spec.ts` exerce les vrais composants à 320/390/1280 px : menu admin vs marchand, recherche/pagination, sélection, option d’identité, création et liens, affichage des échecs partiels, non-répétition et absence d’erreur d’hydratation. Les requêtes de cette fixture synthétique `/dev/admin-duplication-proof` sont interceptées ; aucun accès administrateur n’est accordé par la fixture, qui renvoie 404 en production. `admin-campaign-access.spec.ts` teste les refus HTTP réels. Recette propriétaire : depuis une campagne de l’établissement administrateur, dupliquer vers un compte pilote de test, vérifier ses données/logo/liens/affiche et son stock initial, puis ouvrir le brouillon depuis Pilotage. La source doit rester inchangée ; aucun test ne modifie un commerce réel.
 
+## Confirmation d’enregistrement — #577
+
+`e2e/game-ready-577.spec.ts` vérifie la confirmation dans le vrai cadre marchand
+à 1280×720, 1280×600, 1366×768 et 320/390 px : QR visible et export SVG identique,
+pas de téléchargement implicite, statut brouillon/publié, nom du site en assistance
+admin, clavier/focus, erreur/reprise et fermeture pendant la préparation.
+Les sauvegardes du vrai Wizard sont interceptées avec données fictives pour roue
+et ticket, création/édition et jeu publié : aperçu de la version enregistrée,
+une seule popin et accès au QR de test conservé. La suite QR/CSV/affiche existante
+est rejouée après extraction du panneau commun. Les vrais handlers QR marchand
+et admin vérifient inline sans métrique, export explicite, autorisations et
+absence de publication/écriture. Voir [la livraison #577](releases/2026-10-25-game-ready-dialog-577.md).
+
 ## QR de diffusion administrateur — #470
 
 La suite `test:admin-campaigns` vérifie la nouvelle route avec sessions/base simulées et le vrai générateur SVG partagé : refus 401/403 avant lecture, jeu absent/site archivé, erreur de base sans divulgation, bon lien public sans jeton de test, fichier téléchargeable privé, brouillon sans publication et audit technique hors indicateurs marchand. Les tests de rendu/câblage couvrent la liste, le Wizard et sa confirmation. Les permissions HTTP réelles sont ajoutées à `admin-campaign-access.spec.ts`. La fixture `/dev/admin-qr-proof` (404 en production) teste les vrais composants à 320/390/1280 px et le téléchargement d’un fichier synthétique, sans contourner l’authentification serveur.
