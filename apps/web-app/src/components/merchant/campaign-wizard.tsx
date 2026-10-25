@@ -2165,10 +2165,9 @@ export function CampaignWizard({
                   Les probabilités dépassent 100 % de {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(totalProbability - 100)} points. Ajustez votre composition avant de continuer.
                 </div>
               ) : null}
-              <WizardPrizeBudget prizes={draft.prizes} onEdit={(index) => openPrizeEditor("edit", draft.prizes[index])} />
               <section aria-label="Lots gagnants" className="overflow-hidden rounded-[14px] border border-[#e8e2ea] bg-white" data-testid="wizard-prize-table">
                 {draft.prizes.length ? <div data-testid="wizard-prize-table-header" className="hidden grid-cols-[minmax(0,1fr)_6rem_7rem_7rem_6.5rem] gap-3 border-b border-[#eee8f0] bg-[#fcfafc] px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-[#716b78] sm:grid">
-                  <span>Lot</span><span className="text-left">Chance</span><span className="text-left">Stock</span><span className="text-left">Coût</span><span className="text-right">Actions</span>
+                  <span>Lot</span><span className="text-left">Chance</span><span className="text-left">Stock</span><span className="text-left">Coût de revient</span><span className="text-right">Actions</span>
                 </div> : null}
                 {draft.prizes.length ? draft.prizes.map((prize, index) => {
                   const stock = isEditing
@@ -2198,7 +2197,7 @@ export function CampaignWizard({
                         <span aria-hidden="true">%</span>
                       </label>
                       <p className="text-sm text-[#242126]"><span className="mr-1 text-[10px] font-medium text-[#716b78] sm:hidden">Stock</span>{stock === null || stock === undefined ? "Illimité" : stock}</p>
-                      <p className="text-sm text-[#242126]"><span className="mr-1 text-[10px] font-medium text-[#716b78] sm:hidden">Coût</span>{isPrizeCostKnown(prize) ? new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(prize.estimatedUnitCost) : "À renseigner"}</p>
+                      <p className="text-sm text-[#242126]"><span className="mr-1 text-[10px] font-medium text-[#716b78] sm:hidden">Coût de revient</span>{isPrizeCostKnown(prize) ? new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(prize.estimatedUnitCost) : "À renseigner"}</p>
                       <div className="col-span-2 flex justify-end gap-1 sm:col-span-1">
                         <button type="button" onClick={() => openPrizeEditor("edit", prize)} aria-label={`Modifier ${prize.label || `le lot ${index + 1}`}`} title="Modifier" className="rounded-[8px] p-2 text-[#64206f] transition hover:bg-[#f6f0fa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f]"><Pencil className="h-4 w-4" aria-hidden="true" /></button>
                         <button type="button" onClick={() => openPrizeEditor("duplicate", { ...prize, id: createWizardPrizeId() })} aria-label={`Dupliquer ${prize.label || `le lot ${index + 1}`}`} title="Dupliquer" className="rounded-[8px] p-2 text-[#64206f] transition hover:bg-[#f6f0fa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#64206f]"><Copy className="h-4 w-4" aria-hidden="true" /></button>
@@ -2296,6 +2295,7 @@ export function CampaignWizard({
                   </div>
                 </div>
               </details>
+              <WizardPrizeBudget prizes={draft.prizes} onEdit={(index) => openPrizeEditor("edit", draft.prizes[index])} />
             </div>
           ) : null}
 
