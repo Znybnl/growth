@@ -380,6 +380,22 @@ n'est envoyé. Aucune hausse de CA, témoignage client ou exclusivité concurren
 n'est inventée ; un cas pilote exige des chiffres vérifiés et une autorisation
 de publication distincte. [Périmètre et recette](releases/2026-10-16-marketing-proof-520.md).
 
+## Introduction compacte de l’accueil — #647
+
+L’index présente le titre « Donnez à vos clients une bonne raison de revenir. »
+et une courte explication à gauche, l’inscription et « 30 jours sans carte
+bancaire, sans engagement. » à droite sur ordinateur, puis empilés sur mobile.
+L’illustration statique, le lien vers la démo, le surtitre et les bénéfices
+répétés sont retirés du hero. Les conditions complètes restent dans les tarifs.
+Une transition unique de 32 px (24 px sur mobile) mène à la démo existante.
+Retour propriétaire : le hero conserve un espace généreux autour de la promesse
+et de l’inscription (80/56 px en haut/bas sur ordinateur, 48/32 px sur mobile).
+Un filet discret termine le hero avant la transition pour distinguer les deux temps.
+Son H2 « Essayez le parcours de vos clients » et ses choix d’activité composent
+une barre compacte, 20 px avant le cadre. Cette présentation est réservée
+à l’index : les introductions Beauté/Restaurants et les dimensions/écrans
+du jeu, ses résultats et ses événements restent inchangés.
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

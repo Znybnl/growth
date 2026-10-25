@@ -137,7 +137,10 @@ test("les choix multisectoriels et le ticket conservent les UTM sans transmettre
   await context.addCookies([{ name: ANALYTICS_CONSENT_COOKIE, value: encodeURIComponent(JSON.stringify({ version: ANALYTICS_CONSENT_VERSION, choice: "accepted", decidedAt: Date.now() })), url: baseURL! }]);
   const events = await capturePackets(page);
   await page.goto("/?utm_source=fixture&utm_campaign=multisector_607");
+  // The compact layout is visible before the lazily loaded analytics SDK.
+  await expect.poll(() => events.filter(event => event.event === "$pageview").length).toBeGreaterThan(0);
   await page.getByRole("navigation", { name: "Activité de la démo" }).getByRole("link", { name: "Boutiques & commerces" }).click();
+  await expect.poll(() => events.filter(event => event.event === "marketing_cta_clicked" && event.properties.cta === "select_demo_sector").length).toBe(1);
   await page.locator("#fonctionnalites").getByRole("button", { name: "Commerce", exact: true }).click();
   const demo = page.locator("#demo");
   await demo.getByRole("button", { name: "Jouer", exact: true }).click();
@@ -327,4 +330,11 @@ test("les pages et CTA conservent uniquement le contexte d’acquisition autoris
     destination: "/inscription",
   });
   expect(JSON.stringify(events)).not.toMatch(/private@example|token=secret/);
+  await page.goto("/?utm_source=fixture&utm_medium=seo");
+  await expect.poll(() => events.filter(event => event.event === "$pageview" && event.properties.page === "/").length).toBeGreaterThan(0);
+  await page.getByRole("region", { name: /Donnez à vos clients/ }).getByRole("link", { name: "Essayer gratuitement", exact: true }).click();
+  await expect.poll(() => events.filter(event => event.event === "marketing_cta_clicked" && event.properties.location === "hero").length).toBe(1);
+  expect(events.find(event => event.event === "marketing_cta_clicked" && event.properties.location === "hero")!.properties).toMatchObject({
+    cta: "start_trial", page: "/", location: "hero", destination: "/inscription", utmSource: "fixture", utmMedium: "seo",
+  });
 });

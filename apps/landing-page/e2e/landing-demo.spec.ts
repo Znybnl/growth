@@ -61,6 +61,9 @@ test("roue entière, étapes lisibles et résultats accessibles dans les trois v
   ]) {
     await page.goto(path);
     const demo = page.locator("#demo");
+    await expect(demo.getByRole("heading", { level: 2 })).toHaveText(
+      path === "/" ? "Essayez le parcours de vos clients" : "À vous de jouer.",
+    );
     const phoneScreen = demo.getByTestId("demo-phone");
     await expect(phoneScreen).toContainText(
       path === "/instituts-beaute" ? "L’atelier beauté" : "Le bistro",
