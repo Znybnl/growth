@@ -10,7 +10,7 @@ export function HomeHero() {
   return <section className={`${styles.container} ${styles.hero}`} aria-labelledby="home-hero-title">
     <div className={styles.heroCopy}>
       <h1 id="home-hero-title">Donnez à vos clients une bonne raison de <em>revenir.</em></h1>
-      <p>Une roue de la fortune ou un ticket à gratter à votre image. Vos clients scannent, jouent et peuvent gagner un cadeau à utiliser lors d’une prochaine visite.</p>
+      <p>Une roue de la fortune à votre image. Vos clients scannent, jouent et peuvent gagner un cadeau à utiliser lors d’une prochaine visite.</p>
     </div>
     <div className={styles.heroSignup}>
       <PrimaryButton href={`${APP_URL}/inscription`} trackingName="start_trial" trackingLocation="hero">Essayer gratuitement</PrimaryButton>
