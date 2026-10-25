@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CampaignWizard } from "@/components/merchant/campaign-wizard";
 import { CampaignEditor } from "@/components/merchant/campaign-editor";
+import { MerchantShell } from "@/components/merchant/merchant-shell";
 import { OnboardingFlow } from "@/components/auth/onboarding-flow";
 import { PrizeSuggestionsManager } from "@/components/merchant/prize-suggestions-manager";
 import { BEAUTY_SUBSECTOR_OPTIONS, beautySubsectorOptions } from "@/lib/merchant-options";
@@ -54,7 +55,7 @@ export function BeautyCatalogProof() {
     onboardingCompleted: true, createdAt };
   const initialCampaign = fixture(merchant);
   initialCampaign.campaign.gameType = gameType;
-  return <main className="p-4">
+  const content = <>
     <div className="mb-5 flex flex-wrap gap-4">
       <label>Type de jeu de test <select aria-label="Type de jeu de test" value={gameType} onChange={(event) => setGameType(event.target.value as "wheel" | "scratch")}><option value="wheel">Roue</option><option value="scratch">Ticket</option></select></label>
       <label>Interface <select aria-label="Interface" value={mode} onChange={(event) => setMode(event.target.value)}>
@@ -71,5 +72,10 @@ export function BeautyCatalogProof() {
     {mode === "admin" ? <PrizeSuggestionsManager initialSuggestions={catalog.map((item) => ({
       ...item, icon: item.icon as PrizeSuggestion["icon"], isActive: true, createdAt, updatedAt: createdAt,
     }))} /> : null}
-  </main>;
+  </>;
+  return mode === "wizard" || mode === "classic" ? <MerchantShell merchant={merchant}
+    user={{id:"catalog-fixture-user",merchantId:merchant.id,role:"owner",firstName:"Camille",lastName:"Test",email:"catalog@example.test",password:"",createdAt}}
+    locations={[{merchant,role:"owner"}]} activeLocationId={merchant.id} isSaasAdmin={false}>
+    {content}
+  </MerchantShell> : <main className="p-4">{content}</main>;
 }

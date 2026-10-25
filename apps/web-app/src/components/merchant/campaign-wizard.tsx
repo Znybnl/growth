@@ -3002,7 +3002,7 @@ export function CampaignWizard({
         </WizardResponsivePreview> : null}
       </div>
       {suggestionsOpen ? <WizardPrizeLibrary
-        key={merchant.id}
+        key={JSON.stringify([merchant.id, merchant.industry, merchant.industrySubsector])}
         initialTab={libraryInitialTab}
         initialCompositionId={libraryCompositionId}
         compositionContext={merchant}

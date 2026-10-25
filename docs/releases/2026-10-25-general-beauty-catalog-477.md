@@ -1,5 +1,41 @@
 # Toutes les suggestions Beauté pour le généraliste — #477
 
+## Complément : filtre de sous-secteur
+
+Retour propriétaire intégré dans la même PR #650 :
+
+- Champ « Sous-secteur des suggestions », partagé entre Wizard et éditeur
+  classique, pour le profil explicitement Beauté généraliste. Tous par défaut ;
+  six catégories avec compteurs calculés depuis les suggestions reçues.
+- Filtrage exact : Coiffure n’inclut pas les lots généralistes ou non classés.
+  L’alias historique Massage & spa est regroupé sous Massage & Spa.
+  Les suggestions sans catégorie restent accessibles séparément lorsqu’elles
+  existent. Les catégories vides restent sélectionnables et expliquées.
+- Pas de requête réseau ni d’écriture lors du changement de filtre. L’ordre,
+  les identifiants/homonymes, les valeurs et conditions des suggestions restent
+  inchangés. Un lot ajouté reste dans la composition après changement de filtre.
+- Le filtre concerne Suggestions uniquement : Mes lots et les recettes conservent
+  leur source complète. Fermeture ou changement d’établissement/profil remet Tous.
+- Select natif accessible, compteur annoncé, filtre conservé en état vide,
+  retour possible à Tous. Sur mobile le compteur passe sous le champ pour
+  préserver sa largeur. Popin classique bornée au viewport, une seule zone de
+  scroll pour les cartes et fermeture visible. Le conteneur de l’éditeur classique
+  utilise minmax(0,1fr)/min-width0 pour corriger un débordement mobile préexistant
+  révélé par la vérification dans le vrai MerchantShell.
+- Tests ajoutés :4unitaires de filtrage (nouvelle commande
+  `test:prize-suggestion-filters`, exécutée en CI) et suite navigateur étendue
+  à11scénarios, dont chaque sous-secteur, non classés, reprise état vide,
+  compteurs, absence de requête supplémentaire, copie roue/ticket dans les
+  deux éditeurs, réouverture/profil spécialisé et compositions inchangées.
+- Contrôle visuel avec le vrai cadre de navigation à1280×720/600 et320/390px.
+  Pas de changement d’API, schéma, données ou permissions ; aucune migration.
+- Vérifications du complément :4tests filtres,27catalogue,31compositions et
+  11E2E réussis. Lint sans erreur (4warnings anciens), build/TypeScript,
+  source et diff réussis. Relecture React : liste dérivée du catalogue complet,
+  un seul état de sélection, pas d’effet de synchronisation, annulation du
+  focus différé après ajout lorsque le filtre change ; état réinitialisé par
+  remontage du dialogue/contextes, pas par stockage persistant.
+
 ## Résultat
 
 Un établissement explicitement classé Beauté généraliste / multi-activité

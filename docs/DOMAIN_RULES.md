@@ -69,6 +69,11 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
   L’union conserve les valeurs et dédoublonne par identifiant, pas par libellé.
   Les autres profils, le repli sans sous-secteur/ancien profil et les recettes
   métier conservent leur périmètre. Aucun profil ou lot enregistré n’est modifié.
+- Complément propriétaire #477 : dans cette union généraliste, Suggestions peut
+  être filtré par sous-secteur, avec Tous par défaut et les suggestions non
+  classées accessibles séparément. Filtre local identique dans les deux éditeurs,
+  sans modifier le profil, les lots ajoutés, Mes lots ou les compositions.
+  Fermeture ou changement de contexte réinitialise la sélection sur Tous.
 - À l'ajout d'une suggestion Beauté, sa condition suggérée préremplit les conditions d'utilisation. « Achat requis pour le retrait » est activé lorsque cette condition impose une prestation payante ou une nouvelle pose ; une réduction à tarif normal ou un cadeau autonome ne l'active pas. Ces réglages restent modifiables, sans recalcul rétroactif sur les lots existants.
 
 - Un lot publiable doit avoir un libellé, une quantité disponible strictement positive et des conditions de retrait cohérentes.
