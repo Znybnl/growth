@@ -70,8 +70,9 @@ function fakeDb() {
     const filters = [];
     let range;
     let single = false;
+    let projection;
     const q = {
-      select(fields) { state.projections.push(fields); return q; },
+      select(fields) { projection = fields; state.projections.push(fields); return q; },
       eq(key,value) {filters.push(row => row[key] === value); return q;},
       in(key,values) {filters.push(row => values.includes(row[key])); return q;},
       order() {return q;}, limit() {return q;},
@@ -79,12 +80,20 @@ function fakeDb() {
       range(start,end) {range = [start,end]; state.range = range; return q;},
       maybeSingle() {single = true; return q;},
       then(resolve,reject) {
+        // Real schema has both account membership and notification-recipient
+        // relationships. An unqualified embed is rejected, not an empty list.
+        if (projection?.includes("merchant_users!inner")) {
+          return Promise.resolve({data:null,error:{code:"PGRST201",message:"Ambiguous relationship"}}).then(resolve,reject);
+        }
         const rows = table === "campaigns" ? state.campaigns
           : table === "merchant_users" ? [{id:"user-root",merchant_id:"root"}]
           : Object.values(state.profiles).map(p => ({id:p.id,company_name:p.companyName,location_status:p.locationStatus ?? "active",city:p.city}));
         let data = rows.filter(row => filters.every(filter => filter(row)));
+        if (projection?.includes("merchant_users!merchant_users_merchant_id_fkey!inner") && state.accountUserMerchants) {
+          data = data.filter(row => state.accountUserMerchants.includes(row.id));
+        }
         if (range) data = data.slice(range[0],range[1]+1);
-        return Promise.resolve({data:single ? data[0] ?? null : data,error:state.errorTable === table ? {message:"test error"} : null}).then(resolve,reject);
+        return Promise.resolve({data:single ? data[0] ?? null : data,error:state.errorTable === table ? {code:state.errorCode ?? "XX000",message:"sensitive test error",details:"private details"} : null}).then(resolve,reject);
       },
     };
     return q;
@@ -461,7 +470,65 @@ test("sélecteur admin léger : pagination/recherche sans données personnelles 
   assert.equal(result.page,1);assert.equal(state.pattern,"%100\\%\\_%");
   assert.deepEqual(Object.keys(result.accounts[0]),["id","companyName","city"]);
   assert.deepEqual(state.reads,["merchants"]);
-  assert.equal(state.projections[0],"id,company_name,city,merchant_users!inner(id)");
+  assert.equal(state.projections[0],"id,company_name,city,merchant_users!merchant_users_merchant_id_fkey!inner(id)");
+});
+
+test("sélecteur : utilise le rattachement du compte, jamais les destinataires de notifications", async () => {
+  state.accountUserMerchants = ["root", "root", "other"];
+  // site is a notification recipient's establishment, not their account.
+  state.profiles.archived = {id:"archived",companyName:"Archivé",locationStatus:"archived"};
+  state.accountUserMerchants.push("archived");
+  const result = await getAdminDuplicationAccounts(adminEmail);
+  assert.deepEqual(result.accounts.map(row => row.id), ["root", "other"]);
+  assert.equal(result.hasNextPage, false);
+});
+
+test("sélecteur : pagination de comptes au-delà de 50 et page vide", async () => {
+  state.profiles = Object.fromEntries(Array.from({length: 105}, (_, i) => [`account-${i}`, {id:`account-${i}`,companyName:`Compte ${i}`} ]));
+  const first = await getAdminDuplicationAccounts(adminEmail, "", 1);
+  const second = await getAdminDuplicationAccounts(adminEmail, "", 2);
+  const third = await getAdminDuplicationAccounts(adminEmail, "", 3);
+  assert.deepEqual([first.accounts.length, second.accounts.length, third.accounts.length], [50, 50, 5]);
+  assert.deepEqual([first.hasNextPage, second.hasNextPage, third.hasNextPage], [true, true, false]);
+  assert.equal(new Set([...first.accounts, ...second.accounts, ...third.accounts].map(a => a.id)).size, 105);
+  assert.deepEqual((await getAdminDuplicationAccounts(adminEmail, "", 4)).accounts, []);
+});
+
+test("sélecteur : refus non-admin avant toute lecture", async () => {
+  await assert.rejects(getAdminDuplicationAccounts("merchant@example.test"), /réservé/);
+  assert.deepEqual(state.reads, []);
+});
+
+test("chargement GET : erreur de comptes journalisée sans détails ni données de recherche", async () => {
+  state.session.merchant.id = "site";
+  // Let source verification succeed, then fail only the destination embed.
+  const original = state.db.from;
+  state.db.from = table => {
+    const request = original(table);
+    const select = request.select;
+    request.select = fields => {
+      if (fields.includes("merchant_users!")) {state.errorTable = "merchants"; state.errorCode = "PGRST201";}
+      return select(fields);
+    };
+    return request;
+  };
+  const response = await duplicateMerchant.GET(new Request("http://localhost:3001/api/admin/campaigns/existing/duplicate-merchant?q=private-search"), params);
+  assert.equal(response.status, 500);
+  assert.equal(response.headers.get("cache-control"), "private, no-store");
+  assert.deepEqual(await response.json(), {error:"Impossible de charger les marchands destinataires."});
+  assert.deepEqual(state.logs, [["error", "admin_duplication_destinations_failed", {stage:"accounts",databaseCode:"PGRST201"}]]);
+  assert.doesNotMatch(JSON.stringify(state.logs), /private-search|sensitive|details/);
+  assert.deepEqual(state.saves, []);
+});
+
+test("chargement GET : compte sans utilisateur reste un succès vide, privé et sans création", async () => {
+  state.session.merchant.id = "site";
+  state.accountUserMerchants = [];
+  const response = await duplicateMerchant.GET(new Request("http://localhost:3001/api/admin/campaigns/existing/duplicate-merchant"), params);
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {accounts:[],hasNextPage:false,page:1});
+  assert.equal(response.headers.get("cache-control"), "private, no-store");
+  assert.deepEqual(state.saves, []);
 });
 test("sélecteur sites : pas de source ni données privées", async () => {
   state.session.merchant.id="site";

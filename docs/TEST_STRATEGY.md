@@ -518,6 +518,19 @@ Rejouer `admin-campaign-access.spec.ts` sur le serveur local pour le refus HTTP 
 
 ## Duplication administrative vers un marchand — #469
 
+Régression #619 : le sélecteur de comptes qualifie la relation
+`merchant_users_merchant_id_fkey`, indépendamment du chemin ajouté par les
+préférences de notifications. `test:admin-campaigns` simule les deux relations,
+vérifie le périmètre des comptes, la pagination au-delà de 50, le succès vide,
+les refus administratifs et la journalisation technique sans message brut.
+`admin-campaign-duplication.spec.ts` couvre l’erreur initiale sans faux résultat
+vide ni pagination, Réessayer sans création implicite, les échecs de recherche
+et d’établissements, la conservation du filtre et du compte, ainsi que les
+captures à 1280×720, 1280×600, 390×844 et 320×740.
+Un contrôle distant `limit(0)` a confirmé PGRST201 avant qualification et HTTP200
+après qualification, sans lecture de coordonnées ni écriture. Il ne remplace
+pas la recette authentifiée après déploiement autorisé.
+
 La suite `test:admin-campaigns` couvre aussi les vrais handlers de duplication avec base/session/stockage simulés : source appartenant à l’établissement actif de l’admin, cibles associées au compte, sites archivés, refus 401/403/404, sélection invalide, brouillons sans historique/stock consommé, adaptation facultative de l’identité et des liens, audit et erreur partielle. Les helpers réels de copie des médias sont testés avec un bucket simulé (propriété/origine, dédoublonnage et indépendance de stockage).
 
 `e2e/admin-campaign-duplication.spec.ts` exerce les vrais composants à 320/390/1280 px : menu admin vs marchand, recherche/pagination, sélection, option d’identité, création et liens, affichage des échecs partiels, non-répétition et absence d’erreur d’hydratation. Les requêtes de cette fixture synthétique `/dev/admin-duplication-proof` sont interceptées ; aucun accès administrateur n’est accordé par la fixture, qui renvoie 404 en production. `admin-campaign-access.spec.ts` teste les refus HTTP réels. Recette propriétaire : depuis une campagne de l’établissement administrateur, dupliquer vers un compte pilote de test, vérifier ses données/logo/liens/affiche et son stock initial, puis ouvrir le brouillon depuis Pilotage. La source doit rester inchangée ; aucun test ne modifie un commerce réel.
