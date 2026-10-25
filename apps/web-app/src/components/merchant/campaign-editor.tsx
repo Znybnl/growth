@@ -2,6 +2,8 @@
 
 import { prizeFieldsFromSuggestion } from "@/lib/prize-suggestion-fields";
 import { usePrizeSuggestions } from "@/lib/use-prize-suggestions";
+import { canFilterBeautySuggestions, filterPrizeSuggestionsBySubsector } from "@/lib/prize-suggestion-filters";
+import { PrizeSuggestionSubsectorFilter } from "@/components/merchant/prize-suggestion-subsector-filter";
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -828,6 +830,7 @@ function PrizeSuggestionDialog({
   open,
   suggestions,
   industry,
+  industrySubsector,
   remainingProbability,
   onAdd,
   onClose,
@@ -835,17 +838,21 @@ function PrizeSuggestionDialog({
   open: boolean;
   suggestions: PrizeSuggestion[];
   industry?: string;
+  industrySubsector?: string;
   remainingProbability: number;
   onAdd: (suggestion: PrizeSuggestion) => void;
   onClose: () => void;
 }) {
+  const [subsectorFilter, setSubsectorFilter] = useState("");
+  const filterEnabled = canFilterBeautySuggestions({ industry, industrySubsector });
+  const filteredSuggestions = filterEnabled ? filterPrizeSuggestionsBySubsector(suggestions, subsectorFilter) : suggestions;
   if (!open) {
     return null;
   }
 
   return (
-    <DialogShell open={open} onClose={onClose} labelledBy="prize-suggestions-title" className="max-w-5xl p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <DialogShell open={open} onClose={onClose} labelledBy="prize-suggestions-title" className="!max-w-5xl !p-5 flex max-h-[calc(100dvh-3rem)] flex-col overflow-hidden">
+        <div className="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="okado-label">Suggestions de lots</p>
             <h2 id="prize-suggestions-title" className="mt-2 text-2xl font-semibold text-carbon">
@@ -865,8 +872,10 @@ function PrizeSuggestionDialog({
           </button>
         </div>
 
-        <div className="mt-6 grid max-h-[66vh] gap-4 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
-          {suggestions.map((suggestion) => {
+        {filterEnabled ? <div className="mt-4 shrink-0"><PrizeSuggestionSubsectorFilter suggestions={suggestions} value={subsectorFilter} onChange={setSubsectorFilter} /></div> : null}
+        <div className="mt-4 grid min-h-0 gap-4 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3">
+          {!filteredSuggestions.length ? <p role="status" className="col-span-full py-8 text-sm text-ash">Aucune suggestion pour ce sous-secteur. Choisissez un autre filtre pour explorer les lots disponibles.</p> : null}
+          {filteredSuggestions.map((suggestion) => {
             const iconStyle = getPrizeSuggestionIcon(suggestion.icon);
             const Icon = iconStyle.Icon;
             const canAdd = suggestion.probability <= remainingProbability;
@@ -2889,8 +2898,8 @@ export function CampaignEditor({
 
       ) : null}
 
-      <div className="grid min-w-0 gap-6 min-[1600px]:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="space-y-6">
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6 min-[1600px]:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-w-0 space-y-6">
           <section className="okado-card p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
@@ -4878,14 +4887,16 @@ export function CampaignEditor({
         }}
         onClose={() => setEditingPrizeConditionsId(null)}
       />
-      <PrizeSuggestionDialog
+      {prizeSuggestionsOpen ? <PrizeSuggestionDialog
+        key={JSON.stringify([merchant.id, merchant.industry, merchant.industrySubsector])}
         open={prizeSuggestionsOpen}
         suggestions={prizeSuggestions}
         industry={merchant.industry}
+        industrySubsector={merchant.industrySubsector}
         remainingProbability={remainingPrizeProbability}
         onAdd={addSuggestedPrize}
         onClose={() => setPrizeSuggestionsOpen(false)}
-      />
+      /> : null}
       <BackgroundLibraryDialog
         open={backgroundLibraryDialogOpen}
         onClose={() => setBackgroundLibraryDialogOpen(false)}

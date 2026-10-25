@@ -10,6 +10,8 @@ import { buildPrizeCompositions, type PrizeComposition, type PrizeCompositionCon
 import { WizardPrizeCompositions } from "./wizard-prize-compositions";
 import { isPrizeCostKnown } from "@/lib/prize-budget";
 import styles from "./wizard-prize-library.module.css";
+import { canFilterBeautySuggestions, filterPrizeSuggestionsBySubsector } from "@/lib/prize-suggestion-filters";
+import { PrizeSuggestionSubsectorFilter } from "./prize-suggestion-subsector-filter";
 
 const icons = { coffee: Coffee, dessert: Sparkles, drink: Soup, discount: BadgePercent, supplement: CirclePlus, menu: UtensilsCrossed, gift: Gift, history: History };
 const percent = (value: number) => new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(value);
@@ -38,12 +40,15 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
   initialTab?: "suggestions" | "mine" | "compositions";
 }) {
   const [tab, setTab] = useState<"suggestions" | "mine" | "compositions">(initialTab);
+  const [subsectorFilter, setSubsectorFilter] = useState("");
+  const filterEnabled = canFilterBeautySuggestions(compositionContext);
+  const filteredSuggestions = filterEnabled ? filterPrizeSuggestionsBySubsector(suggestions, subsectorFilter) : suggestions;
   const compositions = useMemo(() => buildPrizeCompositions(suggestions, compositionContext), [suggestions, compositionContext]);
   const [compositionId, setCompositionId] = useState<string | null>(initialCompositionId ?? null);
   const [confirmReplacement, setConfirmReplacement] = useState(false);
   const selectedComposition = compositions.find((item) => item.id === compositionId) ?? null;
   const previous = useReusablePrizes(previousPrizesEndpoint, tab === "mine", excludeCampaignId);
-  const entries: LibraryEntry[] = tab === "suggestions" ? suggestions : previous.prizes.map((prize, sortOrder) => ({
+  const entries: readonly LibraryEntry[] = tab === "suggestions" ? filteredSuggestions : previous.prizes.map((prize, sortOrder) => ({
     id: `previous-${prize.id}`, label: prize.label, description: prize.usageConditions,
     probability: prize.probability, estimatedUnitCost: prize.estimatedUnitCost,
     icon: "history", industry: "", isActive: true, sortOrder, previous: prize,
@@ -176,6 +181,18 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
           }}><span className="inline-flex items-center gap-2">{value === "mine" ? <History className="size-4" aria-hidden="true" /> : value === "compositions" ? <Layers3 className="size-4" aria-hidden="true" /> : <Sparkles className="size-4" aria-hidden="true" />}{value === "mine" ? "Mes lots" : value === "compositions" ? "Compositions" : "Suggestions"}</span></button>)}
       </div>
       <div ref={contentRef} id="prize-library-panel" role="tabpanel" aria-labelledby={`prize-tab-${tab}`} className={styles.libraryContent} data-testid="wizard-prize-library-content">
+        {tab === "suggestions" && filterEnabled && !adjustment && !loading && !loadError ? (
+          <PrizeSuggestionSubsectorFilter suggestions={suggestions} value={subsectorFilter} onChange={value => {
+            setSubsectorFilter(value);
+            setValidationError(null);
+            setLastAdded("");
+            originRef.current = null;
+            if (focusFrame.current !== null) {
+              cancelAnimationFrame(focusFrame.current);
+              focusFrame.current = null;
+            }
+          }} />
+        ) : null}
         {adjustment ? (
           <section aria-labelledby="wizard-suggestion-adjustment-title" className="mx-auto max-w-xl space-y-4">
             <button type="button" onClick={cancelAdjustment} className="inline-flex items-center gap-1 text-sm font-semibold text-[#64206f]"><ChevronLeft className="size-4" aria-hidden="true" />{tab === "mine" ? "Retour à mes lots" : "Retour aux suggestions"}</button>
@@ -219,7 +236,7 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
         ) : !entries.length ? (
           <div className="rounded-[12px] border border-dashed border-[#e8e2ea] px-5 py-8 text-center">
             <Gift className="mx-auto size-7 text-[#8c5b98]" aria-hidden="true" />
-            <h3 className="mt-3 font-semibold text-[#242126]">{tab === "mine" ? "Vous n’avez pas encore de lots enregistrés." : "Aucune suggestion pour cette activité"}</h3>
+            <h3 className="mt-3 font-semibold text-[#242126]">{tab === "mine" ? "Vous n’avez pas encore de lots enregistrés." : filterEnabled && subsectorFilter ? "Aucune suggestion pour ce sous-secteur" : "Aucune suggestion pour cette activité"}</h3>
             <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#716b78]">{tab === "mine" ? "Les lots de vos prochaines campagnes pourront être réutilisés ici." : "Vous pouvez créer votre propre lot depuis la composition. Son nom, sa chance et ses conditions restent entièrement personnalisables."}</p>
             <button type="button" onClick={tab === "mine" ? () => { selectTab("suggestions"); document.getElementById("prize-tab-suggestions")?.focus(); } : onClose} className="okado-secondary-action mt-4 px-4 text-sm">{tab === "mine" ? "Explorer les suggestions" : "Retour à ma composition"}</button>
           </div>

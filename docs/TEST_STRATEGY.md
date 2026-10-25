@@ -547,6 +547,14 @@ Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu e
 
 ## Catalogue Beauté — #466
 
+Évolution #477 : `test:beauty-catalog` vérifie l’union des six bibliothèques pour
+le généraliste explicite, les ajouts futurs, actifs/inactifs, homonymes et IDs
+dupliqués, sans modifier les profils, autres secteurs ou replis historiques.
+`general-beauty-catalog.spec.ts` couvre les deux éditeurs et les deux jeux, les
+conditions/coûts/chances et le lot existant conservés, ainsi que le changement
+de contexte et les captures1280×600/390px. Les API sont interceptées et aucune
+écriture n’est autorisée ; la fixture reste limitée au développement.
+
 `npm run test:beauty-catalog -w @okado/web-app` vérifie les six catégories et les 61 lignes, le mapping condition/achat, le repli général, les alias, les personnalisations, la session API et l'absence de cache. La migration et son retour arrière sont exécutés réellement dans PostgreSQL embarqué PGlite (dépendance de test uniquement) : conservation des lots et des autres secteurs, contraintes conditionnelles, RLS, réexécution et protection des modifications administratives. Aucun accès Supabase pour ces tests.
 
 `e2e/beauty-catalog.spec.ts` utilise les vrais éditeurs et l'onboarding sur une fixture synthétique, avec interception des API et blocage des écritures : les six bibliothèques dans les deux parcours, conditions modifiables, conservation d'un lot existant, chargements concurrents et affichage à 320/390/1280 px. `/dev/beauty-catalog-proof` est inaccessible en production. L'audit préalable `scripts/audit-beauty-catalog.mjs` est en lecture seule et ne retourne que des compteurs, sans identité d'établissement ni secret.

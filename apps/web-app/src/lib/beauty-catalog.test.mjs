@@ -88,15 +88,54 @@ test("les 61 lignes conservent probabilité, coût et condition ; achat seulemen
   assert.equal(fields.prizeFieldsFromSuggestion({ ...catalog[0], industry: "Restauration" }).usageConditions, "");
 });
 
-for (const [category, count] of options.BEAUTY_SUBSECTOR_OPTIONS.map((c, i) => [c, [7,10,12,11,10,11][i]])) {
+for (const [category, count] of options.BEAUTY_SUBSECTOR_OPTIONS.map((c, i) => [c, [61,10,12,11,10,11][i]])) {
   test(`bibliothèque ${category} : ${count} lignes sans normalisation`, async () => {
     const actual = await repository.getPrizeSuggestions("Beauté", false, category);
     assert.equal(actual.length, count);
-    assert.ok(actual.every(s => s.industrySubsector === category));
+    const expected = category === options.GENERAL_BEAUTY_SUBSECTOR ? catalog : catalog.filter(s => s.industrySubsector === category);
+    assert.ok(actual.every(s => options.BEAUTY_SUBSECTOR_OPTIONS.includes(s.industrySubsector)));
     assert.deepEqual(actual.map(s => [s.id, s.label, s.probability, s.estimatedUnitCost, s.description]).sort(),
-      catalog.filter(s => s.industrySubsector === category).map(s => [s.id, s.label, s.probability, s.estimatedUnitCost, s.description]).sort());
+      expected.map(s => [s.id, s.label, s.probability, s.estimatedUnitCost, s.description]).sort());
   });
 }
+
+test("généraliste explicite : union active, futures suggestions et homonymes, dédoublonnage par ID sans mutation", async () => {
+  const future = {...row(catalog.find(s => s.industrySubsector === "Coiffure")),id:"future",label:catalog[0].label,probability:21,description:"Condition différente",estimated_unit_cost:12};
+  state.rows.push(future, {...future}, {...row(catalog[0]),id:"custom",industry_subsector:null}, {...row(catalog[0]),id:"inactive",is_active:false}, {...row(catalog[0]),id:"legacy",industry_subsector:"Ongles & cils"});
+  const before = structuredClone(state.rows);
+  const result = await repository.getPrizeSuggestions("Beauté", false, options.GENERAL_BEAUTY_SUBSECTOR);
+  assert.equal(result.length, 63);
+  assert.equal(result.filter(s => s.id === "future").length, 1);
+  assert.equal(result.filter(s => s.label === catalog[0].label).length, 3);
+  assert.ok(result.some(s => s.id === "custom"));
+  assert.ok(!result.some(s => ["inactive", "legacy"].includes(s.id)));
+  const added = fields.prizeFieldsFromSuggestion(result.find(s => s.id === "future"));
+  assert.deepEqual(added,{label:future.label,totalQuantity:null,probability:21,estimatedUnitCost:12,usageConditions:"Condition différente",purchaseRequired:false});
+  assert.equal((await repository.getPrizeSuggestions("Beauté", true, options.GENERAL_BEAUTY_SUBSECTOR)).length,64);
+  assert.ok(result.every((item,i) => !i || result[i-1].probability >= item.probability));
+  assert.deepEqual(state.rows,before);
+});
+
+test("généraliste : alias Spa inclus, filtre non Beauté conservé, panne jamais confondue avec une liste vide", async () => {
+  state.rows.push({...row(catalog[0]),id:"old-spa",industry_subsector:"Massage & spa"}, {...row(catalog[0]),id:"foreign",industry:"Restauration",industry_subsector:null});
+  assert.equal((await repository.getPrizeSuggestions("Beauté",false,options.GENERAL_BEAUTY_SUBSECTOR)).length,62);
+  assert.deepEqual((await repository.getPrizeSuggestions("Restaurant")).map(s => s.id),["foreign"]);
+  state.error={code:"XX000",message:"private database failure"};
+  await assert.rejects(repository.getPrizeSuggestions("Beauté",false,options.GENERAL_BEAUTY_SUBSECTOR),/Lecture des suggestions/);
+});
+
+test("API : profil généraliste sélectionné ouvre l’union, autre établissement et profil absent restent ciblés", async () => {
+  state.session={merchant:{id:"general-site",industry:"Beauté",industrySubsector:options.GENERAL_BEAUTY_SUBSECTOR}};
+  const before = structuredClone(state.session);
+  const response=await route.GET(new NextRequest("https://example.test/api/prize-suggestions"));
+  assert.equal(response.headers.get("cache-control"),"private, no-store");
+  assert.equal((await response.json()).suggestions.length,61);
+  assert.deepEqual(state.session,before);
+  state.session={merchant:{id:"nails-site",industry:"Beauté",industrySubsector:"Ongles"}};
+  assert.equal((await (await route.GET(new NextRequest("https://example.test/api/prize-suggestions"))).json()).suggestions.length,12);
+  state.session={merchant:{id:"unclassified-site",industry:"Beauté"}};
+  assert.equal((await (await route.GET(new NextRequest("https://example.test/api/prize-suggestions"))).json()).suggestions.length,7);
+});
 
 test("repli général sans sous-secteur ou pour ancienne catégorie ; suggestions personnalisées conservées", async () => {
   state.rows.push({ ...row(catalog[0]), id: "custom", industry_subsector: null });

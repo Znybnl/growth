@@ -1,6 +1,7 @@
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import {
   BEAUTY_INDUSTRY,
+  BEAUTY_SUBSECTOR_OPTIONS,
   isBeautySubsector,
   GENERAL_BEAUTY_SUBSECTOR,
   isLegacyBeautySubsector,
@@ -115,7 +116,7 @@ export function validatePrizeSuggestionInput(input: Partial<PrizeSuggestionInput
 
 async function fetchPrizeSuggestions(
   industry: string,
-  industrySubsector: string | undefined,
+  industrySubsector: string | string[] | undefined,
   includeInactive: boolean,
   useSubsectorColumn = true,
 ) {
@@ -130,7 +131,9 @@ async function fetchPrizeSuggestions(
     .order("created_at", { ascending: true });
 
   if (useSubsectorColumn) {
-    query = industrySubsector
+    query = Array.isArray(industrySubsector)
+      ? query.in("industry_subsector", industrySubsector)
+      : industrySubsector
       ? industrySubsector === "Massage & Spa"
         ? query.in("industry_subsector", ["Massage & Spa", "Massage & spa"])
         : query.eq("industry_subsector", industrySubsector)
@@ -170,8 +173,17 @@ export async function getPrizeSuggestions(
     throw new Error("Le sous-secteur sélectionné n'est pas valide pour ce secteur.");
   }
 
+  // Only an explicit generalist profile opens every current Beauty library.
+  // Missing/legacy subsectors and specialist fallbacks keep their prior scope.
+  if (normalizedIndustry === BEAUTY_INDUSTRY && requestedSubsector === GENERAL_BEAUTY_SUBSECTOR) {
+    return mergeSuggestions(await Promise.all([
+      fetchPrizeSuggestions(BEAUTY_INDUSTRY, [...BEAUTY_SUBSECTOR_OPTIONS, "Massage & spa"], includeInactive),
+      fetchPrizeSuggestions(BEAUTY_INDUSTRY, undefined, includeInactive),
+    ]));
+  }
+
   if (normalizedIndustry === BEAUTY_INDUSTRY
-    && (!requestedSubsector || requestedSubsector === GENERAL_BEAUTY_SUBSECTOR || isLegacyBeautySubsector(requestedSubsector))) {
+    && (!requestedSubsector || isLegacyBeautySubsector(requestedSubsector))) {
     const groups = await Promise.all([
       fetchPrizeSuggestions(BEAUTY_INDUSTRY, GENERAL_BEAUTY_SUBSECTOR, includeInactive),
       fetchPrizeSuggestions(BEAUTY_INDUSTRY, undefined, includeInactive),
