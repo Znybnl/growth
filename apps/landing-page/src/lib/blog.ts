@@ -4754,6 +4754,141 @@ export const blogPosts: BlogPost[] = [
       "/comment-ca-marche",
     ],
   },
+  {
+    path: "/blog/journee-decouverte-magasin-optique",
+    title: "Comment organiser une journée découverte dans un magasin d’optique ?",
+    seoTitle: "Journée découverte chez un opticien : idées et organisation",
+    description:
+      "Organisez une journée découverte en magasin d’optique : thème, présentation de montures, équipe, communication locale, cadre professionnel et bilan pratique.",
+    eyebrow: "Opticiens et commerce local",
+    intro:
+      "Une journée découverte en magasin d’optique peut aider les visiteurs à mieux connaître les montures, les matières, les accessoires et les services réellement proposés par l’équipe. Elle fonctionne comme un rendez-vous de boutique, pas comme une consultation : choisissez un thème limité, préservez le temps de conseil et annoncez clairement ce que les visiteurs pourront découvrir.",
+    answer:
+      "Choisissez une famille de produits et un public précis, préparez quelques démonstrations fondées sur les informations des fabricants, puis organisez un créneau qui ne désorganise ni l’accueil ni les rendez-vous. Séparez la présentation commerciale de toute question individuelle de santé visuelle, communiquez les conditions d’accès et mesurez les visites, échanges et demandes sans attribuer automatiquement les ventes à l’événement.",
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-25",
+    updatedAt: "2026-10-25",
+    reviewedAt: "2026-10-25",
+    readingTime: "8 min de lecture",
+    image: "/images/blog/journee-decouverte-magasin-optique.webp",
+    imageAlt:
+      "Un opticien présente plusieurs montures à une cliente dans une boutique indépendante",
+    ctaLabel: "Découvrir le fonctionnement d’Okado",
+    ctaHref: "/comment-ca-marche",
+    source: [
+      {
+        label: "Légifrance — Code de la santé publique, délivrance et adaptation des verres correcteurs",
+        href: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047568701",
+      },
+      {
+        label: "Google Business Profile — publier un événement sur sa fiche d’établissement",
+        href: "https://support.google.com/business/answer/7342169?hl=fr",
+      },
+      {
+        label: "CNIL — communications électroniques et prospection commerciale",
+        href: "https://www.cnil.fr/fr/communication-electronique-quelles-regles",
+      },
+      {
+        label: "DGCCRF — annonces de réduction de prix",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir",
+      },
+      {
+        label: "DGCCRF — loteries publicitaires et pratiques commerciales",
+        href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
+      },
+    ],
+    sections: [
+      {
+        title: "Choisir un thème assez précis pour être utile",
+        paragraphs: [
+          "Une invitation comme « journée de l’optique » reste difficile à se représenter. Préférez un thème visible en boutique : découvrir les formes de montures, comparer des matériaux à partir des fiches produit, présenter des accessoires, ou montrer comment l’équipe entretient et ajuste une monture dans le cadre de ses services. Ne retenez que les sujets que le magasin peut réellement préparer et expliquer.",
+          "Définissez aussi à qui s’adresse le rendez-vous : personnes qui cherchent une monture, parents accompagnant un enfant, clients curieux d’une nouvelle collection ou visiteurs qui veulent connaître les services de l’atelier. Ce choix guide les exemples, le nombre de places et le ton de l’annonce ; il ne justifie pas de collecter des informations de santé pour segmenter les invités.",
+          "Pour construire une trame, notez une phrase de promesse, trois objets à présenter et les questions de boutique auxquelles l’équipe sait répondre. Les informations techniques doivent correspondre aux modèles réellement montrés et aux documents disponibles, pas être généralisées à toutes les montures ou à tous les verres.",
+        ],
+        items: [
+          "Montures : formes, matériaux, finitions et différences observables entre les références présentes.",
+          "Accessoires : étuis, cordons ou produits d’entretien, avec leurs usages et consignes fabricant.",
+          "Services de boutique : étapes pratiques de prise en charge, entretien ou ajustage, selon ce que l’établissement propose réellement.",
+        ],
+      },
+      {
+        title: "Organiser une découverte sans interrompre l’activité",
+        paragraphs: [
+          "Avant de fixer la date, regardez les rendez-vous, la disponibilité de l’équipe, l’espace de circulation et le nombre de modèles à portée de main. Une personne doit rester disponible pour l’accueil habituel ; si toute l’équipe est mobilisée par l’animation, réduisez la jauge ou choisissez un format plus court. Gardez la caisse, l’accès aux présentoirs et les zones de confidentialité dégagés.",
+          "Un parcours simple suffit : accueil et présentation du thème, découverte de quelques modèles, questions générales, puis orientation vers un échange individuel si la personne en a besoin. Indiquez à l’équipe qui anime et qui prend le relais. Une réservation peut aider à dimensionner les places, mais annoncez également si les visiteurs sans inscription peuvent venir.",
+          "Exemple fictif à adapter : un samedi, deux séquences de 30 minutes à 10 h 30 et 15 h, limitées à six personnes chacune, avec 15 minutes entre les groupes pour remettre les montures en place. Une personne anime chaque séquence et une autre garde l’accueil courant. Ces nombres illustrent une organisation ; ils ne constituent ni une jauge recommandée pour tous les magasins, ni une estimation de fréquentation.",
+        ],
+        items: [
+          "Sélectionner à l’avance les références, accessoires et fiches fabricant à présenter.",
+          "Préparer une table ou un présentoir identifié, sans déplacer les produits nécessaires aux rendez-vous.",
+          "Prévoir une durée, une jauge et un rôle pour chaque personne de l’équipe.",
+          "Définir comment proposer un échange ultérieur lorsque la question dépasse la démonstration collective.",
+        ],
+      },
+      {
+        title: "Maintenir une frontière nette avec la santé visuelle",
+        paragraphs: [
+          "Une journée de découverte commerciale n’est ni un examen de vue ni un diagnostic. Présentez des produits et des services généraux, sans interpréter une ordonnance, évaluer les symptômes d’un visiteur ou lui recommander une correction personnalisée pendant une animation. Si une question porte sur sa vision, son ordonnance ou une gêne, l’équipe la reprend dans le cadre professionnel adapté ou l’oriente vers le professionnel de santé concerné.",
+          "Cette limite est importante car le [Code de la santé publique encadre la délivrance et certaines adaptations de verres correcteurs](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047568701). L’article décrit des compétences et conditions précises ; il ne faut pas en déduire qu’une animation autorise un acte individuel, ni transformer cette page en guide médical. En cas d’incertitude sur le périmètre professionnel ou une formulation, faites relire le programme par un opticien responsable avant publication.",
+          "N’utilisez pas non plus une collecte de contacts pour recueillir des données sur la santé ou l’ordonnance. Pour suivre une réservation, demandez seulement les informations nécessaires à cette réservation et dites à quoi elles servent. Une inscription à l’événement ne vaut pas, à elle seule, accord général pour recevoir des offres ultérieures.",
+        ],
+      },
+      {
+        title: "Inviter localement avec un programme exact",
+        paragraphs: [
+          "L’annonce doit répondre immédiatement aux questions pratiques : quoi découvrir, où, quand, combien de temps, entrée libre ou sur réservation, nombre de places et éventuel tarif. Si une référence est présentée uniquement sur commande ou si une démonstration dépend de la disponibilité d’un membre de l’équipe, précisez-le avant le déplacement. Évitez les formulations qui promettent un résultat visuel ou un conseil individuel gratuit si ce n’est pas le format proposé.",
+          "La fiche d’établissement Google permet de publier un post de type événement avec titre et dates ; la documentation explique où il peut apparaître sur la Recherche et Maps. Vous pouvez [créer un post événementiel Google](https://support.google.com/business/answer/7342169?hl=fr), puis vérifier qu’il est bien indiqué « En ligne » et corriger les horaires si le programme change. Cette publication est un canal de communication, pas une garantie de visibilité ou de participation.",
+          "Relayer l’invitation en vitrine, sur le site et dans les réseaux sociaux du magasin. Pour un e-mail ou SMS, distinguez le message nécessaire à une réservation de la prospection commerciale. La [CNIL détaille les règles des communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles) : pour les particuliers, le principe est le consentement préalable à la prospection, sous réserve des exceptions applicables. N’ajoutez donc pas automatiquement les inscrits à une liste marketing ; séparez cette finalité et son choix.",
+        ],
+      },
+      {
+        title: "Préférer une découverte à une remise permanente",
+        paragraphs: [
+          "Le contenu de la journée peut être l’avantage : voir des modèles rarement sortis, comparer des finitions, échanger avec l’équipe ou comprendre les services de l’atelier. Si vous choisissez une offre, définissez son objet, sa durée, les références concernées, les limites de stock et les conditions avant de la communiquer. Une remise n’est pas nécessaire pour donner une raison de passer en boutique.",
+          "En cas d’annonce de réduction de prix, vérifiez la règle applicable au produit et à la formule retenue. La [DGCCRF rappelle que le prix antérieur annoncé correspond en principe au prix le plus bas pratiqué par le professionnel dans les 30 jours précédant la réduction](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir). Ne réutilisez pas un pourcentage ou un prix barré d’une précédente campagne sans contrôler la situation actuelle.",
+          "Un jeu promotionnel peut être ajouté comme animation facultative, avec un règlement et une dotation définis avant diffusion. Consultez les repères de la [DGCCRF sur les loteries publicitaires](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees) pour vérifier les règles applicables au dispositif concret. Okado peut servir à proposer un jeu par QR code ; ce n’est ni un système de réservation ou de dossier client, ni un essayage virtuel ou un outil de diagnostic. [Voir le fonctionnement d’Okado](/comment-ca-marche) et comparez ce format à une simple démonstration si celle-ci répond déjà à l’objectif.",
+        ],
+      },
+      {
+        title: "Mesurer l’intérêt sans inventer un retour sur investissement",
+        paragraphs: [
+          "Choisissez les indicateurs avant la journée et utilisez des dénominateurs compréhensibles : inscriptions, personnes effectivement venues, participants aux séquences, demandes d’information produit et rendez-vous demandés. Ne mélangez pas ces étapes. Une inscription n’est pas une visite, une question n’est pas une intention d’achat, et une vente observée le jour même n’est pas automatiquement causée par l’événement.",
+          "Exemple fictif de bilan : 12 places réservées, 9 personnes présentes, 7 échanges sur les montures et 3 demandes de rendez-vous. Le magasin peut constater que trois rendez-vous ont été demandés, mais pas conclure que l’événement a produit trois ventes ni qu’il a augmenté la fidélité. Notez aussi le temps d’équipe, les références montrées, les imprévus et les questions auxquelles le format collectif n’a pas répondu.",
+          "Pour comparer deux éditions, gardez une méthode identique et consignez les différences de jour, horaires, météo, équipe et disponibilité des produits. Le guide [mesurer une animation commerciale](/blog/mesurer-animation-commerciale) explique comment séparer participation, contact, retrait et vente. Pour l’aménagement et la circulation, consultez aussi [l’expérience client en boutique](/blog/experience-client-boutique) ; les principes de [découverte en magasin de vêtements](/blog/animation-boutique-vetements) peuvent inspirer la mise en scène, mais doivent être adaptés aux produits d’optique.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur une journée découverte chez un opticien",
+        paragraphs: [
+          "Quel thème choisir pour une journée découverte en magasin d’optique ? Choisissez une famille de montures, une présentation de matériaux ou d’accessoires, ou une explication des services réellement disponibles. Le sujet doit tenir dans le temps prévu et s’appuyer sur les produits et informations que le magasin peut montrer.",
+          "Faut-il obligatoirement proposer une réduction ? Non. Une présentation de collection, une démonstration d’entretien ou un échange avec l’équipe peuvent constituer le cœur de l’événement. Si une réduction est choisie, vérifiez les règles d’annonce et détaillez les conditions avant de publier.",
+          "Peut-on donner un conseil personnalisé sur la vue pendant l’événement ? L’événement collectif ne doit pas servir de diagnostic ni remplacer le parcours professionnel correspondant. Les questions individuelles sur l’ordonnance, la correction ou la santé visuelle doivent être prises en charge dans le cadre adapté par un professionnel compétent.",
+          "Comment annoncer la journée ? Affichez le thème, l’adresse, la date, les horaires, le format d’accès et les limites de place. Une publication événementielle sur la fiche Google, une vitrine et les canaux habituels du magasin peuvent se compléter, sans garantir de fréquentation.",
+          "Un jeu QR peut-il enregistrer des rendez-vous ou des informations de santé ? Non. Ne présentez pas Okado comme un agenda, un dossier optique ou un outil de diagnostic. Gardez les réservations et les données éventuellement nécessaires dans les outils et parcours adaptés, et séparés du jeu.",
+        ],
+      },
+      {
+        title: "Checklist avant de communiquer",
+        paragraphs: ["Validez ces points avec la personne responsable et l’équipe :"],
+        items: [
+          "Le thème, le public et l’objectif correspondent aux produits et services réellement proposés.",
+          "Les modèles et informations de présentation sont vérifiés à partir des références et documents disponibles.",
+          "La durée, la jauge, les rôles et l’espace préservent l’accueil et les rendez-vous habituels.",
+          "L’équipe sait distinguer présentation produit, question individuelle et sujet de santé visuelle.",
+          "L’annonce donne l’adresse, la date, les horaires, le format, le tarif éventuel et les limites d’accès.",
+          "Une remise ou un jeu éventuel a des conditions définies et vérifiées avant publication.",
+          "La réservation, les messages de service et la prospection restent des finalités distinctes.",
+          "Le bilan distingue personnes venues, échanges, demandes et ventes observées sans attribution automatique.",
+        ],
+      },
+    ],
+    related: [
+      "/blog/animation-boutique-vetements",
+      "/blog/experience-client-boutique",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche",
+    ],
+  },
 ];
 
 export function blogPostByPath(path: string) {
