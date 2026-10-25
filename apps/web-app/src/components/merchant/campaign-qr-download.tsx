@@ -1,12 +1,10 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { DownloadFeedbackDialog, downloadBlob, fetchDownload, useDownloadTask } from "@/components/merchant/download-feedback";
 
-export function CampaignQrDownloadDialog({ campaignId, isActive, admin = false, onClose }: {
-  campaignId: string; isActive?: boolean; admin?: boolean; onClose: () => void;
-}) {
+function useCampaignQr(campaignId: string, admin: boolean) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageReady, setImageReady] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -16,7 +14,9 @@ export function CampaignQrDownloadDialog({ campaignId, isActive, admin = false, 
     setImageReady(false);
     setImageError(false);
     const blob = await fetchDownload(`${endpoint}?inline=1`, signal, "image/svg+xml");
-    setImageUrl(URL.createObjectURL(blob));
+    const nextUrl = URL.createObjectURL(blob);
+    if (signal.aborted) { URL.revokeObjectURL(nextUrl); return ""; }
+    setImageUrl(nextUrl);
     return "Scannez ce QR code ou enregistrez son image avec un clic droit.";
   }, "Préparation de votre QR code…");
   // Read-only request; the actual download remains an explicit action.
@@ -31,8 +31,12 @@ export function CampaignQrDownloadDialog({ campaignId, isActive, admin = false, 
     downloadBlob(blob, `${encodeURIComponent(campaignId)}-qr.svg`);
     return "Le QR code a été transmis au navigateur. Retrouvez-le dans vos téléchargements.";
   }, "Préparation du téléchargement du QR code…");
-  return <DownloadFeedbackDialog compact state={task.state} title="QR code de diffusion" onClose={() => { task.close(); onClose(); }} onRetry={imageReady ? download : load}>
-    {isActive === false ? <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">Brouillon : ne diffusez ce QR code qu’après la publication du jeu.</p> : null}
+  return { imageUrl, imageReady, imageError, setImageReady, setImageError, task, load, download };
+}
+
+function CampaignQrImageAndDownload({ qr, secondary = false }: { qr: ReturnType<typeof useCampaignQr>; secondary?: boolean }) {
+  const { imageUrl, imageReady, imageError, setImageReady, setImageError, task, load, download } = qr;
+  return <>
     {imageUrl ? <div className="mt-4 flex justify-center rounded-xl border border-border bg-white p-3">
       {/* A real SVG image preserves scanning and right-click saving. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -40,7 +44,32 @@ export function CampaignQrDownloadDialog({ campaignId, isActive, admin = false, 
     </div> : null}
     {imageError ? <p role="alert" className="mt-3 text-sm text-red-700">L’image du QR code ne peut pas être affichée.</p> : null}
     {imageError ? <button type="button" className="okado-secondary-action mt-3 w-full px-4" onClick={load}>Recharger le QR code</button> : null}
-    {imageUrl ? <button type="button" disabled={!imageReady || task.state?.status === "loading"} className="okado-filled-action mt-4 w-full gap-2 px-4 disabled:opacity-50" onClick={download}><Download className="h-4 w-4" aria-hidden="true" />Télécharger le QR code</button> : null}
+    {imageUrl ? <button type="button" disabled={!imageReady || task.state?.status === "loading"} className={`${secondary ? "okado-secondary-action" : "okado-filled-action"} mt-4 w-full gap-2 px-4 disabled:opacity-50`} onClick={download}><Download className="h-4 w-4" aria-hidden="true" />Télécharger le QR code</button> : null}
+  </>;
+}
+
+/** Embedded read-only QR: no second modal, same renderer/download as the QR menu. */
+export function CampaignQrPanel({ campaignId, admin = false }: { campaignId: string; admin?: boolean }) {
+  const qr = useCampaignQr(campaignId, admin);
+  return <>
+    <CampaignQrImageAndDownload qr={qr} secondary />
+    {qr.task.state ? <p role={qr.task.state.status === "error" ? "alert" : "status"}
+      className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-ash">
+      {qr.task.state.status === "loading" ? <Loader2 className="h-4 w-4 shrink-0 animate-spin motion-reduce:animate-none" aria-hidden="true" /> : null}
+      {qr.task.state.message}
+    </p> : null}
+    {qr.task.state?.status === "error" ? <button type="button" className="okado-secondary-action mt-3 w-full px-4"
+      onClick={qr.imageReady ? qr.download : qr.load}>Réessayer</button> : null}
+  </>;
+}
+
+export function CampaignQrDownloadDialog({ campaignId, isActive, admin = false, onClose }: {
+  campaignId: string; isActive?: boolean; admin?: boolean; onClose: () => void;
+}) {
+  const qr = useCampaignQr(campaignId, admin);
+  return <DownloadFeedbackDialog compact state={qr.task.state} title="QR code de diffusion" onClose={() => { qr.task.close(); onClose(); }} onRetry={qr.imageReady ? qr.download : qr.load}>
+    {isActive === false ? <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">Brouillon : ne diffusez ce QR code qu’après la publication du jeu.</p> : null}
+    <CampaignQrImageAndDownload qr={qr} />
   </DownloadFeedbackDialog>;
 }
 

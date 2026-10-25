@@ -32,6 +32,25 @@ beforeEach(() => {
 });
 const params = { params: Promise.resolve({ id: "test-game" }) };
 
+for (const active of [false, true]) {
+  test(`diffusion ${active ? "publiée" : "brouillon"} : affichage sans téléchargement, même URL au clic explicite`, async () => {
+    state.performance.campaign.isActive = active;
+    const inline = await GET(new Request("https://app.example.test/api/campaigns/test-game/qr?inline=1"), params);
+    const inlineSvg = await inline.text();
+    assert.match(inline.headers.get("content-disposition"), /^inline;/);
+    assert.equal(state.events, 0);
+    // Reopening does not inflate downloads.
+    await GET(new Request("https://app.example.test/api/campaigns/test-game/qr?inline=1"), params);
+    assert.equal(state.events, 0);
+    const download = await GET(new Request("https://app.example.test/api/campaigns/test-game/qr"), params);
+    assert.equal(await download.text(), inlineSvg);
+    assert.match(download.headers.get("content-disposition"), /^attachment;/);
+    assert.equal(state.events, 1);
+    assert.deepEqual(state.urls, Array(3).fill("https://app.example.test/campaign/test-game"));
+    assert.equal(state.performance.campaign.isActive, active);
+  });
+}
+
 test("QR privé de brouillon : vrai SVG et jeton de test signé limité au bon jeu", async () => {
   const response = await GET(new Request("https://app.example.test/api/campaigns/test-game/qr?preview=1&inline=1"), params);
   assert.equal(response.status, 200);

@@ -1,11 +1,9 @@
 "use client";
 
-import { Check, Download, Eye, ImageIcon, QrCode, X } from "lucide-react";
-import { useState } from "react";
-
+import { Check, Eye, ImageIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DialogShell } from "@/components/ui/dialog";
-import { CampaignQrDownloadDialog } from "@/components/merchant/campaign-qr-download";
+import { CampaignQrPanel } from "@/components/merchant/campaign-qr-download";
 
 type CampaignSavedDialogProps = {
   open: boolean;
@@ -15,98 +13,51 @@ type CampaignSavedDialogProps = {
   adminIsActive?: boolean;
   onClose: () => void;
   onPreview: () => void;
-  onPreviewQr: () => void;
 };
 
 export function CampaignSavedDialog({
-  open,
-  campaignId,
-  isActive,
-  adminTargetName,
-  adminIsActive,
-  onClose,
-  onPreview,
-  onPreviewQr,
+  open, campaignId, isActive, adminTargetName, adminIsActive, onClose, onPreview,
 }: CampaignSavedDialogProps) {
-  const [qrOpen, setQrOpen] = useState(false);
-  if (!open && qrOpen) setQrOpen(false);
-  if (open && qrOpen) return <CampaignQrDownloadDialog campaignId={campaignId} admin={Boolean(adminTargetName)} isActive={adminTargetName ? adminIsActive : isActive} onClose={() => setQrOpen(false)} />;
+  const published = adminTargetName ? adminIsActive === true : isActive === true;
   return (
-    <DialogShell
-      open={open}
-      onClose={onClose}
-      labelledBy="campaign-saved-dialog-title"
+    <DialogShell open={open} onClose={onClose} labelledBy="campaign-saved-dialog-title"
       describedBy="campaign-saved-dialog-description"
-    >
-        <div className="flex items-start justify-between gap-4">
-          <div
-            aria-hidden="true"
-            className="okado-dialog-icon bg-[#e9f8ec] text-[#18864b]"
-          >
-            <Check className="h-6 w-6" />
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Fermer la confirmation d’enregistrement"
-            className="okado-dialog-dismiss focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine/30"
-          >
-            <X className="h-4 w-4" aria-hidden="true" />
-          </button>
+      className="!max-w-2xl max-h-[calc(100dvh-3.5rem)] overflow-y-auto">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#e9f8ec] text-[#18864b]"><Check className="h-5 w-5" /></span>
+          <p role="status" className="text-xs font-semibold uppercase tracking-[0.14em] text-ash">
+            {published ? "Jeu publié" : "Brouillon enregistré"}
+          </p>
         </div>
-
-        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-ash">
-          {adminTargetName ? (adminIsActive ? "Jeu publié" : "Brouillon enregistré") : "Jeu prêt"}
-        </p>
-        <h2 id="campaign-saved-dialog-title" className="okado-dialog-title">
-          {adminTargetName
-            ? adminIsActive
-              ? `Le jeu est publié pour ${adminTargetName}.`
-              : `Le brouillon est prêt pour ${adminTargetName}.`
-            : "Votre jeu est enregistré."}
-        </h2>
-        <p id="campaign-saved-dialog-description" className="okado-dialog-description max-w-xl">
-          {adminTargetName
-            ? adminIsActive
-              ? "Le jeu est maintenant public. Vous pouvez poursuivre sa configuration dans le wizard."
-              : "Le jeu n’est pas publié. Vous pouvez poursuivre sa configuration dans le wizard."
-            : "Testez le parcours ou reprenez sa configuration. Vous restez sur la campagne en cours."}
-        </p>
-
-        {adminTargetName ? (
-          <>
-            <Button type="button" variant="primary" size="default" className="mt-6 w-full" onClick={onClose}>
-              Continuer la configuration
-            </Button>
-            <Button type="button" variant="default" className="mt-2 w-full" onClick={() => setQrOpen(true)}><Download className="h-4 w-4" aria-hidden="true" />Télécharger le QR code de diffusion</Button>
-            <Button asChild variant="default" size="default" className="mt-2 w-full">
-              <a href={`/admin/campaigns/${campaignId}/poster`}>
-                <ImageIcon className="h-4 w-4" aria-hidden="true" />
-                Personnaliser l’affiche
-              </a>
-            </Button>
-          </>
-        ) : <Button type="button" variant="primary" size="default" className="mt-6 w-full" onClick={() => setQrOpen(true)}>
-            <Download className="h-4 w-4" aria-hidden="true" />
-            Télécharger le QR code de diffusion
-        </Button>}
-
-        {!adminTargetName ? <div className="mt-2 grid gap-2 sm:grid-cols-2">
-          <Button type="button" variant="default" size="default" onClick={onPreview}>
-            <Eye className="h-4 w-4" aria-hidden="true" />
-            Prévisualiser
-          </Button>
-          <Button type="button" variant="default" size="default" onClick={onPreviewQr}>
-            <QrCode className="h-4 w-4" aria-hidden="true" />
-            QR de test
-          </Button>
-          <Button asChild variant="default" size="default">
-            <a href={`/campaigns/${campaignId}/poster`}>
-              <ImageIcon className="h-4 w-4" aria-hidden="true" />
-              Affiche
-            </a>
-          </Button>
-        </div> : null}
+        <button type="button" onClick={onClose} aria-label="Fermer la confirmation d’enregistrement"
+          className="okado-dialog-dismiss focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine/30">
+          <X className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </div>
+      <div className="mt-5 grid gap-5 sm:grid-cols-[minmax(0,1fr)_248px] sm:items-center sm:gap-7">
+      <div className="min-w-0">
+      <h2 id="campaign-saved-dialog-title" className="okado-dialog-title !mt-0">
+        {adminTargetName
+          ? published ? `Le jeu est publié pour ${adminTargetName}.` : `Le brouillon est prêt pour ${adminTargetName}.`
+          : "Votre jeu est enregistré."}
+      </h2>
+      <p id="campaign-saved-dialog-description" className="mt-2 text-sm leading-relaxed text-ash">
+        {published ? "Votre jeu est prêt à être partagé." : "Ce QR donnera accès au jeu après publication."}
+      </p>
+      <Button type="button" variant="primary" className="mt-5 w-full" onClick={onPreview}>
+        <Eye className="h-4 w-4" aria-hidden="true" />Prévisualiser mon jeu
+      </Button>
+      <a href={`/${adminTargetName ? "admin/" : ""}campaigns/${encodeURIComponent(campaignId)}/poster`}
+        className="mt-4 flex min-h-11 items-center justify-center gap-2 text-sm font-medium text-aubergine underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine/30">
+        <ImageIcon className="h-4 w-4" aria-hidden="true" />Affiche
+      </a>
+      </div>
+      {open ? <div className="min-w-0 border-t border-border pt-4 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5">
+        <p className="text-center text-sm font-semibold text-carbon">QR code de participation</p>
+        <CampaignQrPanel key={campaignId} campaignId={campaignId} admin={Boolean(adminTargetName)} />
+      </div> : null}
+      </div>
     </DialogShell>
   );
 }

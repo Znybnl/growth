@@ -28,6 +28,13 @@ La fiche dans Pilotage est réservée à l’administration de la plateforme et 
 
 ## Cycle de vie d'un jeu
 
+- Confirmation après sauvegarde — #577 : l’aperçu isolé est l’action principale,
+  le QR de diffusion est visible et son téléchargement reste explicite.
+  Un brouillon peut exporter son QR sans être publié ; son statut et l’accès
+  disponible seulement après publication sont indiqués. L’ouverture ne compte
+  pas comme un téléchargement. L’accès au QR de test reste dans le Wizard.
+  La fréquence de cette confirmation n’est pas modifiée.
+
 - L’administration peut télécharger le QR de diffusion d’un jeu marchand depuis Pilotage et l’éditeur dédié (issue #470), après vérification serveur de son rôle et du contexte du jeu. Le téléchargement ne publie pas un brouillon, n’ajoute pas de jeton de prévisualisation et ne modifie pas les indicateurs du marchand. Un QR de brouillon est identifié comme à diffuser après publication.
 
 - Un jeu peut être enregistré en **brouillon**, même incomplet.
