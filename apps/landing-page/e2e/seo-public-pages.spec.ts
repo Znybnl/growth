@@ -181,6 +181,9 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
 
 test("tous les articles exposent liens, sources et métadonnées cohérentes dans le HTML", async ({ page, request }, testInfo) => {
   test.setTimeout(120_000);
+  if (testInfo.project.name === "desktop") {
+    await page.setViewportSize({ width: 1280, height: 720 });
+  }
   expect(new Set(blogPosts.map((post) => post.path)).size).toBe(blogPosts.length);
   const descriptions = new Set<string>();
   const sitemap = await (await request.get("/sitemap.xml")).text();
@@ -256,6 +259,21 @@ test("tous les articles exposent liens, sources et métadonnées cohérentes dan
       { "@type": "ListItem", position: 3, name: post.title, item: `https://www.okado.app${post.path}` },
     ]);
     expect(sitemap).toContain(`<loc>https://www.okado.app${post.path}</loc>\n<lastmod>${post.updatedAt}</lastmod>`);
+    if ([
+      "/blog/idees-animations-commerciales-boutique",
+      "/blog/attirer-clients-commerce-local",
+      "/blog/animation-magasin-velos-journee-decouverte",
+    ].includes(post.path) && ["desktop", "mobile"].includes(testInfo.project.name)) {
+      const slug = post.path.split("/").pop();
+      await page.locator("main header").scrollIntoViewIfNeeded();
+      await page.screenshot({ path: testInfo.outputPath(`${slug}-header.png`) });
+      await article.locator("section").first().scrollIntoViewIfNeeded();
+      await page.screenshot({ path: testInfo.outputPath(`${slug}-practical-section.png`) });
+      const takeaway = page.getByText("À retenir", { exact: true }).locator("..");
+      await expect(takeaway.getByRole("heading")).toHaveText(post.takeaway.title);
+      await takeaway.scrollIntoViewIfNeeded();
+      await page.screenshot({ path: testInfo.outputPath(`${slug}-analysis.png`) });
+    }
   }
 });
 
