@@ -89,6 +89,10 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
               </span>
               <span>{post.readingTime}</span>
             </div>
+            <p className="mt-4 max-w-3xl text-sm leading-6 text-[#b9c7d9]">
+              Guide préparé avec une assistance IA et publié par Okado, éditeur de jeux par QR code.
+              Les cas signalés comme fictifs sont des simulations, pas des résultats clients.
+            </p>
           </div>
         </header>
 
@@ -193,10 +197,10 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
             À retenir
           </p>
           <h2 className="mt-3 max-w-2xl text-2xl font-semibold tracking-[-0.03em] md:text-3xl">
-            Une animation utile est simple à comprendre, à délivrer et à mesurer.
+            {post.takeaway.title}
           </h2>
           <p className="mt-4 max-w-2xl leading-7 text-[#5f5144]">
-            Découvrez comment Okado relie un support en point de vente, un jeu mobile et le suivi des gains.
+            <BlogInlineText text={post.takeaway.text} />
           </p>
           <div className="mt-6">
             <PrimaryButton
