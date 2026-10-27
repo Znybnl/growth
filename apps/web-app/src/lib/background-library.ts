@@ -1,6 +1,17 @@
 import { BackgroundLibraryAsset } from "@/lib/types";
+import { CHRISTMAS_WHEEL_THEMES, christmasWheelArtwork } from "@/lib/christmas-wheel-themes";
 
 export const builtInBackgroundAssets: BackgroundLibraryAsset[] = [
+  ...CHRISTMAS_WHEEL_THEMES.map(theme => ({
+    id: `builtin-wheel-${theme.id}`,
+    label: theme.name,
+    category: "Noël",
+    imageUrl: christmasWheelArtwork(theme.id),
+    thumbnailUrl: `/images/wheel-templates/${theme.id}-thumb.webp`,
+    source: "built-in" as const,
+    width: theme.id === "christmas-traditional" ? 941 : 940,
+    height: 1672,
+  })),
   {
     id: "builtin-wheel-beauty-pop-ribbons",
     label: "Beauty Pop — rubans roses",

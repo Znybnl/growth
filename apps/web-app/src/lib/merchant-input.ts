@@ -1,4 +1,4 @@
-import {
+import type {
   ActionKind,
   BackgroundMode,
   ButtonSize,
@@ -70,6 +70,9 @@ const TEXT_FONTS = new Set<TextFont>([
 const BUTTON_SIZES = new Set<ButtonSize>(["sm", "md", "lg"]);
 const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
 const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
+  "christmas-rose",
+  "christmas-natural",
+  "christmas-traditional",
   "halloween-gold",
   "classic",
   "restaurant-pop",

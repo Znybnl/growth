@@ -41,6 +41,8 @@ import {
 
 import { BrandMark } from "@/components/brand-mark";
 import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
+import { ChristmasCampaignPreview } from "./christmas-campaign-preview";
+import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme, isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
@@ -276,6 +278,7 @@ export type CampaignEditorPreviewModel = {
     fontFamily: string;
   };
   hasCustomBackgroundImage: boolean;
+  selectedBackgroundImageUrl?: string;
   logoMode: EditorState["logoMode"];
   logoAlignmentClass: string;
   logoBottomSpacingPx: number;
@@ -350,6 +353,7 @@ const wheelPageTemplateOptions: Array<{
   title: string;
   description: string;
 }> = [
+  ...CHRISTMAS_WHEEL_THEMES.map(theme => ({ value: theme.id, title: theme.name, description: theme.description })),
   { value: "halloween-gold", title: "Halloween doré", description: "Roses noires, bougies et roue dorée. Décor et palette fixes." },
   {
     value: "cocorico-wheel",
@@ -978,6 +982,9 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       ? "relative isolate min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
       : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
+  if (preview.gameType === "wheel" && isChristmasWheelTemplate(preview.gamePageTemplateId)) {
+    return <ChristmasCampaignPreview preview={preview} />;
+  }
   if (preview.gameType === "wheel" && preview.gamePageTemplateId === "halloween-gold") {
     return <HalloweenCampaignPreview preview={preview} />;
   }
@@ -1685,6 +1692,7 @@ export function buildCampaignLivePreviewModel(
       fontFamily: textFontFamily(form.presentation.heading.fontFamily),
     },
     hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
+    selectedBackgroundImageUrl: form.presentation.background.mode === "image" ? form.presentation.background.imageUrl : undefined,
     logoMode: form.logoMode,
     logoAlignmentClass,
     logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
@@ -2113,6 +2121,7 @@ export function CampaignEditor({
         fontFamily: textFontFamily(form.presentation.heading.fontFamily),
       },
       hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
+      selectedBackgroundImageUrl: form.presentation.background.mode === "image" ? form.presentation.background.imageUrl : undefined,
       logoMode: form.logoMode,
       logoAlignmentClass,
       logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
@@ -3051,6 +3060,7 @@ export function CampaignEditor({
                   return (
                     <button
                       key={template.value}
+                      aria-pressed={active}
                       type="button"
                       onClick={() => {
                         captureClientProductEvent("campaign_template_selected", {
@@ -3084,10 +3094,8 @@ export function CampaignEditor({
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.value, current.presentation.background.color, wheel.loseColor);
                           const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
                           const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.value, wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
-                          const firstSelectionHeadingFont = template.value === "classic" || template.value === "halloween-gold"
-                            ? wheelHeadingFontForTemplateSelection(template.value, current.presentation.heading.fontFamily)
-                            : current.presentation.heading.fontFamily;
-                          const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
+                          const firstSelectionHeadingFont = wheelHeadingFontForTemplateSelection(template.value, current.presentation.heading.fontFamily);
+                          const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? christmasWheelTheme(template.value)?.button ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                           const scratchSignal =
                             remembered?.scratchSignal ??
                             (scratchTemplateDefaultPrimaryColor(template.value) &&

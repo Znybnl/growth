@@ -40,6 +40,9 @@ export type PosterTemplateId =
   | "pastel-editorial-wheel"
   | "ivory-editorial-wheel";
 export type GamePageTemplateId =
+  | "christmas-rose"
+  | "christmas-natural"
+  | "christmas-traditional"
   | "halloween-gold"
   | "classic"
   | "restaurant-pop"
