@@ -81,6 +81,15 @@ const references = {
 };
 
 export type BlogSection = ContentSection & {
+  figures?: {
+    src: string;
+    width: number;
+    height: number;
+    alt: string;
+    caption: string;
+    sourceUrl: string;
+    capturedAt: string;
+  }[];
   table?: {
     caption: string;
     headers: string[];
@@ -112,6 +121,206 @@ export type BlogPost = {
 };
 
 export const blogPosts: BlogPost[] = [
+  {
+    path: "/blog/creer-fiche-google-institut-beaute",
+    title: "Créer une fiche Google pour un institut de beauté : le guide pas à pas",
+    seoTitle: "Fiche Google institut de beauté : création et optimisation",
+    description: "Créez ou revendiquez la fiche Google de votre institut : captures, validation, catégories, services, avis et réservation. Un guide pratique du SEO local.",
+    eyebrow: "Guide pratique · Institut de beauté",
+    intro: "Vous ouvrez un institut, travaillez à domicile ou reprenez une fiche existante ? Ce guide vous accompagne du premier écran aux réglages utiles pour être trouvé et faciliter la prise de rendez-vous. Les exemples sont fictifs ; les trois captures du démarrage proviennent de l’interface Google en français, consultée le 27 octobre 2026.",
+    answer: "Pour créer la fiche Google de votre institut de beauté, recherchez d’abord une fiche existante, revendiquez-la ou ajoutez l’établissement, renseignez son identité réelle puis suivez la validation proposée par Google. Complétez ensuite les services, les horaires, les photos et le lien de réservation. La fiche est gratuite ; sa création et son optimisation ne garantissent aucune position dans les résultats locaux.",
+    takeaway: {
+      title: "Notre avis : une fiche fiable avant une fiche très animée",
+      text: "Nous commencerions par l’identité, la validation, l’accès à l’institut et le test du lien de réservation. Ces éléments permettent à une personne intéressée d’aller au bout de sa démarche. Publier davantage ne compense pas une adresse trompeuse ou un agenda inaccessible. Une fois ces bases vérifiées, choisissez une amélioration précise et observez les rendez-vous réellement honorés.",
+    },
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-27",
+    updatedAt: "2026-10-27",
+    reviewedAt: "2026-10-27",
+    readingTime: "15 min de lecture",
+    image: "/images/blog/fiche-google-institut-beaute.webp",
+    imageAlt: "Les quatre étapes du guide : rechercher, renseigner, valider et optimiser sa fiche Google",
+    ctaLabel: "Voir un exemple d’animation pour institut",
+    ctaHref: "/instituts-beaute#demo",
+    sections: [
+      {
+        title: "Avant de commencer : réunir les informations et choisir le bon cas",
+        paragraphs: [
+          "La fiche d’établissement Google, anciennement Google My Business, présente votre activité dans la recherche et Google Maps. Pour la gérer, utilisez un compte Google contrôlé durablement par l’institut, plutôt que le compte personnel d’un prestataire. Un compte Google peut être associé à une adresse professionnelle sans être une adresse Gmail. La [documentation de démarrage](https://support.google.com/business/answer/7039811?hl=fr) décrit les conditions d’accès.",
+          "Préparez le nom affiché sur l’enseigne, votre téléphone professionnel, l’adresse ou les communes réellement desservies, les horaires, le site, l’agenda et une courte liste des prestations principales. Rassemblez aussi des photos récentes des lieux et les éléments qui attestent votre activité pour la validation. Ne créez pas une fiche supplémentaire simplement parce que vous avez perdu l’accès à l’ancienne.",
+          "L’adresse dépend de votre fonctionnement, pas du quartier sur lequel vous aimeriez apparaître. Selon les [règles Google sur les établissements de services](https://support.google.com/business/answer/9157481?hl=fr), une activité qui se déplace chez les clients et ne les reçoit pas à son adresse doit masquer celle-ci. Recevoir à domicile ne donne pas automatiquement droit à une adresse publique : vérifiez les conditions d’accueil et de signalétique avant de choisir.",
+        ],
+        table: {
+          caption: "Quelle configuration choisir pour votre activité beauté ?",
+          headers: ["Situation réelle", "Configuration à examiner", "Vérification utile"],
+          rows: [
+            ["Institut accueillant les clientes dans un local", "Établissement avec adresse publique", "Entrée identifiable, nom sur place et accueil aux horaires indiqués"],
+            ["Esthéticienne intervenant uniquement chez les clientes", "Établissement de services de proximité, adresse masquée", "Communes réellement desservies ; pas de faux local"],
+            ["Accueil à domicile et déplacements", "Établissement mixte, si les conditions Google sont remplies", "Accueil réel, signalétique permanente et présence aux heures affichées"],
+            ["Cabine louée dans un autre commerce", "Vérifier l’éligibilité de l’activité indépendante", "Identité et accueil propres ; ne pas copier la fiche de l’hébergeur"],
+          ],
+        },
+      },
+      {
+        title: "1. Rechercher l’institut avant de créer une nouvelle fiche",
+        paragraphs: [
+          "Recherchez le nom de l’institut et sa ville dans Google Maps, puis ouvrez le [parcours de création ou de revendication](https://business.google.com/create?hl=fr) avec le compte choisi. L’écran de départ permet de rechercher un établissement. S’il existe déjà, sélectionnez le bon résultat et suivez la revendication au lieu de cliquer directement sur l’ajout. Google peut déjà connaître un lieu même si vous ne l’avez jamais enregistré.",
+          "Si un ancien prestataire ou propriétaire gère la fiche, utilisez la [demande d’accès à la fiche existante](https://support.google.com/business/answer/4566671?hl=fr). Google indique normalement un délai de trois jours pour sa réponse, sans garantir un transfert automatique en l’absence de réponse. Pour certaines activités sans accueil physique, la procédure passe par l’assistance. Conservez le message de demande et vérifiez l’adresse du compte utilisé.",
+          "Une nouvelle prestation, comme l’épilation ou les soins du visage, n’est pas un motif pour multiplier les fiches du même institut. En cas de déménagement, modifiez la fiche existante. Les [consignes sur les doublons](https://support.google.com/business/answer/12756178?hl=fr) permettent d’éviter de disperser l’identité de l’établissement et ses avis.",
+        ],
+        figures: [{
+          src: "/images/blog/fiche-google-institut/01-rechercher.jpg", width: 549, height: 672,
+          alt: "Écran Google proposant de rechercher et gérer un établissement existant ou d’en ajouter un",
+          caption: "Écran 1 — Recherchez le nom de votre institut. L’ajout d’un établissement est le parcours à utiliser lorsqu’aucune fiche correspondante n’existe.",
+          sourceUrl: "https://business.google.com/create?hl=fr", capturedAt: "2026-10-27",
+        }],
+      },
+      {
+        title: "2. Saisir le nom réel de l’institut, sans ajouter de mots-clés",
+        paragraphs: [
+          "Si aucune fiche n’existe, choisissez l’ajout sur Google, puis remplissez le champ « Nom de l’entreprise ». Reprenez le nom utilisé sur votre signalétique et vos documents. Dans notre exemple fictif, « Maison Lueur » convient si c’est le nom réel ; « Maison Lueur — meilleur institut soin visage pas cher Lyon » ne convient pas si ces mots ont seulement été ajoutés pour le référencement.",
+          "Google demande une [représentation fidèle du nom et de l’activité](https://support.google.com/business/answer/3038177?hl=fr). L’ajout artificiel de services, de villes ou de slogans au nom peut entraîner une suspension. Gardez les prestations dans les champs dédiés. Une dénomination exacte aide aussi une nouvelle cliente à reconnaître la bonne entrée et à retrouver l’institut sur son agenda.",
+        ],
+        figures: [{
+          src: "/images/blog/fiche-google-institut/02-identite.jpg", width: 549, height: 672,
+          alt: "Formulaire Google de création avec les champs Nom de l’entreprise et Catégorie d’activité",
+          caption: "Écran 2 — Le formulaire commence par l’identité et la catégorie. Aucun institut fictif n’a été enregistré pour réaliser ce guide. L’illustration de gauche appartient à l’interface Google.",
+          sourceUrl: "https://business.google.com/create?hl=fr", capturedAt: "2026-10-27",
+        }],
+      },
+      {
+        title: "3. Choisir la catégorie principale qui décrit votre activité",
+        paragraphs: [
+          "Dans « Catégorie d’activité », commencez à saisir « Institut de beauté », puis sélectionnez la proposition si elle correspond à votre activité principale. Ce libellé était proposé dans l’interface française lors de notre vérification. Une activité principalement consacrée aux ongles doit examiner la catégorie la plus précise qui correspond à son métier, plutôt que choisir automatiquement celle d’un institut généraliste.",
+          "Selon les [consignes Google sur les catégories](https://support.google.com/business/answer/7249669?hl=fr), vous devez choisir parmi les propositions disponibles et retenir peu de catégories, fidèles aux activités réellement exercées. Les catégories supplémentaires servent à décrire d’autres activités, pas à enregistrer chaque soin comme une catégorie. Une modification ultérieure peut nécessiter une nouvelle validation.",
+          "Exemple de décision : pour un institut dont l’activité centrale est constituée de soins du visage, d’épilations et de soins esthétiques, commencez par la catégorie qui décrit l’institut. Ajoutez les prestations dans les services. Ne choisissez pas une catégorie médicale pour suggérer une compétence ou une prise en charge que l’établissement ne possède pas.",
+        ],
+        figures: [{
+          src: "/images/blog/fiche-google-institut/03-categorie.jpg", width: 549, height: 672,
+          alt: "Champ Catégorie d’activité avec la suggestion Google Institut de beauté",
+          caption: "Écran 3 — Sélectionnez la suggestion proposée par Google. Après cette étape, les écrans dépendent de votre situation et de votre compte ; les étapes suivantes sont décrites à partir de l’aide officielle, sans fausse capture de validation.",
+          sourceUrl: "https://business.google.com/create?hl=fr", capturedAt: "2026-10-27",
+        }],
+      },
+      {
+        title: "4. Vérifier l’adresse, l’accès, le téléphone et les horaires",
+        paragraphs: [
+          "Poursuivez le formulaire selon les questions proposées : accueil sur place, adresse, éventuelle zone desservie et coordonnées. Pour un institut avec accueil, vérifiez le repère sur la carte et l’entrée effectivement utilisée. Pour une activité exclusivement à domicile chez les clientes, masquez votre adresse personnelle et indiquez les zones réellement couvertes. Ajouter des villes à une zone desservie ne garantit pas d’y apparaître en bonne position.",
+          "Une fois l’accès à la fiche disponible, Google indique « Éditer la fiche » dans la recherche et « Modifier le profil » dans Maps ; les intitulés peuvent varier. Complétez le téléphone, le site et les horaires réels, puis prévoyez les horaires exceptionnels des jours fériés et congés. La [procédure de modification](https://support.google.com/business/answer/3039617?hl=fr) précise les champs et leur disponibilité.",
+          "Contrôle pratique : demandez à une personne qui ne connaît pas les lieux de vérifier la fiche depuis son téléphone. Peut-elle identifier la porte, comprendre l’étage ou l’interphone, savoir si elle doit réserver et vous joindre ? Si vous travaillez sur rendez-vous uniquement, ne présentez pas une amplitude fictive comme un accueil continu. Vérifiez les options d’horaires adaptées dans votre interface.",
+        ],
+      },
+      {
+        title: "5. Faire valider la fiche avec la méthode proposée par Google",
+        paragraphs: [
+          "La création du formulaire ne suffit pas à prouver que vous représentez l’établissement. Suivez l’action de validation affichée sur votre fiche. Google choisit les [méthodes de validation disponibles](https://support.google.com/business/answer/7107242?hl=fr) : vidéo, téléphone ou SMS, e-mail, appel vidéo ou courrier selon le cas. Vous ne pouvez pas imposer une méthode particulière ; plusieurs vérifications peuvent être demandées. Ne prévoyez donc pas un délai de publication garanti.",
+          "Si Google demande une vidéo, préparez une séquence montrant l’environnement, l’existence de l’activité et votre capacité à la gérer : rue et numéro, enseigne correspondant au nom, entrée, matériel et accès réservé à l’équipe. Google exige une [vidéo enregistrée dans son parcours](https://support.google.com/business/answer/14271705?hl=fr), continue, sans montage et d’au moins 30 secondes. Une vidéo promotionnelle déjà enregistrée n’est pas un remplacement.",
+          "Pour un institut, répétez le trajet avant de filmer afin de ne pas exposer de clientes, de dossiers, de coordonnées ou de codes d’accès. Préparez les lieux vides et les éléments utiles à la preuve. Ne communiquez pas un code de validation à une personne qui vous appelle pour promettre une meilleure position. En cas de refus, relisez le motif et fournissez les éléments demandés ; créer un doublon ne résout pas le problème.",
+        ],
+      },
+      {
+        title: "6. Rédiger une description utile et détailler les prestations",
+        paragraphs: [
+          "Dans la description de l’établissement, présentez les soins principaux, la localisation utile et votre mode d’accueil. Google limite ce champ à 750 caractères, sans URL ni HTML, et demande de privilégier l’activité plutôt que les prix ou promotions. Exemple fictif à adapter : « Maison Lueur est un institut de beauté situé à Angers. Nous proposons des soins du visage, des épilations et des prestations d’onglerie sur rendez-vous. Consultez les prestations et leurs durées avant de choisir votre créneau. » Ne recopiez pas une spécialité, une qualification ou un équipement que vous ne proposez pas.",
+          "Si l’éditeur est disponible, ouvrez « Éditer services », sélectionnez les services proposés ou ajoutez un service personnalisé, puis renseignez sa description et son prix. La [documentation sur les services](https://support.google.com/business/answer/9455399?hl=fr) précise leur fonctionnement selon les catégories. Mettez le nom du soin dans le nom ; les tarifs et coordonnées ont leurs propres champs.",
+          "Exemple fictif de fiche de prestation : nom « Soin du visage hydratant » ; prix 65 € ; description « Séance de 45 minutes comprenant démaquillage, soin et masque. Réservation nécessaire. » Vérifiez que ces indications correspondent à votre protocole et que le temps annoncé distingue le soin du temps d’installation. Évitez les promesses thérapeutiques ou les résultats garantis. Le but est d’aider la cliente à choisir, sans répéter artificiellement « institut de beauté + ville » dans chaque service.",
+        ],
+      },
+      {
+        title: "7. Ajouter un lien de réservation et tester le parcours complet",
+        paragraphs: [
+          "Si votre fiche propose la rubrique « Réservation », ouvrez-la, choisissez l’ajout d’un lien puis renseignez l’adresse de votre agenda. Les [liens de réservation Google](https://support.google.com/business/answer/6218037?hl=fr) dépendent de la catégorie et des fonctionnalités disponibles. Des partenaires peuvent aussi fournir des liens : contrôlez la destination affichée et le lien préféré lorsque cette option existe.",
+          "Choisissez une page qui ouvre le bon institut et permet de sélectionner un soin, plutôt que l’accueil d’une enseigne avec plusieurs adresses. Testez sur mobile : bonne prestation, durée, tarif, date, confirmation. Un agenda Planity, Treatwell ou un autre outil peut convenir si votre établissement y est correctement configuré ; ce choix ne constitue pas une garantie de classement dans Google.",
+          "Pour distinguer les visites de la fiche, vous pouvez baliser le lien de votre propre site avec des paramètres UTM, si votre outil de mesure et vos choix de consentement le permettent. Exemple de convention : source « google », support « organic », campagne « fiche_etablissement ». Vérifiez que l’agenda conserve ces paramètres. Si ce n’est pas le cas, utilisez une question de provenance dans le parcours ou une mesure agrégée adaptée ; n’attribuez pas toutes les réservations du jour à Google.",
+        ],
+      },
+      {
+        title: "8. Ajouter des photos qui répondent aux questions d’une nouvelle cliente",
+        paragraphs: [
+          "Dans la rubrique photos de votre fiche, ajoutez des images récentes de l’entrée, de l’accueil et des cabines. Google accepte notamment JPG ou PNG, de 10 Ko à 5 Mo, et recommande une résolution de 720 × 720 pixels. Les [consignes photo](https://support.google.com/business/answer/6103862?hl=fr) demandent une représentation fidèle des lieux ; l’image de couverture choisie n’est pas assurée d’apparaître en premier.",
+          "Notre proposition de reportage, à adapter : une vue de la façade permettant de reconnaître l’entrée ; une vue de l’accueil ; une cabine vide et préparée ; une présentation réelle de l’équipe avec son accord ; un équipement ou une prestation expliquée sans montrer une cliente identifiable sans autorisation. Une photo de banque d’images peut être jolie tout en laissant la personne incapable de reconnaître votre institut.",
+          "Remplacez les photos devenues trompeuses après des travaux ou un changement d’enseigne. Nous privilégions ce contrôle à une obligation de publier chaque semaine. Google ne présente pas, dans ses conseils de classement local, l’ajout de coordonnées GPS dans les fichiers comme une recette pour remonter : gardez votre temps pour montrer les lieux réels et faciliter la venue.",
+        ],
+      },
+      {
+        title: "9. Demander des avis sans récompense et répondre avec discrétion",
+        paragraphs: [
+          "Depuis la fonction de demande d’avis de votre fiche, récupérez le lien ou le QR code à partager après une prestation. Les [règles Google sur les avis](https://support.google.com/business/answer/3474122?hl=fr) autorisent une invitation à raconter une expérience réelle, mais interdisent un avantage en échange de l’avis, de sa modification ou de son retrait. Demandez un retour honnête à la clientèle, sans réserver l’invitation aux seules personnes satisfaites.",
+          "Message à adapter : « Merci de votre visite chez Maison Lueur. Si vous le souhaitez, vous pouvez partager votre expérience sur Google : [votre lien d’avis]. Votre retour nous aide à comprendre ce qui fonctionne et ce qui peut être amélioré. » Ne demandez ni cinq étoiles ni la copie d’un texte contenant des mots-clés. Si vous envoyez ce message par e-mail ou SMS, vérifiez aussi que l’usage des coordonnées et les modalités d’opposition respectent les règles applicables à votre communication.",
+          "Pour une réponse publique à un avis négatif, restez factuel et proposez un contact privé sans confirmer un traitement, une situation de santé ou un détail de dossier : « Nous avons pris connaissance de votre retour. Vous pouvez contacter la responsable de l’institut pour que nous examinions la situation. » Ne publiez pas un historique de rendez-vous pour démontrer que vous avez raison.",
+          "Si vous utilisez une animation Okado après le soin pour encourager une prochaine visite, séparez-la de la demande d’avis : participation et gain doivent rester indépendants d’un avis, de sa note ou de sa publication. [L’exemple pour institut](/instituts-beaute#demo) montre une animation commerciale ; Okado n’est pas un outil de création de fiche Google ni une méthode pour acheter des avis.",
+        ],
+      },
+      {
+        title: "Optimisations avancées : distinguer classement, information et réservation",
+        paragraphs: [
+          "Google explique le classement local par la pertinence, la distance et la popularité de l’établissement. Une fiche complète aide à comprendre l’activité ; la distance dépend notamment de la personne qui cherche ; la notoriété s’appuie sur plusieurs signaux, dont les liens et les avis. Les [conseils officiels de classement local](https://support.google.com/business/answer/7091?hl=fr) ne proposent pas de payer pour une meilleure position naturelle. Les avis et notes peuvent contribuer au classement, sans fournir un seuil magique à atteindre.",
+          "Notre analyse : le levier contrôlable est d’abord la cohérence entre la recherche de la cliente, l’activité déclarée et la page d’arrivée. Pour un institut avec un seul lieu, créez une page utile sur ce lieu : soins réels, tarifs à jour, réservation, accès et réponses aux questions pratiques. Une seule page exacte vaut mieux qu’une série de pages presque identiques pour des villes où vous n’avez pas d’établissement.",
+          "Lors d’un partenariat local réel, demandez à votre partenaire de présenter l’opération et le bon lien vers l’institut si cela aide son public. Ne payez pas un réseau de faux annuaires pour fabriquer de la popularité. Une publication sur votre fiche peut informer d’une ouverture exceptionnelle ou d’une offre datée si la fonctionnalité est disponible ; nous ne lui attribuons pas un effet automatique sur le classement. La fréquence de publication ne remplace pas une information exacte.",
+        ],
+        table: {
+          caption: "Ordre de travail proposé pour une fiche d’institut déjà validée",
+          headers: ["Priorité", "Action concrète", "Ce que vous vérifiez"],
+          rows: [
+            ["1 · Fiabilité", "Corriger identité, catégorie principale, repère et horaires", "La fiche représente bien l’activité et permet de trouver le lieu"],
+            ["2 · Réservation", "Ouvrir le lien depuis un téléphone non connecté à votre compte", "La bonne prestation peut être réservée dans le bon institut"],
+            ["3 · Choix", "Décrire services, tarifs et durées ; montrer les lieux", "Une nouvelle cliente comprend ce qu’elle peut réserver"],
+            ["4 · Réputation", "Inviter les clientes à un avis honnête et traiter les retours", "Aucune récompense, aucun filtrage, aucune donnée privée dans les réponses"],
+            ["5 · Présence locale", "Aligner le site et les partenaires réellement concernés", "Adresses et contacts cohérents ; contenu utile sans pages de villes artificielles"],
+          ],
+        },
+      },
+      {
+        title: "Mesurer les résultats sans confondre un clic et une cliente acquise",
+        paragraphs: [
+          "Avec un compte autorisé sur une fiche validée, ouvrez les performances et choisissez une période. Google présente des [indicateurs de visibilité et d’interaction](https://support.google.com/business/answer/9918094?hl=fr), selon les fonctionnalités : recherches, vues, clics vers le site, demandes d’itinéraire ou appels. Certaines données peuvent réunir des interactions naturelles et publicitaires. Le bouton d’appel mesure une action sur le bouton, pas un appel décroché ; un itinéraire demandé ne prouve pas une visite.",
+          "Exemple entièrement fictif : sur quatre semaines, la fiche enregistre 60 clics vers le site. L’agenda identifie six réservations issues du lien balisé et quatre rendez-vous honorés. Les rapports observés sont 6 ÷ 60 = 10 % de réservations par clic et 4 ÷ 60 ≈ 6,7 % de rendez-vous honorés par clic. Ce ne sont ni des moyennes du secteur ni un taux de clientes uniques : une personne peut cliquer plusieurs fois, et le suivi peut perdre une partie du parcours.",
+          "Dans cet exemple, nous examinerions d’abord pourquoi deux rendez-vous réservés n’ont pas été honorés avant de chercher davantage de clics. Comparez ensuite une période de même durée et notez vacances, publicité, jours ouverts et changements de prestations. Ne mesurez pas votre position depuis votre seul téléphone : le lieu de recherche et le contexte changent les résultats. Le rapprochement avec l’agenda est une aide à la décision, pas une preuve que la dernière modification de la fiche a causé les réservations.",
+        ],
+      },
+      {
+        title: "Une routine simple après la mise en ligne",
+        paragraphs: [
+          "Au lancement, contrôlez la fiche publique depuis un autre compte ou une session non connectée : nom, adresse masquée ou visible selon le cas, horaires, photos et réservation. Après chaque changement réel, mettez à jour la fiche et le site. Avant un jour férié, vérifiez l’horaire exceptionnel. Chaque mois, rapprochez les interactions disponibles des réservations identifiables et relisez les avis pour repérer un problème d’accès ou de compréhension.",
+          "Si vous manquez de temps, consacrez votre prochaine intervention au premier obstacle observé : lien cassé, mauvaise porte, prestation ambiguë ou horaire erroné. Notre recommandation est de tenir un journal très court — date, modification, motif, période de mesure — plutôt que d’enchaîner les changements de nom et de catégorie pour « tester l’algorithme ». Pour compléter la fiche avec d’autres actions commerciales, consultez le [guide pour attirer de nouvelles clientes en institut](/blog/attirer-nouvelles-clientes-institut-beaute).",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur la fiche Google d’un institut",
+        paragraphs: [
+          "La création d’une fiche Google est-elle payante ? Non, l’ajout ou la revendication est gratuit, comme le rappelle l’[aide à la création](https://support.google.com/business/answer/2911778?hl=fr). Une agence peut facturer son accompagnement et Google Ads propose de la publicité, mais ni l’un ni l’autre n’est nécessaire pour créer la fiche ou acheter une meilleure position naturelle.",
+          "Une esthéticienne à domicile peut-elle avoir une fiche ? Une activité éligible qui se déplace chez les clientes peut disposer d’une fiche de services de proximité. Elle masque son adresse si elle n’y reçoit pas de clientèle et indique sa zone réelle. Pour recevoir chez soi avec une adresse publique, il faut examiner les conditions d’accueil et de signalétique ; une simple domiciliation ne suffit pas.",
+          "Pourquoi les boutons du guide n’apparaissent-ils pas sur ma fiche ? L’interface, les catégories, la région, les droits du compte et l’état de validation peuvent modifier les fonctions proposées. Les trois captures montrent seulement le démarrage vérifié le 27 octobre 2026. Pour la suite, utilisez le lien officiel de l’étape concernée et vérifiez d’abord que vous êtes connecté au compte propriétaire ou gestionnaire.",
+          "Que faire si la fiche ne remonte pas sur « institut de beauté + ville » ? Distinguez l’absence de fiche publique d’une position éloignée sur une recherche concurrentielle. Vérifiez d’abord validation, catégorie, informations et éventuelles notifications. Si la fiche est publique, une optimisation ne supprime pas le facteur distance et ne garantit pas les premières places. Gardez un suivi des demandes et rendez-vous plutôt que d’ajouter des mots-clés au nom.",
+          "Que faire si Google refuse une modification ou suspend la fiche ? Consultez la notification, rassemblez des preuves cohérentes avec l’activité réelle et suivez la procédure indiquée par Google. Ne recréez pas le même établissement pour contourner le refus. Si un tiers gère la fiche, demandez l’accès à l’existante avant toute nouvelle création.",
+        ],
+      },
+    ],
+    source: [
+      { label: "Google — ajouter ou revendiquer une fiche, gratuitement", href: "https://support.google.com/business/answer/2911778?hl=fr" },
+      { label: "Google — démarrer et choisir le compte de gestion", href: "https://support.google.com/business/answer/7039811?hl=fr" },
+      { label: "Google — règles de représentation et nom de l’établissement", href: "https://support.google.com/business/answer/3038177?hl=fr" },
+      { label: "Google — établissements de services et zones desservies", href: "https://support.google.com/business/answer/9157481?hl=fr" },
+      { label: "Google — demander la propriété d’une fiche existante", href: "https://support.google.com/business/answer/4566671?hl=fr" },
+      { label: "Google — doublons et fiches multiples", href: "https://support.google.com/business/answer/12756178?hl=fr" },
+      { label: "Google — gérer les catégories d’activité", href: "https://support.google.com/business/answer/7249669?hl=fr" },
+      { label: "Google — modifier les informations, horaires et description", href: "https://support.google.com/business/answer/3039617?hl=fr" },
+      { label: "Google — méthodes de validation de l’établissement", href: "https://support.google.com/business/answer/7107242?hl=fr" },
+      { label: "Google — réaliser une vidéo de validation", href: "https://support.google.com/business/answer/14271705?hl=fr" },
+      { label: "Google — ajouter les services et leurs prix", href: "https://support.google.com/business/answer/9455399?hl=fr" },
+      { label: "Google — liens de réservation et autres actions", href: "https://support.google.com/business/answer/6218037?hl=fr" },
+      { label: "Google — photos et vidéos de l’établissement", href: "https://support.google.com/business/answer/6103862?hl=fr" },
+      { label: "Google — obtenir des avis sans contrepartie", href: "https://support.google.com/business/answer/3474122?hl=fr" },
+      { label: "Google — pertinence, distance et popularité dans le classement local", href: "https://support.google.com/business/answer/7091?hl=fr" },
+      { label: "Google — comprendre les performances de la fiche", href: "https://support.google.com/business/answer/9918094?hl=fr" },
+    ],
+    related: [
+      "/blog/attirer-nouvelles-clientes-institut-beaute",
+      "/blog/faire-revenir-cliente-apres-premiere-visite-institut-beaute",
+      "/blog/animation-commerciale-institut-beaute",
+      "/instituts-beaute",
+    ],
+  },
   {
     path: "/blog/idees-animations-commerciales-boutique",
     takeaway: {
@@ -613,6 +822,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Rendez l’institut trouvable et compréhensible sur Google",
         paragraphs: [
+          "Pour réaliser la configuration plutôt que lire seulement ses principes, suivez notre [guide illustré de création d’une fiche Google pour institut](/blog/creer-fiche-google-institut-beaute) : recherche d’un doublon, catégorie, validation, services et réservation. Ce guide traite la mise en place ; les autres leviers d’acquisition sont présentés ci-dessous.",
           "Revendiquer et vérifier la fiche Google Business Profile de l’établissement. Contrôlez le nom réel, la catégorie la plus précise disponible, l’adresse ou la zone desservie, les horaires, le téléphone, le site et les services. Ajoutez des photos récentes et authentiques du lieu, de l’équipe ou des prestations, puis corrigez les informations dès qu’elles changent. N’ajoutez pas de mots-clés au nom de l’établissement s’ils n’en font pas partie dans la réalité.",
           "Google décrit le classement local par la pertinence, la distance et la notoriété. Compléter la fiche aide les personnes à comprendre l’offre, mais ne permet ni de choisir sa position, ni d’acheter une meilleure place dans les résultats naturels. Concentrez votre page web sur les soins réellement proposés : description, durée, prix ou façon de les obtenir, localisation et prochaine étape. Une page utile par spécialité peut répondre mieux qu’une page locale dupliquée pour chaque quartier.",
           "Si l’option est disponible sur la fiche, ajoutez le lien direct de réservation et testez-le depuis un téléphone. Google permet d’ajouter des liens d’action, mais leur disponibilité peut dépendre du profil et de la catégorie. Le lien doit aboutir sur le bon agenda ou la bonne page, avec un chemin lisible jusqu’au rendez-vous ; ne promettez pas un bouton qui n’apparaît pas sur toutes les fiches.",

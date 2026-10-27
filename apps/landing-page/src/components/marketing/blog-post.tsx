@@ -173,6 +173,34 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
                     </table>
                   </div>
                 ) : null}
+                {section.figures?.map((figure) => (
+                  <figure key={figure.src} className="mt-7 rounded-2xl border border-[#e4ddd3] bg-white p-4 sm:p-5">
+                    <a
+                      href={figure.src}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Agrandir la capture : ${figure.alt}`}
+                      className="block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#6c00f6]"
+                    >
+                      <Image
+                        src={figure.src}
+                        width={figure.width}
+                        height={figure.height}
+                        alt={figure.alt}
+                        sizes="(max-width: 640px) 80vw, 549px"
+                        className="mx-auto h-auto w-full max-w-[549px] rounded-xl"
+                      />
+                    </a>
+                    <figcaption className="mt-4 text-sm leading-6 text-[#4b5563]">
+                      <BlogInlineText text={figure.caption} />
+                      <span className="mt-2 block">
+                        <a href={figure.sourceUrl} className="text-[#6c00f6] underline underline-offset-4">Interface Google Business Profile</a>
+                        {" · Capture du "}<time dateTime={figure.capturedAt}>{formatDate(figure.capturedAt)}</time>
+                        {" · Sélectionnez l’image pour l’agrandir."}
+                      </span>
+                    </figcaption>
+                  </figure>
+                ))}
               </section>
             ))}
             {post.source ? (
