@@ -105,7 +105,13 @@ test("le blog utilise un gabarit commun sans commentaires", async ({ page }) => 
   }
   for (const post of blogPosts) {
     await page.goto(post.path);
-    await expect(page.getByAltText(post.imageAlt!, { exact: true })).toBeVisible();
+    if (post.guide) {
+      // Practical guides start with their instructions; the illustration remains on the listing and in social metadata.
+      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", `https://www.okado.app${post.image}`);
+      await expect(page.getByRole("navigation", { name: "Choisir votre situation" })).toBeVisible();
+    } else {
+      await expect(page.getByAltText(post.imageAlt!, { exact: true })).toBeVisible();
+    }
   }
   await page.goto(blogPosts[0].path);
   await expect(page.locator("article")).toHaveCount(1);
@@ -207,6 +213,8 @@ test("tous les articles exposent liens, sources et métadonnées cohérentes dan
 
     const inlineTexts = post.sections.flatMap((section) => [
       ...section.paragraphs,
+      section.result ?? "",
+      section.fallback ?? "",
       ...(section.items ?? []),
       ...(section.table?.rows.flat() ?? []),
     ]);

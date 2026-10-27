@@ -3,14 +3,25 @@
 ## Résultat et périmètre
 
 - Issue : https://github.com/Znybnl/growth/issues/672.
-- Article : `/blog/creer-fiche-google-institut-beaute`, auteur organisationnel « L’équipe Okado », publication/relecture le 27 octobre 2026.
+- Article : `/blog/creer-fiche-google-institut-beaute`, auteur organisationnel « L’équipe Okado », publication datée du 27 octobre 2026, mise à jour et relecture le 28 octobre 2026.
 - Intention propre : réaliser la création/revendication, puis configurer et maintenir la fiche. Le guide d’acquisition existant conserve son rôle multicanal et renvoie vers cette procédure.
 - Décisions métier inchangées : aucune fiche Google créée, aucun compte marchand ou joueur utilisé, aucune donnée personnelle ajoutée. Aucun changement au SaaS, au tracking, aux consentements ou aux droits.
-- Le gabarit de blog accepte désormais des figures locales optionnelles, légendées, datées, accessibles au clavier et ouvrables en taille d’origine. Les articles sans figures gardent leur rendu.
+- Le gabarit accepte des figures locales optionnelles, légendées, datées, accessibles au clavier et ouvrables en taille d’origine. Ce guide active aussi une introduction compacte et trois points d’entrée. Les autres articles gardent leur présentation.
+
+## Améliorations de praticité validées et appliquées le 28 octobre
+
+- Trois parcours vers des ancres explicites : préparation, fiche existante sans accès, fiche déjà validée à compléter.
+- Dix étapes opératoires, listes d’actions numérotées et résultats vérifiables. Les recours sont liés au tableau de dépannage.
+- Fil conducteur fictif Maison Lueur cohérent : institut d’Angers, accueil sur rendez-vous, description, trois soins avec durées/prix, photos et réservation. Les exemples restent à adapter aux prestations réelles.
+- Lien d’avis : procédure officielle « Voir les avis → Recevoir plus d’avis », QR disponible sur ordinateur et contrôle du lien sans publier un faux avis.
+- Tableau de dépannage à sept situations avec vérification initiale et aide officielle, puis checklist de neuf points utilisable au clavier.
+- UTM repliés dans une option facultative. Aucune donnée de lecture ou de case cochée stockée ni transmise. Sommaire mobile natif repliable ; sommaire desktop à hauteur limitée et défilement interne.
+- Couverture décorative retirée du début de cet article ; illustration conservée pour le listing et les métadonnées sociales. Titre, auteur, date de mise à jour et provenance visibles. Les dates de publication/relecture restent dans le registre ; BlogPosting garde les dates prévues par le socle.
+- Renvois internes au format de lien déjà autorisé par le gabarit, sans élargir son filtre d’URL. Pas de composant client ni de dépendance supplémentaire.
 
 ## Sources et méthode éditoriale
 
-Les liens d’aide Google Business Profile vérifiés figurent près des étapes et en fin d’article : compte, éligibilité, doublons, nom, catégories, validation, vidéo, services, réservation, photos, avis, classement et performances. Les intitulés et fonctions peuvent varier selon le compte, la catégorie, le pays et l’état de validation.
+Les 18 liens d’aide Google Business Profile figurent près des étapes et en fin d’article : compte, éligibilité, doublons, nom, catégories, validation, vidéo, services, réservation, photos, avis, lien/QR d’avis, suspension, classement et performances. Les procédures de gestion ont été revérifiées lors de l’itération du 28 octobre. Les intitulés et fonctions peuvent varier selon le compte, la catégorie, le pays et l’état de validation.
 
 Les recommandations propres à Okado sont signalées comme un avis ou une proposition : ordre de priorité, contrôle de l’accès, reportage photo, journal des modifications et analyse des rendez-vous honorés. Aucun témoignage client, performance sectorielle ou expérience de terrain n’est inventé. Les montants et taux du cas de mesure sont explicitement fictifs ; les calculs sont visibles et leurs limites expliquées. La solution Okado est présentée comme une animation indépendante des avis, pas un outil de classement ou de réservation.
 
@@ -25,13 +36,13 @@ Il n’existe pas de garantie d’immunité à cette mise à jour. Le travail po
 
 ## Provenance des visuels
 
-- Trois captures JPEG originales de l’interface française `https://business.google.com/create?hl=fr`, réalisées le 27 octobre 2026 : recherche, identité, suggestion « Institut de beauté ».
+- Deux captures JPEG originales de l’interface française `https://business.google.com/create?hl=fr`, réalisées le 27 octobre 2026 : recherche et suggestion « Institut de beauté » avec champ du nom visible. La capture redondante du formulaire vide a été retirée.
 - Fichiers dans `apps/landing-page/public/images/blog/fiche-google-institut/`, 549 × 672 px ; pas de nom, d’adresse ou de dossier de cliente saisi.
 - Seul le champ de catégorie a été renseigné. Aucun clic sur « Suivant » pour enregistrer un établissement ou accepter ses conditions. L’illustration à gauche appartient à Google et n’est pas présentée comme un institut créé par Okado.
-- Limite exposée dans l’article : les captures couvrent le démarrage, pas les étapes privées de validation et de gestion d’un établissement réel. Celles-ci sont décrites et reliées à l’aide officielle ; aucune interface fictive n’est présentée comme une capture.
+- Limite exposée dans l’article : les captures couvrent le démarrage, pas les étapes privées de validation et de gestion d’un établissement réel. Aucune fiche d’institut autorisée n’est disponible pour des captures supplémentaires ; celles-ci restent de côté. Les étapes sont décrites et reliées à l’aide officielle ; aucune interface fictive n’est présentée comme une capture.
 - Couverture : diagramme éditorial original en SVG avec dérivé WebP de 1 600 × 800 px, distinct de l’interface Google.
 
-## Vérifications
+## Vérifications de la première version
 
 - `npm run lint:landing` : succès.
 - `npm run build:landing` : succès ; 63 pages précompilées, dont le nouveau guide.
@@ -43,9 +54,21 @@ Il n’existe pas de garantie d’immunité à cette mise à jour. Le travail po
 - Captures locales : `apps/landing-page/test-results/google-profile-beauty-guid-fb3f3-ans-débordement-visual-1280-{desktop,mobile}/google-guide-{header,step-1,step-2,step-3,table-1,table-2,analysis}.png`. Les fichiers de tests sont ignorés par Git ; les trois captures Google intégrées à l’article sont versionnées dans `public/images/blog/fiche-google-institut/`.
 - Aperçu local de production : `http://localhost:3253/blog/creer-fiche-google-institut-beaute`. Cet aperçu ne constitue pas un déploiement.
 
+## Vérifications de l’itération du 28 octobre
+
+- `npm run lint:landing` : succès.
+- `npm run build:landing` : succès, 63 pages précompilées.
+- `npm run test:e2e -w @okado/landing-page -- google-profile-beauty-guide.spec.ts seo-public-pages.spec.ts --grep 'guide Google|tous les articles|sitemap, robots|le blog utilise' --project=desktop --project=mobile` : neuf succès en 2,4 minutes. Un cas ignoré intentionnellement sur mobile : le contrôle 1280 × 600 réservé au projet desktop.
+- Contrôles du guide : trois liens d’entrée et titres non masqués par la navigation, ouverture/fermeture du sommaire mobile, deux captures et agrandissement réel, UTM repliables, checklist de neuf cases utilisable au clavier, tableaux, CTA, absence d’erreur JavaScript et de débordement global.
+- Le contrôle HTML des 35 articles couvre aussi les renvois des nouveaux champs de résultat et de recours. Un premier passage avait détecté des fragments non pris en charge par le rendu éditorial : les liens utilisent désormais le chemin interne complet autorisé. Le passage final est vert, sans assouplissement de la validation des URL.
+- Contrôle visuel à 1280 × 720, 1280 × 600 et 390 × 844 : introduction, choix de parcours, captures, trois prestations fictives, dépannage et checklist. Les tableaux restent à défilement horizontal sur mobile. Le sommaire desktop peut défiler dans sa propre zone.
+- Relance finale : `npm run test:e2e -w @okado/landing-page -- google-profile-beauty-guide.spec.ts --project=desktop --project=mobile --output=test-results/guide-final` : trois succès en 35,8 secondes, un contrôle 1280 × 600 ignoré intentionnellement sur mobile. Les captures utilisent la préférence de réduction des animations prise en charge par le site, afin de capturer le défilement terminé. Les assertions vérifient le titre de la checklist entièrement dans la fenêtre et sous la navigation fixe.
+- Preuves finales inspectées : `apps/landing-page/test-results/guide-final/google-profile-beauty-guid-fb3f3-ans-débordement-visual-1280-{desktop,mobile}/google-guide-{header,checklist,step-1,step-2,table-1,table-2,table-3,table-4,analysis}.png`, ainsi que les captures `google-guide-600-{header,help}.png` du second cas desktop. La checklist montre bien ses cases, le focus et le titre sans recouvrement par le menu.
+- Aperçu de production local redémarré et onglet existant actualisé : `http://localhost:3253/blog/creer-fiche-google-institut-beaute`. Les renvois vers le dépannage, les situations et le suivi facultatif ont aussi été constatés dans l’interface.
+
 ## Test fonctionnel proposé au propriétaire
 
-Ouvrir l’article, suivre le sommaire vers la catégorie, agrandir la capture au clavier ou au toucher, lire le tableau des priorités sur mobile et contrôler les exemples de prestations. Les liens Google ouvrent les procédures officielles ; aucune création de fiche n’est nécessaire pour relire le guide. Le CTA final mène à la démonstration pour institut.
+Choisir « Je gère une fiche validée » et vérifier l’arrivée sur la description. Sur mobile, ouvrir/replier le sommaire, rejoindre les prestations, lire le tableau en le faisant défiler, agrandir une capture puis cocher la checklist. Tester aussi les renvois de dépannage et l’ouverture de l’option UTM. Les liens Google ouvrent les procédures officielles ; aucune création de fiche n’est nécessaire pour relire le guide. Le CTA final mène à la démonstration pour institut.
 
 ## Risques et retour arrière
 
