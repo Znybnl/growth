@@ -21,6 +21,7 @@ export function ChristmasWheelsFixture({ templateId, mode }: { templateId: Chris
   const [logo, setLogo] = useState<LogoMode>("text");
   const [heading, setHeading] = useState("JOUEZ &\nGAGNEZ");
   const [brand, setBrand] = useState("Maison Douceur");
+  const [titleColor, setTitleColor] = useState<string>();
   const [clicks, setClicks] = useState(0);
   const [finished, setFinished] = useState(0);
   const theme = christmasWheelTheme(selected)!;
@@ -31,7 +32,7 @@ export function ChristmasWheelsFixture({ templateId, mode }: { templateId: Chris
     presentation: { ...halloweenFixture.presentation,
       background: { mode: background === "image" ? "image" as const : "color" as const, color: background === "color" ? "#e0f2fe" : theme.background,
         imageUrl: background === "image" ? "/images/wheel-templates/christmas-natural.webp" : undefined },
-      heading: { ...halloweenFixture.presentation.heading, fontFamily: "bodoni" as const, textColor: theme.text, fontSizePx: 40, align: "center" as const },
+      heading: { ...halloweenFixture.presentation.heading, fontFamily: "bodoni" as const, textColor: titleColor ?? theme.text, fontSizePx: 40, align: "center" as const },
       logo: { ...halloweenFixture.presentation.logo, sizePercent: 80, textColor: theme.logo, align: "center" as const },
       button: { ...halloweenFixture.presentation.button, backgroundColor: theme.button, textColor: "#fff8e8" },
       wheel: christmasWheelPalette(selected, halloweenFixture.presentation.wheel),
@@ -55,6 +56,7 @@ export function ChristmasWheelsFixture({ templateId, mode }: { templateId: Chris
       <label>Modèle de test<select value={selected} onChange={event => setSelected(event.target.value as ChristmasWheelTemplateId)}>{CHRISTMAS_WHEEL_THEMES.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
       <label>Titre de test<textarea value={heading} onChange={event => setHeading(event.target.value)} /></label>
       <label>Nom de test<input value={brand} onChange={event => setBrand(event.target.value)} /></label>
+      <label>Couleur du titre<input type="color" value={titleColor ?? theme.text} onChange={event => setTitleColor(event.target.value)} /></label>
       <label>Fond de test<select value={background} onChange={event => setBackground(event.target.value)}>{["native", "image", "color"].map(item => <option key={item}>{item}</option>)}</select></label>
       <label>Logo de test<select value={logo} onChange={event => setLogo(event.target.value as LogoMode)}>{["text", "image", "none"].map(item => <option key={item}>{item}</option>)}</select></label>
     </div>

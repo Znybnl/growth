@@ -94,6 +94,9 @@ test("personnalisation texte/logo et remplacement du fond natif sans fuite entre
   await expect(scene.locator("img[data-template-art]")).toHaveCount(0);
   await page.getByLabel("Fond de test").selectOption("native");
   await expect(scene.locator('img[data-template-art="christmas-traditional"]')).toHaveCount(1);
+  await page.getByLabel("Couleur du titre").fill("#134e4a");
+  await expect(scene.getByRole("heading")).toHaveCSS("color", "rgb(19, 78, 74)");
+  await expect(scene.getByRole("heading")).toHaveCSS("-webkit-text-fill-color", "rgb(19, 78, 74)");
   await page.getByLabel("Fond de test").selectOption("color");
   await expect(scene.locator("img")).toHaveCount(1); // Logo only.
   await expect(scene).toHaveCSS("background-color", "rgb(224, 242, 254)");

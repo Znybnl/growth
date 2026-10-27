@@ -15,7 +15,7 @@ Les composants de sélection et les réglages des deux éditeurs sont conservés
 Le logo, le titre, le sous-titre, les couleurs, la police et les espacements restent
 personnalisables. Un filet discret accompagne le logo texte uniquement.
 Le bouton JOUER est sans icône, avec relief et reflet supérieur gauche. Le pointeur
-et les trois fines lignes du contour restent immobiles pendant la rotation.
+et la monture dorée restent immobiles pendant la rotation.
 Les libellés utilisent DM Sans et le composant existant d'ajustement individuel.
 
 ## Réutilisation et isolation
@@ -123,6 +123,35 @@ Le smoke local compilé vérifie les six assets, les trois URL Next/Image et
 le refus HTTP 404 de la fixture en production.
 
 ## Recette propriétaire et retour arrière
+
+### Finitions complémentaires demandées
+
+La monture comporte un biseau métallique, des reflets et un filet extérieur clair.
+Les secteurs sont opaques : une trame vectorielle très fine, un éclairage et une
+ombre intérieure créent le fini satiné sans laisser transparaître le décor.
+Le bouton central possède une monture dorée partagée avec la miniature, une face
+colorée en relief et un reflet discret ; il reste sans icône. Le pointeur est
+facetté et l'ensemble de la monture reste fixe pendant la rotation.
+
+La largeur de roue passe de 86 à 82 % pour dégager les décors. Le sous-titre
+occupe 64 % de la largeur ; un petit filet étoilé accompagne les espacements
+d'au moins 40 px, sans ajouter de hauteur ni gêner les faibles espacements.
+Le filet du logo suit désormais son alignement. Le titre traditionnel reçoit
+une dorure seulement avec sa couleur native : toute couleur personnalisée reste
+effective, sans remplissage transparent imposé.
+
+Les miniatures du wizard adoptent deux colonnes, texte à gauche et roue complète
+à droite, afin de ne plus rogner la roue ni superposer les textes. La texture
+et les biseaux sont vectoriels, sans nouvel asset ni requête supplémentaire.
+L'ajustement des libellés tient compte du rayon extérieur du nouveau moyeu.
+Le moteur de tirage et les règles de jeu ne changent pas.
+
+Contrôles complémentaires réussis : 13 tests Noël Chromium et 7 tests WebKit,
+captures inspectées sur mobile et à 1280 px, personnalisation de la couleur
+du titre, lint (zéro erreur, quatre avertissements préexistants) et build.
+Les nouvelles captures se trouvent dans `.codex-logs/christmas-674/refinement/`.
+
+### Recette et retrait
 
 Créer ou ouvrir un jeu roue, choisir chacun des trois modèles, modifier le logo,
 le titre et le sous-titre, puis changer de modèle et revenir au précédent.
