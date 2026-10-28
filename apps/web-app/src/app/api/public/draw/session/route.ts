@@ -49,7 +49,7 @@ async function measure<T>(timing: PreparationTiming, stage: PreparationStage, wo
 }
 
 // One operational measurement per request, including refusals and failures.
-// No player/campaign/session identifiers, tokens, URLs or request bodies.
+// Keep this event aggregate-only: no identifiers, tokens, URLs or raw request bodies.
 export async function POST(request: NextRequest) {
   const startedAt = performance.now();
   const timing: PreparationTiming = { mode: "unknown", stage: "parse", stages: {} };
