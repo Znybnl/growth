@@ -26,6 +26,7 @@ import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { HalloweenWheelScene } from "@/components/public/halloween-wheel-art";
 import { ChristmasWheelScene } from "@/components/public/christmas-wheel-art";
 import { isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
+import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
 import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
@@ -895,8 +896,9 @@ export function CampaignExperience({
     ? beautyWheelDefaultBackground(pageTemplate, campaign.presentation.background)
     : null;
   const templateDefaultBackground = scratchTemplateDefaultBackground(pageTemplate, campaign.presentation.background);
+  const nativeChristmasScratchBackground = campaign.gameType === "scratch" && christmasScratchTemplate(pageTemplate) ? templateDefaultBackground : undefined;
   const backgroundStyle =
-    (beautyScratchTheme && !hasCustomSelectedBackground) || nativeWheelBackgroundUrl
+    (beautyScratchTheme && !hasCustomSelectedBackground) || nativeWheelBackgroundUrl || nativeChristmasScratchBackground
       ? "none"
       : managedBackgroundUrl
         ? "none"
@@ -905,6 +907,7 @@ export function CampaignExperience({
       ? userBackgroundImageStyle(campaign.presentation.background.imageUrl)
       : templateDefaultBackground
         ? `url("${templateDefaultBackground}")`
+      : christmasScratchTemplate(pageTemplate) ? "none"
       : isScratchVaultTemplate
         ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`
         : isScratchConfettiTemplate
@@ -976,9 +979,9 @@ export function CampaignExperience({
           className="pointer-events-none absolute inset-0 z-0 object-cover"
         />
       ) : null}
-      {(beautyScratchTheme && !hasCustomSelectedBackground) || nativeWheelBackgroundUrl ? (
+      {(beautyScratchTheme && !hasCustomSelectedBackground) || nativeWheelBackgroundUrl || nativeChristmasScratchBackground ? (
         <Image
-          src={nativeWheelBackgroundUrl ?? beautyScratchTheme!.background}
+          src={nativeWheelBackgroundUrl ?? nativeChristmasScratchBackground ?? beautyScratchTheme!.background}
           alt=""
           fill
           priority
@@ -1194,6 +1197,7 @@ export function CampaignExperience({
           >
             {isImmersiveScratchTemplate ? (
               <ImmersiveScratchTicket
+                headingFontSizePx={campaign.presentation.heading.fontSizePx}
                 key={`${campaign.id}-${drawSession?.id ?? "idle"}`}
                 accent={scratchAccent}
                 resultLabel={scratchLabel}

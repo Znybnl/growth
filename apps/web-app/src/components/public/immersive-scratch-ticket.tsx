@@ -11,6 +11,7 @@ import {
   scratchTemplatePrimaryColor,
 } from "@/lib/campaign-defaults";
 import { scratchVisualTheme, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 
 type ScratchTemplateId = ImmersiveScratchTemplateId;
 
@@ -35,6 +36,7 @@ type ImmersiveScratchTicketProps = {
   logoTextColor?: string;
   headingFontClass?: string;
   headingFontSize?: string;
+  headingFontSizePx?: number;
   headingFontWeight?: number;
   headingAlignmentClass?: string;
   logoAlignmentClass?: string;
@@ -173,6 +175,7 @@ export function ImmersiveScratchTicket({
   logoTextSizePx = 30,
   fitContainer = false,
   headingFontSize = "32px",
+  headingFontSizePx,
 }: ImmersiveScratchTicketProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawingRef = useRef(false);
@@ -187,6 +190,7 @@ export function ImmersiveScratchTicket({
   const isLilac = template === "scratch-lilac";
   const isSunburst = template === "scratch-sunburst";
   const beautyTheme = scratchVisualTheme(template);
+  const christmasTheme = christmasScratchTemplate(template);
   const configuredPrimary = accent.signal;
   const primary = scratchTemplatePrimaryColor(configuredPrimary, template);
   const hasCustomPrimary =
@@ -375,7 +379,7 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = `flex flex-col pb-8 ${fitContainer ? "pt-2" : "pt-[76px]"} ${beautyTheme
+  const rootClass = `flex flex-col pb-8 ${christmasTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[76px]"} ${beautyTheme
     ? "bg-transparent px-6"
     : isVault || isConfetti
     ? "bg-transparent px-5"
@@ -394,7 +398,7 @@ export function ImmersiveScratchTicket({
     >
       <div
         className={`relative isolate flex-1 overflow-hidden ${rootClass}`}
-        style={{ minHeight: fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
+        style={{ minHeight: christmasTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
       >
         <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
@@ -413,7 +417,7 @@ export function ImmersiveScratchTicket({
           ) : null}
           <h2
             className={`${beautyTheme || isConfetti ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
-            style={{ color: ink, fontSize: headingFontSize, fontWeight: headingFontWeight }}
+            style={{ color: ink, fontSize: christmasTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: headingFontWeight, whiteSpace: christmasTheme ? "pre-line" : undefined }}
           >
             {displayHeadline}
           </h2>
@@ -441,6 +445,8 @@ export function ImmersiveScratchTicket({
               className="pointer-events-none absolute inset-0 z-10 overflow-hidden"
               data-testid="scratch-foil-first-paint"
               style={{
+                position: "absolute",
+                inset: 0,
                 backgroundColor: coverColor,
                 ...(beautyTheme ? {} : {
                   backgroundImage: `repeating-linear-gradient(135deg, transparent 0 32px, ${withAlpha(readableTextColor(primary), isSunburst ? "24" : "2e")} 33px 35px), linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 42%, ${coverColor} 72%, ${blendWithWhite(coverColor, isSunburst ? 0.04 : 0.08)} 100%)`,

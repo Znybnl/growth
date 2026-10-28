@@ -411,6 +411,19 @@ Le bouton JOUER en relief est sans icône. Le rendu est partagé entre aperçu e
 page de jeu ; aucun modèle existant ni aucune probabilité n'est modifié.
 [Périmètre, contrôles et assets](releases/2026-10-28-christmas-wheels-674.md).
 
+## Tickets à gratter Noël — #676
+
+Les trois ambiances Noël rose poudré, naturel et traditionnel existent aussi en
+ticket à gratter, dans les deux éditeurs et pour tous les secteurs. Elles utilisent
+les décors Noël de la bibliothèque, sans les enregistrer comme image sélectionnée
+par le marchand. Une image ou une couleur de fond choisie manuellement les remplace.
+Le titre est initialisé à 46 px ; logo, textes, polices et espacements restent
+personnalisables. La zone ronde emploie les textures métalliques existantes, nacrée,
+champagne ou dorée, avec une palette de grattage fixe. L'aperçu est non interactif ;
+la page de jeu conserve le moteur de grattage et les règles de tirage existants.
+Les anciens modèles et les modèles par défaut de chaque activité restent inchangés.
+[Périmètre et recette](releases/2026-10-28-christmas-scratch-676.md).
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

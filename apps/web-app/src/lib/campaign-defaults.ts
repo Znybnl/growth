@@ -10,6 +10,7 @@ import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 import { getPosterTemplate } from "@/lib/poster-templates";
 import { beautyWheelTheme, isBeautyIndustry } from "@/lib/beauty-wheel-themes";
 import { christmasWheelTheme, christmasWheelPalette, isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
+import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate, christmasScratchDefaultBackground } from "@/lib/christmas-scratch-templates";
 import { BEAUTY_SCRATCH_TEMPLATES, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL, beautyScratchTemplate } from "@/lib/beauty-scratch-templates";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
@@ -94,6 +95,8 @@ export function defaultScratchTemplateForIndustry(industry?: string | null): Gam
 }
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
+  const christmas = christmasScratchTemplate(templateId);
+  if (christmas) return christmas.scratch.base;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#b99a6a";
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.scratch.base;
@@ -120,6 +123,7 @@ export function shouldApplyScratchTemplateDefaultPrimaryColor(configuredColor: s
     DEFAULT_SCRATCH_LILAC_COLOR,
     "#b99a6a",
     ...BEAUTY_SCRATCH_TEMPLATES.map((template) => template.scratch.base),
+    ...CHRISTMAS_SCRATCH_TEMPLATES.map((template) => template.scratch.base),
   ].includes(configuredColor.trim().toLowerCase());
 }
 
@@ -144,6 +148,7 @@ export function resolveWheelPrimaryColorAfterGameTypeSwitch(configuredColor: str
     DEFAULT_SCRATCH_SUNBURST_COLOR,
     DEFAULT_SCRATCH_LILAC_COLOR,
     ...BEAUTY_SCRATCH_TEMPLATES.map((template) => template.scratch.base),
+    ...CHRISTMAS_SCRATCH_TEMPLATES.map((template) => template.scratch.base),
   ];
 
   return !normalized || knownTemplateDefaults.includes(normalized)
@@ -278,6 +283,8 @@ export function wheelBackgroundForTemplateSelection(
 ) {
   const christmas = christmasWheelTheme(templateId);
   if (christmas) return christmas.background;
+  const christmasScratch = christmasScratchTemplate(templateId);
+  if (christmasScratch) return christmasScratch.backgroundColor;
   if (templateId === "cocorico-duo-wheel") return primaryColor;
   if (templateId === "classic") return "#ffffff";
   if (templateId === "restaurant-pop") return "#fffdfa";
@@ -371,6 +378,8 @@ export function scratchTemplatePrimaryColor(
   configuredColor: string,
   templateId?: GamePageTemplateId,
 ) {
+  const christmas = christmasScratchTemplate(templateId);
+  if (christmas) return christmas.scratch.base;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#b99a6a";
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.scratch.base;
@@ -477,6 +486,8 @@ const SCRATCH_DEFAULT_INK_VALUES = new Set([
 const LEGACY_SCRATCH_LILAC_TEXT_COLORS = new Set(["#4c1d95", "#32104f", "#003cb4"]);
 
 export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
+  const christmas = christmasScratchTemplate(templateId);
+  if (christmas) return christmas.text;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#49372c";
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.text;
@@ -509,6 +520,8 @@ export function resolveScratchTemplateTextColor(
 
 /** The initial font used by the legacy scratch-card themes called out in issue #439. */
 export function defaultScratchTemplateFont(templateId?: GamePageTemplateId) {
+  const christmas = christmasScratchTemplate(templateId);
+  if (christmas) return christmas.font;
   switch (templateId) {
     case CLASSIC_NUDE_SCRATCH_TEMPLATE_ID:
       return "playfair" as const;
@@ -523,8 +536,12 @@ export function defaultScratchTemplateFont(templateId?: GamePageTemplateId) {
 
 export function scratchTemplateDefaultBackground(
   templateId: GamePageTemplateId,
-  background: { mode: "color" | "image"; imageUrl?: string | null },
+  background: { mode: "color" | "image"; imageUrl?: string | null; color?: string },
 ): string | undefined {
+  const christmas = christmasScratchTemplate(templateId);
+  if (christmas) {
+    return christmasScratchDefaultBackground(templateId, background);
+  }
   if (templateId !== CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return undefined;
   if (background.mode === "image" && background.imageUrl?.trim()) return undefined;
   return NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL;
@@ -532,6 +549,7 @@ export function scratchTemplateDefaultBackground(
 
 export function scratchTemplateUsesFixedPrimaryColor(templateId?: GamePageTemplateId) {
   return Boolean(
+    christmasScratchTemplate(templateId) ||
     templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID ||
       beautyScratchTemplate(templateId) ||
       templateId === "scratch-confetti",
@@ -552,7 +570,7 @@ export function scratchTemplateUsesTicketTextColor(templateId?: GamePageTemplate
     case "scratch-sunburst":
       return false;
     default:
-      return !beautyScratchTemplate(templateId);
+      return !beautyScratchTemplate(templateId) && !christmasScratchTemplate(templateId);
   }
 }
 

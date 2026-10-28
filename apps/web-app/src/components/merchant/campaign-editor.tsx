@@ -42,7 +42,9 @@ import {
 import { BrandMark } from "@/components/brand-mark";
 import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
 import { ChristmasCampaignPreview } from "./christmas-campaign-preview";
+import { ChristmasScratchPreview } from "./christmas-scratch-preview";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme, isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
+import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate, christmasScratchBackgroundImage } from "@/lib/christmas-scratch-templates";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
@@ -423,6 +425,10 @@ const scratchPageTemplateOptions: Array<{
   title: string;
   description: string;
 }> = [
+  ...CHRISTMAS_SCRATCH_TEMPLATES.map(item => {
+    const theme = christmasScratchTemplate(item.id)!;
+    return { value: item.id, title: theme.name, description: theme.description };
+  }),
   {
     value: "scratch-nude-classic",
     title: "Nude",
@@ -982,6 +988,9 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       ? "relative isolate min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
       : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
+  if (preview.gameType === "scratch" && christmasScratchTemplate(preview.gamePageTemplateId)) {
+    return <ChristmasScratchPreview preview={preview} />;
+  }
   if (preview.gameType === "wheel" && isChristmasWheelTemplate(preview.gamePageTemplateId)) {
     return <ChristmasCampaignPreview preview={preview} />;
   }
@@ -1650,7 +1659,8 @@ export function buildCampaignLivePreviewModel(
     ? wheelBackgroundForTemplate(templateId, form.presentation.background.color, form.presentation.wheel.loseColor)
     : form.presentation.background.color;
   const backgroundImage =
-    beautyScratchTemplate(templateId)
+    christmasScratchBackgroundImage(templateId, form.presentation.background) ??
+    (beautyScratchTemplate(templateId)
       ? `url("${beautyScratchTemplate(templateId)!.background}")`
       : form.presentation.background.mode === "image" && form.presentation.background.imageUrl
       ? userBackgroundImageStyle(form.presentation.background.imageUrl)
@@ -1680,7 +1690,7 @@ export function buildCampaignLivePreviewModel(
                 ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(previewAccent.signal, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff80 0%, #f7edff80 100%)`
                 : templateId === "scratch-sunburst"
                   ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(previewAccent.signal, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf99 0%, #ffdc5880 68%, #fff0c599 100%)`
-            : "";
+            : "");
 
   return {
     formId: form.id ?? "new-campaign",
@@ -2085,7 +2095,12 @@ export function CampaignEditor({
       backgroundStyle: {
         backgroundColor: pageBackgroundColor,
         backgroundImage:
-          beautyScratchTemplate(form.presentation.layout.templateId)
+          christmasScratchBackgroundImage(currentTemplateId, {
+            mode: form.presentation.background.mode,
+            color: form.presentation.background.color,
+            imageUrl: form.presentation.background.imageUrl,
+          }) ??
+          (beautyScratchTemplate(form.presentation.layout.templateId)
             ? `url("${beautyScratchTemplate(form.presentation.layout.templateId)!.background}")`
             : form.presentation.background.mode === "image" && form.presentation.background.imageUrl
             ? userBackgroundImageStyle(form.presentation.background.imageUrl)
@@ -2115,7 +2130,7 @@ export function CampaignEditor({
                       ? `radial-gradient(circle at 50% 0%, ${withHexAlpha(previewAccent.signal, "2c")} 0 20%, transparent 44%), linear-gradient(180deg, #fffaff80 0%, #f7edff80 100%)`
                       : (form.presentation.layout.templateId ?? "classic") === "scratch-sunburst"
                         ? `repeating-conic-gradient(from -18deg at 50% -2%, ${withHexAlpha(previewAccent.signal, "52")} 0deg 12deg, transparent 12deg 24deg), linear-gradient(180deg, #fff4bf99 0%, #ffdc5880 68%, #fff0c599 100%)`
-                  : "",
+                  : ""),
         backgroundPosition: "center",
         backgroundSize: "cover",
         fontFamily: textFontFamily(form.presentation.heading.fontFamily),
@@ -3093,7 +3108,7 @@ export function CampaignEditor({
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.value, current.presentation.background.color, wheel.loseColor);
                           const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
-                          const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.value, wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
+                          const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? christmasScratchTemplate(template.value)?.logo ?? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.value, wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
                           const firstSelectionHeadingFont = wheelHeadingFontForTemplateSelection(template.value, current.presentation.heading.fontFamily);
                           const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? christmasWheelTheme(template.value)?.button ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                           const scratchSignal =
