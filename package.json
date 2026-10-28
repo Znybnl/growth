@@ -21,6 +21,7 @@
     "test:wizard-marketing-actions": "npm run test:wizard-marketing-actions -w @okado/web-app",
     "check:gotomarket": "npm run check:gotomarket -w @okado/web-app",
     "check:dependencies": "npm run check:dependencies -w @okado/web-app",
+    "check:dependencies:all": "npm run check:dependencies -w @okado/web-app -- --include-dev",
     "check:supabase": "npm run check:supabase -w @okado/web-app",
     "verify:source": "node scripts/verify-source.mjs",
     "smoke:critical": "npm run smoke:critical -w @okado/web-app",
