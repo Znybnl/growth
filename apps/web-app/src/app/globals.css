@@ -1178,6 +1178,9 @@ button:disabled,
   position: fixed;
   inset: 0;
   z-index: 70;
+  /* Radix modal menus disable pointer events on the body while open. A dialog
+     opened from one of their actions must explicitly restore its own target. */
+  pointer-events: auto;
   display: flex;
   align-items: flex-end;
   justify-content: center;
