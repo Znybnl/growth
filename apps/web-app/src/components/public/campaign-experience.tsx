@@ -912,7 +912,7 @@ export function CampaignExperience({
       ? userBackgroundImageStyle(campaign.presentation.background.imageUrl)
       : templateDefaultBackground
         ? `url("${templateDefaultBackground}")`
-      : christmasScratchTemplate(pageTemplate) ? "none"
+      : christmasScratchTemplate(pageTemplate) || isChristmasWheelTemplate(pageTemplate) ? "none"
       : isScratchVaultTemplate
         ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`
         : isScratchConfettiTemplate
@@ -1027,7 +1027,7 @@ export function CampaignExperience({
         logoMode={campaign.logoMode} logoText={campaign.logoText ?? campaign.merchantLogoText} logoUrl={campaign.logoUrl}
         logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor} logoAlign={campaign.presentation.logo.align} logoBottomSpacingPx={clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}
         title={safeSubtitle} titleColor={headingTextColor} titleFontSizePx={campaign.presentation.heading.fontSizePx} titleFontFamily={textFontFamily(campaign.presentation.heading.fontFamily)} titleFontWeight={campaign.presentation.heading.fontWeight ?? 500} titleAlign={campaign.presentation.heading.align}
-        renderBackgroundArt={!managedBackgroundUrl && !nativeWheelBackgroundUrl}
+        renderBackgroundArt={false}
         secondaryText={wheelSubtitle} subtitleSpacingPx={clampCampaignSpacingPx(campaign.presentation.layout.subtitleSpacingPx)} blockSpacingPx={clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)} publicPage>
         <WheelOfFortune key={`${campaign.id}-${drawSession?.id ?? "idle"}`} accent={campaign.accent} pageTemplate={pageTemplate} wheelStyle={campaign.presentation.wheel} buttonStyle={campaign.presentation.button}
           segments={segments} winningSegmentId={winningSegmentId} canSpin={stage === "ready"} buttonEnabled={stage === "idle" || stage === "ready"} buttonLabel="JOUER"

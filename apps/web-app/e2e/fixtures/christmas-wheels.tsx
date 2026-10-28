@@ -14,10 +14,10 @@ const subscribe = () => () => {};
 const clientSnapshot = () => true;
 const serverSnapshot = () => false;
 
-export function ChristmasWheelsFixture({ templateId, mode }: { templateId: ChristmasWheelTemplateId; mode?: string }) {
+export function ChristmasWheelsFixture({ templateId, mode, initialBackground = "native", longCopy = false }: { templateId: ChristmasWheelTemplateId; mode?: string; initialBackground?: string; longCopy?: boolean }) {
   const ready = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
   const [selected, setSelected] = useState(templateId);
-  const [background, setBackground] = useState("native");
+  const [background, setBackground] = useState(initialBackground);
   const [logo, setLogo] = useState<LogoMode>("text");
   const [heading, setHeading] = useState("JOUEZ &\nGAGNEZ");
   const [brand, setBrand] = useState("Maison Douceur");
@@ -36,7 +36,7 @@ export function ChristmasWheelsFixture({ templateId, mode }: { templateId: Chris
       logo: { ...halloweenFixture.presentation.logo, sizePercent: 80, textColor: theme.logo, align: "center" as const },
       button: { ...halloweenFixture.presentation.button, backgroundColor: theme.button, textColor: "#fff8e8" },
       wheel: christmasWheelPalette(selected, halloweenFixture.presentation.wheel),
-      layout: { ...halloweenFixture.presentation.layout, templateId: selected, wheelSubtitle: selected === "christmas-natural" ? "Des cadeaux de Noël naturels et bien-être !" : selected === "christmas-traditional" ? "Un Noël plein de surprises !" : "Des attentions de Noël rien que pour vous !" },
+      layout: { ...halloweenFixture.presentation.layout, templateId: selected, wheelSubtitle: longCopy ? "Tentez de gagner une séance de drainage offerte et bien d’autres surprises beauté pour votre prochaine visite." : selected === "christmas-natural" ? "Des cadeaux de Noël naturels et bien-être !" : selected === "christmas-traditional" ? "Un Noël plein de surprises !" : "Des attentions de Noël rien que pour vous !" },
     },
   };
   const merchant = { id: "fixture-merchant", companyName: brand, logoText: brand } as Merchant;

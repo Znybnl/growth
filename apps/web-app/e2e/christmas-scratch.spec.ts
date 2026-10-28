@@ -46,6 +46,7 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
     const foil = page.locator("canvas");
     await expect(foil).toHaveAttribute("data-foil-loaded", "true");
+    await page.evaluate(() => document.fonts.ready);
     const box = (await foil.boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
     for (let row = 1; row < 12 && await foil.count(); row++) {
