@@ -2,6 +2,8 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import { Gift, Pointer } from "lucide-react";
 import { HalloweenWheelVisual } from "@/components/public/halloween-wheel-art";
+import { ChristmasTemplateThumbnail } from "./christmas-template-thumbnail";
+import { isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
 import { HALLOWEEN_WHEEL_BACKGROUND } from "@/lib/halloween-wheel-theme";
 import { DEFAULT_COCORICO_DUO_BLUE, DEFAULT_COCORICO_DUO_YELLOW, DEFAULT_COCORICO_PRIMARY_COLOR, DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR, DEFAULT_ROSE_INSTITUT_PRIMARY_COLOR, DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR, DEFAULT_ROSE_INSTITUT_TEXT_COLOR } from "@/lib/campaign-defaults";
 import type { GamePageTemplateId } from "@/lib/types";
@@ -64,6 +66,7 @@ function ModernThumbnailWheel() {
 }
 
 export function WheelTemplateThumbnail({ templateId, card = false }: { templateId: GamePageTemplateId; card?: boolean }) {
+  if (isChristmasWheelTemplate(templateId)) return <ChristmasTemplateThumbnail templateId={templateId} card={card} />;
   if (templateId === "halloween-gold") return <div aria-hidden="true" data-testid="wheel-template-thumbnail-halloween-gold" className={`relative overflow-hidden bg-black ${card ? "h-full px-4 pt-3" : "mb-3 flex h-28 items-center justify-center rounded-xl"}`}>
     <Image src={HALLOWEEN_WHEEL_BACKGROUND} alt="" fill sizes="220px" className="object-cover" />
     {card ? <div className="relative z-10 max-w-[44%] text-[#f8f6ef]"><div className="min-h-[20px] text-[8px] font-semibold uppercase leading-[1.15] tracking-[0.06em]">Votre établissement</div><div data-testid="template-sample-heading" className="mt-3 font-cormorant text-[20px] leading-[1.05] text-[#ecac52]">Tournez<br />la roue</div><div className="mt-2 font-serif text-[8px] leading-[1.35] text-[#ecac52]">Une surprise exclusive vous attend — Spécial Halloween</div></div> : null}

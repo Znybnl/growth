@@ -64,6 +64,7 @@ const measuredPages = new Set([
   // Public editorial routes only. The consent tests check this list against
   // the server-side blog registry; never import article bodies into the client.
   "/blog",
+  "/blog/creer-fiche-google-institut-beaute",
   "/blog/idees-animations-commerciales-boutique",
   "/blog/animer-point-de-vente-qr-code",
   "/blog/idees-jeux-concours-restaurant",
@@ -94,6 +95,10 @@ const measuredPages = new Set([
   "/blog/portes-ouvertes-salle-sport",
   "/blog/organiser-degustation-epicerie-fine",
   "/blog/animation-magasin-velos-journee-decouverte",
+  "/blog/attirer-nouvelles-clientes-institut-beaute",
+  "/blog/faire-revenir-cliente-apres-premiere-visite-institut-beaute",
+  "/blog/journee-decouverte-magasin-optique",
+  "/blog/remplir-heures-creuses-institut-beaute",
 ]);
 
 export function safeAnalyticsPage(pathname: string) {

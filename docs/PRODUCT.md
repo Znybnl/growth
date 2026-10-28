@@ -396,6 +396,46 @@ une barre compacte, 20 px avant le cadre. Cette présentation est réservée
 à l’index : les introductions Beauté/Restaurants et les dimensions/écrans
 du jeu, ses résultats et ses événements restent inchangés.
 
+## Templates roue Noël — #674
+
+Les trois modèles **Noël rose poudré**, **Noël naturel** et **Noël traditionnel**
+sont disponibles pour tous les secteurs dans le wizard et l'éditeur classique.
+Leurs décors natifs sont résolus à l'affichage, sans écrire d'image partagée dans
+les réglages du marchand. Une image choisie manuellement ou une couleur de fond
+personnalisée reste prioritaire. Les décors sont aussi proposés dans la bibliothèque.
+Le logo, le titre, le sous-titre, les couleurs et les réglages habituels restent
+personnalisables ; les textes et la roue ne sont jamais intégrés à l'image.
+Le contour doré et le pointeur restent fixes pendant la rotation. Les libellés
+réels des lots utilisent DM Sans sans icône et s'ajustent individuellement.
+Le bouton JOUER en relief est sans icône. Le rendu est partagé entre aperçu et
+page de jeu ; aucun modèle existant ni aucune probabilité n'est modifié.
+[Périmètre, contrôles et assets](releases/2026-10-28-christmas-wheels-674.md).
+
+## Tickets à gratter Noël — #676
+
+Les trois ambiances Noël rose poudré, naturel et traditionnel existent aussi en
+ticket à gratter, dans les deux éditeurs et pour tous les secteurs. Elles utilisent
+les décors Noël de la bibliothèque, sans les enregistrer comme image sélectionnée
+par le marchand. Une image ou une couleur de fond choisie manuellement les remplace.
+Le titre est initialisé à 46 px ; logo, textes, polices et espacements restent
+personnalisables. La zone ronde emploie les textures métalliques existantes, nacrée,
+champagne ou dorée, avec une palette de grattage fixe. L'aperçu est non interactif ;
+la page de jeu conserve le moteur de grattage et les règles de tirage existants.
+Les anciens modèles et les modèles par défaut de chaque activité restent inchangés.
+[Périmètre et recette](releases/2026-10-28-christmas-scratch-676.md).
+
+## Affiliation par compte — #677
+
+L'administration Affiliation affiche les comptes marchands inscrits, récents
+en premier, avec l'identité et l'e-mail de connexion du propriétaire. L'activation,
+le code et les commissions sont communs à tous les établissements du compte.
+Les comptes sans programme sont proposés désactivés ; l'activation crée leur code.
+Une carte de parrainage apparaît dans Mon compte / Utilisateur uniquement pour
+un programme actif et un utilisateur propriétaire ou administrateur du compte.
+Une reprise d'abonnement pendant la fenêtre initiale de 12 mois reste rémunérée,
+sans commission sur la pause ni redémarrage de la fenêtre. Le paiement reste manuel.
+[Migration, vérifications et recette](releases/2026-10-28-affiliate-accounts-677.md).
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

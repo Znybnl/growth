@@ -7,6 +7,7 @@ import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
 import { syncMerchantBillingFromStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
 import { getMerchantRedemptionPinStates } from "@/lib/store";
+import { getAffiliateSummaryForMerchant } from "@/lib/affiliate-repository";
 
 type AccountPageProps = {
   searchParams?: Promise<{
@@ -60,9 +61,10 @@ async function AccountPageContent({ searchParams }: AccountPageProps) {
   }
 
   const billing = getMerchantBillingSummary(merchant);
-  const redemptionPinStates = await getMerchantRedemptionPinStates(
-    session.locations.map(({ merchant: location }) => location.id),
-  );
+  const [redemptionPinStates, affiliateSummary] = await Promise.all([
+    getMerchantRedemptionPinStates(session.locations.map(({ merchant: location }) => location.id)),
+    ["owner", "admin"].includes(session.user.role ?? "owner") ? getAffiliateSummaryForMerchant(merchant) : null,
+  ]);
   return (
     <div className="space-y-4">
       <PageHeader
@@ -78,6 +80,7 @@ async function AccountPageContent({ searchParams }: AccountPageProps) {
         locations={session.locations}
         redemptionPinStates={redemptionPinStates}
         billing={billing}
+        affiliateSummary={affiliateSummary}
       />
     </div>
   );

@@ -1,0 +1,67 @@
+.mobileLabel {
+  display: none;
+}
+
+/* Keep one semantic table in the server HTML; show each row as a labelled card on phones. */
+@media (max-width: 767px) {
+  .guideTable,
+  .guideTable caption,
+  .guideTable tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .guideTable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .guideTable tbody {
+    padding: 0 12px 12px;
+  }
+
+  .guideTable tbody tr {
+    display: block;
+    margin-top: 12px;
+    padding: 16px;
+    border: 1px solid #e4ddd3;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .guideTable tbody tr:first-child {
+    margin-top: 0;
+  }
+
+  .guideTable tbody th,
+  .guideTable tbody td {
+    display: block;
+    width: 100%;
+    padding: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .guideTable tbody th {
+    color: #30264a;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .guideTable tbody td {
+    margin-top: 12px;
+    line-height: 1.75;
+  }
+
+  .mobileLabel {
+    display: block;
+    margin-bottom: 4px;
+    color: #667085;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+}

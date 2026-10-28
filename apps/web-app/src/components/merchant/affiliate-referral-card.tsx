@@ -45,17 +45,22 @@ export function AffiliateReferralCard({ summary }: AffiliateReferralCardProps) {
   }
 
   return (
-    <section className="okado-card overflow-hidden text-graphite">
+    <section id="account-affiliation" aria-labelledby="account-affiliation-title" className="okado-card scroll-mt-44 overflow-hidden text-graphite">
       <div className="grid gap-6 p-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:p-8">
         <div>
           <p className="okado-label">Parrainage</p>
-          <h2 className="mt-3 okado-section-title">
+          <h2 id="account-affiliation-title" className="mt-3 okado-section-title">
             Partagez Okado, gagnez {commissionRatePercent}%
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-ash">
             Recevez {commissionRatePercent}% des abonnements payés par vos filleuls pendant{" "}
             {summary.account.commissionDurationMonths} mois. Les commissions sont calculées
             automatiquement puis payées manuellement par Okado.
+          </p>
+          <p className="mt-2 text-sm leading-6 text-ash">
+            Ce programme est commun à tous les établissements de votre compte.
+            Après une interruption, les abonnements payés pendant la période initiale restent pris en compte,
+            sans prolonger cette période.
           </p>
 
           <div className="mt-6 grid gap-4 border-y border-fog py-4 md:grid-cols-3 md:divide-x md:divide-fog">

@@ -62,6 +62,7 @@ test("@visual-1280 phase 3 : copie limitée confirmée, indépendante, personnal
   await expect.poll(() => writes.length).toBe(1);
   expect(writes[0].prizes[1]).toMatchObject({ label: "SOIN PERSONNALISÉ", probability: 10, totalQuantity: 7, remainingQuantity: 7, estimatedUnitCost: 8, usageConditions: "Avec un rituel payant.", purchaseRequired: true });
   expect(writes[0].prizes[1].id).not.toBe("old-limited");
+  expect(writes[0].prizes[1].reusedFromPrizeId).toBe("old-limited");
   expect(writes[0].prizes[2]).toMatchObject({ totalQuantity: null, remainingQuantity: null, purchaseRequired: false });
   expect(writes[0].prizes.some((prize) => prize.id === "old-limited" || prize.id === "old-unlimited")).toBe(false);
 });
