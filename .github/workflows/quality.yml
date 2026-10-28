@@ -142,13 +142,10 @@ jobs:
         run: npm run test:metrics -w @okado/web-app
       - name: Test merchant page reads, session isolation and private timings
         run: npm run test:page-performance -w @okado/web-app
-<<<<<<< HEAD
       - name: Test anonymous draw preparation timings and percentile report
         run: npm run test:draw-preparation -w @okado/web-app
-=======
       - name: Test merchant account affiliation, permissions, resubscription and migration
         run: npm run test:affiliates -w @okado/web-app
->>>>>>> origin/main
       - name: Build web app
         run: npm run build:web
       - name: Verify prize library with compiled production CSS
