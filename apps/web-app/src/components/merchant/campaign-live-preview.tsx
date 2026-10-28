@@ -6,6 +6,10 @@ import { memo } from "react";
 
 import { BrandMark } from "@/components/brand-mark";
 import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
+import { ChristmasCampaignPreview } from "./christmas-campaign-preview";
+import { isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
+import { christmasScratchBackgroundImage, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
+import { ChristmasScratchPreview } from "./christmas-scratch-preview";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
 import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
@@ -77,6 +81,7 @@ export type CampaignEditorPreviewModel = {
     fontFamily: string;
   };
   hasCustomBackgroundImage: boolean;
+  selectedBackgroundImageUrl?: string;
   nativeWheelBackgroundUrl?: string | null;
   logoMode: CampaignSetupInput["logoMode"];
   logoAlignmentClass: string;
@@ -154,6 +159,8 @@ function previewBackgroundImage(
   templateId: GamePageTemplateId,
   accent: CampaignSetupInput["accent"],
 ) {
+  const christmasBackground = christmasScratchBackgroundImage(templateId, form.presentation.background);
+  if (christmasBackground !== undefined) return christmasBackground;
   if (form.presentation.background.mode === "image" && form.presentation.background.imageUrl) {
     return userBackgroundImageStyle(form.presentation.background.imageUrl);
   }
@@ -229,6 +236,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
       fontFamily: textFontFamily(form.presentation.heading.fontFamily),
     },
     hasCustomBackgroundImage: form.presentation.background.mode === "image" && Boolean(form.presentation.background.imageUrl),
+    selectedBackgroundImageUrl: form.presentation.background.mode === "image" ? form.presentation.background.imageUrl : undefined,
     nativeWheelBackgroundUrl: form.gameType === "wheel" ? beautyWheelDefaultBackground(templateId, form.presentation.background) : null,
     logoMode: form.logoMode,
     logoAlignmentClass,
@@ -339,6 +347,12 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
     ? preview.logoTextSizePx * (isRosePowderTemplate || isRoseInstitutTemplate ? 0.9 : 1)
     : scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1);
 
+  if (preview.gameType === "scratch" && christmasScratchTemplate(preview.gamePageTemplateId)) {
+    return <ChristmasScratchPreview preview={preview} />;
+  }
+  if (preview.gameType === "wheel" && isChristmasWheelTemplate(preview.gamePageTemplateId)) {
+    return <ChristmasCampaignPreview preview={preview} publicPage={mobileViewport} />;
+  }
   if (preview.gameType === "wheel" && preview.gamePageTemplateId === "halloween-gold") {
     if (mobileViewport) return <div className="min-h-screen bg-black"><HalloweenCampaignPreview preview={preview} /></div>;
     return <HalloweenCampaignPreview preview={preview} compact={compact} />;

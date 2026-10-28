@@ -20,6 +20,16 @@ Une PR applicative attend une validation de merge/déploiement distincte.
 
 ## Lecture des données
 
+### Contrôle complémentaire du 25 octobre 2026
+
+Le sitemap HTTP actuel contient **57 URL dont 34 articles**, toutes en 200.
+Les nombres 53/30 ci-dessous restent ceux du contrôle historique du 21 octobre.
+Google/Bing n'ont pas été relus : panne d'initialisation des outils navigateur
+et ordinateur, sans conclusion sur les autorisations des comptes.
+PostHog 212872/EU a été relu avec succès : réception réelle, mais aucun parcours
+consenti complet d'acquisition jusqu'à publication observé. Derniers chiffres,
+définitions, tests et limites : [contrôle #507](releases/2026-10-25-acquisition-verification-507.md).
+
 ### Google
 
 Propriété `sc-domain:okado.app`, recherche Web. Isoler les URL contenant

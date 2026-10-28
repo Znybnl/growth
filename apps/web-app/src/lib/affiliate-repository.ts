@@ -1,7 +1,9 @@
-import Stripe from "stripe";
+import type Stripe from "stripe";
+import { getAffiliateAccountDirectory, getAffiliateWorkspaceId } from "@/lib/affiliate-account-directory";
+import { readAllRows } from "@/lib/paginated-read";
 
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
-import { getSupabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import { logSupportEvent } from "@/lib/support-log";
 import {
   AffiliateAccount,
@@ -21,6 +23,8 @@ const DEFAULT_COMMISSION_DURATION_MONTHS = 12;
 type AffiliateAccountRow = {
   id: string;
   merchant_id: string;
+  workspace_id: string;
+  canonical_account_id: string | null;
   code: string;
   status: "active" | "disabled";
   commission_rate_bps: number | null;
@@ -33,6 +37,8 @@ type AffiliateAccountRow = {
 type AffiliateReferralRow = {
   id: string;
   affiliate_account_id: string;
+  affiliate_workspace_id: string;
+  referred_workspace_id: string;
   affiliate_merchant_id: string;
   referred_merchant_id: string;
   referral_code: string;
@@ -78,6 +84,7 @@ function toAffiliateAccount(row: AffiliateAccountRow): AffiliateAccount {
   return {
     id: row.id,
     merchantId: row.merchant_id,
+    workspaceId: row.workspace_id,
     code: row.code,
     status: row.status,
     commissionRateBps: row.commission_rate_bps ?? DEFAULT_COMMISSION_RATE_BPS,
@@ -92,12 +99,6 @@ function toAffiliateAccount(row: AffiliateAccountRow): AffiliateAccount {
 function formatAffiliateCode(merchantId: string) {
   const suffix = merchantId.replace(/[^a-z0-9]/gi, "").slice(-6).toUpperCase();
   return `OKADO-${suffix || crypto.randomUUID().slice(0, 6).toUpperCase()}`;
-}
-
-function addMonths(date: Date, months: number) {
-  const next = new Date(date);
-  next.setMonth(next.getMonth() + months);
-  return next;
 }
 
 function getInvoiceAmountExcludingTaxCents(invoice: Stripe.Invoice) {
@@ -142,155 +143,100 @@ async function fetchMerchantMap(merchantIds: string[]) {
     return new Map<string, MerchantLiteRow>();
   }
 
-  const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("merchants")
-    .select("id, company_name, restaurant_email")
-    .in("id", uniqueMerchantIds)
-    .returns<MerchantLiteRow[]>();
-
-  if (error) {
-    throw new Error(`Lecture des marchands affiliés impossible: ${error.message}`);
+  const result = new Map<string, MerchantLiteRow>();
+  for (let offset = 0; offset < uniqueMerchantIds.length; offset += 200) {
+    const batch = await readAllRows((start, end) => getSupabaseAdmin().from("merchants")
+      .select("id, company_name, restaurant_email", { count: "exact" }).in("id", uniqueMerchantIds.slice(offset, offset + 200)).order("id").range(start, end));
+    if (batch.error) throw new Error("Lecture des marchands affiliés impossible.");
+    for (const merchant of batch.data as MerchantLiteRow[]) result.set(merchant.id, merchant);
   }
-
-  return new Map((data ?? []).map((merchant) => [merchant.id, merchant]));
+  return result;
 }
 
 export async function ensureAffiliateAccountForMerchant(merchantId: string) {
   const supabase = getSupabaseAdmin();
-  const existing = await supabase
-    .from("affiliate_accounts")
-    .select("*")
-    .eq("merchant_id", merchantId)
-    .maybeSingle<AffiliateAccountRow>();
-
-  if (existing.error) {
-    throw new Error(`Lecture du compte affilié impossible: ${existing.error.message}`);
+  const workspaceId = await getAffiliateWorkspaceId(merchantId);
+  async function existing() {
+    const result = await supabase.from("affiliate_accounts").select("*")
+      .eq("workspace_id", workspaceId).is("canonical_account_id", null).maybeSingle<AffiliateAccountRow>();
+    if (result.error) throw new Error("Lecture du programme d’affiliation impossible.");
+    return result.data;
   }
-
-  if (existing.data) {
-    return toAffiliateAccount(existing.data);
-  }
-
-  const baseCode = formatAffiliateCode(merchantId);
-  const insert = await supabase
-    .from("affiliate_accounts")
-    .insert({
-      merchant_id: merchantId,
-      code: baseCode,
-      status: "disabled",
-      commission_rate_bps: DEFAULT_COMMISSION_RATE_BPS,
+  const account = await existing();
+  if (account) return toAffiliateAccount(account);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const insert = await supabase.from("affiliate_accounts").insert({
+      merchant_id: merchantId, workspace_id: workspaceId,
+      code: attempt ? `OKADO-${crypto.randomUUID().slice(0, 8).toUpperCase()}` : formatAffiliateCode(merchantId),
+      status: "disabled", commission_rate_bps: DEFAULT_COMMISSION_RATE_BPS,
       commission_duration_months: DEFAULT_COMMISSION_DURATION_MONTHS,
-    })
-    .select("*")
-    .single<AffiliateAccountRow>();
-
-  if (insert.error || !insert.data) {
-    throw new Error(`Création du compte affilié impossible: ${insert.error?.message ?? "réponse vide"}`);
+    }).select("*").single<AffiliateAccountRow>();
+    if (!insert.error && insert.data) return toAffiliateAccount(insert.data);
+    if (insert.error?.code !== "23505") throw new Error("Création du programme d’affiliation impossible.");
+    const concurrent = await existing();
+    if (concurrent) return toAffiliateAccount(concurrent);
   }
-
-  return toAffiliateAccount(insert.data);
+  throw new Error("Création du code d’affiliation impossible.");
 }
 
 export async function createAffiliateReferralForMerchant(input: {
-  referredMerchantId: string;
-  referralCode?: string | null;
-  source: "signup" | "google_signup";
+  referredMerchantId: string; referralCode?: string | null; source: "signup" | "google_signup";
 }) {
   const referralCode = normalizeAffiliateCode(input.referralCode);
-
-  if (!referralCode) {
-    return null;
-  }
-
+  if (!referralCode) return null;
   const supabase = getSupabaseAdmin();
-  const existingReferral = await supabase
-    .from("affiliate_referrals")
-    .select("id")
-    .eq("referred_merchant_id", input.referredMerchantId)
-    .maybeSingle<{ id: string }>();
-
-  if (existingReferral.error) {
-    throw new Error(`Lecture de l'attribution affiliée impossible: ${existingReferral.error.message}`);
-  }
-
-  if (existingReferral.data) {
-    return null;
-  }
-
-  const account = await supabase
-    .from("affiliate_accounts")
-    .select("*")
-    .eq("code", referralCode)
-    .eq("status", "active")
+  const referredWorkspaceId = await getAffiliateWorkspaceId(input.referredMerchantId);
+  const code = await supabase.from("affiliate_accounts").select("workspace_id").eq("code", referralCode)
+    .maybeSingle<{ workspace_id: string }>();
+  if (code.error) throw new Error("Lecture du code affilié impossible.");
+  if (!code.data || code.data.workspace_id === referredWorkspaceId) return null;
+  const account = await supabase.from("affiliate_accounts").select("*")
+    .eq("workspace_id", code.data.workspace_id).is("canonical_account_id", null).eq("status", "active")
     .maybeSingle<AffiliateAccountRow>();
-
-  if (account.error) {
-    throw new Error(`Lecture du code affilié impossible: ${account.error.message}`);
-  }
-
-  if (!account.data || account.data.merchant_id === input.referredMerchantId) {
-    return null;
-  }
-
-  const insert = await supabase
-    .from("affiliate_referrals")
-    .insert({
-      affiliate_account_id: account.data.id,
-      affiliate_merchant_id: account.data.merchant_id,
-      referred_merchant_id: input.referredMerchantId,
-      referral_code: account.data.code,
-      source: input.source,
-      status: "registered",
-    })
-    .select("id")
-    .single<{ id: string }>();
-
-  if (insert.error || !insert.data) {
-    throw new Error(`Création de l'attribution affiliée impossible: ${insert.error?.message ?? "réponse vide"}`);
-  }
-
-  logSupportEvent("info", "affiliate_referral_created", {
-    merchantId: account.data.merchant_id,
-    referredMerchantId: input.referredMerchantId,
-    referralCode: account.data.code,
+  if (account.error) throw new Error("Lecture du programme d’affiliation impossible.");
+  if (!account.data) return null;
+  const insert = await supabase.from("affiliate_referrals").insert({
+    affiliate_account_id: account.data.id, affiliate_merchant_id: account.data.merchant_id,
+    affiliate_workspace_id: account.data.workspace_id, referred_workspace_id: referredWorkspaceId,
+    referred_merchant_id: input.referredMerchantId, referral_code: referralCode, source: input.source, status: "registered",
+  }).select("id").single<{ id: string }>();
+  if (insert.error?.code === "23505") return null;
+  if (insert.error || !insert.data) throw new Error("Création de l’attribution affiliée impossible.");
+  logSupportEvent("info", "affiliate_referral_created", { merchantId: account.data.merchant_id, referredMerchantId: input.referredMerchantId });
+  await captureProductEvent("affiliate_referral_created", merchantDistinctId(account.data.merchant_id), {
+    merchantId: account.data.merchant_id, referredMerchantId: input.referredMerchantId, source: input.source,
   });
-  await captureProductEvent("affiliate_referral_created", account.data.merchant_id, {
-    merchantId: account.data.merchant_id,
-    referredMerchantId: input.referredMerchantId,
-    referralCode: account.data.code,
-    source: input.source,
-  });
-
   return insert.data.id;
+}
+
+async function readAffiliateRows<T>(table: string, order = "id") {
+  const result = await readAllRows((start, end) => getSupabaseAdmin().from(table)
+    .select("*", { count: "exact" }).order(order).range(start, end));
+  if (result.error) throw new Error("Lecture de l’affiliation impossible.");
+  return (result.data ?? []) as T[];
 }
 
 export async function getAffiliateSummaryForMerchant(
   merchant: Merchant,
-): Promise<AffiliateSummary> {
-  const account = await ensureAffiliateAccountForMerchant(merchant.id);
+): Promise<AffiliateSummary | null> {
+  if (!isSupabaseConfigured()) return null;
+  const workspaceId = merchant.workspaceId ?? await getAffiliateWorkspaceId(merchant.id);
+  const found = await getSupabaseAdmin().from("affiliate_accounts").select("*")
+    .eq("workspace_id", workspaceId).is("canonical_account_id", null).eq("status", "active").maybeSingle<AffiliateAccountRow>();
+  if (found.error) throw new Error("Lecture de l’affiliation impossible.");
+  if (!found.data) return null;
+  const account = toAffiliateAccount(found.data);
   const supabase = getSupabaseAdmin();
-  const [{ data: referrals, error: referralsError }, { data: commissions, error: commissionsError }] =
-    await Promise.all([
-      supabase
-        .from("affiliate_referrals")
-        .select("*")
-        .eq("affiliate_merchant_id", merchant.id)
-        .order("created_at", { ascending: false })
-        .returns<AffiliateReferralRow[]>(),
-      supabase
-        .from("affiliate_commissions")
-        .select("*")
-        .eq("affiliate_merchant_id", merchant.id)
-        .returns<AffiliateCommissionRow[]>(),
-    ]);
-
-  if (referralsError) {
-    throw new Error(`Lecture des filleuls impossible: ${referralsError.message}`);
-  }
-
-  if (commissionsError) {
-    throw new Error(`Lecture des commissions impossible: ${commissionsError.message}`);
+  const result = await readAllRows((start, end) => supabase.from("affiliate_referrals").select("*", { count: "exact" })
+    .eq("affiliate_workspace_id", workspaceId).order("created_at", { ascending: false }).range(start, end));
+  if (result.error) throw new Error("Lecture des filleuls impossible.");
+  const referrals = (result.data ?? []) as AffiliateReferralRow[];
+  const commissions: AffiliateCommissionRow[] = [];
+  for (let offset = 0; offset < referrals.length; offset += 200) {
+    const rows = await readAllRows((start, end) => supabase.from("affiliate_commissions").select("*", { count: "exact" })
+      .in("referral_id", referrals.slice(offset, offset + 200).map(ref => ref.id)).order("id").range(start, end));
+    if (rows.error) throw new Error("Lecture des commissions impossible.");
+    commissions.push(...rows.data as AffiliateCommissionRow[]);
   }
 
   const merchantMap = await fetchMerchantMap((referrals ?? []).map((item) => item.referred_merchant_id));
@@ -355,128 +301,27 @@ export async function getAffiliateSummaryForMerchant(
   };
 }
 
-export async function createAffiliateCommissionFromPaidInvoice(
-  invoice: Stripe.Invoice,
-  referredMerchantId?: string,
-) {
-  if (!referredMerchantId || !invoice.id) {
-    return null;
-  }
-
+export async function createAffiliateCommissionFromPaidInvoice(invoice: Stripe.Invoice, referredMerchantId?: string) {
+  if (!referredMerchantId || !invoice.id || invoice.status !== "paid") return null;
   const amountCents = getInvoiceAmountExcludingTaxCents(invoice);
-
-  if (amountCents <= 0) {
-    return null;
-  }
-
-  const supabase = getSupabaseAdmin();
-  const referralQuery = await supabase
-    .from("affiliate_referrals")
-    .select("*")
-    .eq("referred_merchant_id", referredMerchantId)
-    .maybeSingle<AffiliateReferralRow>();
-
-  if (referralQuery.error) {
-    throw new Error(`Lecture du filleul affilié impossible: ${referralQuery.error.message}`);
-  }
-
-  if (!referralQuery.data || referralQuery.data.status === "canceled") {
-    return null;
-  }
-
-  const accountQuery = await supabase
-    .from("affiliate_accounts")
-    .select("*")
-    .eq("id", referralQuery.data.affiliate_account_id)
-    .eq("status", "active")
-    .maybeSingle<AffiliateAccountRow>();
-
-  if (accountQuery.error) {
-    throw new Error(`Lecture du compte affilié impossible: ${accountQuery.error.message}`);
-  }
-
-  if (!accountQuery.data) {
-    return null;
-  }
-
-  const commissionRateBps =
-    accountQuery.data.commission_rate_bps ?? DEFAULT_COMMISSION_RATE_BPS;
-  const commissionDurationMonths =
-    accountQuery.data.commission_duration_months ?? DEFAULT_COMMISSION_DURATION_MONTHS;
-
-  const paidAt = getInvoicePaidAt(invoice);
-  const eligibleUntil = referralQuery.data.commission_eligible_until
-    ? new Date(referralQuery.data.commission_eligible_until)
-    : addMonths(paidAt, commissionDurationMonths);
-
-  if (paidAt > eligibleUntil) {
-    return null;
-  }
-
-  const firstPaidAt = referralQuery.data.first_subscription_paid_at
-    ? new Date(referralQuery.data.first_subscription_paid_at)
-    : paidAt;
-  const nextEligibleUntil =
-    referralQuery.data.commission_eligible_until ??
-    addMonths(firstPaidAt, commissionDurationMonths).toISOString();
-  const commissionAmountCents = Math.round((amountCents * commissionRateBps) / 10000);
-  const subscriptionId = getInvoiceSubscriptionId(invoice);
-
-  const insert = await supabase
-    .from("affiliate_commissions")
-    .insert({
-      referral_id: referralQuery.data.id,
-      affiliate_merchant_id: referralQuery.data.affiliate_merchant_id,
-      referred_merchant_id: referredMerchantId,
-      stripe_invoice_id: invoice.id,
-      stripe_subscription_id: subscriptionId ?? null,
-      invoice_paid_at: paidAt.toISOString(),
-      invoice_amount_cents: amountCents,
-      commission_rate_bps: commissionRateBps,
-      commission_duration_months: commissionDurationMonths,
-      commission_amount_cents: commissionAmountCents,
-      currency: invoice.currency ?? "eur",
-      status: "pending",
-    })
-    .select("id")
-    .maybeSingle<{ id: string }>();
-
-  if (insert.error) {
-    if (insert.error.message.toLowerCase().includes("duplicate")) {
-      return null;
-    }
-
-    throw new Error(`Création de la commission affiliée impossible: ${insert.error.message}`);
-  }
-
-  await supabase
-    .from("affiliate_referrals")
-    .update({
-      status: "active",
-      first_subscription_paid_at: referralQuery.data.first_subscription_paid_at ?? paidAt.toISOString(),
-      commission_eligible_until: nextEligibleUntil,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", referralQuery.data.id);
-
-  logSupportEvent("info", "affiliate_commission_created", {
-    merchantId: referralQuery.data.affiliate_merchant_id,
-    referredMerchantId,
-    stripeInvoiceId: invoice.id,
-    commissionAmountCents,
+  if (amountCents <= 0) return null;
+  const { data, error } = await getSupabaseAdmin().rpc("record_affiliate_paid_invoice_677", {
+    p_merchant_id: referredMerchantId, p_invoice_id: invoice.id, p_paid_at: getInvoicePaidAt(invoice).toISOString(),
+    p_amount_cents: amountCents, p_currency: invoice.currency ?? "eur", p_subscription_id: getInvoiceSubscriptionId(invoice) ?? null,
   });
-  await captureProductEvent(
-    "affiliate_commission_created",
-    merchantDistinctId(referralQuery.data.affiliate_merchant_id),
-    {
-      merchantId: referralQuery.data.affiliate_merchant_id,
-      referredMerchantId,
-      stripeInvoiceId: invoice.id,
-      commissionAmountCents,
-    },
-  );
-
-  return insert.data?.id ?? null;
+  if (error) throw new Error("Enregistrement de la commission affiliée impossible.");
+  if (data) {
+    const created = await getSupabaseAdmin().from("affiliate_commissions")
+      .select("affiliate_merchant_id, commission_amount_cents").eq("id", data)
+      .maybeSingle<{ affiliate_merchant_id: string; commission_amount_cents: number }>();
+    if (created.data) {
+      const payload = { merchantId: created.data.affiliate_merchant_id, referredMerchantId,
+        stripeInvoiceId: invoice.id, commissionAmountCents: created.data.commission_amount_cents };
+      logSupportEvent("info", "affiliate_commission_created", payload);
+      await captureProductEvent("affiliate_commission_created", merchantDistinctId(created.data.affiliate_merchant_id), payload);
+    }
+  }
+  return data as string | null;
 }
 
 export async function markAffiliateReferralCanceled(referredMerchantId?: string) {
@@ -488,7 +333,7 @@ export async function markAffiliateReferralCanceled(referredMerchantId?: string)
   const { error } = await supabase
     .from("affiliate_referrals")
     .update({ status: "canceled", updated_at: new Date().toISOString() })
-    .eq("referred_merchant_id", referredMerchantId);
+    .eq("referred_workspace_id", await getAffiliateWorkspaceId(referredMerchantId));
 
   if (error) {
     throw new Error(`Annulation du filleul affilié impossible: ${error.message}`);
@@ -530,23 +375,11 @@ export async function getAffiliateAdminOverview(input?: {
   query?: string;
   status?: string;
 }): Promise<AffiliateAdminOverview> {
-  const supabase = getSupabaseAdmin();
-  const [{ data: accounts, error: accountsError }, { data: referrals, error: referralsError }, { data: commissions, error: commissionsError }] =
-    await Promise.all([
-      supabase.from("affiliate_accounts").select("*").returns<AffiliateAccountRow[]>(),
-      supabase.from("affiliate_referrals").select("*").returns<AffiliateReferralRow[]>(),
-      supabase
-        .from("affiliate_commissions")
-        .select("*")
-        .order("invoice_paid_at", { ascending: false })
-        .limit(300)
-        .returns<AffiliateCommissionRow[]>(),
-    ]);
-
-  if (accountsError) throw new Error(`Lecture des affiliés impossible: ${accountsError.message}`);
-  if (referralsError) throw new Error(`Lecture des filleuls impossible: ${referralsError.message}`);
-  if (commissionsError) throw new Error(`Lecture des commissions impossible: ${commissionsError.message}`);
-
+  const [allAccounts, referrals, commissions, directory] = await Promise.all([
+    readAffiliateRows<AffiliateAccountRow>("affiliate_accounts"), readAffiliateRows<AffiliateReferralRow>("affiliate_referrals"),
+    readAffiliateRows<AffiliateCommissionRow>("affiliate_commissions", "invoice_paid_at"), getAffiliateAccountDirectory(),
+  ]);
+  const accounts = allAccounts.filter(account => !account.canonical_account_id);
   const merchantIds = [
     ...(accounts ?? []).map((item) => item.merchant_id),
     ...(referrals ?? []).flatMap((item) => [item.affiliate_merchant_id, item.referred_merchant_id]),
@@ -556,17 +389,22 @@ export async function getAffiliateAdminOverview(input?: {
   const query = input?.query?.trim().toLowerCase() ?? "";
   const status = input?.status?.trim() ?? "all";
 
+  const directoryByWorkspace = new Map(directory.map(owner => [owner.workspaceId, owner]));
+  const referralById = new Map(referrals.map(ref => [ref.id, ref]));
   const commissionItems: AffiliateAdminCommissionItem[] = (commissions ?? [])
     .map((commission) => {
+      const referral = referralById.get(commission.referral_id);
+      const affiliateOwner = directoryByWorkspace.get(referral?.affiliate_workspace_id ?? "");
+      const referredOwner = directoryByWorkspace.get(referral?.referred_workspace_id ?? "");
       const affiliate = merchantMap.get(commission.affiliate_merchant_id);
       const referred = merchantMap.get(commission.referred_merchant_id);
 
       return {
         id: commission.id,
         affiliateMerchantId: commission.affiliate_merchant_id,
-        affiliateMerchantName: affiliate?.company_name ?? "Affilié",
+        affiliateMerchantName: affiliateOwner?.merchantName ?? affiliate?.company_name ?? "Affilié",
         referredMerchantId: commission.referred_merchant_id,
-        referredMerchantName: referred?.company_name ?? "Filleul",
+        referredMerchantName: referredOwner?.merchantName ?? referred?.company_name ?? "Filleul",
         stripeInvoiceId: commission.stripe_invoice_id,
         stripeSubscriptionId: commission.stripe_subscription_id ?? undefined,
         invoicePaidAt: commission.invoice_paid_at,
@@ -597,46 +435,25 @@ export async function getAffiliateAdminOverview(input?: {
   const paidCommissionCents = (commissions ?? [])
     .filter((commission) => commission.status === "paid")
     .reduce((sum, commission) => sum + commission.commission_amount_cents, 0);
-  const accountItems: AffiliateAdminAccountItem[] = (accounts ?? [])
-    .map((account) => {
-      const merchant = merchantMap.get(account.merchant_id);
-      const accountReferrals = (referrals ?? []).filter(
-        (referral) => referral.affiliate_account_id === account.id,
-      );
-      const accountCommissions = (commissions ?? []).filter(
-        (commission) => commission.affiliate_merchant_id === account.merchant_id,
-      );
-
-      return {
-        id: account.id,
-        merchantId: account.merchant_id,
-        merchantName: merchant?.company_name ?? "Marchand",
-        merchantEmail: merchant?.restaurant_email ?? undefined,
-        code: account.code,
-        status: account.status,
-        commissionRateBps: account.commission_rate_bps ?? DEFAULT_COMMISSION_RATE_BPS,
-        commissionDurationMonths:
-          account.commission_duration_months ?? DEFAULT_COMMISSION_DURATION_MONTHS,
-        referralCount: accountReferrals.length,
-        pendingCommissionCents: accountCommissions
-          .filter((commission) => ["pending", "payable"].includes(commission.status))
-          .reduce((sum, commission) => sum + commission.commission_amount_cents, 0),
-        paidCommissionCents: accountCommissions
-          .filter((commission) => commission.status === "paid")
-          .reduce((sum, commission) => sum + commission.commission_amount_cents, 0),
-      };
-    })
-    .filter((account) => {
-      if (!query) return true;
-      return [account.merchantName, account.code, account.status].some((value) =>
-        value.toLowerCase().includes(query),
-      );
-    });
+  const accountItems: AffiliateAdminAccountItem[] = directory.map(owner => {
+    const account = accounts.find(row => row.workspace_id === owner.workspaceId);
+    const accountReferrals = referrals.filter(ref => ref.affiliate_workspace_id === owner.workspaceId);
+    const ids = new Set(accountReferrals.map(ref => ref.id));
+    const accountCommissions = commissions.filter(item => ids.has(item.referral_id));
+    return {
+      ...owner, id: account?.id ?? `workspace:${owner.workspaceId}`, code: account?.code ?? "À générer à l’activation",
+      status: account?.status ?? "disabled", commissionRateBps: account?.commission_rate_bps ?? DEFAULT_COMMISSION_RATE_BPS,
+      commissionDurationMonths: account?.commission_duration_months ?? DEFAULT_COMMISSION_DURATION_MONTHS,
+      referralCount: accountReferrals.length,
+      pendingCommissionCents: accountCommissions.filter(item => ["pending", "payable"].includes(item.status)).reduce((sum, item) => sum + item.commission_amount_cents, 0),
+      paidCommissionCents: accountCommissions.filter(item => item.status === "paid").reduce((sum, item) => sum + item.commission_amount_cents, 0),
+    };
+  }).filter(account => !query || [account.merchantName, account.merchantEmail, account.workspaceName, account.code, account.status].some(value => value?.toLowerCase().includes(query)));
 
   return {
     totals: {
-      affiliates: accounts?.length ?? 0,
-      activeAffiliates: (accounts ?? []).filter((account) => account.status === "active").length,
+      affiliates: directory.length,
+      activeAffiliates: directory.filter(owner => accounts.some(account => account.workspace_id === owner.workspaceId && account.status === "active")).length,
       referrals: referrals?.length ?? 0,
       pendingCommissionCents,
       payableCommissionCents,
@@ -673,7 +490,14 @@ export async function updateAffiliateAccountSettings(input: {
   }
 
   const supabase = getSupabaseAdmin();
-  const { error } = await supabase
+  let accountId = input.accountId;
+  if (accountId.startsWith("workspace:")) {
+    const workspaceId = accountId.slice("workspace:".length);
+    const owner = (await getAffiliateAccountDirectory()).find(account => account.workspaceId === workspaceId);
+    if (!owner) throw new Error("Compte marchand introuvable.");
+    accountId = (await ensureAffiliateAccountForMerchant(owner.merchantId)).id;
+  }
+  const { data, error } = await supabase
     .from("affiliate_accounts")
     .update({
       status: input.status,
@@ -681,11 +505,9 @@ export async function updateAffiliateAccountSettings(input: {
       commission_duration_months: commissionDurationMonths,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", input.accountId);
+    .eq("id", accountId).is("canonical_account_id", null).select("id").maybeSingle();
 
-  if (error) {
-    throw new Error(`Mise à jour du compte affilié impossible: ${error.message}`);
-  }
+  if (error || !data) throw new Error("Mise à jour du compte affilié impossible.");
 
   logSupportEvent("info", "affiliate_account_updated", {
     affiliateAccountId: input.accountId,

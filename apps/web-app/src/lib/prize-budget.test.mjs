@@ -41,13 +41,14 @@ beforeEach(() => {
       return { data: state.row.id, error: null };
     },
     from(table) {
-      let start = 0, end = 499;
+      let start = 0, end = 499, sourceIds;
       const query = {
         select() { return query; }, eq() { return query; }, order() { return query; },
+        neq() { return query; }, in(key, ids) { sourceIds = ids; return query; },
         range(a, b) { start = a; end = b; return query; }, returns() { return query; },
         insert() { return Promise.resolve({ error: null }); },
-        maybeSingle() { return Promise.resolve({ data: state.row, error: null }); },
-        then(resolve) { const data = table === "prizes" ? state.prizes : []; return Promise.resolve({ data: data.slice(start, end + 1), error: null, count: data.length }).then(resolve); },
+        maybeSingle() { return Promise.resolve({ data: state.row ? {...state.row, campaign_local_settings:state.settings} : null, error: null }); },
+        then(resolve) { const data = sourceIds ? (state.sources??[]).filter(x=>sourceIds.includes(x.id)) : table === "prizes" ? state.prizes : []; return Promise.resolve({ data: data.slice(start, end + 1), error: null, count: data.length }).then(resolve); },
       }; return query;
     },
   };
@@ -106,4 +107,25 @@ test("copie d'un coût inconnu conservée et distincte d'un vrai zéro", () => {
   assert.equal(copy.estimatedUnitCostKnown, false);
   assert.equal(calculatePrizeBudget([copy]).complete, false);
   assert.equal(deduplicateReusablePrizes([previous, { ...previous, id: "zero", estimatedUnitCostKnown: true }]).length, 2);
+});
+
+test("réutilisation : parseur, nouveaux IDs et métadonnées dans la même sauvegarde atomique", async () => {
+  const state=globalThis.__budget;
+  state.sources=[{id:"source",campaign_id:"other",campaigns:{merchant_id:"site"}}];
+  const input=parseCampaignSetupInput(payload({title:"Test",prizes:[prize(10,2,{reusedFromPrizeId:"source",reusedAt:"2099-01-01"})]}),"site");
+  assert.equal(input.prizes[0].reusedFromPrizeId,"source");
+  const id=await updateCampaignSetupInSupabase(input);
+  const savedId=state.prizes[0].id;
+  const original=structuredClone(state.settings.prizeSettings[savedId]);
+  assert.equal(original.reusedFromPrizeId,"source");
+  assert.ok(Date.parse(original.reusedAt)<Date.parse("2099-01-01"));
+  const edit=parseCampaignSetupInput(payload({id,title:"Nouveau titre",prizes:[prize(10,2,{id:savedId,remainingQuantity:null})]}),"site");
+  await updateCampaignSetupInSupabase(edit);
+  assert.deepEqual(state.settings.prizeSettings[savedId],original);
+  const calls=state.calls.length;
+  const rpc=state.db.rpc;
+  state.db.rpc=async()=>{throw new Error("échec atomique simulé")};
+  await assert.rejects(updateCampaignSetupInSupabase(input),/échec atomique/);
+  assert.equal(state.calls.length,calls);
+  state.db.rpc=rpc;
 });

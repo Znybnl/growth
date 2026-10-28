@@ -28,6 +28,12 @@ jobs:
         env:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
           NEXT_PUBLIC_POSTHOG_ENABLED: "true"
+      - name: Verify Christmas templates on mobile, rotation and scratch gestures
+        run: npx playwright test e2e/christmas-wheels.spec.ts e2e/christmas-scratch.spec.ts --grep-invert @visual-1280 --output=test-results/christmas
+        working-directory: apps/web-app
+      - name: Verify affiliate account card and administration on mobile
+        run: npx playwright test e2e/affiliate-accounts.spec.ts --grep-invert @visual-1280 --output=test-results/affiliate-mobile
+        working-directory: apps/web-app
       - name: Upload visual evidence for inspection
         if: always()
         uses: actions/upload-artifact@v4
@@ -80,16 +86,24 @@ jobs:
         run: npm ci
       - name: Verify critical source files and encoding
         run: npm run verify:source
+      - name: Test aggregate acquisition audit without external requests
+        run: node --test scripts/conversion-audit-results.test.mjs
       - name: Test dependency audit guard
         run: npm run test:dependency-audit -w @okado/web-app
       - name: Test every configured wheel reward and exact drawn result stays visible
         run: npm run test:wheel-segments -w @okado/web-app
+      - name: Test Christmas template settings, backgrounds and contrast
+        run: npm run test:christmas-wheels -w @okado/web-app
+      - name: Test Christmas scratch templates, original foils and manual backgrounds
+        run: npm run test:christmas-scratch -w @okado/web-app
       - name: Test guaranteed draw weights, stock and private SQL functions
         run: npm run test:guaranteed-draw -w @okado/web-app
       - name: Test Google click acceptance versions, API and private SQL controls
         run: npm run test:google-click -w @okado/web-app
       - name: Audit production dependencies in both apps
         run: npm run check:dependencies
+      - name: Audit development tooling without exceptions
+        run: npm run check:dependencies:all
       - name: Lint web app
         run: npm run lint:web
       - name: Test analytics consent in both apps and server capture
@@ -126,6 +140,8 @@ jobs:
         run: npm run test:metrics -w @okado/web-app
       - name: Test merchant page reads, session isolation and private timings
         run: npm run test:page-performance -w @okado/web-app
+      - name: Test merchant account affiliation, permissions, resubscription and migration
+        run: npm run test:affiliates -w @okado/web-app
       - name: Build web app
         run: npm run build:web
       - name: Verify prize library with compiled production CSS

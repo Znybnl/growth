@@ -23,6 +23,12 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: supabaseImagePattern ? [supabaseImagePattern] : [],
   },
+  outputFileTracingExcludes: {
+    // Sharp falls back to this ~9 MB WebAssembly build only when no supported
+    // native binary is available. Vercel's Linux x64 runtime uses the native
+    // package explicitly included below; keep the fallback out of each trace.
+    "/*": ["../../node_modules/@img/sharp-wasm32/**/*"],
+  },
   turbopack: {
     // Recharts imports this subpath through victory-vendor. Pinning the
     // resolver to d3-shape's ESM entry avoids a clean-build Turbopack export

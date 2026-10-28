@@ -123,3 +123,23 @@ La RPC privée `get_support_monitoring` réalise recherche, jointures, comptages
 ## Lectures des écrans marchands — #500
 
 Les écrans de consultation utilisent un snapshot SQL privé sans images ni configuration complète ; les métriques canoniques #498 restent la source de calcul. La déduplication React est limitée au rendu courant et à une clé d'établissement. Les alertes navigation/Accueil partagent un fournisseur client réinitialisé au changement de compte/site et un agrégat service_role. Les profils multi-sites restent bornés à l'adhésion vérifiée, lus par lots paginés. Voir [analyse, migration et retour arrière](releases/2026-10-14-page-performance-500.md). Aucun changement de région sans confirmation de la région primaire Supabase.
+
+
+## Affiliation du compte — #677
+
+`affiliate_accounts.workspace_id` porte le programme ; un index unique partiel
+impose une seule fiche canonique par workspace. Les anciennes fiches/codes restent
+comme alias via `canonical_account_id`, sans réécriture des factures ou montants.
+Les attributions possèdent les deux workspace_id : unicité du filleul et interdiction
+d’auto-parrainage entre sites. Des triggers de compatibilité dérivent ces champs
+pour les écritures de la version applicative précédente pendant le déploiement.
+
+Le listing administratif lit les propriétaires/adhésions/workspaces et propose
+les comptes sans fiche comme désactivés. L’activation, réservée à la plateforme,
+crée la fiche si nécessaire. Aucune création n’est conditionnée à une visite de
+Mon compte. La carte active est fournie côté serveur aux seuls rôles owner/admin,
+avec le même périmètre quel que soit le site sélectionné. Les lectures sont paginées.
+La RPC privée `record_affiliate_paid_invoice_677` verrouille l’attribution et
+crée la commission/fixe la fenêtre dans une même transaction. Le statut canceled
+n’empêche pas une nouvelle facture payée pendant la fenêtre initiale. La clé
+unique de facture empêche les doubles commissions. [Livraison et rollback](releases/2026-10-28-affiliate-accounts-677.md).

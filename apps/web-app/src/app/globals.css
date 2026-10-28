@@ -640,6 +640,11 @@ select {
   .okado-data-table.okado-affiliate-table :where(td:nth-child(5))::before { content: "Réglages"; }
   .okado-data-table.okado-affiliate-table :where(td:nth-child(6))::before { content: "Commission"; }
   .okado-data-table.okado-affiliate-table :where(td:nth-child(7))::before { content: "Statut"; }
+  .okado-data-table.okado-affiliate-account-table :where(td:nth-child(1))::before { content: "Compte marchand"; }
+  .okado-data-table.okado-affiliate-account-table :where(td:nth-child(2))::before { content: "Code"; }
+  .okado-data-table.okado-affiliate-account-table :where(td:nth-child(3))::before { content: "Filleuls"; }
+  .okado-data-table.okado-affiliate-account-table :where(td:nth-child(4))::before { content: "Commissions"; }
+  .okado-data-table.okado-affiliate-account-table :where(td:nth-child(5))::before { content: "Réglages du compte"; }
   .okado-data-table.okado-support-table :where(td:nth-child(1))::before { content: "Date"; }
   .okado-data-table.okado-support-table :where(td:nth-child(2))::before { content: "Événement"; }
   .okado-data-table.okado-support-table :where(td:nth-child(3))::before { content: "Niveau"; }

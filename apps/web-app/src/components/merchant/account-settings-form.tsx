@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
+import { AffiliateReferralCard } from "@/components/merchant/affiliate-referral-card";
+import type { AffiliateSummary } from "@/lib/types";
 import { GainNotificationSettings } from "@/components/merchant/gain-notification-settings";
 import { RewardReminderSettings } from "@/components/merchant/reward-reminder-settings";
 import { AccountLocationPanel } from "@/components/merchant/account-location-panel";
@@ -36,6 +38,7 @@ type AccountSettingsFormProps = {
   locations: MerchantLocationAccess[];
   redemptionPinStates: Record<string, MerchantRedemptionPinState>;
   billing: MerchantBillingSummary;
+  affiliateSummary?: AffiliateSummary | null;
   onDirtyChange?: (isDirty: boolean) => void;
 };
 
@@ -99,6 +102,7 @@ export function AccountSettingsForm({
   locations,
   redemptionPinStates,
   billing,
+  affiliateSummary,
   onDirtyChange,
 }: AccountSettingsFormProps) {
   const [selectedLocationId, setSelectedLocationId] = useState(merchant.id);
@@ -379,6 +383,7 @@ export function AccountSettingsForm({
           merchantName={selectedMerchant.companyName} email={notificationEmail}
           timeZone={selectedMerchant.timeZone ?? "Europe/Paris"} />
         <RewardReminderSettings key={selectedMerchant.workspaceId ?? selectedMerchant.id} accountKey={selectedMerchant.workspaceId ?? selectedMerchant.id} />
+        {affiliateSummary?.account.status === "active" ? <AffiliateReferralCard summary={affiliateSummary} /> : null}
         </div> : null}
 
         {activeTab === "establishment" ? <div id="account-tabpanel-establishment" role="tabpanel" aria-labelledby="account-establishment-tab">
