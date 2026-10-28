@@ -27,6 +27,7 @@
     "test:beauty-catalog": "node --experimental-strip-types --test src/lib/beauty-catalog.test.mjs",
     "test:prize-suggestion-filters": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/prize-suggestion-filters.test.mjs",
     "test:admin-profiles": "node --experimental-strip-types --test src/lib/admin-establishment-profile.test.mjs",
+    "test:admin-last-sign-in": "node --experimental-strip-types --test src/lib/admin-last-sign-in.test.mjs src/lib/admin-last-sign-in-page.test.mjs",
     "test:merchant-logo-text": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/merchant-logo-text.test.mjs",
     "test:poster-defaults": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/poster-defaults.test.mjs",
     "test:poster-composition": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/poster-composition.test.mjs",

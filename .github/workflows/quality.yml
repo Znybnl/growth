@@ -134,6 +134,8 @@ jobs:
         run: npm run test:prize-budget -w @okado/web-app
       - name: Test administrator establishment profiles
         run: npm run test:admin-profiles -w @okado/web-app
+      - name: Test administrator last sign-in source and permissions
+        run: npm run test:admin-last-sign-in -w @okado/web-app
       - name: Test support email incident permissions and migration
         run: npm run test:support-incidents -w @okado/web-app
       - name: Test metric consistency and private SQL aggregates
