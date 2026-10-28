@@ -424,6 +424,18 @@ la page de jeu conserve le moteur de grattage et les règles de tirage existants
 Les anciens modèles et les modèles par défaut de chaque activité restent inchangés.
 [Périmètre et recette](releases/2026-10-28-christmas-scratch-676.md).
 
+## Affiliation par compte — #677
+
+L'administration Affiliation affiche les comptes marchands inscrits, récents
+en premier, avec l'identité et l'e-mail de connexion du propriétaire. L'activation,
+le code et les commissions sont communs à tous les établissements du compte.
+Les comptes sans programme sont proposés désactivés ; l'activation crée leur code.
+Une carte de parrainage apparaît dans Mon compte / Utilisateur uniquement pour
+un programme actif et un utilisateur propriétaire ou administrateur du compte.
+Une reprise d'abonnement pendant la fenêtre initiale de 12 mois reste rémunérée,
+sans commission sur la pause ni redémarrage de la fenêtre. Le paiement reste manuel.
+[Migration, vérifications et recette](releases/2026-10-28-affiliate-accounts-677.md).
+
 ## Questions ouvertes
 
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.

@@ -41,6 +41,16 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Synthèse de gains | E-mail récapitulant une période locale close et contenant une ligne par gain : date/heure, prénom et nom du participant, jeu et lot. | Consommation ou retrait des lots ; garantie de réception exactement à 9 h. | Synthèse de la semaine précédente, au passage quotidien du lundi matin en heure de France (horaire indicatif). |
 | Lead | Enregistrement d'un joueur/participant utilisable par le marchand dans les résultats. | Simple scan. | Contact ayant laissé son e-mail. |
 
+## Affiliation — #677
+
+- **Affilié** : compte marchand dont le programme de parrainage a été activé par
+  l'administration plateforme ; il couvre tous ses établissements.
+- **Filleul** : compte marchand attribué à un parrain à son inscription via un
+  code actif ; ses établissements ne constituent pas des filleuls distincts.
+- **Commission d'affiliation** : montant calculé sur une facture d'abonnement
+  payée pendant la fenêtre initiale d'éligibilité ; son marquage comme payé
+  enregistre un versement manuel, sans déclencher de virement.
+
 ## Catalogue de suggestions — issue #466
 
 - **Composition proposée** (#609, phase 4) : ensemble indicatif de suggestions de l’activité avec une répartition de chances proposée. Son application crée des lots indépendants dans le brouillon ; elle n’est ni un jeu publié ni une nouvelle bibliothèque de lots.
