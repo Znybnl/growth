@@ -50,7 +50,7 @@ export function PageSchema({
           }
         : {}),
       isPartOf: { "@id": `${SITE_URL}/#website` },
-      about: { "@id": `${SITE_URL}/#software` },
+      ...(article ? {} : { about: { "@id": `${SITE_URL}/#software` } }),
     },
   ];
   if (path !== "/")
