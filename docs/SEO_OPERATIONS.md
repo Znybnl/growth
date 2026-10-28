@@ -14,7 +14,7 @@ Une PR applicative attend une validation de merge/déploiement distincte.
 | --- | --- | --- |
 | Mesure du blog | Routes publiques exactes, découverte produit ≠ essai, SDK testé sans émission réelle ; constater la réception des prochains événements consentis après déploiement autorisé. | #507 |
 | Indexation et demande | Vérifier découverte, indexation effective et visibilité séparément ; analyser les exclusions disponibles avant toute correction ou soumission supplémentaire. | #507 |
-| Mobile | Baseline répétée sur quatre pages ; mesures laboratoire distinctes du terrain. Optimisations justifiées par les traces, pas un score isolé. | #519 |
+| Mobile | Nouvelle mesure du 25 octobre : quatre pages, première visite/refus, comparaison de builds de production locaux ; [protocole et résultats](releases/2026-10-25-mobile-performance-519.md). Données terrain indisponibles, pas de gain CWV revendiqué. | #519 |
 | Preuves marchands | Deux études vérifiables et autorisées ; aucune publication sans données suffisantes. | #509 |
 | Éditorial | Exploiter les 30 articles existants et les demandes observées avant d'ajouter des sujets ; aucune suppression ou réorientation automatique. | #509 |
 

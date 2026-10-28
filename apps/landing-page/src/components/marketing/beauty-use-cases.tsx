@@ -34,7 +34,7 @@ export function BeautyUseCases() {
     </div>
     <div id="lots" className="scroll-mt-36">{beautySpecialties.map((specialty, index) => <div key={specialty.id} id={`${id}-panel-${index}`} role="tabpanel" aria-labelledby={`${id}-tab-${index}`}
       hidden={index !== active} tabIndex={0} className={styles.specialtyPanel} data-testid="beauty-use-case">
-      <div className={styles.specialtyArt}><GamePreview model={specialty.model} /></div>
+      <div className={styles.specialtyArt}><GamePreview model={specialty.model} sizes="(min-width: 768px) 198px, 183px" /></div>
       <div><h3>{specialty.title}</h3><ul className={styles.rewardList}>{specialty.rewards.map(reward => <li key={reward}><Gift aria-hidden="true" />{reward}</li>)}</ul><p>{specialty.condition}</p><p className={styles.note}>Modèle {specialty.model.name} · {specialty.model.type}. Exemple fictif, à personnaliser.</p>
         <PrimaryButton href={`#demo-${specialty.id}`} trackingName="sector_demo" trackingLocation="beauty_examples" trackingVariant={specialty.id} appearance="text">Essayer cet exemple</PrimaryButton>
       </div>

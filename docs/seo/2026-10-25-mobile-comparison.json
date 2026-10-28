@@ -1,0 +1,5239 @@
+{
+  "date": "2026-10-25",
+  "baseSha": "622f449d021b83c9ca4935e5761d7c9319b3899e",
+  "productionDeployment": "dpl_Gdzh9dsN5tSt3rxxksWyZRk81X7o",
+  "protocol": "Three interleaved mobile runs per URL and consent choice; fresh isolated browser each time, no concurrent build/test; Next production builds for the local comparison.",
+  "localEnvironment": "Synthetic public analytics key solely to exercise the same consent UI. Analytics blocked. No real user profile.",
+  "fieldData": {
+    "lcpP75": null,
+    "inpP75": null,
+    "clsP75": null,
+    "psiHttpStatus": 429,
+    "reason": "RESOURCE_EXHAUSTED; no field verdict obtained from this attempt"
+  },
+  "limits": [
+    "Laboratory only; TBT is not INP.",
+    "Public production CPU strongly variable; local before/after still sequential, not a randomized controlled benchmark.",
+    "Do not compare local simulated times directly with hosted production; compare the two local phases.",
+    "No guaranteed performance gain or SEO ranking claim."
+  ],
+  "phases": {
+    "production": {
+      "archive": "okado-mobile-519-20261025-production-v2",
+      "cpuRange": [
+        941,
+        3190.5
+      ],
+      "groups": [
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 92,
+            "lcp": 2571.023,
+            "tbt": 238.5,
+            "cls": 0,
+            "fcp": 1226.0230000000001,
+            "bytes": 423130,
+            "jsBytes": 189751
+          },
+          "scoreRange": [
+            71,
+            94
+          ],
+          "lcpRange": [
+            2452.302,
+            2673.409
+          ],
+          "tbtRange": [
+            217,
+            1227
+          ]
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 97,
+            "lcp": 2174.36,
+            "tbt": 159.5,
+            "cls": 0,
+            "fcp": 1214.223,
+            "bytes": 423137,
+            "jsBytes": 189706
+          },
+          "scoreRange": [
+            83,
+            98
+          ],
+          "lcpRange": [
+            2112.223,
+            2439.417
+          ],
+          "tbtRange": [
+            95.5,
+            559
+          ]
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 94,
+            "lcp": 2424.9415,
+            "tbt": 214,
+            "cls": 0,
+            "fcp": 1294.0945000000002,
+            "bytes": 386522,
+            "jsBytes": 191365
+          },
+          "scoreRange": [
+            81,
+            97
+          ],
+          "lcpRange": [
+            2195.0945,
+            2853
+          ],
+          "tbtRange": [
+            129,
+            530
+          ]
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 93,
+            "lcp": 2195.3105,
+            "tbt": 213,
+            "cls": 0,
+            "fcp": 1213.3105,
+            "bytes": 386480,
+            "jsBytes": 191376
+          },
+          "scoreRange": [
+            91,
+            97
+          ],
+          "lcpRange": [
+            2160.7380000000003,
+            2642.0105
+          ],
+          "tbtRange": [
+            169,
+            350
+          ]
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 94,
+            "lcp": 2260.2,
+            "tbt": 216,
+            "cls": 0,
+            "fcp": 1172.2,
+            "bytes": 313815,
+            "jsBytes": 191361
+          },
+          "scoreRange": [
+            94,
+            98
+          ],
+          "lcpRange": [
+            2140.758,
+            2415.87
+          ],
+          "tbtRange": [
+            123.99999999999977,
+            232
+          ]
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 98,
+            "lcp": 2123.631,
+            "tbt": 126,
+            "cls": 0,
+            "fcp": 1157.1665,
+            "bytes": 313816,
+            "jsBytes": 191372
+          },
+          "scoreRange": [
+            95,
+            98
+          ],
+          "lcpRange": [
+            2121.2875,
+            2225.1665000000003
+          ],
+          "tbtRange": [
+            125.5,
+            221.00000000000023
+          ]
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 97,
+            "lcp": 2172.362,
+            "tbt": 178.0000000000001,
+            "cls": 0,
+            "fcp": 919.362,
+            "bytes": 299805,
+            "jsBytes": 189636
+          },
+          "scoreRange": [
+            93,
+            98
+          ],
+          "lcpRange": [
+            2115.592,
+            2449.632
+          ],
+          "tbtRange": [
+            130,
+            245.5
+          ]
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 93,
+            "lcp": 2426.166,
+            "tbt": 203.50000000000006,
+            "cls": 0,
+            "fcp": 1226.1660000000002,
+            "bytes": 299848,
+            "jsBytes": 189589
+          },
+          "scoreRange": [
+            90,
+            98
+          ],
+          "lcpRange": [
+            2296.001,
+            2645.159
+          ],
+          "tbtRange": [
+            58,
+            341
+          ]
+        }
+      ],
+      "runs": [
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:29:44.533Z",
+          "finalUrl": "https://www.okado.app/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3063,
+          "score": 94,
+          "lcp": 2452.302,
+          "tbt": 217,
+          "cls": 0,
+          "bytes": 423119,
+          "jsBytes": 189674,
+          "observedLcp": 546,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-first-visit-1.json",
+          "sha256": "acfeb7b8461c0957a6657e251f27eee60a46b9f34ff1010db685069946ea1de6",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 520.2560000000029
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 427.784
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 284.75599999999986
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 55.10399999999997
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 52.53999999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 39.46399999999999
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 23.272000000000006
+            }
+          ],
+          "unusedJs": 28704,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:29:54.532Z",
+          "finalUrl": "https://www.okado.app/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 2443,
+          "score": 97,
+          "lcp": 2174.36,
+          "tbt": 159.5,
+          "cls": 0,
+          "bytes": 423305,
+          "jsBytes": 189711,
+          "observedLcp": 847,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-rejected-1.json",
+          "sha256": "c21d7eabc83d031d8c2b2520b6e2ea8d600c79376070bb03be9da89bcf13b7bc",
+          "lcpElement": "main#contenu > section.vXsdPq_container > div.vXsdPq_heroCopy > h1#home-hero-title",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 482.60800000000165
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 387
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 272.4599999999999
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 103.93600000000006
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 49.184
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 43.908
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 25.348
+            }
+          ],
+          "unusedJs": 28809,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:30:06.764Z",
+          "finalUrl": "https://www.okado.app/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 2201,
+          "score": 94,
+          "lcp": 2424.9415,
+          "tbt": 214,
+          "cls": 0,
+          "bytes": 386522,
+          "jsBytes": 191365,
+          "observedLcp": 1147,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-first-visit-1.json",
+          "sha256": "b1b9a5ce58764cb161f0d0a434b1e2556e597523d2f62a0ab3e05eb0e2fcdd17",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 656.6919999999999
+            },
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 623.1040000000016
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 304.6440000000016
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 73.17599999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 53.17599999999997
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 36.54800000000001
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 35.81600000000001
+            }
+          ],
+          "unusedJs": 28566,
+          "imageSavings": 0
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:30:17.636Z",
+          "finalUrl": "https://www.okado.app/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 2461,
+          "score": 91,
+          "lcp": 2160.7380000000003,
+          "tbt": 350,
+          "cls": 0,
+          "bytes": 386480,
+          "jsBytes": 191353,
+          "observedLcp": 649,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-rejected-1.json",
+          "sha256": "a44ca4f323eaff369b831c7c5f6512d4acfeef5405ecbe7ea7ddd933b73cd2cb",
+          "lcpElement": "main#contenu > section.vXsdPq_beautyIntro > div > p.mt-4",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 561.2080000000018
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 530.176
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 308.39999999999986
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 218.30399999999995
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 56.92800000000002
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 34.12000000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 27.7
+            }
+          ],
+          "unusedJs": 28965,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:30:28.917Z",
+          "finalUrl": "https://www.okado.app/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 2052,
+          "score": 98,
+          "lcp": 2140.758,
+          "tbt": 123.99999999999977,
+          "cls": 0,
+          "bytes": 313843,
+          "jsBytes": 191361,
+          "observedLcp": 1012,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-first-visit-1.json",
+          "sha256": "60bc00c80d62557856ea2bc7f58216088788dd358d1f9d5660e72a19517d5eef",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 537.6960000000015
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 499.69999999999993
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 311.91199999999975
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 59.208
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 55.255999999999986
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 43.299999999999976
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 23.112000000000002
+            }
+          ],
+          "unusedJs": 28713,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:30:40.878Z",
+          "finalUrl": "https://www.okado.app/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 2580,
+          "score": 95,
+          "lcp": 2225.1665000000003,
+          "tbt": 221.00000000000023,
+          "cls": 0,
+          "bytes": 313816,
+          "jsBytes": 191388,
+          "observedLcp": 616,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-rejected-1.json",
+          "sha256": "f640fde0258af1bfd651a2b210e52e319411a89fd057410af219a0175eccd67e",
+          "lcpElement": "main#contenu > section.mx-auto > div > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 628.8000000000012
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 420.62000000000006
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 325.7599999999997
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 48.49999999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 30.34000000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 21.368000000000002
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 15.099999999999994
+            }
+          ],
+          "unusedJs": 28956,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:30:52.805Z",
+          "finalUrl": "https://www.okado.app/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 2276.5,
+          "score": 98,
+          "lcp": 2172.362,
+          "tbt": 130,
+          "cls": 0,
+          "bytes": 299909,
+          "jsBytes": 189738,
+          "observedLcp": 858,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-first-visit-1.json",
+          "sha256": "7c124dd1ecb011f95faaea674bf6f4b4bb6d02b71a9601d1f8d75f0104dc7088",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 520.5680000000026
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 283.81200000000007
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 180.668
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 58.312000000000005
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 45.31999999999997
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 25.204
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 14.096000000000002
+            }
+          ],
+          "unusedJs": 28779,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:31:02.811Z",
+          "finalUrl": "https://www.okado.app/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 985,
+          "score": 90,
+          "lcp": 2296.001,
+          "tbt": 341,
+          "cls": 0,
+          "bytes": 299851,
+          "jsBytes": 189589,
+          "observedLcp": 909,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-rejected-1.json",
+          "sha256": "4dbac72225617f4d23ba9a0e4071704975a40bc31d32674f2a163b55919210ea",
+          "lcpElement": "main#contenu > div.mx-auto > div.max-w-3xl > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 830.7359999999993
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 462.15200000000124
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 366.24800000000005
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 130.43200000000002
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 96.95600000000006
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 44.608000000000004
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 43.023999999999994
+            }
+          ],
+          "unusedJs": 28880,
+          "imageSavings": 0
+        },
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:31:15.307Z",
+          "finalUrl": "https://www.okado.app/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 957,
+          "score": 71,
+          "lcp": 2673.409,
+          "tbt": 1227,
+          "cls": 0,
+          "bytes": 423339,
+          "jsBytes": 189751,
+          "observedLcp": 1793,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-first-visit-2.json",
+          "sha256": "ebbd3bfa10742d58645a98c303b06f4c6d4f37dcdf70b0891f6496d3f5661137",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 1540.376
+            },
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 1154.4799999999962
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 623.4360000000013
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 470.89600000000013
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 135.69199999999998
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 120.33200000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 51.388
+            }
+          ],
+          "unusedJs": 28674,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:31:31.005Z",
+          "finalUrl": "https://www.okado.app/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 941,
+          "score": 83,
+          "lcp": 2439.417,
+          "tbt": 559,
+          "cls": 0,
+          "bytes": 423137,
+          "jsBytes": 189706,
+          "observedLcp": 1172,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-rejected-2.json",
+          "sha256": "7047420fd4f99c40ee3fb8fa1b27d86dbc3e43f6da2f6b6687775de7ae050a29",
+          "lcpElement": "main#contenu > section.vXsdPq_container > div.vXsdPq_heroCopy > h1#home-hero-title",
+          "mainThread": [
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 1074.872
+            },
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 1014.9839999999976
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 499.89200000000176
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 134.22799999999995
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 67.072
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 64.22
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 58.576
+            }
+          ],
+          "unusedJs": 28927,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:31:44.313Z",
+          "finalUrl": "https://www.okado.app/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1505,
+          "score": 81,
+          "lcp": 2853,
+          "tbt": 530,
+          "cls": 0,
+          "bytes": 386540,
+          "jsBytes": 191447,
+          "observedLcp": 1269,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-first-visit-2.json",
+          "sha256": "b81b7763377a61bc2e5b0bf99877862d280e9b1c93a42b4b7f2b615d79bbbdc8",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 850.732
+            },
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 738.5080000000007
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 504.47200000000197
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 131.95600000000005
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 105.36000000000003
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 72.432
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 34.488
+            }
+          ],
+          "unusedJs": 28713,
+          "imageSavings": 0
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:31:55.899Z",
+          "finalUrl": "https://www.okado.app/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1784.5,
+          "score": 97,
+          "lcp": 2195.3105,
+          "tbt": 169,
+          "cls": 0,
+          "bytes": 386469,
+          "jsBytes": 191414,
+          "observedLcp": 685,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-rejected-2.json",
+          "sha256": "5033a0460ed99f2695bca3eccf9ee834a31f3538bead144273344bef9990f8c1",
+          "lcpElement": "main#contenu > section.vXsdPq_beautyIntro > div > p.mt-4",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 543.8000000000031
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 461.87199999999996
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 354.34000000000214
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 103.34000000000007
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 66.37599999999999
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 44.828
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 43.448
+            }
+          ],
+          "unusedJs": 28965,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:32:06.414Z",
+          "finalUrl": "https://www.okado.app/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1894,
+          "score": 94,
+          "lcp": 2415.87,
+          "tbt": 216,
+          "cls": 0,
+          "bytes": 313809,
+          "jsBytes": 191336,
+          "observedLcp": 809,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-first-visit-2.json",
+          "sha256": "3c45f3beff178811ed9fa929d25e0c335015b3dd8de6b1e8e75a6bdf6fc5a5c6",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 460.82400000000064
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 433.328
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 313.07200000000205
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 157.41599999999994
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 81.78799999999998
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 47.22399999999998
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 30.379999999999995
+            }
+          ],
+          "unusedJs": 28713,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:32:17.861Z",
+          "finalUrl": "https://www.okado.app/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1414.5,
+          "score": 98,
+          "lcp": 2123.631,
+          "tbt": 125.5,
+          "cls": 0,
+          "bytes": 313864,
+          "jsBytes": 191372,
+          "observedLcp": 696,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-rejected-2.json",
+          "sha256": "0b43fdac63404a77f7f1d07f3493eb3454f47401bde07024370d43a29e8563c5",
+          "lcpElement": "main#contenu > section.mx-auto > div > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 554.1960000000033
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 427.7639999999999
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 309.97600000000017
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 56.86799999999997
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 55.67600000000001
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 33.55200000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 24.991999999999994
+            }
+          ],
+          "unusedJs": 28965,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:32:29.556Z",
+          "finalUrl": "https://www.okado.app/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1508.5,
+          "score": 93,
+          "lcp": 2449.632,
+          "tbt": 245.5,
+          "cls": 0,
+          "bytes": 299805,
+          "jsBytes": 189612,
+          "observedLcp": 763,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-first-visit-2.json",
+          "sha256": "41f3b615c2a5b3dec869ae2475a80e43e0428bcfecd2a8af31be93eeda6c6b71",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 610.2840000000011
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 362.42400000000106
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 248.40800000000002
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 75.84800000000001
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 60.684
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 29.651999999999997
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 20.272
+            }
+          ],
+          "unusedJs": 28779,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:32:39.672Z",
+          "finalUrl": "https://www.okado.app/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1344,
+          "score": 93,
+          "lcp": 2645.159,
+          "tbt": 203.50000000000006,
+          "cls": 0,
+          "bytes": 299848,
+          "jsBytes": 189613,
+          "observedLcp": 861,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-rejected-2.json",
+          "sha256": "962a8070169b88457a118d430608f24e67a69623ae037d94d512d39071f0b2fc",
+          "lcpElement": "main#contenu > div.mx-auto > div.max-w-3xl > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 605.8120000000032
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 290.3160000000001
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 283.06
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 88.80000000000004
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 79.648
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 19.436
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 18.516000000000002
+            }
+          ],
+          "unusedJs": 28880,
+          "imageSavings": 0
+        },
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:32:49.749Z",
+          "finalUrl": "https://www.okado.app/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1890.5,
+          "score": 92,
+          "lcp": 2571.023,
+          "tbt": 238.5,
+          "cls": 0,
+          "bytes": 423130,
+          "jsBytes": 189760,
+          "observedLcp": 783,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-first-visit-3.json",
+          "sha256": "648308a70888ccedc2463b1fefa4868009fe50fae1d2d0dc47e1956bd59031c9",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 630.3200000000002
+            },
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 592.4880000000026
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 301.80800000000124
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 70.604
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 63.736
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 53.14
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 29.199999999999996
+            }
+          ],
+          "unusedJs": 28527,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:33:00.857Z",
+          "finalUrl": "https://www.okado.app/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1776.5,
+          "score": 98,
+          "lcp": 2112.223,
+          "tbt": 95.5,
+          "cls": 0,
+          "bytes": 423118,
+          "jsBytes": 189653,
+          "observedLcp": 664,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-rejected-3.json",
+          "sha256": "5b9bfff11c3cb43dc763e4c8c694ffe4f5fdbf73d36b71d8ed7116788f8a6b59",
+          "lcpElement": "main#contenu > section.vXsdPq_container > div.vXsdPq_heroCopy > h1#home-hero-title",
+          "mainThread": [
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 520.648
+            },
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 517.0360000000023
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 274.81600000000066
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 67.672
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 45.859999999999964
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 36.49999999999999
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 31.02
+            }
+          ],
+          "unusedJs": 28927,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:33:12.481Z",
+          "finalUrl": "https://www.okado.app/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1658.5,
+          "score": 97,
+          "lcp": 2195.0945,
+          "tbt": 129,
+          "cls": 0,
+          "bytes": 386504,
+          "jsBytes": 191331,
+          "observedLcp": 965,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-first-visit-3.json",
+          "sha256": "7ecee988547da4778af0c7466b3253e5866ca9408d3cf7e651b5a82db0809dab",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 665.212
+            },
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 606.9280000000015
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 378.80800000000585
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 70.35199999999999
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 63.53999999999999
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 35.28
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 9.687999999999994
+            }
+          ],
+          "unusedJs": 28713,
+          "imageSavings": 0
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:33:23.717Z",
+          "finalUrl": "https://www.okado.app/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1567.5,
+          "score": 93,
+          "lcp": 2642.0105,
+          "tbt": 213,
+          "cls": 0,
+          "bytes": 386501,
+          "jsBytes": 191376,
+          "observedLcp": 770,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-rejected-3.json",
+          "sha256": "c5d8f0df457338c727fbc60a404cbf48c11b88ab3783208559636de282d252d2",
+          "lcpElement": "main#contenu > section.vXsdPq_beautyIntro > div > p.mt-4",
+          "mainThread": [
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 649.956
+            },
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 572.4720000000021
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 294.4440000000026
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 102.16800000000012
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 71.07199999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 59.819999999999986
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 31.532
+            }
+          ],
+          "unusedJs": 28965,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:33:34.586Z",
+          "finalUrl": "https://www.okado.app/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 1778.5,
+          "score": 94,
+          "lcp": 2260.2,
+          "tbt": 232,
+          "cls": 0,
+          "bytes": 313815,
+          "jsBytes": 191389,
+          "observedLcp": 760,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-first-visit-3.json",
+          "sha256": "48bb9c6638f18354f14f359467c5d430853f30f4143b44f2ba74e542c5aa54df",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 566.244000000002
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 501.38000000000005
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 277.6200000000013
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 78.83600000000006
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 77.28000000000002
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 48.275999999999996
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 33.7
+            }
+          ],
+          "unusedJs": 28713,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:33:44.803Z",
+          "finalUrl": "https://www.okado.app/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 2150.5,
+          "score": 98,
+          "lcp": 2121.2875,
+          "tbt": 126,
+          "cls": 0,
+          "bytes": 313814,
+          "jsBytes": 191355,
+          "observedLcp": 710,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-rejected-3.json",
+          "sha256": "eb4cf8f6b90ba73ec588b956f0ce0012c907e4490119d9d211ddc22b7395f109",
+          "lcpElement": "main#contenu > section.mx-auto > div > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 507.89600000000286
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 428.11999999999995
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 246.6
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 61.29600000000001
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 50.704
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 35.11600000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 24.424
+            }
+          ],
+          "unusedJs": 28965,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:33:54.217Z",
+          "finalUrl": "https://www.okado.app/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 2843,
+          "score": 97,
+          "lcp": 2115.592,
+          "tbt": 178.0000000000001,
+          "cls": 0,
+          "bytes": 299668,
+          "jsBytes": 189636,
+          "observedLcp": 527,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-first-visit-3.json",
+          "sha256": "c6e5a40df2b4754b035cfa0588fd075904fa78178219e37530c7027b59033567",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 373.1120000000017
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 215.50800000000015
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 215.04800000000012
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 139.504
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 45.740000000000016
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 22.712000000000007
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 10.399999999999997
+            }
+          ],
+          "unusedJs": 28779,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:34:02.916Z",
+          "finalUrl": "https://www.okado.app/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3190.5,
+          "score": 98,
+          "lcp": 2426.166,
+          "tbt": 58,
+          "cls": 0,
+          "bytes": 299831,
+          "jsBytes": 189587,
+          "observedLcp": 497,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-rejected-3.json",
+          "sha256": "6c0fe91a29bac9c7591d03cd1479543f874f322221a1c8c7542b4cd07ecf847a",
+          "lcpElement": "main#contenu > div.mx-auto > div.max-w-3xl > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 313.1880000000005
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 269.44
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 126.42399999999999
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 54.81199999999998
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 38.43599999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 12.267999999999997
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 10.267999999999999
+            }
+          ],
+          "unusedJs": 28889,
+          "imageSavings": 0
+        }
+      ],
+      "settings": {
+        "output": "json",
+        "maxWaitForFcp": 30000,
+        "maxWaitForLoad": 45000,
+        "pauseAfterFcpMs": 1000,
+        "pauseAfterLoadMs": 1000,
+        "networkQuietThresholdMs": 1000,
+        "cpuQuietThresholdMs": 1000,
+        "formFactor": "mobile",
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "requestLatencyMs": 562.5,
+          "downloadThroughputKbps": 1474.5600000000002,
+          "uploadThroughputKbps": 675,
+          "cpuSlowdownMultiplier": 4
+        },
+        "throttlingMethod": "simulate",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 1.75,
+          "disabled": false
+        },
+        "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+        "auditMode": false,
+        "gatherMode": false,
+        "clearStorageTypes": [
+          "file_systems",
+          "shader_cache",
+          "service_workers",
+          "cache_storage"
+        ],
+        "disableStorageReset": true,
+        "debugNavigation": false,
+        "channel": "node",
+        "usePassiveGathering": false,
+        "disableFullPageScreenshot": false,
+        "skipAboutBlank": false,
+        "blankPage": "about:blank",
+        "ignoreStatusCode": false,
+        "locale": "en-US",
+        "blockedUrlPatterns": [
+          "*posthog.com/*",
+          "*/_vercel/insights/*"
+        ],
+        "additionalTraceCategories": null,
+        "extraHeaders": null,
+        "precomputedLanternData": null,
+        "onlyAudits": null,
+        "onlyCategories": [
+          "performance"
+        ],
+        "skipAudits": null
+      }
+    },
+    "before": {
+      "archive": "okado-mobile-519-20261025-before",
+      "cpuRange": [
+        3043,
+        3426.5
+      ],
+      "groups": [
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 92,
+            "lcp": 3321.6531000000004,
+            "tbt": 51,
+            "cls": 0,
+            "fcp": 1057.2176999999997,
+            "bytes": 423228,
+            "jsBytes": 186749
+          },
+          "scoreRange": [
+            92,
+            96
+          ],
+          "lcpRange": [
+            2805.9983999999995,
+            3394.151
+          ],
+          "tbtRange": [
+            50,
+            54
+          ]
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 94,
+            "lcp": 3103.134,
+            "tbt": 48,
+            "cls": 0,
+            "fcp": 1057.3424,
+            "bytes": 423228,
+            "jsBytes": 186749
+          },
+          "scoreRange": [
+            92,
+            94
+          ],
+          "lcpRange": [
+            3083.714749999999,
+            3393.3559999999993
+          ],
+          "tbtRange": [
+            23.999999999999773,
+            58.99999999999977
+          ]
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 92,
+            "lcp": 3390.7407283152506,
+            "tbt": 51.49999999999977,
+            "cls": 0,
+            "fcp": 1056.995879251222,
+            "bytes": 386279,
+            "jsBytes": 188586
+          },
+          "scoreRange": [
+            92,
+            93
+          ],
+          "lcpRange": [
+            3175.1990767200223,
+            3398.849913025697
+          ],
+          "tbtRange": [
+            38.5,
+            62
+          ]
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 95,
+            "lcp": 2928.7981182751055,
+            "tbt": 50,
+            "cls": 0,
+            "fcp": 1057.4771486635864,
+            "bytes": 386279,
+            "jsBytes": 188586
+          },
+          "scoreRange": [
+            95,
+            95
+          ],
+          "lcpRange": [
+            2912.2157229953796,
+            2933.4575795084393
+          ],
+          "tbtRange": [
+            38,
+            54.0672939082981
+          ]
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 94,
+            "lcp": 3022.8407999999995,
+            "tbt": 51,
+            "cls": 0,
+            "fcp": 1057.6136,
+            "bytes": 311560,
+            "jsBytes": 188586
+          },
+          "scoreRange": [
+            94,
+            94
+          ],
+          "lcpRange": [
+            3021.027,
+            3023.1077999999993
+          ],
+          "tbtRange": [
+            35,
+            65
+          ]
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 97,
+            "lcp": 2674.4812500000003,
+            "tbt": 51,
+            "cls": 0,
+            "fcp": 1056.9875,
+            "bytes": 311560,
+            "jsBytes": 188586
+          },
+          "scoreRange": [
+            94,
+            97
+          ],
+          "lcpRange": [
+            2660.40275,
+            3022.860899999999
+          ],
+          "tbtRange": [
+            48,
+            64
+          ]
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 94,
+            "lcp": 3013.0758,
+            "tbt": 73.99999999999955,
+            "cls": 0,
+            "fcp": 758.2551000000001,
+            "bytes": 295968,
+            "jsBytes": 186749
+          },
+          "scoreRange": [
+            94,
+            94
+          ],
+          "lcpRange": [
+            2903.7947000000004,
+            3016.5102000000006
+          ],
+          "tbtRange": [
+            60,
+            92
+          ]
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 95,
+            "lcp": 2898.85685,
+            "tbt": 51,
+            "cls": 0,
+            "fcp": 1227.047375,
+            "bytes": 295969,
+            "jsBytes": 186749
+          },
+          "scoreRange": [
+            95,
+            97
+          ],
+          "lcpRange": [
+            2411.3961,
+            2903.0740000000005
+          ],
+          "tbtRange": [
+            48,
+            104
+          ]
+        }
+      ],
+      "runs": [
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:35:16.809Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3418.5,
+          "score": 96,
+          "lcp": 2805.9983999999995,
+          "tbt": 54,
+          "cls": 0,
+          "bytes": 423235,
+          "jsBytes": 186749,
+          "observedLcp": 439,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-first-visit-1.json",
+          "sha256": "10783927db8af91e05f1dc559f3a267ad9379c8243ed299cfd07879e0cf9eb32",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 436.8160000000021
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 321.96
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 259.0600000000017
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 93.33600000000004
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 59.38399999999998
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 52.311999999999976
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 42.996
+            }
+          ],
+          "unusedJs": 28047,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:35:26.629Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3426.5,
+          "score": 94,
+          "lcp": 3083.714749999999,
+          "tbt": 48,
+          "cls": 0,
+          "bytes": 423210,
+          "jsBytes": 186749,
+          "observedLcp": 364,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-rejected-1.json",
+          "sha256": "7733a0b95b2add87bbb8656f13af3e3975d2464c935bd4957779c1fd14960c3c",
+          "lcpElement": "main#contenu > section.vXsdPq_container > div.vXsdPq_heroCopy > h1#home-hero-title",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 443.1040000000014
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 334.75600000000003
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 265.0039999999996
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 89.21600000000004
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 56.692000000000014
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 32.672000000000004
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 31.144000000000002
+            }
+          ],
+          "unusedJs": 28402,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:35:36.348Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3202.5,
+          "score": 92,
+          "lcp": 3398.849913025697,
+          "tbt": 51.49999999999977,
+          "cls": 0,
+          "bytes": 386280,
+          "jsBytes": 188586,
+          "observedLcp": 431,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-first-visit-1.json",
+          "sha256": "12fc1f653e4855671f7beb75d8aef928c49e4da7fa0ded9bb7b95582a2e4d7d6",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 459.54400000000254
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 413.3160000000001
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 263.40799999999524
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 61.30399999999999
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 51.02000000000002
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 41.00399999999998
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 22.352
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:35:46.068Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3043,
+          "score": 95,
+          "lcp": 2928.7981182751055,
+          "tbt": 54.0672939082981,
+          "cls": 0,
+          "bytes": 386279,
+          "jsBytes": 188586,
+          "observedLcp": 484,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-rejected-1.json",
+          "sha256": "13cd3598a8c7e1d02313e8e2152b13871712953ba4103646ad4dfba496ca7acc",
+          "lcpElement": "main#contenu > section.vXsdPq_beautyIntro > div > p.mt-4",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 437.6760000000015
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 375.044
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 227.9720000000012
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 90.95200000000004
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 39.071999999999996
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 37.248
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 29.163999999999998
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:35:55.740Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3250,
+          "score": 94,
+          "lcp": 3022.8407999999995,
+          "tbt": 65,
+          "cls": 0,
+          "bytes": 311560,
+          "jsBytes": 188586,
+          "observedLcp": 513,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-first-visit-1.json",
+          "sha256": "e09f1049d6d65d029a46cf600e2eff0f633adc83a4a2229eeb3dd4bc456aee90",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 421.3240000000019
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 371.39599999999996
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 312.0480000000007
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 46.464000000000006
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 30.451999999999995
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 21.131999999999998
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 19.31999999999999
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:36:05.338Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3285.5,
+          "score": 97,
+          "lcp": 2674.4812500000003,
+          "tbt": 64,
+          "cls": 0,
+          "bytes": 311560,
+          "jsBytes": 188586,
+          "observedLcp": 371,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-rejected-1.json",
+          "sha256": "a2d8c2066015d2030e8d5194c2fb25e94b2ca4388d0a0499f8dc62c0623a82b7",
+          "lcpElement": "main#contenu > section.mx-auto > div > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 418.58800000000224
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 284.17199999999997
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 241.50800000000152
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 61.867999999999995
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 37.279999999999994
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 26.060000000000006
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 19.727999999999998
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:36:14.847Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3285.5,
+          "score": 94,
+          "lcp": 3016.5102000000006,
+          "tbt": 60,
+          "cls": 0,
+          "bytes": 295972,
+          "jsBytes": 186749,
+          "observedLcp": 407,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-first-visit-1.json",
+          "sha256": "ab03e554a25239d43e489da230e034225eea974e062b57361e6ec83b1467036e",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 371.7440000000017
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 223.84000000000088
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 134.88
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 74.20400000000005
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 34.66399999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 17.555999999999997
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 10.272
+            }
+          ],
+          "unusedJs": 28257,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:36:23.545Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3355.5,
+          "score": 97,
+          "lcp": 2411.3961,
+          "tbt": 104,
+          "cls": 0,
+          "bytes": 295969,
+          "jsBytes": 186749,
+          "observedLcp": 358,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-rejected-1.json",
+          "sha256": "f4d7ef1af96ba3b0d80a30625a358b116c71af2fc3242af609303aa2270d153c",
+          "lcpElement": "main#contenu > div.mx-auto > div.max-w-3xl > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 379.1320000000023
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 275.743999999998
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 132.68800000000002
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 37.680000000000014
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 25.856
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 16.359999999999996
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 13.031999999999986
+            }
+          ],
+          "unusedJs": 28356,
+          "imageSavings": 0
+        },
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:36:31.821Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3268.5,
+          "score": 92,
+          "lcp": 3321.6531000000004,
+          "tbt": 50,
+          "cls": 0,
+          "bytes": 423210,
+          "jsBytes": 186749,
+          "observedLcp": 425,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-first-visit-2.json",
+          "sha256": "e73cc758869e3f8594df30a2c95bad168cc91dffc7f46eb5426ee901c010a78b",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 453.0320000000015
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 341.16
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 245.77599999999921
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 71.24400000000004
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 52.656000000000006
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 34.56400000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 24.204000000000004
+            }
+          ],
+          "unusedJs": 28154,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:36:41.466Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3299.5,
+          "score": 94,
+          "lcp": 3103.134,
+          "tbt": 58.99999999999977,
+          "cls": 0,
+          "bytes": 423228,
+          "jsBytes": 186749,
+          "observedLcp": 355,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-rejected-2.json",
+          "sha256": "49899f573d2d566437927cceb59b19977caee389e23b860f3a26e48c1b9ad621",
+          "lcpElement": "main#contenu > section.vXsdPq_container > div.vXsdPq_heroCopy > h1#home-hero-title",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 454.3880000000027
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 294.14799999999997
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 232.6120000000001
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 85.63600000000007
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 43.21600000000001
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 34.655999999999985
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 25.663999999999998
+            }
+          ],
+          "unusedJs": 28410,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:36:51.169Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3353,
+          "score": 92,
+          "lcp": 3390.7407283152506,
+          "tbt": 38.5,
+          "cls": 0,
+          "bytes": 386261,
+          "jsBytes": 188586,
+          "observedLcp": 407,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-first-visit-2.json",
+          "sha256": "f47be0b8ce95392f9a94517218a0ed28e7a959dc8ab45d1df998fdfc270b64da",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 414.11200000000224
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 318.704
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 231.78800000000166
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 68.28
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 40.272000000000006
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 30.508
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 23.816000000000003
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:37:00.759Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3310,
+          "score": 95,
+          "lcp": 2912.2157229953796,
+          "tbt": 38,
+          "cls": 0,
+          "bytes": 386279,
+          "jsBytes": 188586,
+          "observedLcp": 354,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-rejected-2.json",
+          "sha256": "40d26b28487d0c15c10153697b072dbe90ba3e9b5cdd6da65f6d1cd06f59b58f",
+          "lcpElement": "main#contenu > section.vXsdPq_beautyIntro > div > p.mt-4",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 391.38000000000227
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 359.81600000000003
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 239.92400000000114
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 72.78800000000001
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 62.815999999999974
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 31.980000000000004
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 27.996000000000006
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:37:10.400Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3291,
+          "score": 94,
+          "lcp": 3023.1077999999993,
+          "tbt": 51,
+          "cls": 0,
+          "bytes": 311542,
+          "jsBytes": 188586,
+          "observedLcp": 480,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-first-visit-2.json",
+          "sha256": "38bf50d1dcd33074f49c1f5b7d0667ff86e701a1cec351178a91961f435a1a42",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 363.7920000000003
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 265.564000000001
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 263.508
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 39.73600000000002
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 20.924000000000003
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 20.447999999999986
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 19.468
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:37:19.845Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3231,
+          "score": 97,
+          "lcp": 2660.40275,
+          "tbt": 51,
+          "cls": 0,
+          "bytes": 311560,
+          "jsBytes": 188586,
+          "observedLcp": 356,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-rejected-2.json",
+          "sha256": "9f14597a66bcc8adc808cc314fda2f006ad174898f92a2810fb4f52da4a7d1bf",
+          "lcpElement": "main#contenu > section.mx-auto > div > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 441.83200000000255
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 269.7560000000018
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 260.072
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 99.65599999999998
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 45.62400000000002
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 23.124
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 19.631999999999994
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:37:29.590Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3293.5,
+          "score": 94,
+          "lcp": 3013.0758,
+          "tbt": 73.99999999999955,
+          "cls": 0,
+          "bytes": 295968,
+          "jsBytes": 186749,
+          "observedLcp": 502,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-first-visit-2.json",
+          "sha256": "2b8723d8b1b04da45157f74c8389228ca8c6a1e6292b2460561bf7cf489ed419",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 370.1200000000015
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 215.63200000000015
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 136.72
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 82.05600000000007
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 40.764
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 12.819999999999993
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 12.015999999999998
+            }
+          ],
+          "unusedJs": 28257,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:37:38.129Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3271,
+          "score": 95,
+          "lcp": 2903.0740000000005,
+          "tbt": 51,
+          "cls": 0,
+          "bytes": 295969,
+          "jsBytes": 186749,
+          "observedLcp": 371,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-rejected-2.json",
+          "sha256": "098d8d2b27c209060936044aceb4e98c7aaf82177c606d53ff701d540edbf005",
+          "lcpElement": "main#contenu > div.mx-auto > div.max-w-3xl > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 346.59599999999995
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 232.20000000000016
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 144.53199999999998
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 46.17200000000001
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 17.191999999999993
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 16.744
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 11.716
+            }
+          ],
+          "unusedJs": 28356,
+          "imageSavings": 0
+        },
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:37:46.739Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3213.5,
+          "score": 92,
+          "lcp": 3394.151,
+          "tbt": 51,
+          "cls": 0,
+          "bytes": 423228,
+          "jsBytes": 186749,
+          "observedLcp": 400,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-first-visit-3.json",
+          "sha256": "07bdc0898ef2de6d4de0c740efb94564ddd8b5910e0b41c70dd5127f6a1d7674",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 435.1800000000018
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 343.276
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 249.31600000000046
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 73.02800000000002
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 46.59599999999998
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 43.92800000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 22.544
+            }
+          ],
+          "unusedJs": 28162,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:37:56.336Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3286,
+          "score": 92,
+          "lcp": 3393.3559999999993,
+          "tbt": 23.999999999999773,
+          "cls": 0,
+          "bytes": 423228,
+          "jsBytes": 186749,
+          "observedLcp": 466,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-rejected-3.json",
+          "sha256": "cda131daaea0e3d10a87955fb54ac6a2a22d724c1bb215c7bf503bd55516b082",
+          "lcpElement": "main#contenu > section.vXsdPq_container > div.vXsdPq_heroCopy > h1#home-hero-title",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 377.6280000000007
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 297.828
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 275.28800000000143
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 109.91199999999998
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 57.868
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 29.648000000000007
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 22.988000000000003
+            }
+          ],
+          "unusedJs": 28410,
+          "imageSavings": 72136
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:38:05.883Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3200,
+          "score": 93,
+          "lcp": 3175.1990767200223,
+          "tbt": 62,
+          "cls": 0,
+          "bytes": 386279,
+          "jsBytes": 188586,
+          "observedLcp": 402,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-first-visit-3.json",
+          "sha256": "1e277bb00af5c7869134a0b2da72cf6b048ce79ba8f87111c02706ab4c391c82",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 436.0760000000018
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 335.272
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 222.78400000000042
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 38.44800000000001
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 31.356000000000012
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 27.236000000000004
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 25.139999999999997
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:38:15.563Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3380,
+          "score": 95,
+          "lcp": 2933.4575795084393,
+          "tbt": 50,
+          "cls": 0,
+          "bytes": 386261,
+          "jsBytes": 188586,
+          "observedLcp": 360,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-rejected-3.json",
+          "sha256": "e8ffeef0cfc97db14644941675709913a40e84a915591374087f16cc09bf1d44",
+          "lcpElement": "main#contenu > section.vXsdPq_beautyIntro > div > p.mt-4",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 442.1040000000018
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 298.0919999999999
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 286.87600000000054
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 58.49600000000001
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 34.528
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 27.971999999999998
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 17.403999999999996
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:38:25.047Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3382,
+          "score": 94,
+          "lcp": 3021.027,
+          "tbt": 35,
+          "cls": 0,
+          "bytes": 311560,
+          "jsBytes": 188586,
+          "observedLcp": 482,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-first-visit-3.json",
+          "sha256": "a5df0285de6b5346aa9ef78584cb18fb25d6f12bd19047b52d2d92b717dd9f8c",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 356.4000000000005
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 289.5400000000015
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 286.816
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 86.41200000000006
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 41.81599999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 23.644
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 18.396
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:38:34.482Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3356,
+          "score": 94,
+          "lcp": 3022.860899999999,
+          "tbt": 48,
+          "cls": 0,
+          "bytes": 311560,
+          "jsBytes": 188586,
+          "observedLcp": 449,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-rejected-3.json",
+          "sha256": "1a07c1d4b9827f495cc30efaad0045b428886b1577944cd49943a81e8d229f1b",
+          "lcpElement": "main#contenu > section.mx-auto > div > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 343.22800000000063
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 309.96000000000106
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 283.812
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 38.87200000000001
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 19.628000000000007
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 18.151999999999997
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 13.543999999999995
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:38:43.798Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3319.5,
+          "score": 94,
+          "lcp": 2903.7947000000004,
+          "tbt": 92,
+          "cls": 0,
+          "bytes": 295968,
+          "jsBytes": 186749,
+          "observedLcp": 494,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-first-visit-3.json",
+          "sha256": "87a0edbe2fafff21c92108c49350d4425cdf6d0c32c75639e44aa7eb8174a0a3",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 400.228000000001
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 213.5680000000003
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 138.99999999999997
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 57.31600000000001
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 51.675999999999995
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 23.872000000000007
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 12.816
+            }
+          ],
+          "unusedJs": 28257,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:38:52.208Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3382,
+          "score": 95,
+          "lcp": 2898.85685,
+          "tbt": 48,
+          "cls": 0,
+          "bytes": 295969,
+          "jsBytes": 186749,
+          "observedLcp": 351,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-rejected-3.json",
+          "sha256": "4a37774abb1f2117a7251bc4a10a3056689d5671f39ae4127a7b95fc910b69f3",
+          "lcpElement": "main#contenu > div.mx-auto > div.max-w-3xl > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 324.0400000000003
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 230.62000000000089
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 130.04799999999997
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 73.54400000000007
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 37.668
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 15.219999999999999
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 12.491999999999999
+            }
+          ],
+          "unusedJs": 28364,
+          "imageSavings": 0
+        }
+      ],
+      "settings": {
+        "output": "json",
+        "maxWaitForFcp": 30000,
+        "maxWaitForLoad": 45000,
+        "pauseAfterFcpMs": 1000,
+        "pauseAfterLoadMs": 1000,
+        "networkQuietThresholdMs": 1000,
+        "cpuQuietThresholdMs": 1000,
+        "formFactor": "mobile",
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "requestLatencyMs": 562.5,
+          "downloadThroughputKbps": 1474.5600000000002,
+          "uploadThroughputKbps": 675,
+          "cpuSlowdownMultiplier": 4
+        },
+        "throttlingMethod": "simulate",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 1.75,
+          "disabled": false
+        },
+        "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+        "auditMode": false,
+        "gatherMode": false,
+        "clearStorageTypes": [
+          "file_systems",
+          "shader_cache",
+          "service_workers",
+          "cache_storage"
+        ],
+        "disableStorageReset": true,
+        "debugNavigation": false,
+        "channel": "node",
+        "usePassiveGathering": false,
+        "disableFullPageScreenshot": false,
+        "skipAboutBlank": false,
+        "blankPage": "about:blank",
+        "ignoreStatusCode": false,
+        "locale": "en-US",
+        "blockedUrlPatterns": [
+          "*posthog.com/*",
+          "*/_vercel/insights/*"
+        ],
+        "additionalTraceCategories": null,
+        "extraHeaders": null,
+        "precomputedLanternData": null,
+        "onlyAudits": null,
+        "onlyCategories": [
+          "performance"
+        ],
+        "skipAudits": null
+      }
+    },
+    "after": {
+      "archive": "okado-mobile-519-20261025-after-final",
+      "cpuRange": [
+        3167.5,
+        3511.5
+      ],
+      "groups": [
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 93,
+            "lcp": 3287.5612500000007,
+            "tbt": 36.50000000000023,
+            "cls": 0,
+            "fcp": 1059.5567,
+            "bytes": 399899,
+            "jsBytes": 186693
+          },
+          "scoreRange": [
+            92,
+            93
+          ],
+          "lcpRange": [
+            3275.0232499999993,
+            3319.6134
+          ],
+          "tbtRange": [
+            31.499999999999773,
+            59.721649999999954
+          ]
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 93,
+            "lcp": 3298.9443117108967,
+            "tbt": 43.5,
+            "cls": 0,
+            "fcp": 1057.9643,
+            "bytes": 399899,
+            "jsBytes": 186693
+          },
+          "scoreRange": [
+            92,
+            93
+          ],
+          "lcpRange": [
+            3122.94645,
+            3383.123600000001
+          ],
+          "tbtRange": [
+            30,
+            68
+          ]
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 93,
+            "lcp": 3246.5351999999993,
+            "tbt": 41.00000000000023,
+            "cls": 0,
+            "fcp": 1057.1784,
+            "bytes": 386285,
+            "jsBytes": 188563
+          },
+          "scoreRange": [
+            93,
+            93
+          ],
+          "lcpRange": [
+            3242.4995742388696,
+            3249.586858619781
+          ],
+          "tbtRange": [
+            33,
+            53.49999999999977
+          ]
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 95,
+            "lcp": 2926.7781,
+            "tbt": 45.5,
+            "cls": 0,
+            "fcp": 1057.0788,
+            "bytes": 386285,
+            "jsBytes": 188563
+          },
+          "scoreRange": [
+            95,
+            95
+          ],
+          "lcpRange": [
+            2910.6182000000003,
+            2928.1076259716883
+          ],
+          "tbtRange": [
+            37.5,
+            47
+          ]
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 93,
+            "lcp": 3168.4491,
+            "tbt": 59,
+            "cls": 0,
+            "fcp": 1056.3832,
+            "bytes": 311525,
+            "jsBytes": 188563
+          },
+          "scoreRange": [
+            93,
+            96
+          ],
+          "lcpRange": [
+            2715.9580000000005,
+            3173.8325000000004
+          ],
+          "tbtRange": [
+            43,
+            71
+          ]
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 93,
+            "lcp": 3169.4810000000007,
+            "tbt": 51,
+            "cls": 0,
+            "fcp": 1057.6568,
+            "bytes": 311525,
+            "jsBytes": 188563
+          },
+          "scoreRange": [
+            93,
+            97
+          ],
+          "lcpRange": [
+            2675.3381000000004,
+            3172.9703999999992
+          ],
+          "tbtRange": [
+            33,
+            51
+          ]
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "samples": 3,
+          "median": {
+            "score": 94,
+            "lcp": 3014.3265,
+            "tbt": 61,
+            "cls": 0,
+            "fcp": 1282.7666249999997,
+            "bytes": 295917,
+            "jsBytes": 186693
+          },
+          "scoreRange": [
+            94,
+            95
+          ],
+          "lcpRange": [
+            2909.1618999999996,
+            3015.5332500000004
+          ],
+          "tbtRange": [
+            50,
+            72
+          ]
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "samples": 3,
+          "median": {
+            "score": 95,
+            "lcp": 2901.73725,
+            "tbt": 45.00000000000023,
+            "cls": 0,
+            "fcp": 1304.114375,
+            "bytes": 295917,
+            "jsBytes": 186693
+          },
+          "scoreRange": [
+            95,
+            98
+          ],
+          "lcpRange": [
+            2288.3871999999997,
+            2903.3004
+          ],
+          "tbtRange": [
+            42,
+            55
+          ]
+        }
+      ],
+      "runs": [
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:49:37.000Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3450,
+          "score": 92,
+          "lcp": 3319.6134,
+          "tbt": 59.721649999999954,
+          "cls": 0,
+          "bytes": 399900,
+          "jsBytes": 186693,
+          "observedLcp": 370,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-first-visit-1.json",
+          "sha256": "236fcbc336c8dbee4f2e610863d662be6b77d504f15dadd2c9cb218b1b9a149f",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 425.0640000000019
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 348.5560000000001
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 323.4400000000022
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 67.67599999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 36.784000000000006
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 28.016
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 18.319999999999993
+            }
+          ],
+          "unusedJs": 28154,
+          "imageSavings": 32032
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:49:46.824Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3403.5,
+          "score": 93,
+          "lcp": 3298.9443117108967,
+          "tbt": 30,
+          "cls": 0,
+          "bytes": 399881,
+          "jsBytes": 186693,
+          "observedLcp": 428,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-rejected-1.json",
+          "sha256": "35e4bd0eab634e30255f2a71b3eea94d834c85505bb32fff1851785a1e76e5f3",
+          "lcpElement": "main#contenu > section.vXsdPq_container > div.vXsdPq_heroCopy > h1#home-hero-title",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 379.3600000000011
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 303.516
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 261.32000000000164
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 58.71599999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 28.788000000000004
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 25.504
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 17.667999999999992
+            }
+          ],
+          "unusedJs": 28410,
+          "imageSavings": 32032
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:49:56.351Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3275.5,
+          "score": 93,
+          "lcp": 3249.586858619781,
+          "tbt": 41.00000000000023,
+          "cls": 0,
+          "bytes": 386285,
+          "jsBytes": 188563,
+          "observedLcp": 401,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-first-visit-1.json",
+          "sha256": "3c345f7128a5970c41bbd45997db123a09a79352d4db8e9b28a09fe996678d37",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 449.0640000000013
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 360.44399999999996
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 259.1960000000022
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 72.88399999999997
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 48.219999999999985
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 40.81599999999998
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 27.524000000000004
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:50:06.149Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3329.5,
+          "score": 95,
+          "lcp": 2910.6182000000003,
+          "tbt": 37.5,
+          "cls": 0,
+          "bytes": 386285,
+          "jsBytes": 188563,
+          "observedLcp": 357,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-rejected-1.json",
+          "sha256": "8d186b036c5c1a54b3b13715768ecd25c579e8237324e66f0b6f3039f7410e6a",
+          "lcpElement": "main#contenu > section.vXsdPq_beautyIntro > div > p.mt-4",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 430.0440000000017
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 313.64799999999997
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 275.9040000000013
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 42.628
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 37.440000000000005
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 23.924
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 18.515999999999988
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:50:15.789Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3406.5,
+          "score": 93,
+          "lcp": 3173.8325000000004,
+          "tbt": 43,
+          "cls": 0,
+          "bytes": 311512,
+          "jsBytes": 188563,
+          "observedLcp": 424,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-first-visit-1.json",
+          "sha256": "88e6312bdc351932755ca9f702e600e161f260ee45b006b28a9ed0abb1524d10",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 386.0200000000017
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 255.69600000000003
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 237.57200000000316
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 115.40000000000003
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 45.00000000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 25.856000000000005
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 20.467999999999996
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:50:25.314Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3358.5,
+          "score": 93,
+          "lcp": 3172.9703999999992,
+          "tbt": 51,
+          "cls": 0,
+          "bytes": 311525,
+          "jsBytes": 188563,
+          "observedLcp": 442,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-rejected-1.json",
+          "sha256": "2358a76f5cb0f07892cf3796f243412a29fd54d0f8919a72dacbe0f214c81dd2",
+          "lcpElement": "main#contenu > section.mx-auto > div > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 370.6120000000006
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 277.38399999999996
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 231.04399999999973
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 52.82400000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 26.784
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 26.644000000000002
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 20.423999999999992
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:50:34.816Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3366,
+          "score": 94,
+          "lcp": 3015.5332500000004,
+          "tbt": 72,
+          "cls": 0,
+          "bytes": 295917,
+          "jsBytes": 186693,
+          "observedLcp": 462,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-first-visit-1.json",
+          "sha256": "391dd882062b7f54328ffa9760e51d40c2095ddabf1ed9ee70a0943151f09fec",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 359.300000000001
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 209.9319999999993
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 152.32000000000002
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 85.408
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 38.17999999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 15.875999999999996
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 9.964
+            }
+          ],
+          "unusedJs": 28266,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "run": 1,
+          "fetchedAt": "2026-10-25T21:50:43.748Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3511.5,
+          "score": 98,
+          "lcp": 2288.3871999999997,
+          "tbt": 45.00000000000023,
+          "cls": 0,
+          "bytes": 295904,
+          "jsBytes": 186693,
+          "observedLcp": 344,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-rejected-1.json",
+          "sha256": "6f04f907568ff4ccbdeb04ea98b5f454eed9bca20d0b3964413ede4829ba1f27",
+          "lcpElement": "main#contenu > div.mx-auto > div.max-w-3xl > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 369.5680000000013
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 207.6680000000023
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 117.296
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 60.067999999999984
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 38.832
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 11.103999999999997
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 10.443999999999999
+            }
+          ],
+          "unusedJs": 28364,
+          "imageSavings": 0
+        },
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:50:52.457Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3264.5,
+          "score": 93,
+          "lcp": 3287.5612500000007,
+          "tbt": 36.50000000000023,
+          "cls": 0,
+          "bytes": 399899,
+          "jsBytes": 186693,
+          "observedLcp": 466,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-first-visit-2.json",
+          "sha256": "4c9facf9716083fba0c3302b4af1257a58f125d9eaa059fec78e37943eeb9a85",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 419.99600000000186
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 308.8
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 279.97600000000017
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 69.83199999999997
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 64.016
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 42.36400000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 22.735999999999997
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 32032
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:51:01.987Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3205,
+          "score": 93,
+          "lcp": 3122.94645,
+          "tbt": 68,
+          "cls": 0,
+          "bytes": 399899,
+          "jsBytes": 186693,
+          "observedLcp": 592,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-rejected-2.json",
+          "sha256": "d6ab6cc177abf97b72b165836164a712120dcf7c0e41c7a01e97929c97a75e8f",
+          "lcpElement": "main#contenu > section.vXsdPq_container > div.vXsdPq_heroCopy > h1#home-hero-title",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 532.4360000000022
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 356.92400000000004
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 256.9999999999997
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 54.09600000000001
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 48.384
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 40.38799999999999
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 31.364000000000008
+            }
+          ],
+          "unusedJs": 28402,
+          "imageSavings": 32032
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:51:11.629Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3259.5,
+          "score": 93,
+          "lcp": 3246.5351999999993,
+          "tbt": 53.49999999999977,
+          "cls": 0,
+          "bytes": 386285,
+          "jsBytes": 188563,
+          "observedLcp": 409,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-first-visit-2.json",
+          "sha256": "2f6bc34e5cccec47522b2b081071792513a8187f5a2dc7eebb7b748c622d0c48",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 424.64800000000184
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 374.224
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 220.01999999999967
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 42.315999999999995
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 36.57199999999999
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 30.676000000000016
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 25.144
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:51:21.421Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3167.5,
+          "score": 95,
+          "lcp": 2926.7781,
+          "tbt": 45.5,
+          "cls": 0,
+          "bytes": 386272,
+          "jsBytes": 188563,
+          "observedLcp": 442,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-rejected-2.json",
+          "sha256": "4c016a9f34bd22636897a6a98822aa2bc31c41e48166640a743a3b9fc60aa9a0",
+          "lcpElement": "main#contenu > section.vXsdPq_beautyIntro > div > p.mt-4",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 428.1040000000018
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 352.07200000000006
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 292.02400000000017
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 53.395999999999994
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 39.492000000000004
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 24.12
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 23.739999999999988
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:51:31.118Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3225.5,
+          "score": 96,
+          "lcp": 2715.9580000000005,
+          "tbt": 71,
+          "cls": 0,
+          "bytes": 311525,
+          "jsBytes": 188563,
+          "observedLcp": 386,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-first-visit-2.json",
+          "sha256": "95cc2b5f1ca572b6a884552c432ccfa7b52c7a0e59e82ea9703aa195930a22ca",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 439.6640000000015
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 267.00800000000004
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 265.6200000000003
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 79.56799999999998
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 37.364
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 27.827999999999996
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 27.588000000000005
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:51:40.483Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3385.5,
+          "score": 97,
+          "lcp": 2675.3381000000004,
+          "tbt": 33,
+          "cls": 0,
+          "bytes": 311512,
+          "jsBytes": 188563,
+          "observedLcp": 357,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-rejected-2.json",
+          "sha256": "26cc97685f2f092377e8d65c75646767df43f9d0545901ef56ce69f405e71137",
+          "lcpElement": "main#contenu > section.mx-auto > div > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 432.46800000000206
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 282.8000000000005
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 265.48
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 87.21600000000001
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 37.704
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 22.244
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 19.795999999999996
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:51:49.945Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3257.5,
+          "score": 95,
+          "lcp": 2909.1618999999996,
+          "tbt": 61,
+          "cls": 0,
+          "bytes": 295899,
+          "jsBytes": 186693,
+          "observedLcp": 477,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-first-visit-2.json",
+          "sha256": "7993d4335d2dd6dbe5dce393b69c48a895ddb0f8a00a416959d775496bc2978e",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 325.84399999999994
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 272.76400000000064
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 143.09599999999998
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 67.72000000000003
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 45.45600000000001
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 19.275999999999996
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 14.228000000000002
+            }
+          ],
+          "unusedJs": 28266,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "run": 2,
+          "fetchedAt": "2026-10-25T21:51:58.554Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3370,
+          "score": 95,
+          "lcp": 2903.3004,
+          "tbt": 55,
+          "cls": 0,
+          "bytes": 295917,
+          "jsBytes": 186693,
+          "observedLcp": 368,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-rejected-2.json",
+          "sha256": "faa99dceeec366db6b07aa3944cc95336778c8a2104dc587c5c244da611822d7",
+          "lcpElement": "main#contenu > div.mx-auto > div.max-w-3xl > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 315.1800000000001
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 288.1760000000007
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 146.63999999999996
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 77.82400000000008
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 36.69200000000001
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 13.475999999999997
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 12.163999999999998
+            }
+          ],
+          "unusedJs": 28364,
+          "imageSavings": 0
+        },
+        {
+          "path": "/",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:52:07.055Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3235,
+          "score": 93,
+          "lcp": 3275.0232499999993,
+          "tbt": 31.499999999999773,
+          "cls": 0,
+          "bytes": 399899,
+          "jsBytes": 186693,
+          "observedLcp": 416,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-first-visit-3.json",
+          "sha256": "7ac7db52a0783960b33e9d8c8d83b18f4794e41c7009cb8b502afdfde9283aba",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 402.9640000000015
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 318.88400000000007
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 276.2359999999995
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 57.516000000000034
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 46.660000000000004
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 39.5
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 25.299999999999997
+            }
+          ],
+          "unusedJs": 28154,
+          "imageSavings": 32032
+        },
+        {
+          "path": "/",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:52:16.794Z",
+          "finalUrl": "http://localhost:3219/",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3232,
+          "score": 92,
+          "lcp": 3383.123600000001,
+          "tbt": 43.5,
+          "cls": 0,
+          "bytes": 399899,
+          "jsBytes": 186693,
+          "observedLcp": 463,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "home-rejected-3.json",
+          "sha256": "b38c4cd9444ea294da9d49ec259f7e530974fcf932d6b72452ae96553151f836",
+          "lcpElement": "main#contenu > section.vXsdPq_container > div.vXsdPq_heroCopy > h1#home-hero-title",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 402.76000000000084
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 318.008
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 306.2119999999986
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 38.808000000000014
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 32.88399999999999
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 21.016000000000002
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 20.315999999999995
+            }
+          ],
+          "unusedJs": 28410,
+          "imageSavings": 32032
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:52:26.346Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3426.5,
+          "score": 93,
+          "lcp": 3242.4995742388696,
+          "tbt": 33,
+          "cls": 0,
+          "bytes": 386285,
+          "jsBytes": 188563,
+          "observedLcp": 403,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-first-visit-3.json",
+          "sha256": "07fb51e89441b6d99ee85ff99b27d1242813ac7da7151ff0498936802ed861e2",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 415.8840000000023
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 349.93199999999996
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 248.8839999999995
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 44.78800000000002
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 34.884
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 23.848000000000003
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 19.79599999999999
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/instituts-beaute",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:52:36.022Z",
+          "finalUrl": "http://localhost:3219/instituts-beaute",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3299.5,
+          "score": 95,
+          "lcp": 2928.1076259716883,
+          "tbt": 47,
+          "cls": 0,
+          "bytes": 386285,
+          "jsBytes": 188563,
+          "observedLcp": 355,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "instituts-beaute-rejected-3.json",
+          "sha256": "1669a21ffe09f5ade3d2a26f80ac91e6a19077ed0c8e3bf3aded28ef0d261212",
+          "lcpElement": "main#contenu > section.vXsdPq_beautyIntro > div > p.mt-4",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 415.41600000000165
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 395.476
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 293.02000000000083
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 62.492
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 38.96800000000004
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 35.06
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 23.156
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:52:45.553Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3330.5,
+          "score": 93,
+          "lcp": 3168.4491,
+          "tbt": 59,
+          "cls": 0,
+          "bytes": 311525,
+          "jsBytes": 188563,
+          "observedLcp": 401,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-first-visit-3.json",
+          "sha256": "ec220087494bbc1e3bc15d538ac7925755657e74c816b35df115b87ff382c93d",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 406.05200000000207
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 300.824
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 293.5240000000017
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 58.8
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 49.60399999999999
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 40.72799999999997
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 21.244
+            }
+          ],
+          "unusedJs": 28191,
+          "imageSavings": 0
+        },
+        {
+          "path": "/restaurants",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:52:55.141Z",
+          "finalUrl": "http://localhost:3219/restaurants",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3221.5,
+          "score": 93,
+          "lcp": 3169.4810000000007,
+          "tbt": 51,
+          "cls": 0,
+          "bytes": 311525,
+          "jsBytes": 188563,
+          "observedLcp": 449,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "restaurants-rejected-3.json",
+          "sha256": "8a3087e13b00c3ed5bb363e4308177f9627a596adc181a38ea6a3976cea6f09c",
+          "lcpElement": "main#contenu > section.mx-auto > div > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 342.7199999999996
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 250.17999999999998
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 236.10000000000127
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 38.06400000000001
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 35.608000000000004
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 26.480000000000008
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 17.32399999999999
+            }
+          ],
+          "unusedJs": 28440,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "first-visit",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:53:04.500Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3250.5,
+          "score": 94,
+          "lcp": 3014.3265,
+          "tbt": 50,
+          "cls": 0,
+          "bytes": 295917,
+          "jsBytes": 186693,
+          "observedLcp": 467,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-first-visit-3.json",
+          "sha256": "a27ad7fd3d528fc30bdfb41e61f3cafd15a7250e2d6edc0dcd2b65dd5f97a956",
+          "lcpElement": "body.min-h-full > section#okado-cookie-preferences > p.mt-3",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 316.5320000000006
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 290.9240000000011
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 136.508
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 42.16400000000002
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 16.95599999999998
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 13.411999999999997
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 10.803999999999998
+            }
+          ],
+          "unusedJs": 28257,
+          "imageSavings": 0
+        },
+        {
+          "path": "/tarifs",
+          "choice": "rejected",
+          "run": 3,
+          "fetchedAt": "2026-10-25T21:53:13.342Z",
+          "finalUrl": "http://localhost:3219/tarifs",
+          "version": "13.5.0",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
+          "benchmarkIndex": 3278,
+          "score": 95,
+          "lcp": 2901.73725,
+          "tbt": 42,
+          "cls": 0,
+          "bytes": 295917,
+          "jsBytes": 186693,
+          "observedLcp": 429,
+          "warnings": [],
+          "analyticsRequests": 0,
+          "report": "tarifs-rejected-3.json",
+          "sha256": "969e52b52d3034b2b1d9d47b27e93cf1f95dfd757d06ca00e2e7e2c1369a98e7",
+          "lcpElement": "main#contenu > div.mx-auto > div.max-w-3xl > p.mt-6",
+          "mainThread": [
+            {
+              "group": "scriptEvaluation",
+              "groupLabel": "Script Evaluation",
+              "duration": 316.8600000000004
+            },
+            {
+              "group": "other",
+              "groupLabel": "Other",
+              "duration": 226.19600000000017
+            },
+            {
+              "group": "styleLayout",
+              "groupLabel": "Style & Layout",
+              "duration": 127.8
+            },
+            {
+              "group": "garbageCollection",
+              "groupLabel": "Garbage Collection",
+              "duration": 65.36399999999999
+            },
+            {
+              "group": "scriptParseCompile",
+              "groupLabel": "Script Parsing & Compilation",
+              "duration": 43.63200000000001
+            },
+            {
+              "group": "parseHTML",
+              "groupLabel": "Parse HTML & CSS",
+              "duration": 12.004
+            },
+            {
+              "group": "paintCompositeRender",
+              "groupLabel": "Rendering",
+              "duration": 11.812
+            }
+          ],
+          "unusedJs": 28364,
+          "imageSavings": 0
+        }
+      ],
+      "settings": {
+        "output": "json",
+        "maxWaitForFcp": 30000,
+        "maxWaitForLoad": 45000,
+        "pauseAfterFcpMs": 1000,
+        "pauseAfterLoadMs": 1000,
+        "networkQuietThresholdMs": 1000,
+        "cpuQuietThresholdMs": 1000,
+        "formFactor": "mobile",
+        "throttling": {
+          "rttMs": 150,
+          "throughputKbps": 1638.4,
+          "requestLatencyMs": 562.5,
+          "downloadThroughputKbps": 1474.5600000000002,
+          "uploadThroughputKbps": 675,
+          "cpuSlowdownMultiplier": 4
+        },
+        "throttlingMethod": "simulate",
+        "screenEmulation": {
+          "mobile": true,
+          "width": 412,
+          "height": 823,
+          "deviceScaleFactor": 1.75,
+          "disabled": false
+        },
+        "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+        "auditMode": false,
+        "gatherMode": false,
+        "clearStorageTypes": [
+          "file_systems",
+          "shader_cache",
+          "service_workers",
+          "cache_storage"
+        ],
+        "disableStorageReset": true,
+        "debugNavigation": false,
+        "channel": "node",
+        "usePassiveGathering": false,
+        "disableFullPageScreenshot": false,
+        "skipAboutBlank": false,
+        "blankPage": "about:blank",
+        "ignoreStatusCode": false,
+        "locale": "en-US",
+        "blockedUrlPatterns": [
+          "*posthog.com/*",
+          "*/_vercel/insights/*"
+        ],
+        "additionalTraceCategories": null,
+        "extraHeaders": null,
+        "precomputedLanternData": null,
+        "onlyAudits": null,
+        "onlyCategories": [
+          "performance"
+        ],
+        "skipAudits": null
+      }
+    }
+  }
+}
