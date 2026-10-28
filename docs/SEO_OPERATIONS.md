@@ -14,11 +14,21 @@ Une PR applicative attend une validation de merge/déploiement distincte.
 | --- | --- | --- |
 | Mesure du blog | Routes publiques exactes, découverte produit ≠ essai, SDK testé sans émission réelle ; constater la réception des prochains événements consentis après déploiement autorisé. | #507 |
 | Indexation et demande | Vérifier découverte, indexation effective et visibilité séparément ; analyser les exclusions disponibles avant toute correction ou soumission supplémentaire. | #507 |
-| Mobile | Baseline répétée sur quatre pages ; mesures laboratoire distinctes du terrain. Optimisations justifiées par les traces, pas un score isolé. | #519 |
+| Mobile | Nouvelle mesure du 25 octobre : quatre pages, première visite/refus, comparaison de builds de production locaux ; [protocole et résultats](releases/2026-10-25-mobile-performance-519.md). Données terrain indisponibles, pas de gain CWV revendiqué. | #519 |
 | Preuves marchands | Deux études vérifiables et autorisées ; aucune publication sans données suffisantes. | #509 |
 | Éditorial | Exploiter les 30 articles existants et les demandes observées avant d'ajouter des sujets ; aucune suppression ou réorientation automatique. | #509 |
 
 ## Lecture des données
+
+### Contrôle complémentaire du 25 octobre 2026
+
+Le sitemap HTTP actuel contient **57 URL dont 34 articles**, toutes en 200.
+Les nombres 53/30 ci-dessous restent ceux du contrôle historique du 21 octobre.
+Google/Bing n'ont pas été relus : panne d'initialisation des outils navigateur
+et ordinateur, sans conclusion sur les autorisations des comptes.
+PostHog 212872/EU a été relu avec succès : réception réelle, mais aucun parcours
+consenti complet d'acquisition jusqu'à publication observé. Derniers chiffres,
+définitions, tests et limites : [contrôle #507](releases/2026-10-25-acquisition-verification-507.md).
 
 ### Google
 

@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
+  images: {
+    // 178 CSS px × 1.75 DPR needs 312px, not the default next step of 384px.
+    imageSizes: [32, 48, 64, 96, 128, 256, 320, 384],
+  },
   turbopack: {
     // Recharts imports this subpath through victory-vendor. Keep the same
     // resolver as the web application for clean Vercel builds.

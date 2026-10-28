@@ -501,6 +501,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       estimatedUnitCostKnown: prize.estimatedUnitCostKnown === false || prize.estimatedUnitCost == null || prize.estimatedUnitCost === "" ? false : undefined,
       purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: normalizeMultiline(prize.usageConditions, 1200),
+      reusedFromPrizeId: normalizeString(prize.reusedFromPrizeId, 120) || undefined,
     };
   });
 

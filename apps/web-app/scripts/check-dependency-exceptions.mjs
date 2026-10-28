@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd(), "../..");
+const includeDevelopment = process.argv?.includes("--include-dev") ?? false;
 const patchedVersion = "16.4.2";
 const packages = ["web-app", "landing-page"].map((name) => {
   const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, "apps", name, "package.json"), "utf8"));
@@ -11,8 +12,8 @@ const packages = ["web-app", "landing-page"].map((name) => {
 const command = process.platform === "win32" ? process.env.ComSpec ?? "cmd.exe" : "npm";
 const args =
   process.platform === "win32"
-    ? ["/d", "/s", "/c", "npm audit --omit=dev --json"]
-    : ["audit", "--omit=dev", "--json"];
+    ? ["/d", "/s", "/c", `npm audit ${includeDevelopment ? "" : "--omit=dev "}--json`]
+    : ["audit", ...(includeDevelopment ? [] : ["--omit=dev"]), "--json"];
 const result = spawnSync(command, args, {
   cwd: repoRoot,
   encoding: "utf8",
@@ -29,7 +30,7 @@ try {
 }
 
 // Fail closed: an unavailable registry or incomplete report is not a clean audit.
-if (result.status !== 0 || audit.error || !audit.metadata?.vulnerabilities ||
+if (audit.error || !audit.metadata?.vulnerabilities ||
     !Number.isInteger(audit.metadata.vulnerabilities.total) ||
     !audit.vulnerabilities || typeof audit.vulnerabilities !== "object" || Array.isArray(audit.vulnerabilities)) {
   console.error("Échec : audit indisponible, incomplet ou signalant des vulnérabilités.");
@@ -38,14 +39,21 @@ if (result.status !== 0 || audit.error || !audit.metadata?.vulnerabilities ||
 
 const vulnerabilities = audit.vulnerabilities;
 const names = Object.keys(vulnerabilities).sort();
-const allowedNames = [];
+const developmentExceptionNames = ["@shadcn/registry", "deepmerge", "shadcn"];
+const reviewedDevelopmentException = includeDevelopment &&
+  names.length === developmentExceptionNames.length &&
+  names.every((name) => developmentExceptionNames.includes(name)) &&
+  Object.values(vulnerabilities).every(({ severity }) => severity === "low") &&
+  vulnerabilities.deepmerge?.via?.some((advisory) => advisory.url === "https://github.com/advisories/GHSA-gcqx-w48m-w2h4");
+const allowedNames = reviewedDevelopmentException ? developmentExceptionNames : [];
 const unexpectedNames = names.filter((name) => !allowedNames.includes(name));
 const total = audit.metadata?.vulnerabilities?.total ?? names.length;
 const frameworksAreAligned = packages.every(({ next, eslint }) => next === patchedVersion && eslint === patchedVersion);
 
 if (
+  (result.status !== 0 && !reviewedDevelopmentException) ||
   unexpectedNames.length ||
-  total !== 0 ||
+  total !== (reviewedDevelopmentException ? developmentExceptionNames.length : 0) ||
   !frameworksAreAligned ||
   vulnerabilities.next ||
   vulnerabilities.postcss ||
@@ -57,5 +65,5 @@ if (
 }
 
 console.log(
-  `OK - Aucun avis npm audit de production détecté ; Next.js et ESLint ${patchedVersion} alignés sur les deux applications.`,
+  `OK - Audit ${includeDevelopment ? "complet (production et développement)" : "de production"} ; Next.js et ESLint ${patchedVersion} alignés sur les deux applications.${reviewedDevelopmentException ? " Exception documentée : un avis faible et non corrigé dans shadcn de développement." : ""}`,
 );

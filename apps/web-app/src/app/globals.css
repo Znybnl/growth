@@ -623,16 +623,36 @@ select {
   }
 }
 
+/* Pilotage has nine columns: preserve actions and dates at laptop widths. */
+@media (min-width: 768px) and (max-width: 1535px) {
+  .okado-admin-table { table-layout: fixed; }
+  .okado-admin-table :where(th, td) { padding: 0.75rem 0.5rem; overflow-wrap: anywhere; }
+  .okado-admin-table :where(th) { white-space: normal; overflow-wrap: normal; font-size: 0.625rem; }
+  .okado-admin-table :where(td) { font-size: 0.75rem; }
+  .okado-admin-table :where(th:nth-child(1)) { width: 18%; }
+  .okado-admin-table :where(th:nth-child(2)) { width: 12%; }
+  .okado-admin-table :where(th:nth-child(3)) { width: 10%; }
+  .okado-admin-table :where(th:nth-child(4)) { width: 13%; }
+  .okado-admin-table :where(th:nth-child(5)) { width: 8%; }
+  .okado-admin-table :where(th:nth-child(6)) { width: 10%; }
+  .okado-admin-table :where(th:nth-child(7)) { width: 8%; }
+  .okado-admin-table :where(th:nth-child(8)) { width: 8%; }
+  .okado-admin-table :where(th:nth-child(9)) { width: 13%; }
+  .okado-admin-table :where(td:last-child a, td:last-child button) { padding-inline: 0.5rem; }
+}
+
 /* Keep the mobile labels visible for legacy tables that do not carry an
    explicit data-label on every cell. */
 @media (max-width: 767px) {
   .okado-data-table.okado-admin-table :where(td:nth-child(1))::before { content: "Utilisateur"; }
   .okado-data-table.okado-admin-table :where(td:nth-child(2))::before { content: "Commerce"; }
   .okado-data-table.okado-admin-table :where(td:nth-child(3))::before { content: "Inscription"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(4))::before { content: "Parcours"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(5))::before { content: "Abonnement"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(6))::before { content: "Activité"; }
-  .okado-data-table.okado-admin-table :where(td:nth-child(7))::before { content: "Alertes"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(4))::before { content: "Dernière connexion"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(5))::before { content: "Parcours"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(6))::before { content: "Abonnement"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(7))::before { content: "Activité"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(8))::before { content: "Alertes"; }
+  .okado-data-table.okado-admin-table :where(td:nth-child(9))::before { content: "Actions"; }
   .okado-data-table.okado-affiliate-table :where(td:nth-child(1))::before { content: "Marchand / affilié"; }
   .okado-data-table.okado-affiliate-table :where(td:nth-child(2))::before { content: "Code / filleul"; }
   .okado-data-table.okado-affiliate-table :where(td:nth-child(3))::before { content: "Filleuls / facture"; }

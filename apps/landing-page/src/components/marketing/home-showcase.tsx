@@ -29,7 +29,7 @@ export function SectorExamples() {
     <p className={styles.eyebrow}>Pour les commerces locaux</p><h2 id="sectors-title" className={`${styles.heading} mt-4`}>Votre activité. Vos clients. Votre jeu.</h2>
     <p className={styles.intro}>Des animations et des récompenses à adapter à chaque établissement.</p>
     <div className={styles.sectorGrid}>{sectors.map(sector => <article key={sector.title} className={styles.sectorCard}>
-      <div className={styles.sectorArt}><GamePreview model={sector.model} /></div><div className={styles.sectorCopy}><h3>{sector.title}</h3><p>{sector.text}</p>
+      <div className={styles.sectorArt}><GamePreview model={sector.model} sizes="(min-width: 768px) 168px, (min-width: 360px) 102px, 92px" /></div><div className={styles.sectorCopy}><h3>{sector.title}</h3><p>{sector.text}</p>
         <PrimaryButton href={sector.href} trackingName="explore_sector" trackingLocation="sectors" appearance="text" trackingVariant={sector.variant}>{sector.action}</PrimaryButton>
       </div>
     </article>)}</div>

@@ -15,6 +15,16 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 
 La fiche dans Pilotage est réservée à l’administration de la plateforme et consultable uniquement en lecture seule. Chaque site présenté est résolu via les associations existantes du compte, sans modifier le site actif de la session. La réponse serveur utilise une liste explicite de champs : coordonnées, identité, liens marketing et paramètres non secrets. Aucun PIN, empreinte/chiffrement de PIN, jeton, mot de passe ou identifiant privé Stripe n’est transmis. Le navigateur ne mémorise pas ces profils dans un stockage persistant et la réponse HTTP est privée et non mise en cache.
 
+### Dernière connexion dans Pilotage — #411
+
+Chaque ligne affiche la dernière connexion réussie de son utilisateur, fournie
+par Supabase Auth, et non la date d'inscription ou la dernière visite d'une page.
+La date est affichée dans le fuseau du navigateur. Une absence explicitement
+confirmée donne « Jamais connecté » ; une donnée manquante, ambiguë ou inaccessible
+donne « Indisponible ». Lecture administrative côté serveur uniquement, sans
+modifier les sessions ni transmettre les identifiants internes Auth. Voir
+[la livraison et les limites](releases/2026-10-25-admin-last-sign-in-411.md).
+
 ## Affiliation du compte marchand — #677
 
 Décision propriétaire du 28 octobre 2026 : l'affiliation appartient au compte
@@ -231,5 +241,7 @@ Décisions propriétaire du 12 octobre 2026 : préférence commune au compte mar
 - Les tentatives ambiguës ne sont pas rejouées automatiquement au-delà de la fenêtre d’idempotence du fournisseur. Une désactivation stoppe les envois non encore acceptés. Les noms sont lus lors de la préparation, uniquement dans le snapshot/payload privé, jamais dans les événements ni les logs. Ces snapshots sont expurgés après acceptation, annulation et effacement d’une participation ; aucun archivage nominatif supplémentaire.
 
 ## Règle de changement
+
+- Décision propriétaire du 25 octobre 2026 (#609) : dans « Mes lots », la dernière utilisation correspond à la dernière réutilisation enregistrée dans un jeu. La date est produite côté serveur et sauvegardée atomiquement avec la copie ; annuler un ajout ou sauvegarder sans nouvelle réutilisation ne l'avance pas. Les preuves du jeu courant contribuent au classement, mais ses lots restent exclus des choix. Sans preuve historique, conserver la date de création connue sans inventer de date de réutilisation. Voir `docs/releases/2026-10-25-prize-last-reuse-609.md`.
 
 Toute modification de ce document exige une Issue non triviale, une analyse d'impact et les tests adaptés. Les changements de ce document priment sur les comportements implicites du code existant.

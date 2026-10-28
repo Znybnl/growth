@@ -86,6 +86,8 @@ jobs:
         run: npm ci
       - name: Verify critical source files and encoding
         run: npm run verify:source
+      - name: Test aggregate acquisition audit without external requests
+        run: node --test scripts/conversion-audit-results.test.mjs
       - name: Test dependency audit guard
         run: npm run test:dependency-audit -w @okado/web-app
       - name: Test every configured wheel reward and exact drawn result stays visible
@@ -100,6 +102,8 @@ jobs:
         run: npm run test:google-click -w @okado/web-app
       - name: Audit production dependencies in both apps
         run: npm run check:dependencies
+      - name: Audit development tooling without exceptions
+        run: npm run check:dependencies:all
       - name: Lint web app
         run: npm run lint:web
       - name: Test analytics consent in both apps and server capture
@@ -130,12 +134,16 @@ jobs:
         run: npm run test:prize-budget -w @okado/web-app
       - name: Test administrator establishment profiles
         run: npm run test:admin-profiles -w @okado/web-app
+      - name: Test administrator last sign-in source and permissions
+        run: npm run test:admin-last-sign-in -w @okado/web-app
       - name: Test support email incident permissions and migration
         run: npm run test:support-incidents -w @okado/web-app
       - name: Test metric consistency and private SQL aggregates
         run: npm run test:metrics -w @okado/web-app
       - name: Test merchant page reads, session isolation and private timings
         run: npm run test:page-performance -w @okado/web-app
+      - name: Test anonymous draw preparation timings and percentile report
+        run: npm run test:draw-preparation -w @okado/web-app
       - name: Test merchant account affiliation, permissions, resubscription and migration
         run: npm run test:affiliates -w @okado/web-app
       - name: Build web app
@@ -165,3 +173,17 @@ jobs:
         run: npm run lint:landing
       - name: Build landing page
         run: npm run build:landing
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
+          NEXT_PUBLIC_POSTHOG_ENABLED: "true"
+      - name: Install landing browser
+        run: npx playwright install --with-deps chromium
+      - name: Verify deferred loading, demo and consent
+        working-directory: apps/landing-page
+        run: npx playwright test e2e/mobile-performance.spec.ts e2e/landing-demo.spec.ts e2e/multisector-demo.spec.ts e2e/analytics-consent.spec.ts --project=desktop --project=mobile
+      - name: Preserve landing test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: landing-browser-evidence
+          path: apps/landing-page/test-results
