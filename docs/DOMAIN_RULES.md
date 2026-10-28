@@ -232,4 +232,6 @@ Décisions propriétaire du 12 octobre 2026 : préférence commune au compte mar
 
 ## Règle de changement
 
+- Décision propriétaire du 25 octobre 2026 (#609) : dans « Mes lots », la dernière utilisation correspond à la dernière réutilisation enregistrée dans un jeu. La date est produite côté serveur et sauvegardée atomiquement avec la copie ; annuler un ajout ou sauvegarder sans nouvelle réutilisation ne l'avance pas. Les preuves du jeu courant contribuent au classement, mais ses lots restent exclus des choix. Sans preuve historique, conserver la date de création connue sans inventer de date de réutilisation. Voir `docs/releases/2026-10-25-prize-last-reuse-609.md`.
+
 Toute modification de ce document exige une Issue non triviale, une analyse d'impact et les tests adaptés. Les changements de ce document priment sur les comportements implicites du code existant.
