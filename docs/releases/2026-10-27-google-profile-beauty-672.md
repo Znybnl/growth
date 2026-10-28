@@ -5,7 +5,7 @@
 - Issue : https://github.com/Znybnl/growth/issues/672.
 - Article : `/blog/creer-fiche-google-institut-beaute`, auteur organisationnel « L’équipe Okado », publication datée du 27 octobre 2026, mise à jour et relecture le 28 octobre 2026.
 - Intention propre : réaliser la création/revendication, puis configurer et maintenir la fiche. Le guide d’acquisition existant conserve son rôle multicanal et renvoie vers cette procédure.
-- Décisions métier inchangées : aucune fiche Google créée, aucun compte marchand ou joueur utilisé, aucune donnée personnelle ajoutée. Aucun changement au SaaS, au tracking, aux consentements ou aux droits.
+- Décisions métier inchangées : aucune fiche Google créée, aucun compte marchand ou joueur utilisé, aucune donnée personnelle ajoutée. Le chemin public exact de l’article est ajouté aux listes PostHog autorisées dans les deux applications ; consentement, événements, données collectées et droits restent inchangés.
 - Le gabarit accepte des figures locales optionnelles, légendées, datées, accessibles au clavier et ouvrables en taille d’origine. Ce guide active aussi une introduction compacte et trois points d’entrée. Les autres articles gardent leur présentation.
 
 ## Améliorations de praticité validées et appliquées le 28 octobre
@@ -85,3 +85,11 @@ Choisir « Je gère une fiche validée » et vérifier l’arrivée sur la descr
 ## Risques et retour arrière
 
 Les écrans et catégories Google peuvent évoluer : relire lors d’un changement du parcours. L’article ne garantit ni indexation ni position. Le rendu des figures est optionnel et conserve les dimensions pour limiter les déplacements. Retour arrière par revert du commit de cette PR ; aucun changement de données ni migration à annuler. Merge et déploiement restent soumis à la validation explicite du propriétaire.
+
+## Vérification du contrôle requis avant merge
+
+- GitHub bloquait la PR car le test PostHog exige que chaque page d’article publiée soit présente dans la liste stricte des URL publiques autorisées. Le nouveau chemin exact manquait dans les deux applications.
+- Ajout de `/blog/creer-fiche-google-institut-beaute` aux listes autorisées web-app et landing-page. Les chemins arbitraires restent rejetés et le consentement analytique demeure requis.
+- `npm run test:analytics-consent -w @okado/web-app` : 10/10 succès.
+- `npm run lint:web` : succès, quatre avertissements préexistants sur `window.location.assign` dans des composants d’inscription/emplacement, sans erreur.
+- `npm run build:web` : succès, 81 routes générées.
