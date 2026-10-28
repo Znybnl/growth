@@ -25,7 +25,12 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     expect(pixel).toEqual([255, 255]);
     await expect(page.getByTestId("scratch-ticket-surface")).toBeInViewport();
     await expect(page.getByText("Le résultat s'affiche automatiquement.", { exact: true })).toHaveCount(0);
-    await expect(page.locator(`img[data-template-art="${theme.id}"]`)).toHaveJSProperty("complete", true);
+    const experience = page.locator(".okado-public-experience");
+    const artwork = experience.locator(`img[data-template-art="${theme.id}"]`);
+    await expect(artwork).toHaveJSProperty("complete", true);
+    const experienceBounds = (await experience.boundingBox())!;
+    const artworkBounds = (await artwork.boundingBox())!;
+    expect(artworkBounds.y + artworkBounds.height).toBeGreaterThanOrEqual(experienceBounds.y + experienceBounds.height - 1);
     await assertNoPageOverflow(page);
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: info.outputPath(`${theme.id}-public-${width}.png`), fullPage: true, caret: "initial" });
