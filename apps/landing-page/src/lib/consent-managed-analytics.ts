@@ -64,6 +64,7 @@ const measuredPages = new Set([
   // Public editorial routes only. The consent tests check this list against
   // the server-side blog registry; never import article bodies into the client.
   "/blog",
+  "/blog/creer-fiche-google-institut-beaute",
   "/blog/idees-animations-commerciales-boutique",
   "/blog/animer-point-de-vente-qr-code",
   "/blog/idees-jeux-concours-restaurant",
