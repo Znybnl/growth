@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual } from "node:util";
+import { completedResults, summarizeEventCounts, summarizeFunnel, validateAcquisitionDefinition } from "./conversion-audit-results.mjs";
 
 // Private API only: never use the public ingestion key for this audit.
 // Read-only by default. --configure-insights only changes the named reports.
@@ -26,8 +27,6 @@ async function api(path, method = "GET", body) {
   });
   // Never include credentials, arbitrary API bodies or individual event rows in errors.
   if (!response.ok) {
-    const problem = await response.json().catch(() => ({}));
-    if (response.status === 400) console.error(JSON.stringify({ code: problem.code, detail: problem.detail, attribute: problem.attr }));
     throw new Error(`PostHog ${method} ${url.pathname}: HTTP ${response.status}`);
   }
   return response.json();
@@ -49,7 +48,7 @@ const funnel = (series, interval, unit) => ({
 const main = (await api("insights/?short_id=0gtandAv")).results.find((item) => item.short_id === "0gtandAv");
 if (!main || main.query?.source?.kind !== "FunnelsQuery") throw new Error("Expected acquisition funnel 0gtandAv");
 const mainQuery = structuredClone(main.query.source);
-if (mainQuery.series.map((step) => step.event).join(",") !== "marketing_cta_clicked,signup_started,signup_completed,onboarding_completed,campaign_published") throw new Error("Acquisition funnel changed: review before continuing");
+validateAcquisitionDefinition(mainQuery);
 mainQuery.properties = common;
 mainQuery.dateRange = { date_from: "-90d" };
 mainQuery.filterTestAccounts = true;
@@ -98,13 +97,14 @@ if (catalog.results.length) throw new Error("Data catalog now contains metrics: 
 const run = async (query, observationDays = 28) => {
   const from = new Date(Date.parse(snapshotAt) - observationDays * 86400000).toISOString();
   const response = await api("query/", "POST", { query: { ...query, dateRange: { date_from: from, date_to: snapshotAt } } });
-  if (response.query_status && !response.results) throw new Error("Query incomplete: do not interpret a pending result as zero");
-  return response.results;
+  return completedResults(response);
 };
-const counts = await run({ kind: "TrendsQuery", series: ["$pageview", "marketing_cta_clicked", "marketing_demo_started", "marketing_demo_completed", "signup_started", "signup_completed", "onboarding_completed", "campaign_published"].map((event) => ({ kind: "EventsNode", event, math: "total" })), properties: common, filterTestAccounts: true, interval: "day" });
+const countedEvents = ["$pageview", "marketing_cta_clicked", "marketing_demo_started", "marketing_demo_completed", "signup_started", "signup_completed", "onboarding_completed", "campaign_published"];
+const counts = await run({ kind: "TrendsQuery", series: countedEvents.map((event) => ({ kind: "EventsNode", event, math: "total" })), properties: common, filterTestAccounts: true, interval: "day" });
 const mainResult = await run(mainQuery, 90);
 
 const links = [];
+const reportResults = [];
 // PostHog descriptions are capped at 400 characters. Full definitions stay in
 // the versioned tracking/runbook documents; saved descriptions link to #507.
 const shortDescription = (text) => {
@@ -128,15 +128,22 @@ for (const report of reports) {
   } else if (saved) {
     const verified = await api(`insights/${saved.id}/`);
     verifyDefinition(verified.query?.source, report.query);
-    await run(verified.query.source, report.query.funnelsFilter?.funnelWindowIntervalUnit === "day" ? 90 : 28);
+    const result = await run(verified.query.source, report.query.funnelsFilter?.funnelWindowIntervalUnit === "day" ? 90 : 28);
+    if (!Array.isArray(result)) throw new Error("Incomplete saved insight result");
+    reportResults.push({ name: report.name, ...(report.query.kind === "FunnelsQuery"
+      ? { funnel: summarizeFunnel(report.query.series, result) }
+      : { verified: true, seriesCount: result.length, breakdownValuesExported: false }) });
+  } else {
+    throw new Error(`Missing required insight: ${report.name}`);
   }
   links.push({ name: report.name, url: saved ? `${origin}/project/${projectId}/insights/${saved.short_id}` : null });
 }
 console.log(JSON.stringify({
   projectId, region: "EU", timezone: project.timezone, snapshotAt, startAt,
   definition: "Documented working definitions (#507); no governed catalog metric", configured: configure,
-  totalEvents: counts.map((series) => ({ event: series.label, count: series.count })),
-  acquisitionFunnel: { url: `${origin}/project/${projectId}/insights/0gtandAv`, observationDays: 90, results: mainResult },
+  totalEvents: summarizeEventCounts(countedEvents, counts),
+  acquisitionFunnel: { url: `${origin}/project/${projectId}/insights/0gtandAv`, observationDays: 90, ...summarizeFunnel(mainQuery.series, mainResult) },
+  reportResults,
   insights: links,
   caveats: ["Consenting traffic only; small immature cohorts", "No visitor, account, campaign or player records exported", "Pre-fix demo starts and page labels unavailable", "Internal exclusion uses the existing project cohort; it is not a guarantee that all internal activity is identified"],
 }, null, 2));

@@ -86,6 +86,8 @@ jobs:
         run: npm ci
       - name: Verify critical source files and encoding
         run: npm run verify:source
+      - name: Test aggregate acquisition audit without external requests
+        run: node --test scripts/conversion-audit-results.test.mjs
       - name: Test dependency audit guard
         run: npm run test:dependency-audit -w @okado/web-app
       - name: Test every configured wheel reward and exact drawn result stays visible
