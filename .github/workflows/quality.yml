@@ -171,3 +171,17 @@ jobs:
         run: npm run lint:landing
       - name: Build landing page
         run: npm run build:landing
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
+          NEXT_PUBLIC_POSTHOG_ENABLED: "true"
+      - name: Install landing browser
+        run: npx playwright install --with-deps chromium
+      - name: Verify deferred loading, demo and consent
+        working-directory: apps/landing-page
+        run: npx playwright test e2e/mobile-performance.spec.ts e2e/landing-demo.spec.ts e2e/multisector-demo.spec.ts e2e/analytics-consent.spec.ts --project=desktop --project=mobile
+      - name: Preserve landing test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: landing-browser-evidence
+          path: apps/landing-page/test-results

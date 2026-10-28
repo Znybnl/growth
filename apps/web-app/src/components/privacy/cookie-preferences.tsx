@@ -2,11 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Analytics } from "@vercel/analytics/next";
+import dynamic from "next/dynamic";
 import { ANALYTICS_CONSENT_EVENT, readAnalyticsConsent } from "@/lib/analytics-consent";
 import { isAnalyticsConfigured, setAnalyticsChoice } from "@/lib/consent-managed-analytics";
 import { isPublicGamePage } from "@/lib/cookie-preferences-visibility";
 import type { AnalyticsChoice } from "@/lib/analytics-consent";
+
+// The analytics component is only downloaded when the accepted branch renders.
+const Analytics = dynamic(() => import("@vercel/analytics/next").then(module => module.Analytics), { ssr: false });
 
 export function CookiePreferences({ alignment = "left" }: { alignment?: "left" | "right" }) {
   const pathname = usePathname();

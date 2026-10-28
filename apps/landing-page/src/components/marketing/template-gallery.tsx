@@ -43,7 +43,7 @@ export function TemplateGallery({ multisector = false }: { multisector?: boolean
             setSelected(model);
             captureMarketingEvent("marketing_cta_clicked", { cta: "model_preview", location: "models", variant: model.id, destination: "#modeles" });
           }}>
-            <div className={styles.modelArt}><GamePreview model={model} /></div>
+            <div className={styles.modelArt}><GamePreview model={model} sizes="(min-width: 1024px) 184px, (min-width: 768px) 158px, (min-width: 360px) 178px, 163px" /></div>
             <div className={styles.modelCopy}><strong>{model.name}</strong><span>{model.type}</span><Expand size={17} aria-hidden="true" /></div>
           </button>
         </article>)}
@@ -53,7 +53,7 @@ export function TemplateGallery({ multisector = false }: { multisector?: boolean
         onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}
         onClose={() => { setSelected(null); opener.current?.focus({ preventScroll: true }); }}>
         <div className={styles.dialogTop}><h3 id={`${id}-dialog-title`}>{selected?.name}</h3><button type="button" aria-label="Fermer l’aperçu du modèle" onClick={() => dialog.current?.close()}><X size={20} aria-hidden="true" /></button></div>
-        {selected ? <><div className={styles.dialogArt}><GamePreview model={selected} eager /></div><p className={styles.note}>{selected.type} · Exemple fictif. Logo, textes et lots personnalisables ; les options de couleur et de fond dépendent du modèle.</p></> : null}
+        {selected ? <><div className={styles.dialogArt}><GamePreview model={selected} eager sizes="228px" /></div><p className={styles.note}>{selected.type} · Exemple fictif. Logo, textes et lots personnalisables ; les options de couleur et de fond dépendent du modèle.</p></> : null}
       </dialog>
     </section>
   );
