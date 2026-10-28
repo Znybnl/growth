@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd(), "../..");
+const includeDevelopment = process.argv?.includes("--include-dev") ?? false;
 const patchedVersion = "16.4.2";
 const packages = ["web-app", "landing-page"].map((name) => {
   const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, "apps", name, "package.json"), "utf8"));
@@ -11,8 +12,8 @@ const packages = ["web-app", "landing-page"].map((name) => {
 const command = process.platform === "win32" ? process.env.ComSpec ?? "cmd.exe" : "npm";
 const args =
   process.platform === "win32"
-    ? ["/d", "/s", "/c", "npm audit --omit=dev --json"]
-    : ["audit", "--omit=dev", "--json"];
+    ? ["/d", "/s", "/c", `npm audit ${includeDevelopment ? "" : "--omit=dev "}--json`]
+    : ["audit", ...(includeDevelopment ? [] : ["--omit=dev"]), "--json"];
 const result = spawnSync(command, args, {
   cwd: repoRoot,
   encoding: "utf8",
@@ -57,5 +58,5 @@ if (
 }
 
 console.log(
-  `OK - Aucun avis npm audit de production détecté ; Next.js et ESLint ${patchedVersion} alignés sur les deux applications.`,
+  `OK - Aucun avis npm audit ${includeDevelopment ? "complet (production et développement)" : "de production"} détecté ; Next.js et ESLint ${patchedVersion} alignés sur les deux applications.`,
 );

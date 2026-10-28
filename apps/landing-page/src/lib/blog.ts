@@ -1,6 +1,22 @@
 import type { ContentSection } from "@/lib/public-content";
 
 const references = {
+  franceNum: {
+    label: "DGE / France Num — Baromètre 2025, enquête auprès de 11 021 TPE PME",
+    href: "https://www.francenum.gouv.fr/guides-et-conseils/strategie-numerique/comprendre-le-numerique/barometre-france-num-2025-le",
+  },
+  qrMargin: {
+    label: "KEYENCE — structure du QR code et marge en modules",
+    href: "https://www.keyence.eu/ss/products/auto_id/codereader/basic_2d/qr.jsp",
+  },
+  plants2024: {
+    label: "FranceAgriMer / VALHOR — résultats du panel Kantar 2024, publiés le 22 mai 2025",
+    href: "https://www.franceagrimer.fr/index.php/actualites/retour-sur-le-webinaire-achats-de-vegetaux-par-les-francais-en-2024",
+  },
+  cycle2024: {
+    label: "UNION sport & cycle — Observatoire du cycle 2024, publié le 25 avril 2025",
+    href: "https://www.unionsportcycle.com/observatoire-du-cycle/2025-04-25/l-observatoire-du-cycle-2024",
+  },
   lottery: {
     label: "DGCCRF — règles françaises sur les loteries publicitaires",
     href: "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
@@ -65,6 +81,20 @@ const references = {
 };
 
 export type BlogSection = ContentSection & {
+  id?: string;
+  result?: string;
+  fallback?: string;
+  optional?: boolean;
+  checklist?: string[];
+  figures?: {
+    src: string;
+    width: number;
+    height: number;
+    alt: string;
+    caption: string;
+    sourceUrl: string;
+    capturedAt: string;
+  }[];
   table?: {
     caption: string;
     headers: string[];
@@ -80,6 +110,8 @@ export type BlogPost = {
   eyebrow: string;
   intro: string;
   answer?: string;
+  guide?: { label: string; description: string; sectionId: string }[];
+  takeaway: { title: string; text: string };
   sections: BlogSection[];
   related: string[];
   source?: { label: string; href: string }[];
@@ -96,7 +128,346 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
+    path: "/blog/creer-fiche-google-institut-beaute",
+    title: "Créer une fiche Google pour un institut de beauté : le guide pas à pas",
+    seoTitle: "Fiche Google institut de beauté : création et optimisation",
+    description: "Créez ou revendiquez la fiche Google de votre institut : captures, validation, catégories, services, avis et réservation. Un guide pratique du SEO local.",
+    eyebrow: "Guide pratique · Institut de beauté",
+    intro: "Créez ou reprenez la fiche Google de votre institut, puis configurez les soins, les photos et la réservation. Choisissez votre situation pour commencer au bon endroit. Les exemples Maison Lueur sont fictifs ; captures du 27 octobre et procédures vérifiées le 28 octobre 2026.",
+    answer: "Pour créer la fiche Google de votre institut de beauté, recherchez d’abord une fiche existante, revendiquez-la ou ajoutez l’établissement, renseignez son identité réelle puis suivez la validation proposée par Google. Complétez ensuite les services, les horaires, les photos et le lien de réservation. La fiche est gratuite ; sa création et son optimisation ne garantissent aucune position dans les résultats locaux.",
+    guide: [
+      { label: "Je crée ma première fiche", description: "Préparer les informations, puis vérifier qu’aucune fiche n’existe déjà.", sectionId: "preparer" },
+      { label: "Une fiche existe, sans accès", description: "Retrouver la bonne fiche et demander sa gestion.", sectionId: "rechercher" },
+      { label: "Je gère une fiche validée", description: "Compléter la présentation, les services et la réservation.", sectionId: "completer" },
+    ],
+    takeaway: {
+      title: "Notre avis : une fiche fiable avant une fiche très animée",
+      text: "Nous commencerions par l’identité, la validation, l’accès à l’institut et le test du lien de réservation. Ces éléments permettent à une personne intéressée d’aller au bout de sa démarche. Publier davantage ne compense pas une adresse trompeuse ou un agenda inaccessible. Une fois ces bases vérifiées, choisissez une amélioration précise et observez les rendez-vous réellement honorés.",
+    },
+    author: "L’équipe Okado",
+    publishedAt: "2026-10-27",
+    updatedAt: "2026-10-28",
+    reviewedAt: "2026-10-28",
+    readingTime: "19 min de lecture",
+    image: "/images/blog/fiche-google-institut-beaute.webp",
+    imageAlt: "Les quatre étapes du guide : rechercher, renseigner, valider et optimiser sa fiche Google",
+    ctaLabel: "Voir un exemple d’animation pour institut",
+    ctaHref: "/instituts-beaute#demo",
+    sections: [
+      {
+        title: "Avant de commencer : réunir les informations et choisir le bon cas",
+        id: "preparer",
+        paragraphs: [
+          "La fiche d’établissement Google, anciennement Google My Business, présente votre activité dans la recherche et Maps. Utilisez un compte conservé par l’institut ; il peut être associé à une adresse professionnelle sans être une adresse Gmail. La [documentation de démarrage](https://support.google.com/business/answer/7039811?hl=fr) explique l’accès. Pour une activité uniquement chez les clientes, l’adresse doit être masquée : vérifiez les [règles des établissements de services](https://support.google.com/business/answer/9157481?hl=fr) et le tableau ci-dessous avant de commencer.",
+          "Fil conducteur fictif : Maison Lueur est un institut du centre d’Angers, avec accueil sur rendez-vous, une cabine individuelle, des soins du visage, des épilations et de la beauté des mains. Le nom, les équipements, les tarifs et les textes ci-dessous servent d’exemple, pas de modèle à recopier sans vérification. Pour un salon spécialisé en coiffure ou en onglerie, adaptez l’activité, les catégories disponibles et les prestations à votre métier.",
+        ],
+        items: [
+          "Ouvrez le compte Google que l’institut conservera et vérifiez que vous pouvez recevoir ses messages.",
+          "Réunissez sur une feuille : nom sur l’enseigne, adresse ou zones couvertes, téléphone, horaires, site et lien de réservation s’il existe.",
+          "Préparez trois prestations principales avec leur nom, leur prix public et leur durée réelle ; gardez quelques photos des lieux à disposition.",
+        ],
+        result: "Vous avez les informations à saisir et savez si votre activité reçoit sur place, se déplace ou combine les deux.",
+        table: {
+          caption: "Quelle configuration choisir pour votre activité beauté ?",
+          headers: ["Situation réelle", "Configuration à examiner", "Vérification utile"],
+          rows: [
+            ["Institut accueillant les clientes dans un local", "Établissement avec adresse publique", "Entrée identifiable, nom sur place et accueil aux horaires indiqués"],
+            ["Esthéticienne intervenant uniquement chez les clientes", "Établissement de services de proximité, adresse masquée", "Communes réellement desservies ; pas de faux local"],
+            ["Accueil à domicile et déplacements", "Établissement mixte, si les conditions Google sont remplies", "Accueil réel, signalétique permanente et présence aux heures affichées"],
+            ["Cabine louée dans un autre commerce", "Vérifier l’éligibilité de l’activité indépendante", "Identité et accueil propres ; ne pas copier la fiche de l’hébergeur"],
+          ],
+        },
+      },
+      {
+        title: "1. Rechercher l’institut avant de créer une nouvelle fiche",
+        id: "rechercher",
+        paragraphs: [
+          "Google peut déjà connaître votre institut, même si vous ne l’avez jamais enregistré. Recherchez l’existant avant d’ajouter une fiche. Si un tiers la gère, la [procédure de propriété](https://support.google.com/business/answer/4566671?hl=fr) indique normalement trois jours pour sa réponse, sans transfert automatique garanti. Un déménagement demande de modifier l’existante, et une nouvelle prestation ne justifie pas une fiche supplémentaire : voir les [règles sur les doublons](https://support.google.com/business/answer/12756178?hl=fr).",
+        ],
+        items: [
+          "Dans Google Maps, cherchez le nom de l’institut et sa ville ; contrôlez l’adresse du résultat, pas seulement son nom.",
+          "Ouvrez le [parcours Google](https://business.google.com/create?hl=fr) avec le compte choisi et recherchez le même établissement. S’il n’existe pas, utilisez l’ajout ; s’il existe, sélectionnez sa fiche.",
+          "Si une autre personne la gère, ouvrez [la demande d’accès](https://business.google.com/add), sélectionnez l’établissement, choisissez « Demander l’accès », complétez le formulaire puis envoyez-le. Conservez l’e-mail de confirmation.",
+        ],
+        result: "Vous poursuivez sur une seule fiche : celle que vous ajoutez ou celle dont vous demandez la gestion.",
+        fallback: "Si la fiche est déjà gérée sans option de demande visible, vérifiez d’abord vos autres comptes Google. Le tableau [Dépannage](/blog/creer-fiche-google-institut-beaute#depannage) indique le recours pour une activité sans accueil physique.",
+        figures: [{
+          src: "/images/blog/fiche-google-institut/01-rechercher.jpg", width: 549, height: 672,
+          alt: "Écran Google proposant de rechercher et gérer un établissement existant ou d’en ajouter un",
+          caption: "Écran 1 — Recherchez le nom de votre institut. L’ajout d’un établissement est le parcours à utiliser lorsqu’aucune fiche correspondante n’existe.",
+          sourceUrl: "https://business.google.com/create?hl=fr", capturedAt: "2026-10-27",
+        }],
+      },
+      {
+        title: "2. Saisir le nom réel de l’institut, sans ajouter de mots-clés",
+        id: "nom",
+        paragraphs: [
+          "Dans notre exemple fictif, « Maison Lueur » convient si c’est le nom sur l’enseigne ; « Maison Lueur — meilleur institut soin visage pas cher Angers » ne convient pas si ces mots ont seulement été ajoutés pour le référencement. Google demande une [représentation fidèle du nom](https://support.google.com/business/answer/3038177?hl=fr) ; l’ajout artificiel de services ou de villes peut entraîner une suspension.",
+        ],
+        items: [
+          "Dans le champ « Nom de l’entreprise », recopiez la dénomination utilisée sur place.",
+          "Relisez le nom avant de passer à la catégorie : pas de ville, téléphone ou liste de soins ajoutés pour le référencement.",
+        ],
+        result: "Le nom saisi correspond à celui que la cliente verra sur votre enseigne.",
+      },
+      {
+        title: "3. Choisir la catégorie principale qui décrit votre activité",
+        id: "categorie",
+        paragraphs: [
+          "« Institut de beauté » était proposé dans l’interface française lors de notre vérification et correspond au cas Maison Lueur. Pour une activité surtout consacrée aux ongles, recherchez la catégorie disponible qui décrit le mieux ce métier. Les [consignes Google](https://support.google.com/business/answer/7249669?hl=fr) demandent peu de catégories, fidèles aux activités réelles : les soins individuels vont dans les services. Changer de catégorie peut nécessiter une nouvelle validation.",
+        ],
+        items: [
+          "Dans « Catégorie d’activité », tapez l’activité principale de votre institut.",
+          "Sélectionnez une proposition de Google — « Institut de beauté » dans notre exemple — puis continuez le parcours avec « Suivant » une fois les champs complétés et les conditions présentées lues.",
+        ],
+        result: "La catégorie sélectionnée décrit le métier principal, pas une prestation secondaire. L’adresse ou les questions suivantes du parcours peuvent alors être renseignées.",
+        fallback: "Si une catégorie exacte n’est pas proposée, cherchez une catégorie disponible qui décrit réellement l’activité, sans en inventer une. Les fonctions accessibles peuvent dépendre de ce choix.",
+        figures: [{
+          src: "/images/blog/fiche-google-institut/03-categorie.jpg", width: 549, height: 672,
+          alt: "Champ Catégorie d’activité avec la suggestion Google Institut de beauté",
+          caption: "Écran 2 — Le nom se renseigne au-dessus de la catégorie. Sélectionnez la suggestion Google. Les captures couvrent le démarrage ; les étapes de gestion suivantes reposent sur l’aide officielle, car elles nécessitent une fiche réelle autorisée. Aucun institut fictif n’a été enregistré.",
+          sourceUrl: "https://business.google.com/create?hl=fr", capturedAt: "2026-10-27",
+        }],
+      },
+      {
+        title: "4. Vérifier l’adresse, l’accès, le téléphone et les horaires",
+        id: "coordonnees",
+        paragraphs: [
+          "Pour un local recevant les clientes, indiquez son adresse et l’entrée réelle. Pour des interventions uniquement chez les clientes, gardez l’adresse personnelle masquée et les zones réelles. Revenez au [tableau des situations](/blog/creer-fiche-google-institut-beaute#preparer) en cas d’hésitation.",
+          "Pour compléter ou corriger une fiche accessible, recherchez l’établissement avec le compte associé : « Éditer la fiche » dans la recherche, ou « Établissement » puis « Modifier le profil » dans Maps. La [procédure de modification](https://support.google.com/business/answer/3039617?hl=fr) distingue les interfaces ; les intitulés peuvent varier.",
+          "Demandez à une personne qui ne connaît pas les lieux de vérifier la porte, l’étage, l’interphone et la nécessité de réserver. Sur rendez-vous uniquement, vérifiez les options d’horaires proposées plutôt qu’annoncer un accueil continu fictif.",
+        ],
+        items: [
+          "Vérifiez l’adresse complète et le repère sur l’entrée réelle, ou les communes où vous intervenez si l’adresse est masquée.",
+          "Renseignez le numéro professionnel et l’adresse complète du site. Appelez ce numéro depuis un autre téléphone et ouvrez le site sur mobile.",
+          "Renseignez les horaires réels et les exceptions prévues : congés, jours fériés, fermeture ponctuelle. Enregistrez les modifications lorsque le bouton est proposé.",
+        ],
+        result: "Les coordonnées saisies permettent de vous joindre et de trouver le bon lieu. Après examen des modifications par Google, contrôlez aussi leur affichage public.",
+      },
+      {
+        title: "5. Faire valider la fiche avec la méthode proposée par Google",
+        id: "valider",
+        paragraphs: [
+          "Google choisit les [méthodes de validation disponibles](https://support.google.com/business/answer/7107242?hl=fr) : vidéo, téléphone ou SMS, e-mail, appel vidéo ou courrier selon le cas. Plusieurs vérifications peuvent être demandées ; il n’existe pas de méthode ni de délai universel à imposer.",
+          "Pour une [validation vidéo](https://support.google.com/business/answer/14271705?hl=fr), préparez les lieux vides : la séquence doit prouver l’existence de l’activité et votre capacité à la gérer. L’enregistrement demandé se fait dans le parcours Google, en continu, sans montage, pendant au moins 30 secondes. Évitez de filmer clientes, dossiers, coordonnées et codes d’accès ; ne transmettez pas un code de validation à un tiers.",
+        ],
+        items: [
+          "Ouvrez votre fiche avec le compte associé et sélectionnez l’action « Valider » lorsqu’elle est proposée.",
+          "Choisissez parmi les méthodes affichées et préparez ce qu’elles demandent. Pour une vidéo, répétez le trajet extérieur → enseigne → matériel → accès réservé à l’équipe avant d’enregistrer dans le parcours Google.",
+          "Envoyez les éléments demandés puis consultez l’état de validation et les messages reçus sur votre compte. Suivez une éventuelle demande complémentaire.",
+        ],
+        result: "La validation est soit en cours d’examen, soit confirmée, soit accompagnée d’une demande à traiter. La fiche peut encore nécessiter une action : ne confondez pas l’envoi des éléments avec leur acceptation.",
+        fallback: "Si la validation échoue, reprenez le motif affiché et utilisez les recours du [tableau de dépannage](/blog/creer-fiche-google-institut-beaute#depannage), sans ajouter une seconde fiche.",
+      },
+      {
+        title: "6. Présenter l’institut avec une description à adapter",
+        id: "completer",
+        paragraphs: [
+          "Dans « Éditer la fiche », recherchez le champ de description de l’établissement, présentez l’activité puis enregistrez. Google fixe une limite de 750 caractères, sans URL ni HTML, et demande de privilégier l’activité plutôt que les promotions : voir les [règles du champ description](https://support.google.com/business/answer/3039617?hl=fr). Structure proposée : métier + localisation utile + soins principaux + particularité réelle de l’accueil.",
+          "Exemple fictif prêt à adapter : « Maison Lueur est un institut de beauté du centre d’Angers. Nous accueillons sur rendez-vous pour des soins du visage, des épilations et la beauté des mains. Les soins du visage sont réalisés en cabine individuelle. Vous pouvez choisir votre prestation dans notre agenda en ligne ou nous appeler pour être orientée avant votre premier rendez-vous. » Remplacez chaque information par un fait vérifié : pas de cabine privée ou d’agenda en ligne si vous n’en disposez pas.",
+          "L’intérêt de cette description est d’expliquer ce que la cliente trouvera sur place. Une phrase comme « votre meilleur institut pour tous vos besoins » ne décrit ni un soin ni une façon de recevoir. Ne rajoutez pas une série de quartiers ou de villes pour allonger le texte.",
+        ],
+        result: "La description présente les soins et l’accueil dans la limite du champ, sans lien, remise ni promesse inventée. Relisez son affichage après acceptation.",
+      },
+      {
+        title: "7. Ajouter trois prestations avec prix et durée",
+        id: "services",
+        paragraphs: [
+          "La [documentation Google sur les services](https://support.google.com/business/answer/9455399?hl=fr) décrit un éditeur disponible selon les catégories. Gardez un nom de soin simple ; les prix et coordonnées ne vont pas dans le nom du service.",
+          "Les trois lignes Maison Lueur ci-dessous sont fictives. La durée est à intégrer dans la description si votre éditeur ne propose pas de champ dédié. Vérifiez le temps réellement réservé, le tarif public et le contenu du soin ; ne présentez pas une prestation esthétique comme un traitement médical.",
+        ],
+        items: [
+          "Ouvrez la fiche avec le compte associé, puis « Éditer services ». Sélectionnez un soin existant ou « Ajouter d’autres services » et, si nécessaire, un service personnalisé.",
+          "Renseignez un nom de prestation simple. Ajoutez le prix et une description précisant le contenu, la durée et les conditions utiles.",
+          "Enregistrez, puis répétez pour vos autres prestations principales. Contrôlez leur cohérence avec le site et l’agenda.",
+        ],
+        result: "Les prestations ajoutées sont enregistrées dans l’éditeur et correspondent aux soins réellement réservables. Contrôlez ensuite leur publication dans la fiche.",
+        fallback: "Si « Éditer services » est absent, vérifiez le compte, la catégorie et l’état de validation. Présentez aussi les prestations sur votre site sans changer artificiellement de métier pour débloquer un bouton.",
+        table: {
+          caption: "Maison Lueur : trois prestations fictives à adapter",
+          headers: ["Nom du service", "Prix public fictif", "Description proposée"],
+          rows: [
+            ["Soin du visage hydratant", "65 €", "45 minutes : démaquillage, soin et masque, en cabine individuelle. Sur rendez-vous."],
+            ["Épilation demi-jambes", "25 €", "20 minutes réservées pour une épilation des demi-jambes à la cire. Sur rendez-vous."],
+            ["Beauté des mains", "35 €", "30 minutes : mise en forme des ongles et soin des mains, sans pose de vernis. Sur rendez-vous."],
+          ],
+        },
+      },
+      {
+        title: "8. Ajouter un lien de réservation et tester le parcours complet",
+        id: "reservation",
+        paragraphs: [
+          "Les [liens de réservation Google](https://support.google.com/business/answer/6218037?hl=fr) dépendent de la catégorie et des fonctionnalités disponibles. Un lien vers la liste des services, un lien vers votre site et un lien de réservation n’ont pas le même rôle. Choisissez la page du bon institut, avec une prestation sélectionnable, plutôt que l’accueil général d’une enseigne.",
+          "Pour Maison Lueur, la destination serait la page de son propre agenda. Exemple d’adresse à remplacer : https://votre-institut.example/reserver — c’est un domaine d’illustration, pas une page où réserver. Un outil comme Planity ou Treatwell peut convenir si la page et l’établissement y sont correctement configurés.",
+        ],
+        items: [
+          "Dans la recherche Google, ouvrez votre fiche puis « Réservation » ; dans Maps, passez par « Modifier la fiche » puis le type de transaction proposé.",
+          "Sélectionnez « Ajouter un lien » ou « Ajouter un autre lien », collez l’adresse de la page de réservation puis enregistrez. Si plusieurs liens figurent sur la fiche et que l’option existe, définissez votre lien préféré.",
+          "Depuis un téléphone non connecté à votre compte de gestion, ouvrez le bouton public. Vérifiez le bon institut, une prestation, son prix, sa durée, les créneaux et la façon dont la confirmation sera envoyée. Si vous effectuez une réservation de test, utilisez votre propre identité puis annulez-la dans l’agenda.",
+        ],
+        result: "Le bouton ouvre le bon agenda sur mobile. Le soin, le tarif et les conditions concordent avec la fiche ; les éventuels liens de partenaires ont aussi été vérifiés.",
+        fallback: "Sans rubrique « Réservation », gardez le lien du site dans les coordonnées et rendez la prise de rendez-vous ou le contact visible sur cette page. Le suivi UTM est une [option séparée](/blog/creer-fiche-google-institut-beaute#suivi-optionnel), pas un prérequis pour publier la fiche.",
+      },
+      {
+        title: "9. Ajouter des photos qui répondent aux questions d’une nouvelle cliente",
+        id: "photos",
+        paragraphs: [
+          "Préparez un petit reportage fidèle aux lieux. Google accepte JPG ou PNG, de 10 Ko à 5 Mo, et recommande 720 × 720 pixels. Les [consignes photo](https://support.google.com/business/answer/6103862?hl=fr) précisent aussi que les images ne deviennent publiques qu’après validation de la fiche et que la couverture choisie n’est pas assurée d’apparaître en premier.",
+          "Liste proposée pour Maison Lueur : façade avec l’enseigne et l’entrée ; accueil ; cabine individuelle vide et préparée ; équipe avec son accord ; matériel réellement utilisé pour les soins. Remplacez la cabine par ce qui existe dans votre salon. Une cliente doit pouvoir reconnaître les lieux, pas seulement apprécier une image décorative.",
+        ],
+        items: [
+          "Sur ordinateur, recherchez le nom et la ville de l’établissement avec le compte associé.",
+          "Ouvrez « Photos » puis « Ajouter des photos » et sélectionnez les fichiers préparés.",
+          "Contrôlez les images ajoutées et leur état. Après validation de la fiche et publication, vérifiez le rendu public, puis remplacez les vues devenues trompeuses après des travaux ou un changement d’enseigne.",
+        ],
+        result: "Les images envoyées montrent le vrai lieu sans coordonnées de clientes, dossier visible ou personne reconnaissable publiée sans autorisation.",
+      },
+      {
+        title: "10. Récupérer le lien d’avis et préparer une invitation neutre",
+        id: "avis",
+        paragraphs: [
+          "Les [règles Google sur les avis](https://support.google.com/business/answer/3474122?hl=fr) imposent une expérience réelle et interdisent un avantage en échange d’un avis, de sa modification ou de son retrait. Proposez un retour honnête sans filtrer les clientes satisfaites. Le [parcours du lien et du QR d’avis](https://support.google.com/business/answer/16816815?hl=fr) est documenté séparément ; Google précise que la génération du QR se fait actuellement dans un navigateur sur ordinateur.",
+          "Message à adapter : « Merci de votre visite chez Maison Lueur. Si vous le souhaitez, vous pouvez partager votre expérience sur Google : [votre lien d’avis]. Votre retour nous aide à comprendre ce qui fonctionne et ce qui peut être amélioré. » Remplacez le crochet par votre lien testé. Ne demandez ni cinq étoiles ni une copie d’un texte imposé. Vérifiez les conditions d’utilisation des coordonnées avant un envoi par e-mail ou SMS.",
+          "Pour répondre publiquement à un avis négatif, proposez un contact privé sans confirmer un soin ou un détail de dossier : « Nous avons pris connaissance de votre retour. Vous pouvez contacter la responsable de l’institut pour que nous examinions la situation. » Ne publiez pas l’historique des rendez-vous de la cliente.",
+          "Une animation Okado après le soin peut soutenir une prochaine visite, indépendamment des avis : participation et gain restent séparés de leur publication et de leur note. [L’exemple pour institut](/instituts-beaute#demo) présente cette animation commerciale.",
+        ],
+        items: [
+          "Depuis la fiche que vous gérez, ouvrez « Voir les avis » puis « Recevoir plus d’avis », selon les intitulés affichés.",
+          "Copiez le lien proposé. Sur ordinateur, vous pouvez aussi enregistrer l’image du QR par clic droit lorsque Google l’affiche.",
+          "Ouvrez le lien ou scannez le QR avec un autre téléphone pour vérifier le bon établissement, sans déposer d’avis de test sur votre propre activité.",
+        ],
+        result: "Votre lien mène bien à l’avis pour votre établissement et l’invitation ne contient ni récompense ni demande de note précise.",
+      },
+      {
+        title: "Option : identifier les visites issues de la fiche avec des UTM",
+        id: "suivi-optionnel",
+        optional: true,
+        paragraphs: [
+          "Ce suivi est facultatif : utilisez-le seulement si vous disposez d’un outil de mesure configuré et des choix de consentement adaptés. Un paramètre UTM identifie la provenance d’un lien ; il ne crée pas de réservation et ne remplace pas les statistiques de la fiche.",
+          "Exemple technique à adapter sur votre propre lien : https://votre-institut.example/reserver?utm_source=google&utm_medium=organic&utm_campaign=fiche_etablissement. Gardez une convention stable, puis vérifiez que la page et l’agenda conservent les paramètres. Si votre URL contient déjà un « ? », ajoutez les paramètres avec « & » plutôt qu’un second point d’interrogation.",
+          "Si l’agenda perd l’origine, utilisez une question de provenance ou un rapprochement agrégé adapté à votre organisation. Ne présentez pas toutes les réservations du jour comme issues de Google ; le cas de mesure du guide explique cette limite.",
+        ],
+      },
+      {
+        title: "Améliorer une fiche Google déjà validée",
+        id: "optimiser",
+        paragraphs: [
+          "Google explique le classement local par la pertinence, la distance et la popularité de l’établissement. Une fiche complète aide à comprendre l’activité ; la distance dépend notamment de la personne qui cherche ; la notoriété s’appuie sur plusieurs signaux, dont les liens et les avis. Les [conseils officiels de classement local](https://support.google.com/business/answer/7091?hl=fr) ne proposent pas de payer pour une meilleure position naturelle. Les avis et notes peuvent contribuer au classement, sans fournir un seuil magique à atteindre.",
+          "Notre analyse : une personne qui cherche un soin du visage à Angers doit retrouver chez Maison Lueur le soin, ses 65 €, ses 45 minutes, le lieu et une réservation claire. Dans un partenariat réel, un lien vers cette page peut aider la clientèle du partenaire ; évitez les faux annuaires ou les pages de villes où vous n’avez pas d’établissement.",
+        ],
+        items: [
+          "Choisissez une prestation réellement importante pour votre institut et vérifiez qu’elle est décrite avec les mêmes informations dans la fiche, le site et l’agenda.",
+          "Sur la page de votre lieu, ajoutez l’entrée, les modalités d’accès, les soins, les tarifs, la réservation et les réponses aux questions reçues à l’accueil. Corrigez les anciens contacts sur vos profils et partenaires réellement utilisés.",
+          "Pour une actualité utile, comme une ouverture exceptionnelle, préparez un message avec date et prochaine action si les publications sont disponibles. Gardez les pages et les photos à jour avant de chercher un rythme de publication.",
+        ],
+        table: {
+          caption: "Ordre de travail proposé pour une fiche d’institut déjà validée",
+          headers: ["Priorité", "Action concrète", "Ce que vous vérifiez"],
+          rows: [
+            ["1 · Fiabilité", "Corriger identité, catégorie principale, repère et horaires", "La fiche représente bien l’activité et permet de trouver le lieu"],
+            ["2 · Réservation", "Ouvrir le lien depuis un téléphone non connecté à votre compte", "La bonne prestation peut être réservée dans le bon institut"],
+            ["3 · Choix", "Décrire services, tarifs et durées ; montrer les lieux", "Une nouvelle cliente comprend ce qu’elle peut réserver"],
+            ["4 · Réputation", "Inviter les clientes à un avis honnête et traiter les retours", "Aucune récompense, aucun filtrage, aucune donnée privée dans les réponses"],
+            ["5 · Présence locale", "Aligner le site et les partenaires réellement concernés", "Adresses et contacts cohérents ; contenu utile sans pages de villes artificielles"],
+          ],
+        },
+      },
+      {
+        title: "Mesurer les résultats sans confondre un clic et une cliente acquise",
+        id: "mesurer",
+        paragraphs: [
+          "Avec un compte autorisé sur une fiche validée, ouvrez les performances et choisissez une période. Google présente des [indicateurs de visibilité et d’interaction](https://support.google.com/business/answer/9918094?hl=fr), selon les fonctionnalités : recherches, vues, clics vers le site, demandes d’itinéraire ou appels. Certaines données peuvent réunir des interactions naturelles et publicitaires. Le bouton d’appel mesure une action sur le bouton, pas un appel décroché ; un itinéraire demandé ne prouve pas une visite.",
+          "Exemple entièrement fictif : sur quatre semaines, la fiche enregistre 60 clics vers le site, auxquels l’agenda attribue six réservations. À la date du bilan, les six créneaux sont tous passés : quatre rendez-vous ont été honorés, un a été annulé et un correspond à une absence non annoncée. Les rapports sont 6 ÷ 60 = 10 % de réservations par clic et 4 ÷ 60 ≈ 6,7 % de rendez-vous honorés par clic. Ce ne sont ni des moyennes sectorielles ni des taux de clientes uniques ; le suivi peut perdre une partie du parcours.",
+          "Pour ce bilan fictif, l’annulation et l’absence demandent des vérifications différentes. Un rendez-vous futur ne doit pas être classé parmi les rendez-vous manqués : attendez sa date ou isolez-le dans « à venir ». Comparez les mêmes réservations entre leur création et leur issue, puis des périodes de même durée en notant congés et publicité. Ces observations orientent les décisions sans prouver que la dernière modification de la fiche a causé les réservations.",
+        ],
+      },
+      {
+        title: "Une routine simple après la mise en ligne",
+        id: "entretenir",
+        paragraphs: [
+          "Après un changement de prix, de lieu ou de prestation, mettez à jour la fiche, le site et l’agenda. Avant un jour férié, contrôlez les horaires exceptionnels. Chaque mois, comparez les interactions disponibles aux réservations identifiables et traitez le premier obstacle observé : mauvais accès, lien cassé, soin ambigu. Notez date, modification et motif dans un journal court. Pour d’autres leviers commerciaux, consultez le [guide d’acquisition en institut](/blog/attirer-nouvelles-clientes-institut-beaute).",
+        ],
+      },
+      {
+        title: "Dépannage : que vérifier lorsque le parcours bloque ?",
+        id: "depannage",
+        paragraphs: [
+          "Repérez votre problème ci-dessous, vérifiez le compte utilisé puis suivez l’aide correspondante. Gardez la notification Google sous les yeux pour traiter le motif précis.",
+        ],
+        table: {
+          caption: "Fiche Google : première vérification et prochaine action",
+          headers: ["Problème", "À vérifier d’abord", "Prochaine action et aide"],
+          rows: [
+            ["Une autre personne gère la fiche", "Nom, adresse et compte utilisé", "Pour un local ou une activité mixte, demander l’accès à la fiche existante. Pour une activité uniquement chez les clientes, suivre le recours via l’assistance : [demande de propriété](https://support.google.com/business/answer/4566671?hl=fr)."],
+            ["Aucun bouton de gestion", "Êtes-vous connecté au compte associé à la fiche ?", "Se connecter au compte autorisé puis rechercher le nom et la ville ; contrôler les méthodes proposées si la validation manque : [accès et validation](https://support.google.com/business/answer/7107242?hl=fr)."],
+            ["Validation refusée ou nouvelle vérification", "Motif et éléments demandés par Google", "Corriger les éléments incohérents et reprendre la méthode proposée : [aide à la validation](https://support.google.com/business/answer/7107242?hl=fr). Ne pas créer un doublon."],
+            ["Services ou réservation absents", "Catégorie réelle, compte et état de validation", "Comparer les fonctions proposées avec l’aide [services](https://support.google.com/business/answer/9455399?hl=fr) ou [réservation](https://support.google.com/business/answer/6218037?hl=fr). En attendant, rendre le contact et les soins accessibles sur le site."],
+            ["La réservation ouvre le mauvais institut", "Destination de chaque lien, y compris les partenaires", "Corriger le lien géré par l’institut et contrôler le lien préféré ou les liens tiers : [gérer les liens](https://support.google.com/business/answer/6218037?hl=fr). Retester sur mobile."],
+            ["Une photo n’est pas publique", "Validation de la fiche et conformité du fichier", "Vérifier le format, la taille et l’état de la photo avant de multiplier les envois : [aide aux photos](https://support.google.com/business/answer/6103862?hl=fr)."],
+            ["La fiche est suspendue ou désactivée", "Règle citée dans la notification et cohérence des justificatifs", "Vérifier les consignes puis utiliser la procédure officielle de contestation avec les éléments demandés : [rétablissement de la fiche](https://support.google.com/business/answer/4569145?hl=fr). Ne pas recréer le même établissement."],
+          ],
+        },
+      },
+      {
+        title: "Checklist : la fiche est-elle prête à accueillir une nouvelle cliente ?",
+        id: "checklist",
+        paragraphs: [
+          "Depuis un téléphone qui n’utilise pas votre compte de gestion, ouvrez la fiche publique et cochez les points vérifiés.",
+        ],
+        checklist: [
+          "Je gère la bonne fiche, sans doublon, avec un compte conservé par l’institut.",
+          "Le nom et la catégorie correspondent à l’activité réelle ; la validation est confirmée.",
+          "L’adresse et l’entrée sont exactes, ou l’adresse est masquée si je ne reçois pas de clientèle sur place.",
+          "Le téléphone fonctionne ; les horaires et les prochaines exceptions sont à jour.",
+          "La description et les trois prestations principales concordent avec le site et l’agenda.",
+          "Le lien de réservation ou de contact ouvre le bon institut sur mobile.",
+          "Les photos publiques montrent les lieux actuels sans données de clientes exposées.",
+          "Le lien d’avis est testé et l’invitation ne demande ni récompense ni note particulière.",
+          "J’ai prévu un prochain contrôle des informations et des rendez-vous identifiables.",
+        ],
+      },
+      {
+        title: "Questions fréquentes sur la fiche Google d’un institut",
+        id: "questions",
+        paragraphs: [
+          "La création d’une fiche Google est-elle payante ? Non, l’ajout ou la revendication est gratuit, comme le rappelle l’[aide à la création](https://support.google.com/business/answer/2911778?hl=fr). Une agence peut facturer son accompagnement et Google Ads propose de la publicité, mais ni l’un ni l’autre n’est nécessaire pour créer la fiche ou acheter une meilleure position naturelle.",
+          "Que faire si la fiche ne remonte pas sur « institut de beauté + ville » ? Distinguez l’absence de fiche publique d’une position éloignée sur une recherche concurrentielle. Vérifiez d’abord validation, catégorie, informations et éventuelles notifications. Si la fiche est publique, une optimisation ne supprime pas le facteur distance et ne garantit pas les premières places. Gardez un suivi des demandes et rendez-vous plutôt que d’ajouter des mots-clés au nom.",
+        ],
+      },
+    ],
+    source: [
+      { label: "Google — ajouter ou revendiquer une fiche, gratuitement", href: "https://support.google.com/business/answer/2911778?hl=fr" },
+      { label: "Google — démarrer et choisir le compte de gestion", href: "https://support.google.com/business/answer/7039811?hl=fr" },
+      { label: "Google — règles de représentation et nom de l’établissement", href: "https://support.google.com/business/answer/3038177?hl=fr" },
+      { label: "Google — établissements de services et zones desservies", href: "https://support.google.com/business/answer/9157481?hl=fr" },
+      { label: "Google — demander la propriété d’une fiche existante", href: "https://support.google.com/business/answer/4566671?hl=fr" },
+      { label: "Google — doublons et fiches multiples", href: "https://support.google.com/business/answer/12756178?hl=fr" },
+      { label: "Google — gérer les catégories d’activité", href: "https://support.google.com/business/answer/7249669?hl=fr" },
+      { label: "Google — modifier les informations, horaires et description", href: "https://support.google.com/business/answer/3039617?hl=fr" },
+      { label: "Google — méthodes de validation de l’établissement", href: "https://support.google.com/business/answer/7107242?hl=fr" },
+      { label: "Google — réaliser une vidéo de validation", href: "https://support.google.com/business/answer/14271705?hl=fr" },
+      { label: "Google — ajouter les services et leurs prix", href: "https://support.google.com/business/answer/9455399?hl=fr" },
+      { label: "Google — liens de réservation et autres actions", href: "https://support.google.com/business/answer/6218037?hl=fr" },
+      { label: "Google — photos et vidéos de l’établissement", href: "https://support.google.com/business/answer/6103862?hl=fr" },
+      { label: "Google — obtenir des avis sans contrepartie", href: "https://support.google.com/business/answer/3474122?hl=fr" },
+      { label: "Google — créer le lien ou le QR code de demande d’avis", href: "https://support.google.com/business/answer/16816815?hl=fr" },
+      { label: "Google — contester une suspension ou une désactivation", href: "https://support.google.com/business/answer/4569145?hl=fr" },
+      { label: "Google — pertinence, distance et popularité dans le classement local", href: "https://support.google.com/business/answer/7091?hl=fr" },
+      { label: "Google — comprendre les performances de la fiche", href: "https://support.google.com/business/answer/9918094?hl=fr" },
+    ],
+    related: [
+      "/blog/attirer-nouvelles-clientes-institut-beaute",
+      "/blog/faire-revenir-cliente-apres-premiere-visite-institut-beaute",
+      "/blog/animation-commerciale-institut-beaute",
+      "/instituts-beaute",
+    ],
+  },
+  {
     path: "/blog/idees-animations-commerciales-boutique",
+    takeaway: {
+      title: "Choisissez une animation que vous pouvez réellement servir",
+      text: "Pour un premier essai, nous privilégions une démonstration ou un petit atelier si le produit demande une explication, et un jeu court si l’attente est le moment à animer. Le bon critère de choix est le temps d’équipe disponible par participant, avant le nombre de personnes espéré.",
+    },
     title: "15 idées d’animations commerciales pour attirer des clients en boutique",
     seoTitle: "15 idées d’animations commerciales en boutique",
     source: [references.lottery],
@@ -109,16 +480,17 @@ export const blogPosts: BlogPost[] = [
       "Pour attirer des clients en boutique, choisissez une animation liée à un objectif précis, avec une promesse claire, une dotation disponible et une mesure séparant participations, gains et retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "5 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "6 min de lecture",
     image: "/images/blog/animations-commerciales-boutique.webp",
     imageAlt: "Illustration d’une animation commerciale dans une boutique de proximité",
     sections: [
       {
         title: "Commencez par un objectif précis",
         paragraphs: [
-          "Avant de choisir une animation, décidez ce que vous voulez provoquer : faire découvrir un produit, occuper un temps d’attente, encourager une prochaine visite ou créer un moment fort avec votre équipe. Un seul objectif principal rend le message plus lisible et facilite le bilan.",
+          "Pour choisir une animation en boutique, partez du frein à lever : un produit mal compris appelle une démonstration ; un manque de passage appelle une invitation diffusée hors du magasin ; une attente subie peut accueillir un jeu court. Notez le public, l’action attendue et la ressource qui limite l’opération : conseiller disponible, places, stock ou temps de service.",
+          "Exemple fictif de capacité : un atelier accueille six personnes pendant 20 minutes, puis demande 10 minutes de remise en place. Deux séances mobilisent une heure d’animation et accueillent au plus 12 personnes, hors préparation. Si l’objectif exige beaucoup plus de passages, choisissez un autre format plutôt que de promettre des places que l’équipe ne peut pas servir.",
           "Une animation ne prouve pas à elle seule une hausse du chiffre d’affaires. Elle peut en revanche être conçue avec un parcours observable : affichage, participation, gain, retrait ou retour en boutique. Cette distinction évite de confondre une activité mesurée avec une vente automatiquement attribuée.",
         ],
       },
@@ -128,21 +500,21 @@ export const blogPosts: BlogPost[] = [
           "Les idées ci-dessous sont des formats à adapter à votre activité, votre équipe et vos conditions commerciales. Les coûts et résultats ne sont pas universels : prévoyez les contraintes avant de publier l’offre.",
         ],
         items: [
-          "Jeu par QR code à l’accueil : une roue ou un ticket fait découvrir une dotation définie à l’avance.",
-          "Tirage au sort parmi les participants d’une journée ou d’un week-end.",
-          "Démonstration produit avec une mini-expérience à réaliser sur place.",
-          "Atelier court : personnalisation, dégustation, conseil ou découverte d’un savoir-faire.",
-          "Lancement d’un nouveau produit accompagné d’un avantage limité et clairement daté.",
-          "Partenariat avec un commerce voisin pour croiser les audiences locales.",
-          "Défi photo ou mise en scène en boutique, sans conditionner une récompense à un avis public.",
-          "Offre sur un créneau calme pour mieux répartir le flux de visites.",
-          "Animation en caisse qui propose une prochaine visite plutôt qu’une remise illimitée.",
-          "Journée thématique liée à un produit disponible, par exemple une découverte de montures et accessoires en magasin d’optique ([guide pratique](/blog/journee-decouverte-magasin-optique)).",
-          "Programme ambassadeur présenté comme une invitation, avec des règles et un consentement explicites.",
-          "Échantillonnage ou découverte d’un format réduit, si le stock et les conditions le permettent.",
-          "Opération saisonnière avec une durée, une dotation et une date de fin visibles.",
-          "Collecte de contacts facultative, séparée de la participation et de toute prospection future.",
-          "Déclinaison d’une même animation sur plusieurs établissements, après contrôle de chaque QR et de chaque condition.",
+          "Mini-démonstration produit : montrez un usage en dix minutes avec une référence disponible et une personne capable de répondre aux questions.",
+          "Atelier sur inscription : faites réaliser une étape simple, annoncez le matériel fourni et limitez les places au temps d’accompagnement disponible.",
+          "Dégustation ciblée : proposez un ou deux produits identifiés, préparez leur information alimentaire et rendez l’achat possible à proximité.",
+          "Rencontre avec un fournisseur ou créateur : confirmez l’intervenant, le thème et les horaires avant d’annoncer sa présence.",
+          "Présentation de collection : composez une sélection courte autour d’un usage ou d’un style plutôt que de montrer tout le stock.",
+          "Démonstration d’entretien : montrez un geste que l’équipe maîtrise, avec les consignes du fabricant et sans improviser une intervention technique.",
+          "Rendez-vous de conseil : ouvrez quelques créneaux pour aider au choix, avec durée, périmètre et réservation annoncés.",
+          "Parcours de découverte en rayon : balisez quelques produits autour d’un thème et donnez une question concrète à explorer à chaque étape.",
+          "Jeu par QR code pendant l’attente : expliquez la dotation et les conditions avant le scan, puis organisez la remise du gain.",
+          "Quiz de découverte : posez des questions sur la gamme présentée, annoncez les réponses et définissez séparément toute dotation éventuelle.",
+          "Animation avec un voisin : construisez une démonstration complémentaire, en précisant qui accueille et qui finance.",
+          "Soirée autour d’un thème client : annoncez ce que les visiteurs découvriront, le mode d’accès et la capacité d’accueil.",
+          "Personnalisation sur place : proposez une réalisation sur des produits compatibles et estimez le temps nécessaire par commande.",
+          "Journée de découverte métier : montrez le travail de la boutique, par exemple une [découverte des montures en magasin d’optique](/blog/journee-decouverte-magasin-optique), préparée par l’équipe.",
+          "Invitation à une prochaine séance : remettez une date et un motif précis pour revenir, avec un moyen de confirmer sa place.",
         ],
       },
       {
@@ -208,6 +580,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animer-point-de-vente-qr-code",
+    takeaway: {
+      title: "Le scan doit ouvrir une action immédiatement compréhensible",
+      text: "Notre conseil est de tester d’abord la promesse et l’ouverture de la page, puis le jeu. Ajouter une récompense ne résout pas un QR illisible ou un lien qui mène ailleurs. La première amélioration consiste souvent à retirer une étape ou à rapprocher l’affiche du moment d’attente.",
+    },
     source: [references.contrast],
     title: "Comment utiliser un QR code pour animer un point de vente ?",
     description:
@@ -219,8 +595,8 @@ export const blogPosts: BlogPost[] = [
       "Pour animer un point de vente avec un QR code, placez-le dans un moment où le client peut agir, ouvrez un parcours mobile simple, testez le QR public avant impression et mesurez séparément scans, participations et retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "6 min de lecture",
     image: "/images/blog/qr-code-point-de-vente.webp",
     imageAlt: "Illustration d’un client scannant un QR code pour une animation en point de vente",
@@ -230,7 +606,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Un QR code ne crée pas l’animation à lui seul",
         paragraphs: [
-          "Le QR code est un accès rapide depuis une affiche, un comptoir ou un autre support visible. Il ne remplace ni une promesse claire ni une expérience conçue pour le téléphone. Avant de l’imprimer, formulez ce que le client découvre après le scan et ce que votre équipe doit pouvoir délivrer.",
+          "Un QR code de point de vente doit annoncer l’action qui suit le scan : « Jouez pour découvrir votre résultat » ou « Consultez le programme de l’atelier ». Conservez un seul lien principal sur le support et une adresse recopiable pour les personnes qui ne peuvent pas scanner. Testez l’affiche imprimée depuis la position du client, puis terminez le parcours sur téléphone sans expliquer oralement où cliquer.",
+          "Pour diagnostiquer un QR peu utilisé, séparez trois vérifications : le client remarque-t-il la promesse, son téléphone reconnaît-il le code, la page lui permet-elle d’agir ? Notez le premier blocage observé. Refaire le graphisme du jeu n’aide pas un client qui n’arrive jamais jusqu’au navigateur.",
           "Dans un point de vente, une animation peut servir à occuper un temps d’attente, créer un moment de surprise, faire connaître un produit ou préparer une prochaine visite. Choisissez un objectif principal : un message trop général rend le scan moins compréhensible et le bilan plus difficile.",
         ],
       },
@@ -247,7 +624,7 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Un bon emplacement combine visibilité, temps disponible et téléphone utilisable. Selon votre activité, testez l’accueil, une zone d’attente, une table, un comptoir ou la caisse. Dans un restaurant, le client peut avoir le temps de scanner à table ; dans un institut ou une boutique, le moment d’attente peut être plus adapté.",
           "Le support doit laisser respirer le QR code et son message. Indiquez une consigne courte, la nature de l’animation et les conditions essentielles. Évitez de placer le code trop bas, derrière un objet, dans un reflet ou à un endroit où le client ne peut pas garder son téléphone ouvert quelques secondes.",
-          "Ces emplacements sont des scénarios à tester, pas une promesse de résultat. La meilleure place dépend de la circulation, de la lumière, de la distance de lecture et de la capacité de l’équipe à répondre aux questions.",
+          "Pour choisir l’emplacement d’un QR code, observez l’accueil, la table ou le comptoir depuis la position réelle du client. La meilleure place dépend de la circulation, de la lumière, de la distance de lecture et de la capacité de l’équipe à répondre aux questions.",
         ],
       },
       {
@@ -269,7 +646,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Prévoyez une lecture accessible et une solution sans scan",
         paragraphs: [
-          "Associez au code une consigne lisible, une zone dégagée et une adresse web publique recopiable. Sur la page mobile, vérifiez le zoom, le contraste des textes et la navigation au clavier. La référence W3C en fin d’article concerne les textes numériques ; elle ne définit pas une taille universelle de QR imprimé.",
+          "Un QR de point de vente doit être accompagné d’une consigne lisible et d’une adresse publique recopiable. Sur sa page mobile, testez le zoom et la navigation au clavier. Le [critère WCAG 2.2 du W3C pour le contraste du texte](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) prévoit notamment 4,5:1 pour les textes courants, avec des exceptions décrites dans la référence. Ce seuil concerne le texte numérique, pas la taille ou la lecture d’un QR imprimé.",
           "Une personne peut ne pas disposer d’un téléphone compatible ou de connexion. Prévoyez une explication par l’équipe et, si vous l’organisez, un accès alternatif respectant les mêmes conditions. Ne promettez pas un mode hors ligne ou une participation assistée que vous n’avez pas préparé. Pour le support, utilisez la [checklist d’affiche QR code](/blog/affiche-qr-code-animation-commerciale).",
         ],
       },
@@ -307,6 +684,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/idees-jeux-concours-restaurant",
+    takeaway: {
+      title: "Faites passer la fluidité du service avant la taille du cadeau",
+      text: "En restauration, nous privilégions un lot déjà connu de la cuisine et une consigne que la salle peut répéter sans interrompre le service. Un dessert à retirer plus tard et un café servi immédiatement mobilisent des ressources différentes : choisissez le moment de remise avant de choisir le montant affiché.",
+    },
     source: [references.lottery],
     title: "10 idées de jeux-concours pour un restaurant",
     description:
@@ -318,9 +699,9 @@ export const blogPosts: BlogPost[] = [
       "Les meilleurs jeux-concours pour un restaurant sont ceux qui correspondent à un moment précis du service, avec des lots faciles à remettre, des conditions visibles et une mesure distincte des participations et des retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "6 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "7 min de lecture",
     image: "/images/blog/jeux-concours-restaurant.webp",
     imageAlt: "Illustration d’un jeu-concours organisé dans un restaurant",
     ctaLabel: "Préparer une animation pour votre restaurant",
@@ -329,7 +710,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Commencez par le moment que vous voulez améliorer",
         paragraphs: [
-          "Avant de choisir un jeu-concours, identifiez le moment à animer : attente avant le service, déjeuner en semaine, fin de repas, lancement d’une carte ou prochaine visite. Le même lot n’a pas le même intérêt selon l’objectif. Un dessert offert peut créer une surprise immédiate ; une remise valable plus tard peut encourager un retour.",
+          "Pour un jeu-concours de restaurant, choisissez d’abord le moment de remise du lot : pendant le repas ou lors d’une visite ultérieure. Un café immédiatement servi anime l’attente ; un dessert valable sur un prochain déjeuner donne une raison de revenir. Écrivez sur le support le produit, les jours de validité et l’éventuel achat requis pour éviter une négociation au moment de l’addition.",
+          "Exemple de budget entièrement fictif : 20 desserts attribués, chacun coûtant 2 € de matière, représentent 40 € si tous les gains sont retirés, avant le temps de service et les autres frais. Réserver seulement dix desserts au motif que tous les gagnants ne reviendront probablement pas fragilise la promesse : prévoyez la remise de tous les gains encore valides.",
           "Un jeu ne garantit ni une réservation ni une hausse du chiffre d’affaires. Il peut en revanche créer un parcours mesurable : scan du QR code, participation, gain attribué, retrait et éventuelle visite suivante. Cette distinction aide à choisir un format réaliste et à interpréter les résultats sans surpromesse.",
         ],
       },
@@ -339,16 +721,16 @@ export const blogPosts: BlogPost[] = [
           "Les idées suivantes sont des formats à adapter à votre carte, votre capacité de service et vos conditions commerciales. Elles décrivent des scénarios d’animation ; elles ne constituent pas une promesse de résultat ni une règle automatique pour votre établissement.",
         ],
         items: [
-          "QR code à table : proposez une roue ou un ticket à gratter accessible depuis le téléphone pendant l’attente, avec des lots définis à l’avance.",
-          "Dessert offert : faites gagner un dessert clairement identifié, avec une période de validité et les éventuelles conditions d’utilisation visibles.",
-          "Animation en heure creuse : réservez le jeu ou un lot à certains créneaux de faible affluence, si l’équipe peut l’expliquer et le remettre pendant le service.",
-          "Lancement d’une nouvelle carte : associez la découverte d’un plat ou d’une boisson à une participation courte, sans annoncer une disponibilité que le stock ne permet pas d’assurer.",
-          "Jeu lié à un événement : créez une opération pour une soirée, une fête locale ou une date saisonnière, avec une date de fin et une dotation préparées avant la diffusion.",
-          "Lot pour une prochaine visite : choisissez une récompense utilisable plus tard, avec une durée de validité, les jours concernés et les éventuelles conditions d’achat explicitement indiqués.",
-          "Table familiale : proposez une petite surprise choisie et reçue par l’adulte accompagnant, sans demander de coordonnées à un enfant ; vérifiez l’adéquation du lot au public et les conditions de participation.",
-          "Partenariat local : construisez une dotation avec un commerce voisin, en séparant les responsabilités, les conditions de retrait et les usages de coordonnées de chaque partenaire.",
-          "Jeu saisonnier : adaptez le thème, les lots et la période à une saison ou à un produit disponible, puis retirez le support lorsque l’opération est terminée.",
-          "Tirage parmi les participants : annoncez une période de participation, les modalités de sélection et la façon de prévenir ou remettre le lot, sans présenter le tirage comme une vente garantie.",
+          "Quiz de la nouvelle carte : présentez quelques ingrédients ou usages culinaires, avec une réponse expliquée par l’équipe ; définissez séparément toute dotation.",
+          "Roue à table pendant l’attente : proposez une participation courte, avec un support stable et des lots connus de la cuisine et de la salle.",
+          "Dessert pour un prochain déjeuner : faites gagner une référence précise, en affichant jours, validité et éventuel repas requis.",
+          "Découverte d’une boisson sans alcool : mettez en jeu une préparation disponible et indiquez comment obtenir ses informations alimentaires.",
+          "Animation d’un service calme : limitez l’opération au créneau disponible et vérifiez que les gains n’engorgent pas le service suivant.",
+          "Soirée de lancement de carte : associez le jeu à une présentation des plats, après confirmation des produits et des quantités.",
+          "Rendez-vous avec un producteur : préparez une découverte avec un partenaire confirmé ; identifiez l’organisateur et la personne qui remet les lots.",
+          "Surprise familiale : adressez la participation et la remise à l’adulte accompagnant, avec un lot adapté et sans coordonnées demandées aux enfants.",
+          "Parcours avec un commerce voisin : proposez une découverte complémentaire, avec deux adresses, des conditions de retrait et des responsabilités distinctes.",
+          "Tirage de fin d’événement : annoncez période, éligibilité, sélection, contact et remise ; organisez ce tirage séparément si l’outil choisi ne l’automatise pas.",
         ],
       },
       {
@@ -408,6 +790,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animation-commerciale-institut-beaute",
+    takeaway: {
+      title: "Une petite attention ne doit pas désorganiser les cabines",
+      text: "Pour un institut, notre préférence va à un avantage précisément décrit et compatible avec un rendez-vous existant lorsque la capacité est limitée. Si le lot exige une séance dédiée, son coût inclut le temps de cabine mobilisé, et pas seulement le produit utilisé.",
+    },
     source: [references.consent],
     title: "Animation commerciale pour institut de beauté : idées et exemples",
     description:
@@ -419,8 +805,8 @@ export const blogPosts: BlogPost[] = [
       "Pour animer un institut de beauté, choisissez une mécanique et des lots cohérents avec votre positionnement, vos prestations et votre planning, puis testez le parcours et les conditions de remise avant diffusion.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "6 min de lecture",
     image: "/images/blog/animation-institut-beaute.webp",
     imageAlt: "Illustration d’une animation commerciale dans un institut de beauté",
@@ -430,7 +816,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Définissez l’objectif de votre animation",
         paragraphs: [
-          "Un institut peut vouloir faire découvrir un soin, présenter un nouveau protocole, valoriser une gamme ou donner envie de revenir. Ces objectifs ne demandent pas forcément le même lot ni le même moment de diffusion. Commencez par une intention principale pour préserver la lisibilité de l’expérience.",
+          "Pour une animation d’institut, choisissez une prestation à faire découvrir et vérifiez sa capacité de remise avant de préparer l’affiche. Un mini-produit s’emporte à l’accueil ; une option de soin demande du temps ; une prestation offerte seule occupe un rendez-vous complet. L’avantage doit préciser la durée, les soins compatibles et la façon de réserver.",
+          "Exemple entièrement fictif : dix options de soin de 10 minutes ajoutent 100 minutes au planning si elles prolongent les rendez-vous. Même avec 1 € de consommable par option, le budget n’est pas limité à 10 €. Répartissez les créneaux avec l’équipe ou choisissez un lot qui n’allonge pas les soins si les cabines sont déjà occupées.",
           "Une animation ne garantit ni réservation, ni chiffre d’affaires, ni fidélisation. Elle peut en revanche créer un parcours observable : participation, gain, retrait et éventuelle prochaine visite. Cette distinction aide à préserver votre positionnement et à mesurer ce qui s’est réellement passé.",
         ],
       },
@@ -440,16 +827,16 @@ export const blogPosts: BlogPost[] = [
           "Les idées ci-dessous sont des scénarios à adapter à votre positionnement, vos prestations, vos stocks et votre planning. Les exemples de lots et de coûts sont hypothétiques : validez-les avec votre réalité avant toute diffusion.",
         ],
         items: [
-          "Découverte d’un soin : faites gagner une option courte ou un avantage lié à une prestation que votre équipe peut réellement expliquer et délivrer.",
-          "Prochaine visite : proposez un lot valable sur un rendez-vous ultérieur, avec une date limite réaliste et les éventuelles conditions d’utilisation visibles.",
-          "Lancement d’un protocole : accompagnez la présentation d’un nouveau rituel ou d’une nouvelle gamme avec une expérience découverte, sans promettre une disponibilité illimitée.",
-          "Partenariat local : imaginez une dotation commune avec un salon, une boutique ou un commerce voisin, en clarifiant qui organise, qui remet et qui protège les coordonnées.",
-          "Événement client : utilisez une roue ou un ticket à gratter pendant une soirée, une journée découverte ou une présentation, avec une dotation préparée pour le volume attendu.",
-          "Roue élégante : choisissez une roue mobile avec un message court, un logo et des lots cohérents avec votre identité, plutôt qu’une mécanique trop promotionnelle pour votre clientèle.",
-          "Ticket surprise : proposez une révélation tactile sur smartphone pour une opération de découverte, en conservant des conditions lisibles avant et après la participation.",
-          "Offre duo : construisez un avantage pour une prestation ou une découverte à deux, sans transformer le jeu en promesse automatique de réservation.",
-          "Invitation parrainage : préparez une offre de recommandation gérée par votre équipe, avec des règles explicites ; le jeu ne remplace pas un programme de parrainage automatisé.",
-          "Temps fort saisonnier : adaptez le thème, le support et la durée à une période de l’année, puis retirez les affiches et les lots lorsque l’opération est terminée.",
+          "Atelier de découverte d’une gamme : présentez quelques références et leurs usages d’après le fabricant, avec durée et places annoncées.",
+          "Démonstration d’un geste professionnel : montrez ce que l’équipe peut expliquer au public, sans transformer l’animation en diagnostic ou conseil de santé.",
+          "Présentation d’un nouveau protocole : décrivez son déroulement, sa durée et son tarif, avec des créneaux réellement réservables.",
+          "Option sur une prochaine prestation : faites découvrir un complément défini et vérifiez le temps ajouté au rendez-vous.",
+          "Découverte d’un mini-produit : préparez les unités disponibles, leur information d’usage et la procédure de remise.",
+          "Soirée questions-réponses : regroupez les interrogations sur les prestations, annoncez le thème et gardez les situations individuelles pour un échange adapté.",
+          "Jeu à l’accueil : utilisez une roue ou un ticket pendant une attente appropriée, avec une consigne courte et des lots préparés.",
+          "Rencontre avec une marque : confirmez le contenu, les personnes présentes et les produits avant d’inviter les clientes.",
+          "Découverte en duo : ouvrez quelques créneaux compatibles avec les cabines et l’équipe, en indiquant si les prestations sont simultanées ou successives.",
+          "Partenariat de quartier : préparez une invitation avec un commerce complémentaire ; convenez de qui reçoit les demandes et finance les avantages.",
         ],
       },
       {
@@ -516,6 +903,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/attirer-nouvelles-clientes-institut-beaute",
+    takeaway: {
+      title: "Réparez la réservation avant de payer pour davantage de visites",
+      text: "Notre analyse : une page qui ne permet pas de comprendre le soin ou de réserver gaspille l’effort d’acquisition, quel que soit le canal. Corrigez ce passage, puis comparez les canaux au coût par première visite honorée, avec un budget maximal fixé à l’avance.",
+    },
     source: [
       references.localVisibility,
       {
@@ -547,8 +938,8 @@ export const blogPosts: BlogPost[] = [
       "Mettez d’abord à jour votre fiche Google et vos pages de soins, facilitez la prise de rendez-vous et demandez des avis authentiques sans contrepartie. Élargissez ensuite la découverte avec des recommandations, des partenaires locaux ou un contenu social utile. Suivez demandes, nouveaux rendez-vous et présences séparément : une vue, un clic ou un scan ne prouve pas l’acquisition d’une cliente.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-25",
-    updatedAt: "2026-10-25",
-    reviewedAt: "2026-10-25",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "12 min de lecture",
     image: "/images/blog/attirer-nouvelles-clientes-institut-beaute.webp",
     imageAlt: "Une esthéticienne accueille une nouvelle cliente dans son institut",
@@ -558,7 +949,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Définissez quelle nouvelle cliente vous souhaitez accueillir",
         paragraphs: [
-          "« Attirer plus de clientes » est trop large pour choisir un canal. Partez d’une prestation que vous souhaitez faire connaître, de la zone dans laquelle une cliente peut raisonnablement venir et de la capacité réellement disponible. Un institut spécialisé dans les ongles ne répond pas aux mêmes recherches ni aux mêmes questions qu’un spa ou qu’une activité de soins du visage.",
+          "Pour attirer de nouvelles clientes en institut, choisissez une prestation, une zone de déplacement réaliste et des disponibilités effectivement réservables. Une nouvelle cliente doit trouver au même endroit le contenu du soin, sa durée, son tarif, l’accès à l’institut et le lien vers la bonne prestation dans l’agenda. Testez ce parcours sur téléphone avant de financer sa diffusion.",
+          "Pour départager Google, les réseaux sociaux et un partenariat local, demandez aux nouvelles clientes comment elles ont découvert l’institut et notez les rendez-vous honorés, séparément des demandes. Une publication très vue mais consultée hors de votre zone ne répond pas au même besoin qu’une recommandation de quartier suivie d’un rendez-vous.",
           "Notez le besoin visé, le soin correspondant, son prix et sa durée, les disponibilités, puis les questions reçues avant une première visite : accès, stationnement, déroulement, réservation ou personne qui réalisera le soin. Ces réponses guideront votre fiche, votre page web et vos publications. Évitez de créer une promotion avant de savoir ce que la personne ne comprend pas ou ne trouve pas.",
         ],
         items: [
@@ -571,6 +963,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Rendez l’institut trouvable et compréhensible sur Google",
         paragraphs: [
+          "Pour réaliser la configuration plutôt que lire seulement ses principes, suivez notre [guide illustré de création d’une fiche Google pour institut](/blog/creer-fiche-google-institut-beaute) : recherche d’un doublon, catégorie, validation, services et réservation. Ce guide traite la mise en place ; les autres leviers d’acquisition sont présentés ci-dessous.",
           "Revendiquer et vérifier la fiche Google Business Profile de l’établissement. Contrôlez le nom réel, la catégorie la plus précise disponible, l’adresse ou la zone desservie, les horaires, le téléphone, le site et les services. Ajoutez des photos récentes et authentiques du lieu, de l’équipe ou des prestations, puis corrigez les informations dès qu’elles changent. N’ajoutez pas de mots-clés au nom de l’établissement s’ils n’en font pas partie dans la réalité.",
           "Google décrit le classement local par la pertinence, la distance et la notoriété. Compléter la fiche aide les personnes à comprendre l’offre, mais ne permet ni de choisir sa position, ni d’acheter une meilleure place dans les résultats naturels. Concentrez votre page web sur les soins réellement proposés : description, durée, prix ou façon de les obtenir, localisation et prochaine étape. Une page utile par spécialité peut répondre mieux qu’une page locale dupliquée pour chaque quartier.",
           "Si l’option est disponible sur la fiche, ajoutez le lien direct de réservation et testez-le depuis un téléphone. Google permet d’ajouter des liens d’action, mais leur disponibilité peut dépendre du profil et de la catégorie. Le lien doit aboutir sur le bon agenda ou la bonne page, avec un chemin lisible jusqu’au rendez-vous ; ne promettez pas un bouton qui n’apparaît pas sur toutes les fiches.",
@@ -628,8 +1021,8 @@ export const blogPosts: BlogPost[] = [
         title: "Cas fictif : calculez ce qu’a coûté une première visite honorée",
         paragraphs: [
           "Exemple entièrement fictif, sans données d’un institut réel : l’« Institut Lueur » teste une campagne locale pendant quatre semaines avec 120 € de budget publicitaire. Le lien suivi reçoit 60 visites. Six personnes demandent un renseignement, quatre réservent un premier soin et trois viennent effectivement. Ces volumes décrivent le scénario ; ils ne constituent ni un taux de conversion attendu ni une preuve que la publicité explique seule chaque rendez-vous.",
-          "Supposons ensuite, uniquement pour illustrer un calcul, que chaque première visite rapporte 68 € sur une base comptable commune, et déclenche 8 € de produits, 25 € de temps de travail valorisé et 2 € de frais variables. La contribution estimée par visite est 68 − 8 − 25 − 2 = 33 €. Pour trois rendez-vous honorés, elle est de 99 €. Après les 120 € de publicité, le solde est −21 €, avant les charges fixes et les impôts éventuels. Le coût média par première visite honorée est de 120 ÷ 3 = 40 €.",
-          "Dans ce scénario, la première prestation seule ne couvre pas le budget média selon ces hypothèses. Cela ne dit pas si une campagne réelle serait rentable : il faudrait vérifier les montants, les nouvelles clientes, le temps réellement consacré, les réservations annulées et d’éventuelles visites ultérieures observées — sans les présumer. Remplacez chaque valeur par vos coûts et comparez des périodes équivalentes avant de reconduire l’investissement.",
+          "Exemple financier entièrement fictif pour trois premières visites honorées en institut : chaque soin rapporte 68 € sur une base comptable commune, avec 8 € de produits, 25 € de temps de travail valorisé et 2 € de frais variables. La contribution estimée par visite est 68 − 8 − 25 − 2 = 33 €, soit 99 € pour trois visites. Avec 120 € de publicité, le solde est −21 € avant charges fixes et impôts éventuels ; le coût média par première visite honorée est 120 ÷ 3 = 40 €.",
+          "Dans le cas fictif de trois premières visites honorées en institut, 99 € de contribution estimée ne couvrent pas les 120 € de publicité, soit un solde de −21 € avant charges fixes. Cela ne dit pas si une campagne réelle serait rentable : il faudrait vérifier les montants, les nouvelles clientes, le temps réellement consacré, les réservations annulées et d’éventuelles visites ultérieures observées — sans les présumer. Remplacez chaque valeur par vos coûts et comparez des périodes équivalentes avant de reconduire l’investissement.",
         ],
         table: {
           caption: "Parcours fictif de l’Institut Lueur, chiffres hypothétiques",
@@ -647,7 +1040,7 @@ export const blogPosts: BlogPost[] = [
         title: "Plan de test : améliorez un passage à la fois",
         paragraphs: [
           "Pendant quatre semaines, gardez un seul objectif — par exemple obtenir des premiers rendez-vous pour un soin — et modifiez un seul levier principal. Commencez par relever l’état actuel, puis notez chaque semaine les demandes, réservations, annulations, présences, coût publicitaire ou avantage remis et source déclarée. Le délai doit être adapté au rythme de réservation de vos clientes ; quatre semaines ne sont pas une norme universelle.",
-          "À la fin, cherchez où le parcours se bloque : la fiche n’amène-t-elle pas de clics vers le site ? la page reçoit-elle des visites mais peu de demandes ? les demandes deviennent-elles des réservations ? les nouvelles clientes viennent-elles ? Cette lecture aide à choisir la suite, mais de faibles volumes ne permettent pas d’attribuer un changement à une seule action avec certitude.",
+          "Au bilan d’un test d’acquisition en institut, cherchez où le parcours se bloque : la fiche n’amène-t-elle pas de clics vers le site ? la page reçoit-elle des visites mais peu de demandes ? les demandes deviennent-elles des réservations ? les nouvelles clientes viennent-elles ? Cette lecture aide à choisir la suite, mais de faibles volumes ne permettent pas d’attribuer un changement à une seule action avec certitude.",
         ],
         items: [
           "Semaine 1 : relevez les informations, la page, les liens, la capacité et le nombre de nouveaux rendez-vous honorés.",
@@ -677,6 +1070,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/remplir-heures-creuses-institut-beaute",
+    takeaway: {
+      title: "Traitez une annulation et un creux récurrent différemment",
+      text: "Pour un créneau libéré demain, nous privilégions la liste d’attente déjà demandée par les clientes. Pour un creux régulier, il faut examiner les durées vendables et la demande locale. Une réduction permanente peut déplacer les rendez-vous existants tout en diminuant leur contribution.",
+    },
     title: "Comment remplir les heures creuses d’un institut de beauté sans brader ses soins ?",
     seoTitle: "Institut de beauté : remplir les heures creuses sans brader",
     source: [
@@ -700,9 +1097,9 @@ export const blogPosts: BlogPost[] = [
       "La méthode la plus utile dépend de la cause : pour une annulation, contactez une liste d’attente adaptée au soin et à la durée ; pour un creux récurrent, améliorez d’abord l’accès à la réservation et proposez le prochain rendez-vous aux clientes en fin de soin. Utilisez Google Business Profile et les réseaux pour annoncer un créneau concret avec un lien de réservation. Ne testez une remise ciblée qu’en dernier recours, sur une capacité définie, puis comparez les rendez-vous honorés, le coût et le temps mobilisé.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-25",
-    updatedAt: "2026-10-25",
-    reviewedAt: "2026-10-25",
-    readingTime: "13 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "16 min de lecture",
     image: "/images/blog/remplir-heures-creuses-institut-beaute.webp",
     imageAlt: "Une esthéticienne organise les rendez-vous de son institut dans un agenda papier",
     ctaLabel: "Découvrir Okado pour un institut de beauté",
@@ -711,7 +1108,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Confirmez d’abord qu’il s’agit bien d’un créneau creux",
         paragraphs: [
-          "Un agenda qui semble vide aujourd’hui n’indique pas forcément une baisse de demande : les clientes peuvent réserver plus tard, certaines plages peuvent être bloquées pour les pauses ou la préparation, et les annulations ne sont pas la même chose qu’un manque régulier de réservations. Regardez plusieurs semaines comparables, par jour et tranche horaire, puis distinguez les rendez-vous pris, honorés, annulés et non honorés.",
+          "Pour repérer une heure creuse en institut, mesurez des minutes réellement vendables, pas seulement des cases blanches dans l’agenda. Déduisez préparation, nettoyage, pauses et indisponibilités des personnes qualifiées. Distinguez ensuite manque de réservations, annulations et absences : ces situations appellent respectivement une meilleure offre, un remplacement ou un traitement du rendez-vous non honoré.",
+          "Exemple fictif de diagnostic : un mardi offre 180 minutes vendables et 120 minutes de soins honorés, soit 120 ÷ 180 = 66,7 % d’occupation observée. Une heure reste libre, mais deux plages séparées de 30 minutes ne permettent pas de vendre un soin d’une heure. Relevez les durées continues disponibles avant de communiquer un créneau ou une réduction.",
           "Faites ce relevé par cabine, personne et grande famille de prestations. Une plage libre de 30 minutes n’est pas exploitable pour un soin qui en demande 60, nettoyage compris. Tenez compte des temps de préparation, de désinfection, des pauses et des compétences disponibles : une cabine vide n’est pas toujours une capacité réellement vendable.",
           "Pour un premier diagnostic, un tableau sur quatre semaines peut suffire à faire apparaître une hypothèse ; ce n’est pas un seuil statistique. Notez les exceptions (congés, travaux, météo, fêtes, panne) et comparez les mêmes jours plutôt qu’une semaine atypique à une autre.",
         ],
@@ -754,7 +1152,7 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Pour annoncer un créneau disponible sans remise dans Google, connectez-vous au compte qui gère la fiche de l’institut dans la recherche ou Maps, ouvrez la gestion des posts, puis créez un post « Actualités » avec le soin, la date, l’heure et un lien vers la réservation. Pour une véritable promotion, choisissez plutôt le type « Offre » : renseignez le titre, les dates et horaires, les conditions et, si possible, un lien de réservation. Publiez, puis vérifiez que le post apparaît comme « En ligne » : un post en attente ou refusé n’est pas visible. Google indique que les posts en ligne peuvent apparaître dans la recherche et sur Maps, sans garantir leur emplacement ni leur audience. Les posts anciens peuvent être archivés après six mois si aucune période n’est définie.",
           "Exemple de texte pour un créneau libre : « Jeudi 12 novembre à 14 h : un rendez-vous de 45 minutes pour [nom du soin]. Durée et tarif : [détails]. Réservation : [lien] ». Remplacez les éléments entre crochets, indiquez une disponibilité réelle et retirez ou actualisez le post dès que le créneau est pris. Ce modèle informe ; il ne crée pas à lui seul une offre à prix réduit.",
-          "Séparément, ajoutez ou vérifiez le lien de réservation de la fiche : dans Google, ouvrez la gestion du profil, puis la rubrique Réservation si elle est proposée, et enregistrez l’URL de votre agenda ou de votre page de prise de rendez-vous. Les actions proposées et les libellés peuvent varier selon la fiche et les options disponibles. Un lien de réservation permanent ne remplace pas le post daté d’une offre ; les deux doivent conduire à une page à jour.",
+          "Pour permettre la réservation depuis la fiche Google de l’institut, ajoutez ou vérifiez le lien de réservation permanent : dans Google, ouvrez la gestion du profil, puis la rubrique Réservation si elle est proposée, et enregistrez l’URL de votre agenda ou de votre page de prise de rendez-vous. Les actions proposées et les libellés peuvent varier selon la fiche et les options disponibles. Un lien de réservation permanent ne remplace pas le post daté d’une offre ; les deux doivent conduire à une page à jour.",
           "Sur Instagram ou Facebook, publiez une image ou une story avec la prestation, le jour et l’heure, le prix éventuel, la durée et un lien ou une consigne claire pour réserver. Exemple : « Jeudi [date], un créneau de 14 h se libère pour [soin] de 45 minutes — détails et réservation ici ». Retirez l’annonce une fois le créneau pris. Une photo de cabine, d’équipe ou de résultat ne doit être publiée qu’avec les autorisations nécessaires.",
         ],
       },
@@ -772,8 +1170,8 @@ export const blogPosts: BlogPost[] = [
         title: "Exemple fictif : comparer une remise et un avantage en nature",
         paragraphs: [
           "Prenons l’institut entièrement fictif « Atelier Sève ». Il lui reste deux créneaux de 60 minutes, un jeudi après-midi. Pour illustrer le calcul, supposons un prix de prestation de 60 €, 6 € de consommables et 2 € de frais variables de réservation/paiement par rendez-vous. Tous les montants sont supposés dans une même base comptable ; ce calcul simplifié ne comprend ni loyer, ni charges fixes, ni rémunération supplémentaire si l’ouverture de ces créneaux exige du travail en plus.",
-          "Au tarif habituel, la contribution simplifiée par soin est de 60 − 6 − 2 = 52 €. Avec un avantage en nature qui coûte 3 € à l’institut, elle devient 60 − 6 − 2 − 3 = 49 €. Avec une remise de 10 %, le prix passe à 54 € et la contribution à 54 − 6 − 2 = 46 €. Si les deux créneaux sont effectivement réservés puis honorés, cela représente respectivement 104 €, 98 € ou 92 € avant charges fixes et éventuel travail supplémentaire.",
-          "Cette comparaison n’annonce aucun taux de réservation : elle montre seulement le coût de chaque scénario si les rendez-vous ont lieu. Si une cliente aurait réservé au tarif normal, lui appliquer la remise réduit la contribution de 6 € dans cet exemple. À l’inverse, un rendez-vous qui serait resté vide peut apporter une contribution positive, à condition de déduire tous les coûts réellement déclenchés. Remplacez ces hypothèses par vos coûts, frais et règles de TVA ; ne reconduisez l’offre qu’après avoir vérifié les rendez-vous honorés et l’effet sur les réservations au tarif habituel.",
+          "Simulation entièrement fictive pour deux soins à 60 € chacun, avec 6 € de produits et 2 € de frais variables par soin : la contribution simplifiée unitaire est 60 − 6 − 2 = 52 €. Un avantage en nature coûtant 3 € la ramène à 49 € ; une remise de 10 % ramène le prix à 54 € et la contribution à 46 €. Pour deux rendez-vous honorés, les contributions sont donc 104 €, 98 € ou 92 €, avant charges fixes et éventuel travail supplémentaire.",
+          "Comparer une remise et un avantage en nature renseigne leur coût si les rendez-vous sont honorés, pas le nombre de réservations à venir. Accorder une réduction à une cliente qui aurait réservé au tarif normal diminue la contribution du soin du montant de la remise. À l’inverse, un rendez-vous qui serait resté vide peut apporter une contribution positive, à condition de déduire tous les coûts réellement déclenchés. Remplacez ces hypothèses par vos coûts, frais et règles de TVA ; ne reconduisez l’offre qu’après avoir vérifié les rendez-vous honorés et l’effet sur les réservations au tarif habituel.",
         ],
         table: {
           caption: "Comparaison fictive par rendez-vous honoré, avant charges fixes",
@@ -788,7 +1186,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Pour attirer de nouvelles clientes, testez parrainage et partenariat local",
         paragraphs: [
-          "Ces leviers servent à faire découvrir l’institut et peuvent demander plus de temps qu’une liste d’attente ou qu’un lien de réservation mieux placé : ne les choisissez pas pour remplacer un créneau qui vient de se libérer. Si l’objectif est d’attirer de nouvelles clientes sur plusieurs semaines, vous pouvez tester un parrainage simple : une cliente remet à une proche un avantage découverte valable sur une prestation et une plage clairement indiquées ; l’avantage de la marraine peut être déclenché après la première prestation honorée de sa proche. Ce scénario doit être adapté au coût et à la capacité de l’institut ; il ne garantit pas de nouvelles réservations.",
+          "Le parrainage et les partenariats locaux servent à faire découvrir l’institut et peuvent demander plus de temps qu’une liste d’attente ou qu’un lien de réservation mieux placé : ne les choisissez pas pour remplacer un créneau qui vient de se libérer. Si l’objectif est d’attirer de nouvelles clientes sur plusieurs semaines, vous pouvez tester un parrainage simple : une cliente remet à une proche un avantage découverte valable sur une prestation et une plage clairement indiquées ; l’avantage de la marraine peut être déclenché après la première prestation honorée de sa proche. Ce scénario doit être adapté au coût et à la capacité de l’institut ; il ne garantit pas de nouvelles réservations.",
           "Écrivez qui peut participer, quand l’avantage est acquis, sur quelles prestations il s’applique, s’il est cumulable et comment il est utilisé. Laissez la proche prendre contact elle-même plutôt que de transmettre ses coordonnées à l’institut sans qu’elle l’ait demandé. Ne conditionnez jamais un avantage à un avis Google : Google interdit les récompenses échangées contre des avis et la sollicitation sélective d’avis positifs.",
           "Un partenariat local peut réunir des activités complémentaires fréquentées par la même clientèle : institut et studio de yoga, boutique de vêtements ou coiffeur, par exemple. Définissez un échange concret (affiche et carte réciproques, découverte lors d’un événement, avantage limité), qui remet quoi, les dates et le nombre de personnes que chaque établissement peut accueillir. Utilisez un code distinct ou une question neutre à la réservation pour repérer l’origine ; ne partagez pas les fichiers de clientes entre partenaires par défaut.",
         ],
@@ -853,6 +1251,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/faire-revenir-cliente-apres-premiere-visite-institut-beaute",
+    takeaway: {
+      title: "Facilitez une deuxième visite choisie et mesurez sa réalisation",
+      text: "Nous privilégions une proposition de rendez-vous claire en fin de soin, puis un accès simple à la réservation. La réduction devient un outil éventuel, pas le cœur du suivi. Le signal utile est la deuxième visite honorée dans une fenêtre adaptée au soin, plutôt qu’une date réservée puis annulée.",
+    },
     source: [
       {
         label: "CNIL — communications électroniques aux prospects et clients : quelles règles respecter ?",
@@ -878,8 +1280,8 @@ export const blogPosts: BlogPost[] = [
       "À la fin du premier soin, expliquez la prochaine étape seulement si elle a du sens pour la cliente, proposez de réserver sans pression et laissez une façon simple de reprendre rendez-vous. Séparez les rappels nécessaires au service des messages promotionnels, puis mesurez les rendez-vous effectivement honorés plutôt que les seules réservations.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-25",
-    updatedAt: "2026-10-25",
-    reviewedAt: "2026-10-25",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "10 min de lecture",
     image: "/images/blog/faire-revenir-cliente-premiere-visite-institut.webp",
     imageAlt: "Une esthéticienne échange avec une cliente à la fin de son premier rendez-vous",
@@ -889,10 +1291,11 @@ export const blogPosts: BlogPost[] = [
       {
         title: "La deuxième visite se prépare pendant la première",
         paragraphs: [
-          "La possibilité d’une deuxième visite dépend de plusieurs éléments concrets : la prestation correspondait-elle à ce qui avait été annoncé, la cliente sait-elle quoi faire ensuite et peut-elle reprendre rendez-vous sans friction ? Il n’existe ni délai ni fréquence universels : le rythme dépend du soin, des préférences de la personne, de son budget et de son expérience. Ne transformez pas une recommandation professionnelle en obligation de revenir.",
+          "Pour préparer le retour après une première visite en institut, terminez le rendez-vous par trois informations : ce qui a été réalisé, les conseils utiles pour la suite et la façon de retrouver la prestation dans l’agenda. Proposez une prochaine séance seulement si elle répond au besoin de la cliente ; précisez alors la durée, le tarif et les disponibilités, en lui laissant le choix de réserver plus tard.",
+          "Pour comprendre une absence de deuxième rendez-vous, posez une question neutre lorsque l’échange s’y prête : « Qu’est-ce qui vous aiderait à organiser une prochaine visite ? ». Classez les réponses réellement exprimées — disponibilité, budget, besoin ponctuel ou réservation difficile — sans supposer qu’une cliente silencieuse attend une remise. La correction dépend du motif, pas du seul nombre de jours écoulés.",
           "À la fin du rendez-vous, demandez d’abord si elle souhaite un conseil pour la suite. Si un autre soin ou un entretien peut être pertinent, expliquez pourquoi et dans quel horizon cela pourrait se discuter, sans promettre de résultat esthétique ou de santé. Si aucune prochaine visite n’est nécessaire, n’en inventez pas une pour remplir l’agenda.",
           "Le but n’est pas de verrouiller une réservation avant le départ. C’est de permettre à la cliente de choisir en connaissance de cause : réserver maintenant, réfléchir, ou reprendre contact plus tard.",
-          "Ce sujet est différent du remplissage d’un créneau calme : si votre problème principal est une période de faible fréquentation, consultez aussi le guide pour [animer une période creuse dans un commerce local](/blog/animer-periode-creuse-commerce-local). Ici, le point de départ est une première prestation déjà réalisée.",
+          "Le retour après une première visite en institut et le remplissage d’un créneau calme répondent à des besoins différents : si votre problème principal est une période de faible fréquentation, consultez aussi le guide pour [animer une période creuse dans un commerce local](/blog/animer-periode-creuse-commerce-local). Ici, le point de départ est une première prestation déjà réalisée.",
         ],
       },
       {
@@ -943,8 +1346,8 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Choisissez une fenêtre d’observation cohérente avec le soin et annoncez-la dans votre analyse. Une prestation d’entretien rapproché et un soin ponctuel ne se comparent pas avec le même délai. Si vous retenez 60 jours pour un test, présentez ce choix comme une fenêtre de mesure interne, pas comme une norme du secteur.",
           "Exemple entièrement fictif : une cohorte comprend 40 clientes dont la première visite a été honorée pendant un mois. Parmi elles, 18 réservent une nouvelle date avant de partir : 18 ÷ 40 = 45 % de réservations immédiates. Pour mesurer le retour, laissez ensuite à chacune 60 jours complets après sa première visite et attendez que la dernière fenêtre soit terminée. Dans cet exemple, 14 sur 40 ont réalisé une deuxième visite dans leur fenêtre : 14 ÷ 40 = 35 % de retours observés. Ces chiffres illustrent le calcul ; ils ne prédisent pas les résultats d’un institut.",
-          "Les deux pourcentages répondent à des questions différentes : réserver avant de partir n’est pas la même chose que revenir, et une cliente peut aussi réserver plus tard. Notez les annulations et déplacements, le type de soin, la période, les créneaux disponibles et la méthode de comptage. Sans comparaison fiable, parlez d’un constat et non d’un effet causé par une remise, un message ou Okado.",
-          "Pour ce suivi, ne créez pas un fichier marketing plus détaillé que nécessaire : date de première visite, statut de réservation et présence peuvent suffire au calcul. Gardez les informations opérationnelles du soin dans l’outil prévu à cet effet et évitez de les recopier dans une liste de prospection. La [CNIL recommande de limiter les données collectées à ce qui est nécessaire](https://www.cnil.fr/fr/minimiser-les-donnees-collectees) ; certaines informations révélant l’état de santé relèvent en outre d’un régime particulier, à qualifier selon leur nature et leur usage.",
+          "Le taux de réservation au départ de l’institut et le taux de deuxième visite honorée répondent à des questions différentes : réserver avant de partir n’est pas la même chose que revenir, et une cliente peut aussi réserver plus tard. Notez les annulations et déplacements, le type de soin, la période, les créneaux disponibles et la méthode de comptage. Sans comparaison fiable, parlez d’un constat et non d’un effet causé par une remise, un message ou Okado.",
+          "Pour mesurer les deuxièmes visites en institut, limitez le relevé aux informations nécessaires : date de première visite, statut de réservation et présence peuvent suffire au calcul. Gardez les informations opérationnelles du soin dans l’outil prévu à cet effet et évitez de les recopier dans une liste de prospection. La [CNIL recommande de limiter les données collectées à ce qui est nécessaire](https://www.cnil.fr/fr/minimiser-les-donnees-collectees) ; certaines informations révélant l’état de santé relèvent en outre d’un régime particulier, à qualifier selon leur nature et leur usage.",
         ],
         items: [
           "Premières visites honorées : dénominateur de la cohorte suivie.",
@@ -1001,6 +1404,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/jeu-concours-ou-promotion",
+    takeaway: {
+      title: "Choisissez la certitude ou la participation selon le besoin",
+      text: "Nous privilégions une offre certaine si le client cherche surtout un prix ou un avantage précis. Le jeu convient davantage à un moment de participation volontaire. Comparez les deux dispositifs au coût réellement supporté et à l’action recherchée, sans traiter chaque joueur comme un acheteur supplémentaire.",
+    },
     source: [references.lottery, references.pricing],
     title: "Jeu-concours ou promotion : quelle stratégie choisir ?",
     description:
@@ -1012,9 +1419,9 @@ export const blogPosts: BlogPost[] = [
       "Choisissez une promotion pour une offre certaine et immédiatement compréhensible ; choisissez un jeu-concours pour créer une interaction ; combinez-les seulement si chaque étape, condition et indicateur reste lisible.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "6 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "7 min de lecture",
     image: "/images/blog/jeu-concours-ou-promotion.webp",
     imageAlt: "Illustration comparant une promotion et un jeu-concours pour un commerce local",
     ctaLabel: "Choisir un format d’animation",
@@ -1023,7 +1430,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "La différence en une phrase",
         paragraphs: [
-          "Une promotion met en avant une offre et sa condition d’achat ; un jeu-concours demande une participation pour découvrir un résultat, un lot ou une sélection. La promotion répond souvent à une décision immédiate. Le jeu-concours ajoute une étape d’attention et peut créer un moment mémorable, sans garantir une vente ou une prochaine visite.",
+          "Une promotion accorde un avantage défini à toute personne qui en remplit les conditions ; un jeu-concours organise une participation dont le résultat dépend de sa mécanique. Si le frein identifié est le prix, expliquez directement l’offre. Si l’objectif est d’animer une attente ou de présenter un produit, un jeu peut créer une interaction supplémentaire, à condition de garder les règles compréhensibles.",
+          "Comparaison fictive sur 100 utilisations : une remise certaine de 3 € abandonne 300 € de recettes ; 20 lots réellement remis à 3 € de coût unitaire mobilisent 60 €, auxquels s’ajoutent l’outil et la gestion du jeu. Ces budgets achètent des expériences différentes. Les comparer ne permet pas de déduire que le dispositif le moins cher apportera davantage de ventes.",
           "Il n’existe pas de meilleur format dans l’absolu. Commencez par l’objectif de la campagne : trafic, découverte d’un produit, prochaine visite, animation d’un temps d’attente ou collecte facultative et consentie. Un objectif principal rend le choix et la mesure plus cohérents.",
         ],
       },
@@ -1117,6 +1525,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/fideliser-clients-sans-programme-points",
+    takeaway: {
+      title: "Donnez un prochain rendez-vous à la relation, sans ajouter de gestion inutile",
+      text: "Notre conseil est de tester une raison concrète de revenir avant d’administrer des points : une suite de conseil, une nouveauté attendue ou un rendez-vous annoncé. Le coût et la charge de cette promesse doivent rester supportables même si tous les clients concernés l’utilisent.",
+    },
     source: [references.prospecting],
     title: "Comment fidéliser ses clients sans programme de points ?",
     description:
@@ -1128,9 +1540,9 @@ export const blogPosts: BlogPost[] = [
       "Pour fidéliser sans programme de points, travaillez une expérience cohérente et des raisons de revenir, puis utilisez une animation ponctuelle si elle sert un objectif précis ; une participation ne prouve pas une fidélité durable.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "6 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "7 min de lecture",
     image: "/images/blog/fideliser-sans-programme-points.webp",
     imageAlt: "Illustration d’une relation client sans programme de points",
     ctaLabel: "Voir si une animation ponctuelle convient à votre commerce",
@@ -1139,7 +1551,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "La fidélisation commence par une raison de revenir",
         paragraphs: [
-          "Un programme de points formalise des visites répétées, mais il n’est pas la seule façon de travailler la relation client. La clarté de l’offre, la qualité de l’accueil, la régularité du service et la pertinence d’une prochaine invitation peuvent aussi contribuer à donner envie de revenir.",
+          "Pour fidéliser sans points, rendez la prochaine visite utile : retrouver une référence, obtenir un conseil complémentaire, participer à une démonstration ou découvrir un arrivage annoncé. Choisissez une seule promesse que l’équipe peut tenir et expliquez comment le client la retrouve. Une carte de points n’est pas nécessaire pour donner ce repère.",
+          "Exemple fictif : une boutique remet 40 invitations datées pour une démonstration ; dix sont présentées lors d’une visite ultérieure avant l’échéance. Le retour observé est 10 ÷ 40 = 25 % des invitations, avec un support compté une seule fois. Ce ratio renseigne cette invitation et cette période ; il ne mesure ni la fidélité annuelle ni les visites sans invitation.",
           "Aucune animation ne prouve à elle seule qu’un client est devenu fidèle. Une participation, un gain ou un retrait sont des étapes observables d’une campagne ; ils ne remplacent ni une nouvelle visite mesurée ni une relation durable. Cette distinction permet de choisir un objectif honnête.",
         ],
       },
@@ -1229,6 +1642,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/idees-promotions-commerce-local",
+    takeaway: {
+      title: "Une remise se décide sur la marge restante, pas sur son pourcentage",
+      text: "Nous privilégions une offre ciblée et plafonnée lorsque la marge est fragile. Avant de communiquer, calculez les unités supplémentaires nécessaires pour retrouver la contribution habituelle. Un volume de tickets plus élevé peut masquer une opération moins intéressante pour le commerce.",
+    },
     source: [references.pricing],
     title: "15 idées de promotions pour un commerce local",
     description:
@@ -1240,8 +1657,8 @@ export const blogPosts: BlogPost[] = [
       "Pour préparer une promotion locale, associez une offre simple, des conditions et dates visibles, un coût maîtrisé et une mesure qui distingue utilisation, retrait et vente attribuée selon une méthode documentée.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "7 min de lecture",
     image: "/images/blog/promotions-commerce-local.webp",
     imageAlt: "Illustration de promotions pour un commerce local",
@@ -1251,37 +1668,38 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Choisissez d’abord le rôle de la promotion",
         paragraphs: [
-          "Une promotion peut aider à faire découvrir un produit, écouler un stock daté, encourager une prochaine visite, animer un événement ou rendre une offre plus visible. Elle ne répond pas à tous ces objectifs de la même façon : une remise immédiate favorise la compréhension, tandis qu’un avantage différé demande une condition et un suivi plus précis.",
+          "Pour choisir une promotion locale, identifiez le stock ou la prestation concernés, l’objectif et la contribution que vous devez préserver. Chiffrez l’avantage sur une base HT comparable, après les coûts variables, puis fixez sa durée et son périmètre. Une remise générale touche aussi les achats qui auraient eu lieu au prix habituel.",
+          "Simulation fictive, hors charges fixes : un produit vendu 40 € HT coûte 24 € à acheter, soit 16 € de marge avant promotion. Une baisse de 10 % ramène le prix à 36 € HT et la marge à 12 €. Pour retrouver la marge de 30 ventes ordinaires, il faut 30 × 16 ÷ 12 = 40 ventes au prix réduit, soit dix ventes de plus, avant les frais de campagne.",
           "Avant de choisir l’idée, écrivez ce que le client doit comprendre, ce que l’équipe doit remettre et ce que vous voulez observer. Cette phrase de cadrage évite de multiplier les conditions et de présenter une opération comme une garantie de chiffre d’affaires.",
         ],
       },
       {
-        title: "15 idées classées par niveau d’effort",
+        title: "15 offres à choisir selon votre objectif et votre marge",
         paragraphs: [
-          "Les formats ci-dessous sont des exemples à adapter. Le niveau d’effort est indicatif : il dépend de vos supports, de votre stock, du nombre de points de vente et de la capacité de l’équipe.",
+          "Pour chaque promotion, définissez l’éligibilité, le coût maximal, la disponibilité et la façon de compter les utilisations. Ces quinze formats sont des offres à chiffrer avant diffusion ; un QR code ou un logiciel sert à les diffuser et ne constitue pas, à lui seul, une offre.",
         ],
         items: [
-          "Effort faible — Offre découverte : appliquez un avantage sur un produit ou une prestation clairement identifié, avec une date de fin visible.",
-          "Effort faible — Lot complémentaire : ajoutez un accessoire, un supplément ou une option si sa disponibilité et son coût sont maîtrisés.",
-          "Effort faible — Créneau calme : réservez une offre à certaines heures ou journées, en vérifiant que l’équipe peut l’expliquer et la délivrer.",
-          "Effort faible — Prochaine visite : proposez un avantage valable plus tard, avec une durée, des jours et les éventuelles conditions d’achat précisées.",
-          "Effort faible — Offre saisonnière : adaptez un produit, un message et une période à une saison, puis retirez les supports à la fin de l’opération.",
-          "Effort modéré — Duo ou complément : construisez une offre pour deux produits ou deux personnes, sans masquer le prix réel ni les conditions de chaque élément.",
-          "Effort modéré — Lancement local : accompagnez la découverte d’une nouveauté par une offre limitée, seulement si le stock annoncé peut suivre la communication.",
-          "Effort modéré — Événement de quartier : associez une offre à une journée locale, une ouverture spéciale ou une animation, avec un responsable et une date de clôture.",
-          "Effort modéré — Partenariat voisin : échangez une visibilité ou une dotation avec un commerce proche, en séparant les responsabilités et les données collectées.",
-          "Effort modéré — QR code informatif : placez un QR code vers le jeu, l’offre ou les conditions, puis testez le lien public avant d’imprimer le support.",
-          "Effort modéré — Surprise encadrée : proposez une roue ou un ticket à gratter sur smartphone avec des lots définis, des probabilités, des stocks et des conditions contrôlables.",
-          "Effort modéré — Offre pour une nouvelle catégorie : utilisez une dotation ou une remise pour faire découvrir une famille de produits sans promettre qu’elle sera rachetée.",
-          "Effort modéré — Invitation client : créez une opération de remerciement ou de découverte pour une audience définie, sans conditionner le gain à un avis public.",
-          "Effort élevé — Déclinaison multi-sites : diffusez une même campagne dans plusieurs établissements seulement après avoir vérifié les stocks, les dates, les supports et les équipes de chaque lieu.",
-          "Effort élevé — Parcours combiné : associez un jeu, une offre et une prochaine visite uniquement si chaque étape reste lisible et si vous pouvez mesurer séparément participation, gain, retrait et utilisation.",
+          "Offre de première découverte : choisissez une référence ou une prestation, affichez son prix et limitez l’avantage aux conditions prévues.",
+          "Cadeau avec achat : définissez l’achat éligible, le cadeau et le stock ; calculez son coût pour toutes les utilisations possibles.",
+          "Avantage de prochaine visite : remettez une offre datée, avec les produits et l’éventuel minimum d’achat visibles dès la remise.",
+          "Offre sur un créneau calme : réservez l’avantage aux horaires ciblés et regardez si les achats se déplacent depuis les périodes voisines.",
+          "Lot de produits complémentaires : composez un ensemble utile et précisez contenu, quantités et prix sans fausse comparaison.",
+          "Offre duo : définissez les deux produits ou prestations et vérifiez la capacité si deux personnes doivent être accueillies.",
+          "Accessoire inclus : choisissez un complément utile au produit principal, disponible et compatible avec sa marge.",
+          "Service complémentaire offert : décrivez ce qui est inclus, le temps nécessaire et les prestations exclues.",
+          "Seuil de panier : réservez un avantage à un montant annoncé ; vérifiez que la marge supplémentaire couvre le cadeau.",
+          "Sélection de fin de série : limitez l’offre aux références et tailles présentes, avec un stock contrôlé avant communication.",
+          "Offre de lancement : retenez une nouveauté disponible et une période précise, sans prolonger automatiquement l’avantage.",
+          "Petit format découverte : affichez quantité, prix et contenu ; un conditionnement réduit ne signifie pas forcément un prix unitaire inférieur.",
+          "Offre sur commande anticipée : préparez une échéance et un engagement de disponibilité tenables avant de demander une réservation.",
+          "Avantage avec un partenaire : précisez dans quel commerce il est utilisable, qui le finance et comment son utilisation est vérifiée.",
+          "Sélection saisonnière : concentrez l’offre sur des produits utiles au moment annoncé et retirez les supports à la fin de la période.",
         ],
       },
       {
         title: "Comparez marge, stock et effort avant de choisir",
         paragraphs: [
-          "Cette page aide à concevoir un avantage commercial. Pour un atelier ou une démonstration sans avantage sur le prix, consultez plutôt les [idées d’animations en boutique](/blog/idees-animations-commerciales-boutique). Un jeu avec hasard n’accorde pas la même certitude qu’une promotion offerte à toute personne éligible.",
+          "Une promotion locale propose un avantage commercial précis : prix réduit, cadeau ou service inclus. Pour un atelier ou une démonstration sans avantage sur le prix, consultez plutôt les [idées d’animations en boutique](/blog/idees-animations-commerciales-boutique). Un jeu avec hasard n’accorde pas la même certitude qu’une promotion offerte à toute personne éligible.",
           "Si vous annoncez une réduction de prix en France, consultez la fiche DGCCRF en source et vérifiez le prix de référence applicable. Les conditions d’une offre groupée, d’un cadeau ou d’une remise doivent être examinées selon leur dispositif réel ; une seule mention ne convient pas à toutes les offres.",
         ],
         table: {
@@ -1351,6 +1769,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/experience-client-boutique",
+    takeaway: {
+      title: "Corrigez d’abord la friction que le client rencontre réellement",
+      text: "Notre analyse : une attente mieux expliquée ou une information disponible peut apporter plus qu’une animation supplémentaire. Priorisez les obstacles observés plusieurs fois et vérifiez qu’une personne découvre le parcours sans votre aide avant de travailler son effet spectaculaire.",
+    },
     source: [references.contrast],
     title: "Comment créer une expérience client mémorable en boutique ?",
     description:
@@ -1362,9 +1784,9 @@ export const blogPosts: BlogPost[] = [
       "Pour créer une expérience mémorable en boutique, améliorez d’abord l’accueil, l’attente, la découverte, la participation et la remise, puis vérifiez la cohérence entre équipe, supports et promesse.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "7 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "8 min de lecture",
     image: "/images/blog/experience-client-boutique.webp",
     imageAlt: "Illustration des moments d’une expérience client en boutique",
     ctaLabel: "Concevoir un parcours simple à tester",
@@ -1373,7 +1795,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Une expérience mémorable n’est pas forcément spectaculaire",
         paragraphs: [
-          "Une boutique peut marquer un client par une attention simple, une information bien placée ou une équipe qui tient sa promesse. Une animation peut renforcer un moment, mais elle ne compense pas une attente confuse, un prix incompréhensible ou un lot indisponible.",
+          "Pour améliorer l’expérience en boutique, observez un parcours complet avant d’ajouter une animation : entrée, repérage du produit, demande de conseil, attente, achat et départ. Notez à chaque étape la question posée et l’endroit où le client cherche la réponse. Demandez son accord avant tout entretien ; un relevé de frictions n’exige pas de collecter son identité.",
+          "Exemple fictif de diagnostic : sur dix passages observés, quatre personnes demandent où attendre et une seule demande comment fonctionne le jeu. Nous corrigerions d’abord le repère d’accueil, puis observerions à nouveau le même créneau. Dix observations servent à repérer un problème concret ; elles ne constituent pas une enquête représentative de toute la clientèle.",
           "Commencez par observer le parcours réel : que voit la personne avant d’entrer, que comprend-elle dans les premières secondes, où attend-elle, quand pose-t-elle une question et que garde-t-elle en tête en repartant ? Ces observations donnent des pistes plus utiles qu’une liste de tendances.",
         ],
       },
@@ -1452,7 +1875,7 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Définissez « mémorable » avec des observations modestes : une personne trouve le début du parcours ; elle reformule l’offre ; elle accède à la page sans aide ; elle comprend les conditions ; l’équipe remet le lot sans contradiction. Ces cinq critères ne constituent pas un score de satisfaction validé, mais donnent des points à tester.",
           "Exemple de correction à tester : avant, une affiche en caisse cumule trois offres et un QR sans consigne ; après, un seul message annonce l’action, les principales conditions et une adresse alternative. Observez les questions et les étapes bloquantes sur des créneaux comparables. Aucun gain de ventes ou de satisfaction n’est supposé dans cet exemple.",
-          "Pour les textes de la page mobile, la référence W3C sur le contraste aide à vérifier la lisibilité. Complétez le parcours avec les [conseils de QR en point de vente](/blog/animer-point-de-vente-qr-code) et le [test de prochaine visite sans points](/blog/fideliser-clients-sans-programme-points).",
+          "Pour améliorer la lisibilité des textes mobiles, le [W3C précise les contrastes minimaux des textes numériques](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). Appliquez ce contrôle à la page ouverte après le scan, puis testez le support imprimé séparément. Les [conseils de QR en point de vente](/blog/animer-point-de-vente-qr-code) et le [test de prochaine visite sans points](/blog/fideliser-clients-sans-programme-points) aident à préparer le parcours complet.",
         ],
       },
       {
@@ -1473,6 +1896,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/calendrier-marketing-commerce-local",
+    takeaway: {
+      title: "Planifiez moins d’opérations, mais réservez le temps nécessaire",
+      text: "Notre préférence va à un calendrier qui intègre préparation, animation et bilan plutôt qu’à une liste exhaustive de fêtes. Une opération sans responsable ni capacité réservée doit rester une idée, pas une annonce client. Utilisez vos disponibilités d’équipe pour choisir les temps forts réalisables.",
+    },
     source: [references.pricing],
     title: "Calendrier marketing annuel : les temps forts d’un commerce local",
     description:
@@ -1484,8 +1911,8 @@ export const blogPosts: BlogPost[] = [
       "Pour construire un calendrier marketing annuel, partez de vos objectifs commerciaux, répartissez les temps forts par trimestre, préparez chaque opération avec une fiche simple et comparez les participations, utilisations et retraits sans promettre un chiffre d’affaires automatique.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "9 min de lecture",
     image: "/images/blog/calendrier-marketing-commerce-local.webp",
     imageAlt: "Illustration d’un calendrier marketing saisonnier dans une boutique de proximité",
@@ -1495,7 +1922,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Commencez par vos objectifs, pas par les dates",
         paragraphs: [
-          "Un calendrier marketing devient vite une liste de fêtes et de promotions si vous commencez par les dates. Commencez plutôt par les moments que vous voulez améliorer : faire découvrir une gamme, soutenir une période calme, accompagner un lancement, préparer une prochaine visite ou créer un rendez-vous local.",
+          "Pour construire le calendrier marketing d’un commerce, partez des ressources disponibles et des périodes où une action répond à un besoin : arrivage, démonstration, saison locale ou créneau régulièrement calme. Pour chaque opération retenue, réservez trois dates distinctes : validation de l’offre, diffusion et bilan. N’annoncez pas un événement tant que stock, lieu et personne responsable ne sont pas confirmés.",
+          "Exemple fictif de charge : six opérations dans l’année demandent chacune deux heures de préparation, trois heures d’animation et une heure de bilan. Le calendrier mobilise 36 heures d’équipe, hors service ordinaire. Si seules 20 heures sont disponibles, réduisez le nombre d’opérations ou leur format plutôt que de supprimer systématiquement les tests et le bilan.",
           "Un commerce n’a pas besoin d’activer chaque occasion. Trois à six temps forts bien préparés peuvent être plus faciles à expliquer et à mesurer qu’une opération différente chaque semaine. Choisissez un objectif principal par période et gardez les autres comme indicateurs secondaires.",
         ],
       },
@@ -1515,7 +1943,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Adaptez les trimestres à votre activité et à votre territoire",
         paragraphs: [
-          "Ces pistes suivent les saisons de France métropolitaine et ne donnent aucune date réglementée. Une destination touristique, une ville universitaire et un quartier de bureaux ont des rythmes différents. Pour le Canada ou un autre territoire, reconstruisez les repères avec le calendrier local, les vacances et la saisonnalité du lieu.",
+          "Les idées de calendrier par trimestre suivent ici les saisons de France métropolitaine ; elles ne fixent aucune date réglementée. Une destination touristique, une ville universitaire et un quartier de bureaux ont des rythmes différents. Pour le Canada ou un autre territoire, reconstruisez les repères avec le calendrier local, les vacances et la saisonnalité du lieu.",
           "Chaque année, confirmez les événements auprès de leurs organisateurs, les vacances sur le calendrier officiel du territoire et les périodes de soldes auprès de l’administration compétente. Si vous annoncez des réductions en France, la fiche DGCCRF citée aide à vérifier les règles de prix ; elle ne remplace pas la confirmation des dates locales.",
         ],
         table: {
@@ -1533,7 +1961,7 @@ export const blogPosts: BlogPost[] = [
         title: "Détaillez chaque temps fort dans une fiche simple",
         paragraphs: [
           "Une ligne dans un calendrier ne suffit pas à lancer une opération. Pour chaque temps fort, créez une fiche que l’équipe peut relire rapidement. Elle doit transformer une intention générale en décisions vérifiables avant de produire une affiche ou de publier une offre.",
-          "Cette fiche sert aussi à comparer les opérations entre elles. Si vous changez le message, le lot, le canal et la période en même temps, le bilan sera difficile à interpréter. Notez donc vos hypothèses avant le lancement, sans les présenter comme des résultats attendus.",
+          "Une fiche d’opération consignant objectif, date, offre et moyens engagés sert aussi à comparer les animations entre elles. Si vous changez le message, le lot, le canal et la période en même temps, le bilan sera difficile à interpréter. Notez donc vos hypothèses avant le lancement, sans les présenter comme des résultats attendus.",
         ],
         items: [
           "Objectif principal : découverte, visite, utilisation d’une offre, prochaine visite ou animation d’un moment d’attente.",
@@ -1633,7 +2061,11 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/attirer-clients-commerce-local",
-    source: [references.localVisibility, references.prospecting],
+    takeaway: {
+      title: "Choisissez le canal selon le passage qui bloque",
+      text: "Pour un commerce local, nous privilégions d’abord une information fiable et un accès simple au magasin. Une fois ce socle en place, choisissez un canal capable d’amener le public visé : être présent en ligne et obtenir des visites en boutique sont deux objectifs distincts.",
+    },
+    source: [references.franceNum,references.localVisibility, references.prospecting],
     title: "Comment attirer des clients dans un commerce local ?",
     description:
       "Découvrez une méthode concrète pour attirer des clients dans un commerce local : visibilité, partenariats, contenu, animation et mesure sur 30 jours.",
@@ -1644,8 +2076,8 @@ export const blogPosts: BlogPost[] = [
       "Pour attirer des clients dans un commerce local, travaillez d’abord votre visibilité de proximité, puis combinez contenu utile, partenariats, événements et animation en point de vente. Lancez une action à la fois, recueillez les contacts avec un consentement clair et mesurez séparément visibilité, participations, visites et retours.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "10 min de lecture",
     image: "/images/blog/attirer-clients-commerce-local.webp",
     imageAlt: "Illustration d’un commerce de proximité qui combine visibilité locale et animation",
@@ -1655,7 +2087,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Commencez par votre zone et votre objectif",
         paragraphs: [
-          "Un commerce local ne s’adresse pas à tout le monde de la même manière. Décrivez la zone qui peut réellement vous rendre visite : quartier, commune, lieu de passage, zone touristique ou clientèle venue pour un rendez-vous. Cette limite aide à choisir les bons messages et les bons partenaires.",
+          "Pour attirer des clients dans un commerce local, repérez le passage qui bloque : le quartier connaît-il le lieu, les personnes intéressées trouvent-elles les horaires, comprennent-elles l’offre et savent-elles comment venir ? Corrigez le premier obstacle vérifié avant d’ajouter un canal. Une vitrine plus claire sert les passants ; une fiche locale exacte sert les personnes qui recherchent déjà un commerce.",
+          "Le [Baromètre France Num 2025](https://www.francenum.gouv.fr/guides-et-conseils/strategie-numerique/comprendre-le-numerique/barometre-france-num-2025-le) indique que 84 % des TPE PME interrogées disposent d’au moins une solution de visibilité en ligne. L’enquête porte sur 11 021 entreprises françaises, interrogées du 26 mars au 18 avril 2025, tous secteurs représentés. Ce taux décrit leur équipement, pas son efficacité commerciale. Notre lecture : se différencier demande surtout une information locale utile et une prochaine action claire, plutôt que multiplier des profils peu suivis.",
           "Fixez ensuite un objectif principal pour les prochaines semaines : faire découvrir une offre, remplir un créneau calme, accompagner un lancement, encourager une prochaine visite ou créer davantage de contacts qualifiés. Une action avec un seul objectif est plus facile à expliquer et à évaluer qu’une campagne qui promet tout à la fois.",
         ],
         items: [
@@ -1787,6 +2220,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/roue-ou-ticket-a-gratter-commerce",
+    takeaway: {
+      title: "Comparez la roue et le ticket dans le même contexte",
+      text: "Nous ne retenons pas une mécanique sur sa seule apparence. Gardez le même lot, le même emplacement et la même promesse pour observer la compréhension et les demandes d’aide. Le format à retenir est celui que votre clientèle utilise facilement et que l’équipe sait expliquer.",
+    },
     seoTitle: "Roue ou ticket à gratter : que choisir pour un commerce ?",
     source: [references.lottery],
     title: "Roue de la fortune ou ticket à gratter : quel format choisir pour un commerce ?",
@@ -1799,8 +2236,8 @@ export const blogPosts: BlogPost[] = [
       "Choisissez une roue si vous voulez créer un moment visible et animé, notamment avec une équipe disponible pour accompagner la participation. Préférez un ticket à gratter si le client doit jouer rapidement et de façon plus autonome. Dans les deux cas, le bon choix dépend surtout du lieu, du support, des lots, des conditions et de la capacité de remise.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "9 min de lecture",
     image: "/images/blog/roue-ou-ticket-a-gratter-commerce.webp",
     imageAlt: "Illustration comparant une roue de la fortune mobile et un ticket à gratter dans un commerce",
@@ -1810,7 +2247,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Commencez par le moment que vous voulez créer",
         paragraphs: [
-          "Le choix d’une mécanique ne devrait pas commencer par son apparence, mais par la situation du client. Voulez-vous créer un échange au comptoir, occuper une attente, faire découvrir un produit ou proposer une participation rapide avant une prochaine visite ? La même mécanique peut être pertinente dans un lieu et peu adaptée dans un autre.",
+          "Pour choisir entre roue de la fortune et ticket à gratter, observez le moment disponible : une attente assise laisse le temps de regarder une roue ; une découverte individuelle peut convenir à une révélation à gratter. Ces préférences sont des hypothèses de conception à vérifier avec votre public. Les deux formats demandent une promesse courte et un résultat lisible.",
+          "Pour comparer les formats, gardez identiques les lots, leurs conditions, le support et l’emplacement, puis notez les erreurs de compréhension et les demandes d’aide. Si vous changez aussi le cadeau ou sa valeur, vous ne pourrez pas isoler l’intérêt de la roue ou du ticket. Une poignée d’essais aide à corriger le parcours, sans établir un classement universel des mécaniques.",
           "Définissez aussi ce que l’équipe doit faire. Une animation visible peut attirer l’attention, mais elle peut demander une explication ou une intervention au bon moment. Une expérience plus autonome peut être plus facile à diffuser sur une table, une affiche ou une zone où le personnel ne peut pas accompagner chaque personne.",
         ],
         items: [
@@ -1825,14 +2263,14 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Une roue de la fortune met en scène le hasard et le résultat. Sur un téléphone, elle peut rendre la participation plus expressive : le client lance la roue, voit son animation et découvre le résultat dans un format immédiatement compréhensible. Cela peut servir un accueil, une démonstration ou un moment où l’équipe peut proposer une consigne courte.",
           "Un ticket à gratter reproduit une attente plus progressive. Le client révèle son résultat à son rythme, ce qui peut mieux convenir à une participation individuelle ou à un support posé dans un espace d’attente. Il ne demande pas nécessairement de faire tourner une animation devant les autres personnes présentes.",
-          "Ces différences décrivent des usages, pas des performances garanties. Aucune mécanique n’est automatiquement plus rentable, plus virale ou plus efficace. Le résultat dépend de l’objectif, du message, des lots, du lieu, du trafic et de la capacité de l’équipe à remettre ce qui est annoncé.",
+          "Le mouvement d’une roue et le geste de grattage décrivent des expériences distinctes, pas des niveaux de performance démontrés. Aucune mécanique n’est automatiquement plus rentable, plus virale ou plus efficace. Le résultat dépend de l’objectif, du message, des lots, du lieu, du trafic et de la capacité de l’équipe à remettre ce qui est annoncé.",
         ],
       },
       {
         title: "Choisissez la roue pour une participation visible",
         paragraphs: [
           "La roue est souvent adaptée lorsque l’animation doit se voir ou se raconter en quelques secondes. Elle peut donner un repère visuel à une personne qui découvre l’opération et faciliter une présentation par l’équipe. Dans un commerce, ce caractère visible peut devenir un élément de l’accueil plutôt qu’un simple lien posé sur un support.",
-          "Elle demande toutefois un message clair et un espace où le client peut regarder son écran. Si la caisse est encombrée, si le service est continu ou si l’équipe ne peut pas répondre aux questions, simplifiez la consigne et testez le parcours avant de retenir ce format.",
+          "Une roue sur smartphone demande un message clair et un espace où le client peut regarder son écran. Si la caisse est encombrée, si le service est continu ou si l’équipe ne peut pas répondre aux questions, simplifiez la consigne et testez le parcours avant de retenir ce format.",
         ],
         items: [
           "Accueil ou comptoir où une personne peut être orientée vers l’animation.",
@@ -1878,7 +2316,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Quelle mécanique pour un restaurant, un institut ou une boutique ?",
         paragraphs: [
-          "Ces scénarios sont des pistes à adapter, pas des résultats observés. Le bon choix dépend des horaires, du service, des produits, des stocks et du temps réellement disponible pour l’équipe.",
+          "Le choix d’une roue ou d’un ticket dépend du service : temps d’attente en restaurant, accueil en institut ou découverte d’un produit en boutique. Le bon choix dépend des horaires, du service, des produits, des stocks et du temps réellement disponible pour l’équipe.",
         ],
         items: [
           "Restaurant : une roue peut accompagner un moment d’accueil ou de fin de repas ; un ticket peut mieux convenir à une participation à table sans interrompre le service.",
@@ -1949,6 +2387,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/cout-animation-commerciale-commerce",
+    takeaway: {
+      title: "Séparez le coût payé, le temps mobilisé et le budget engagé",
+      text: "Notre conseil est de préparer un budget de trésorerie et un budget complet incluant le temps d’équipe. Les coûts de tous les gains encore valides doivent rester anticipés. Le coût par participant peut aider à comparer deux opérations, mais ne dit pas si elles créent une marge supplémentaire.",
+    },
     source: [references.pricing],
     title: "Combien coûte une animation commerciale pour un commerce local ?",
     description:
@@ -1960,9 +2402,9 @@ export const blogPosts: BlogPost[] = [
       "Pour estimer le coût d’une animation commerciale, séparez les coûts fixes, les coûts variables et le temps d’exécution. Chiffrez ensuite le support, les lots réellement remis, la préparation, l’outil, la communication et le suivi. Comparez enfin ce budget à un objectif mesurable, sans transformer une hypothèse de coût en promesse de chiffre d’affaires.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "10 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "11 min de lecture",
     image: "/images/blog/cout-animation-commerciale-commerce.webp",
     imageAlt: "Illustration d’un commerce qui prépare le budget d’une animation commerciale",
     ctaLabel: "Estimer votre prochaine opération",
@@ -1971,7 +2413,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Commencez par définir ce que vous voulez financer",
         paragraphs: [
-          "Avant de demander combien coûte une animation, décrivez ce qu’elle doit réellement contenir. Une opération peut être une remise en caisse, un atelier, une démonstration, un partenariat local ou un jeu mobile par QR code. Ces formats ne mobilisent ni les mêmes lots, ni le même temps d’équipe, ni les mêmes supports.",
+          "Pour chiffrer une animation commerciale, préparez trois colonnes : dépenses nouvelles à payer, ressources déjà disponibles mais mobilisées, et engagements à honorer après l’événement. Une impression relève de la première ; deux heures d’un salarié de la deuxième ; des gains valides à remettre de la troisième. Chiffrez les montants sur la même base HT ou TTC selon votre situation.",
+          "Exemple entièrement fictif : 30 € d’impression, 80 € de lots et 20 € d’outil représentent 130 € de dépenses affectées à l’opération. Si trois heures d’équipe sont valorisées à 25 € chacune, le budget complet atteint 205 €. Avec 50 participations observées, le coût complet par participation est 205 ÷ 50 = 4,10 €. Il ne s’agit pas d’un coût par client acquis ni d’une mesure de rentabilité.",
           "Définissez aussi l’objectif principal : faire découvrir une offre, animer une période creuse, accompagner un lancement, encourager une prochaine visite ou créer des contacts consentis. Le budget doit être relié à cet objectif, pas à une liste de dépenses ajoutées au dernier moment.",
         ],
         items: [
@@ -2122,6 +2565,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/mesurer-animation-commerciale",
+    takeaway: {
+      title: "Décidez d’abord quelle question chaque indicateur doit résoudre",
+      text: "Nous privilégions un petit tableau dont chaque ligne peut conduire à une décision : corriger le support, clarifier un lot ou revoir la procédure de remise. Un tableau de volumes sans dénominateur, sans période ou sans prochaine action donne une impression de précision sans aider à piloter.",
+    },
     source: [references.consent],
     title: "Comment mesurer une animation commerciale sans inventer son ROI ?",
     description:
@@ -2133,9 +2580,9 @@ export const blogPosts: BlogPost[] = [
       "Pour mesurer une animation commerciale, définissez l’objectif avant le lancement, documentez chaque étape du parcours, rapprochez les coûts réellement connus des résultats observés et comparez des périodes ou des groupes comparables. Un ROI n’est calculable que si les coûts, l’attribution et la méthode de comparaison sont suffisamment fiables.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "10 min de lecture",
     image: "/images/blog/mesurer-animation-commerciale.webp",
     imageAlt: "Illustration d’un commerce qui suit les étapes d’une animation commerciale",
     ctaLabel: "Préparer une mesure simple",
@@ -2144,7 +2591,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Commencez par une hypothèse mesurable",
         paragraphs: [
-          "Avant de créer une animation, formulez ce que vous cherchez à apprendre. Par exemple : vérifier si une offre est comprise, observer la participation sur un créneau calme, faciliter une prochaine visite ou recueillir des contacts avec un consentement explicite. Une hypothèse précise aide à choisir les bons indicateurs.",
+          "Pour mesurer une animation commerciale, écrivez une question avant de choisir un indicateur. « L’affiche amène-t-elle jusqu’au jeu ? » demande de distinguer ouvertures et parties commencées ; « Les gagnants utilisent-ils leur lot ? » demande de suivre les gains et leurs retraits jusqu’à leur échéance. Précisez pour chaque mesure la période, les doublons, les exclusions et la personne qui tient le relevé.",
+          "Exemple fictif de comparaison trompeuse : une opération observe 20 retraits pour 25 gains arrivés à échéance, soit 80 % ; une autre, 30 retraits pour 100 gains comparables, soit 30 %. Le second dispositif remet davantage de lots mais en mobilise une plus faible proportion. Le choix dépend de l’objectif et du coût ; le seul nombre de retraits ne suffit pas à départager les opérations.",
           "Évitez les objectifs trop larges comme « augmenter les ventes » si vous ne pouvez pas isoler l’effet de l’animation. Une formulation plus prudente décrit un comportement observable et une période : « suivre les participations et les retraits pendant la campagne, puis comparer les questions de l’équipe avec celles d’une période comparable ».",
         ],
         items: [
@@ -2197,7 +2645,7 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Pour mesurer un retour financier, commencez par connaître les coûts pertinents. Listez la préparation, le support, les impressions, les lots remis, le temps d’équipe, l’outil, la diffusion et les éventuels partenaires. Séparez ce qui est payé pour cette opération de ce qui est réutilisable ou déjà engagé.",
           "Une estimation de budget ne devient pas automatiquement un coût réel. Après la campagne, remplacez les hypothèses par les dépenses observées et indiquez les postes encore incertains. Le temps interne peut être suivi en durée sans lui attribuer un taux générique non validé.",
-          "Pour une méthode détaillée de cadrage budgétaire, consultez le guide dédié au [coût d’un jeu marketing](/guides/mesurer-jeu-qr-code) et l’article sur le [coût d’une animation commerciale](/blog/cout-animation-commerciale-commerce).",
+          "Pour une méthode détaillée de cadrage budgétaire, consultez le guide dédié au [coût d’un jeu marketing](/guides/cout-jeu-marketing) et l’article sur le [coût d’une animation commerciale](/blog/cout-animation-commerciale-commerce).",
         ],
       },
       {
@@ -2248,7 +2696,7 @@ export const blogPosts: BlogPost[] = [
         title: "Exemple de bilan avec des dénominateurs explicites",
         paragraphs: [
           "Exemple entièrement fictif : une campagne observe 200 scans, 120 participations commencées, 30 gains et 18 retraits. Le ratio participations/scans est 120 ÷ 200 = 60 % ; le ratio retraits/gains est 18 ÷ 30 = 60 %. Les deux pourcentages répondent à des questions différentes. Ces volumes d’événements ne représentent pas nécessairement des personnes uniques et ne démontrent aucune vente supplémentaire.",
-          "Si les coûts documentés sont de 150 € et que 30 nouveaux accords marketing valides sont observés sur le même périmètre, le coût par opt-in est 150 ÷ 30 = 5 €. Définissez auparavant les doublons, les dates et les coûts inclus. Un contact enregistré pour recevoir son gain n’est pas un accord marketing : la source CNIL précise les conditions du consentement.",
+          "Exemple fictif de coût par opt-in : 150 € de coûts et 30 nouveaux accords marketing valides, dédoublonnés sur la même période, donnent 150 ÷ 30 = 5 € par accord. Définissez les dates, les coûts inclus et les doublons avant le relevé. Une adresse enregistrée pour recevoir un gain n’est pas un accord marketing : la [CNIL précise les critères du consentement](https://www.cnil.fr/fr/les-bases-legales/consentement).",
           "Pour une estimation du ROI : (marge additionnelle attribuable avant coût de campagne − coût de campagne) ÷ coût de campagne × 100. Avec une marge additionnelle hypothétique de 240 € et un coût de 150 €, le calcul serait 60 %. Sans preuve de cette marge additionnelle, le résultat reste une simulation, pas le ROI de la campagne. Ne retranchez pas deux fois les mêmes coûts et ne calculez pas ce ratio avec un dénominateur nul.",
         ],
       },
@@ -2271,7 +2719,7 @@ export const blogPosts: BlogPost[] = [
           "Quel est le meilleur indicateur pour une animation commerciale ? Il n’existe pas d’indicateur unique. Choisissez celui qui correspond à l’objectif : participation, retrait, utilisation d’une offre, contact consenti ou observation de l’équipe.",
           "Un QR code permet-il de mesurer les ventes ? Il mesure surtout les ouvertures et, selon le parcours, les participations. Une vente ne peut être reliée à l’animation que si une méthode d’attribution est définie et appliquée.",
           "Comment savoir si une animation fonctionne ? Comparez l’objectif, les étapes observées, les coûts, les incidents et le contexte. Une opération peut être utile pour tester une promesse même si un ROI financier n’est pas calculable.",
-          "Faut-il collecter l’adresse e-mail pour mesurer ? Non. La collecte n’est nécessaire que si elle sert un objectif clair, avec un consentement explicite et une utilisation séparée de la participation ou du gain.",
+          "Faut-il collecter l’adresse e-mail pour mesurer une animation ? Non. Des volumes agrégés de parties, gains et retraits peuvent suffire. Une adresse demandée pour un service doit répondre à cette finalité et disposer d’une base légale adaptée ; le choix de recevoir des offres commerciales se traite séparément, selon les [règles CNIL applicables aux communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles).",
           "Peut-on mesurer une petite animation ? Oui, avec peu d’indicateurs bien définis. Il faut simplement éviter de généraliser un petit test ou de présenter une observation locale comme une preuve universelle.",
         ],
       },
@@ -2302,6 +2750,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animer-periode-creuse-commerce-local",
+    takeaway: {
+      title: "Vérifiez le gain sur l’ensemble des créneaux concernés",
+      text: "Notre analyse : augmenter le passage d’un mardi n’est pas un succès commercial si les mêmes clients désertent le mercredi ou paient moins pour une visite déjà prévue. Regardez le total des périodes voisines et la contribution restante, puis décidez si le créneau mérite d’être reconduit.",
+    },
     source: [references.pricing],
     title: "Comment animer une période creuse dans un commerce local ?",
     description:
@@ -2313,8 +2765,8 @@ export const blogPosts: BlogPost[] = [
       "Une animation de période creuse se construit autour d’un créneau précis, d’un objectif limité, d’une promesse compréhensible et d’une durée courte. Comparez ensuite le passage, les participations, les utilisations d’offre, les retraits et la charge de l’équipe avec un contexte comparable, sans confondre fréquentation et rentabilité.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "10 min de lecture",
     image: "/images/blog/animer-periode-creuse-commerce-local.webp",
     imageAlt: "Illustration d’un commerce local qui prépare une animation sur un créneau calme",
@@ -2324,7 +2776,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Diagnostiquez le creux avant de créer l’animation",
         paragraphs: [
-          "Une période creuse peut être un jour précis, une heure entre deux services, une saison ou un moment où l’équipe dispose de capacité. Ne partez pas d’une impression générale : regardez les passages, les réservations, les ventes, les demandes et les contraintes de service sur plusieurs périodes comparables.",
+          "Pour diagnostiquer une période creuse dans un commerce, relevez le même jour et les mêmes horaires sur plusieurs semaines : passages, demandes, réservations honorées, ventes et capacité disponible. Notez travaux, météo, fermetures et opérations voisines. Un atelier de conseil peut occuper une capacité libre ; il ne résout pas à lui seul une difficulté d’accès au magasin.",
+          "Exemple entièrement fictif : quatre mardis comparables enregistrent 10, 12, 8 et 10 passages, soit une moyenne de dix. Le mardi animé en reçoit 14, mais le mercredi suivant en perd quatre par rapport à son repère habituel. Vérifiez les volumes sur l’ensemble des deux jours avant de conclure à un apport de demande ; une simple redistribution des visites peut être utile à l’organisation, mais répond à un autre objectif.",
           "Notez aussi ce qui rend le créneau difficile : accès, transport, météo, habitudes de la clientèle, horaires voisins ou manque de visibilité. Une animation ne corrige pas une contrainte structurelle à elle seule. Elle doit répondre à un contexte identifiable et rester réversible si l’hypothèse ne se vérifie pas.",
         ],
         items: [
@@ -2446,7 +2899,7 @@ export const blogPosts: BlogPost[] = [
         title: "Un protocole simple de comparaison de créneaux",
         paragraphs: [
           "Avant le test, observez plusieurs occurrences du même créneau : jour de semaine, horaires et durée identiques. Notez les entrées ou commandes si vous disposez de ces mesures, les fermetures, la météo et les événements. Un mardi exceptionnel ne suffit pas à qualifier une période de creuse.",
-          "Testez ensuite une seule modification sur le créneau choisi, en gardant les autres paramètres aussi stables que possible. Regardez aussi les créneaux voisins : une hausse le mardi peut accompagner une baisse le mercredi plutôt qu’une demande nouvelle. Un petit échantillon ou une forte différence de contexte limite la conclusion.",
+          "Pour tester une animation sur un créneau calme, modifiez un seul élément principal sur ce créneau, en gardant les autres paramètres aussi stables que possible. Regardez aussi les créneaux voisins : une hausse le mardi peut accompagner une baisse le mercredi plutôt qu’une demande nouvelle. Un petit échantillon ou une forte différence de contexte limite la conclusion.",
           "Si le test repose sur une réduction en France, vérifiez la présentation du prix avec la fiche DGCCRF citée. Gardez séparés le diagnostic de fréquentation, les participations au jeu et l’utilisation de l’offre ; la [méthode de mesure](/blog/mesurer-animation-commerciale) aide à construire le bilan.",
         ],
       },
@@ -2488,6 +2941,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/faire-revenir-clients-animation",
+    takeaway: {
+      title: "Préparez le retour au moment de remettre l’invitation",
+      text: "Nous privilégions une invitation qui indique un motif, un lieu et une échéance réaliste. Le bilan doit suivre des invitations dont la validité est terminée et identifier les retours avec la même méthode. Les participants à l’animation ne constituent pas automatiquement une base de prospection.",
+    },
     source: [references.prospecting],
     title: "Comment faire revenir des clients après une animation commerciale ?",
     description:
@@ -2499,8 +2956,8 @@ export const blogPosts: BlogPost[] = [
       "Pour faire revenir des clients après une animation, proposez une prochaine action simple et facultative, liée à une date, un produit ou une expérience que votre commerce peut réellement délivrer. Communiquez à nouveau uniquement avec un consentement adapté, puis mesurez les utilisations et visites observées sans inventer de taux de retour.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "9 min de lecture",
     image: "/images/blog/faire-revenir-clients-animation.webp",
     imageAlt: "Illustration d’un commerce qui propose une prochaine visite après une animation",
@@ -2510,7 +2967,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Distinguez animation ponctuelle et fidélité",
         paragraphs: [
-          "Une participation montre qu’une personne a pris part à une action à un moment donné. Elle ne prouve pas une préférence durable, une prochaine visite ou une augmentation de la fréquence d’achat. Pour parler de fidélisation, il faut observer un comportement dans le temps et définir la période de référence.",
+          "Pour faire revenir un client après une animation, préparez dès la remise du gain une prochaine étape utilisable : produit découvert lors de la prochaine visite, atelier daté ou avantage sur un service précis. Indiquez l’adresse, la validité, les jours concernés et les conditions de réservation éventuelles. Une proposition « revenez bientôt » ne donne ni motif ni repère pratique.",
+          "Exemple fictif de suivi : 80 invitations distinctes restent valables un mois ; à leur échéance, 20 ont été présentées lors d’une visite ultérieure, soit 20 ÷ 80 = 25 % d’utilisation observée. Comptez chaque invitation une fois et distinguez les retours du jour de la remise. Les personnes qui reviennent sans présenter le support restent hors de cette mesure.",
           "La bonne question n’est donc pas seulement « combien de personnes ont joué ? », mais « quelle prochaine étape était proposée et combien d’utilisations ou de visites avons-nous réellement pu observer ? ». Cette distinction rend le bilan plus crédible et évite de transformer un gain en preuve de fidélité.",
         ],
         items: [
@@ -2658,6 +3116,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animation-lancement-nouveau-produit",
+    takeaway: {
+      title: "Le lancement doit rendre le produit compréhensible avant de le rendre promotionnel",
+      text: "Notre préférence va à une démonstration centrée sur un usage et une objection fréquente. Si le public ne comprend pas ce qu’il découvre, ajouter une remise ou un jeu amplifie surtout une promesse floue. Corrigez l’explication avant d’élargir la diffusion.",
+    },
     source: [references.pricing],
     title: "Comment lancer un nouveau produit avec une animation commerciale ?",
     description:
@@ -2669,9 +3131,9 @@ export const blogPosts: BlogPost[] = [
       "Pour lancer un nouveau produit avec une animation commerciale, définissez d’abord ce que le client doit découvrir, choisissez une démonstration ou une participation compatible avec votre équipe, préparez un stock et des conditions visibles, puis mesurez les essais et actions observées. Une animation peut faciliter la découverte sans garantir les ventes ni remplacer la qualité du produit.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "9 min de lecture",
     image: "/images/blog/animation-lancement-nouveau-produit.webp",
     imageAlt: "Illustration d’un commerce qui présente un nouveau produit pendant une animation",
     ctaLabel: "Préparer un lancement local",
@@ -2680,7 +3142,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Définissez ce que le lancement doit faire découvrir",
         paragraphs: [
-          "Un nouveau produit peut être difficile à comprendre parce qu’il est inédit, qu’il répond à un usage précis ou qu’il arrive dans une gamme déjà connue. Avant de choisir une animation, formulez la découverte attendue : usage, bénéfice, geste, parfum, texture, format, prestation ou différence avec une offre existante.",
+          "Pour lancer un nouveau produit en commerce, choisissez l’usage que le visiteur doit comprendre et l’objection à lever : compatibilité, texture, format, entretien ou différence avec la gamme existante. Préparez une démonstration répétable, puis demandez à une personne extérieure au projet de reformuler ce qu’elle a vu. Son vocabulaire permet de vérifier si le message est compris.",
+          "Exemple fictif de test d’explication : huit personnes découvrent une nouvelle référence ; cinq pensent qu’elle remplace un produit alors qu’elle le complète. Avant la campagne, modifiez le visuel et la phrase qui présente cet usage, puis testez de nouveau avec d’autres personnes. Ce relevé sert à corriger une confusion, pas à prévoir les ventes à partir de huit avis.",
           "Un lancement ne doit pas tout expliquer en même temps. Choisissez un message principal, puis prévoyez les informations nécessaires sur le prix, la disponibilité, les conditions et les limites. Une animation rend la découverte plus concrète, mais elle ne doit pas dissimuler les caractéristiques importantes.",
         ],
         items: [
@@ -2730,7 +3193,7 @@ export const blogPosts: BlogPost[] = [
         paragraphs: [
           "Avant la première publication, faites relire ensemble la fiche produit, l’affiche, la page mobile et les conditions. Une personne responsable confirme le nom du produit, son usage, sa disponibilité, ses limites, le prix et les dates. Une démonstration ne doit pas annoncer une caractéristique que la fiche produit ne confirme pas.",
           "Séparez quatre blocs : l’information sur le produit ; l’essai ou la démonstration ; l’offre commerciale éventuelle ; les règles du jeu. Le client doit savoir s’il découvre, teste, achète ou participe. Si le lancement annonce une réduction en France, consultez la fiche DGCCRF sur les prix citée ci-dessous. Préparez aussi le retrait des supports si le stock change.",
-          "Ce contrôle est à refaire après toute modification de la promesse ou des conditions, et pour chaque partenaire. Le [budget d’animation](/blog/cout-animation-commerciale-commerce) aide à vérifier le coût de l’essai et des lots avant diffusion.",
+          "La vérification croisée entre fiche produit, affiche et conditions de l’animation est à refaire après chaque changement de promesse et pour chaque partenaire. Le [budget d’animation](/blog/cout-animation-commerciale-commerce) aide à vérifier le coût de l’essai et des lots avant diffusion.",
         ],
       },
       {
@@ -2826,6 +3289,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animation-marketing-multi-sites",
+    takeaway: {
+      title: "Vérifiez chaque établissement avant de consolider le réseau",
+      text: "Nous privilégions un pilote pour contrôler le parcours et une fiche de validation par établissement avant diffusion. Pour comparer les sites, additionnez les volumes compatibles avant de recalculer les ratios ; une moyenne simple des pourcentages peut masquer leurs écarts de taille.",
+    },
     seoTitle: "Animation marketing multi-sites : préparer le déploiement",
     source: [references.consent],
     title: "Comment déployer une animation marketing dans plusieurs établissements ?",
@@ -2838,9 +3305,9 @@ export const blogPosts: BlogPost[] = [
       "Pour déployer une animation dans plusieurs établissements, standardisez la promesse, la mécanique et les règles communes, puis localisez le nom du site, les dates, les stocks, les supports et les responsabilités. Testez d’abord un établissement pilote et suivez séparément scans, participations, gains, retraits, visites et ventes par site.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "10 min de lecture",
     image: "/images/blog/animation-marketing-multi-sites.webp",
     imageAlt: "Illustration d’une responsable qui coordonne une animation dans plusieurs commerces",
     ctaLabel: "Évaluer un déploiement multi-sites",
@@ -2849,8 +3316,9 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Standardisez le socle et localisez ce qui doit l’être",
         paragraphs: [
-          "Une animation multi-sites ne consiste pas à copier un fichier sans contrôle. Le socle commun peut contenir l’objectif, la mécanique, la promesse, les règles générales, le calendrier de référence et les indicateurs. Chaque établissement doit ensuite renseigner ses propres informations et valider son support avant diffusion.",
-          "Cette séparation évite deux risques opposés : des campagnes différentes impossibles à comparer, ou un support identique qui affiche le mauvais lieu, la mauvaise date ou un lot indisponible. Documentez ce qui ne doit jamais changer et ce qui doit être adapté localement.",
+          "Pour déployer une animation dans plusieurs établissements, répartissez les éléments en deux listes : socle commun et validation locale. Le socle fixe l’objectif, la mécanique et les indicateurs ; la fiche locale confirme l’adresse, le QR public, les lots disponibles, les dates, le responsable et la procédure de remise. Aucun support ne part à l’impression avant son contrôle depuis un téléphone.",
+          "Exemple entièrement fictif de bilan réseau : le site A compte 90 retraits pour 100 gains arrivés à échéance ; le site B, 10 pour 1 000 gains comparables. Le taux consolidé est (90 + 10) ÷ (100 + 1 000) = 9,1 %, et non la moyenne simple de 90 % et 1 %. Gardez aussi les lignes par établissement pour comprendre les conditions locales de remise.",
+          "La distinction entre socle commun et validation locale évite deux risques dans une animation multi-sites : des campagnes différentes impossibles à comparer, ou un support identique qui affiche le mauvais lieu, la mauvaise date ou un lot indisponible. Documentez ce qui ne doit jamais changer et ce qui doit être adapté localement.",
         ],
         items: [
           "Socle commun : mécanique, message principal, règles, structure du support et indicateurs.",
@@ -3017,7 +3485,11 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/affiche-qr-code-animation-commerciale",
-    source: [references.contrast],
+    takeaway: {
+      title: "L’affiche doit être comprise avant d’être scannée",
+      text: "Notre analyse : la promesse, les conditions qui la limitent et la consigne de scan passent avant la décoration. Vérifiez la marge du QR, imprimez un exemplaire à sa taille finale et faites tester l’affiche sans commentaire. Une impression lisible sur écran peut échouer sous une vitre ou dans un reflet.",
+    },
+    source: [references.qrMargin,references.contrast],
     title: "Comment créer une affiche QR code pour une animation commerciale ?",
     description:
       "Concevez une affiche QR code claire et lisible : promesse, appel à l’action, conditions, emplacement, test multi-téléphones et checklist avant impression.",
@@ -3028,8 +3500,8 @@ export const blogPosts: BlogPost[] = [
       "Pour créer une affiche QR code d’animation commerciale, formulez une promesse courte, indiquez clairement quoi faire, rendez le code et les conditions visibles, choisissez un emplacement adapté au parcours client et testez le support imprimé sur plusieurs téléphones. Un scan ne garantit ni participation, ni gain, ni vente : le parcours doit être vérifié séparément.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "9 min de lecture",
     image: "/images/blog/affiche-qr-code-animation-commerciale.webp",
     imageAlt: "Illustration d’une affiche QR code testée dans un commerce local",
@@ -3039,7 +3511,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Commencez par un message principal",
         paragraphs: [
-          "Une personne doit comprendre l’intérêt de l’affiche avant de sortir son téléphone. Formulez une promesse concrète et compatible avec l’animation : participer à un jeu, découvrir une offre, essayer un produit ou accéder à une invitation. Évitez les phrases générales qui ne disent pas ce qui se passe après le scan.",
+          "Une affiche QR code d’animation doit répondre à trois questions sans exiger le scan : que peut-on faire, quel bénéfice est proposé, quelle condition change la promesse ? Un exemple fictif serait « Tentez de gagner un dessert pour votre prochain déjeuner », suivi des jours et de l’achat requis si ces conditions existent. Placez « Scannez pour jouer » près du QR et donnez une adresse alternative lisible.",
+          "Le fabricant [KEYENCE décrit une marge de quatre modules pour les QR codes classiques](https://www.keyence.eu/ss/products/auto_id/codereader/basic_2d/qr.jsp). Un module est un petit carré du code, pas un millimètre : avec des modules de 0,5 mm, la marge vide mesure au moins 2 mm sur chaque côté. Cette règle ne fixe pas une taille de lecture universelle ; conservez la marge exportée et testez le support final à sa distance d’usage.",
           "Le message doit rester honnête sur la disponibilité, la durée et les conditions. Une affiche ne doit pas annoncer un gain ou une offre que le commerce ne peut plus remettre. Si le stock ou le nombre de places est limité, prévoyez une formulation et une procédure de mise à jour.",
         ],
         items: [
@@ -3082,7 +3555,7 @@ export const blogPosts: BlogPost[] = [
           "Le QR code et le texte doivent rester lisibles selon le support, la distance, la lumière et les reflets. Un fichier qui paraît correct sur un écran peut devenir difficile à scanner après impression ou derrière une vitre.",
           "Contrôlez le contraste entre le code et son fond, la netteté à la taille finale et la présence d’une marge autour du code. Évitez les fonds chargés, les déformations, les couleurs trop proches et les éléments qui passent sur la zone de lecture.",
           "Pensez aussi aux personnes qui ne peuvent pas scanner facilement. Affichez une consigne alternative ou un moyen simple de demander de l’aide à l’équipe, sans faire dépendre un gain d’une capacité technique particulière.",
-          "Ajoutez sous le QR une adresse publique lisible et recopiable menant au même parcours. Vérifiez qu’elle ne change pas les conditions d’accès. Sur la page numérique, contrôlez le zoom et la lisibilité des textes avec les recommandations W3C citées ; les seuils de contraste des textes ne constituent pas une certification de la lecture du QR imprimé.",
+          "Ajoutez sous le QR de l’affiche une adresse publique lisible et recopiable qui ouvre le même parcours aux mêmes conditions. Pour les textes de la page numérique, vérifiez le zoom et le [contraste défini par le W3C](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). Le seuil de contraste du texte numérique ne certifie pas la lecture du QR imprimé : testez aussi le papier, l’éclairage et la distance.",
           "Gardez visibles sur l’affiche les conditions qui changent la promesse, comme une réservation, une date ou un achat requis. Le lien détaillé complète ces informations ; il ne doit pas être l’unique endroit où le client découvre une restriction essentielle.",
         ],
         items: [
@@ -3189,6 +3662,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/jeu-concours-evenement-local",
+    takeaway: {
+      title: "Préparez la capacité d’accueil avant d’annoncer le jeu",
+      text: "Pour un événement local, nous privilégions une mécanique qui n’ajoute pas de file à l’accueil et une remise que l’équipe peut absorber. Dimensionnez l’assistance en fonction du flux attendu, puis simplifiez la participation si le temps de conseil disponible devient le principal obstacle.",
+    },
     source: [references.lottery, references.consent],
     title: "Comment organiser un jeu-concours pour un événement local ?",
     description:
@@ -3200,8 +3677,8 @@ export const blogPosts: BlogPost[] = [
       "Pour organiser un jeu-concours lors d’un événement local, définissez d’abord l’objectif et les responsabilités, choisissez une participation courte, préparez les lots et les conditions, testez le parcours avant l’ouverture, puis mesurez séparément passage, scans, participations, contacts, gains et retraits.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "10 min de lecture",
     image: "/images/blog/jeu-concours-evenement-local.webp",
     imageAlt: "Illustration d’un jeu-concours par QR code sur un stand lors d’un événement local",
@@ -3211,7 +3688,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Commencez par le rôle du jeu dans l’événement",
         paragraphs: [
-          "Un jeu-concours ne doit pas être ajouté à un événement simplement parce qu’il attire l’attention. Il peut aider à faire découvrir un stand, créer un temps d’échange, présenter un produit ou proposer une prochaine étape après la visite. Choisissez un objectif principal avant de choisir la roue, le ticket ou le tirage.",
+          "Pour intégrer un jeu-concours à un événement local, dessinez le parcours du visiteur : où il découvre le jeu, où il participe, qui répond à ses questions et où il retire son lot. Séparez si possible l’explication du jeu de la file d’entrée. L’objectif peut être de découvrir un stand ou de préparer une prochaine visite, mais le service normal doit rester accessible.",
+          "Exemple fictif de charge : 60 arrivées par heure demandant chacune deux minutes d’aide mobiliseraient 120 minutes d’équipe par heure. Une seule personne ne peut pas absorber ce volume. Réduisez les étapes, annoncez des créneaux ou prévoyez un accueil supplémentaire ; une participation sur téléphone n’élimine pas les besoins d’explication et de remise.",
           "Un passage devant un stand, un scan, une participation, un contact, un gain et un retrait sont des événements différents. Cette distinction vous permet de concevoir une expérience réaliste et d’éviter de présenter un volume de participants comme une preuve de ventes ou de fidélité.",
           "Les exemples de cet article sont des scénarios à adapter à votre événement, à votre pays, au lieu et à votre public. Les règles applicables à un jeu-concours ou à la collecte de données doivent être vérifiées avec les personnes compétentes avant diffusion.",
         ],
@@ -3355,6 +3833,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/collecter-contacts-magasin-consentement",
+    takeaway: {
+      title: "Une coordonnée utile vaut mieux qu’un formulaire rempli sans finalité",
+      text: "Notre conseil est de partir du service demandé et de retirer chaque champ qui n’aide pas à le rendre. Séparez ensuite le choix marketing. Le nombre de contacts réutilisables pour une campagne dépend de la finalité et des autorisations valides, pas du nombre total d’adresses enregistrées.",
+    },
     seoTitle: "Collecter des contacts en magasin : consentement et méthode",
     source: [references.consent, references.prospecting],
     title: "Comment collecter des contacts en magasin sans dégrader l’expérience ?",
@@ -3367,9 +3849,9 @@ export const blogPosts: BlogPost[] = [
       "Pour collecter des contacts en magasin sans dégrader l’expérience, définissez la finalité avant le formulaire, demandez seulement les données nécessaires, expliquez chaque usage au bon moment et séparez la réception d’un gain de la prospection marketing facultative.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-17",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "10 min de lecture",
     image: "/images/blog/collecter-contacts-magasin-consentement.webp",
     imageAlt: "Illustration d’un échange en magasin autour d’un formulaire de contact choisi librement",
     ctaLabel: "Concevoir une collecte claire",
@@ -3378,7 +3860,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Commencez par la finalité, pas par l’adresse e-mail",
         paragraphs: [
-          "Avant d’ajouter un champ, répondez à une question simple : pourquoi cette information est-elle demandée ? Envoyer un gain, répondre à une demande, préparer une réservation, gérer une réclamation et proposer une newsletter sont des finalités différentes. Elles ne doivent pas être regroupées dans une phrase vague comme « rester en contact ».",
+          "Pour collecter des contacts en magasin, associez chaque champ à un usage précis : adresse e-mail pour transmettre un gain, téléphone pour une demande de rappel ou choix distinct pour une newsletter. Supprimez les champs sans destinataire, sans action ou sans justification. Le formulaire doit expliquer l’usage au moment où la personne saisit l’information.",
+          "Exemple entièrement fictif : 100 gagnants laissent une adresse pour recevoir leur gain ; 28 choisissent séparément les offres de l’établissement. Le bilan comporte 100 contacts liés au service et 28 choix marketing exprimés, à qualifier et dédoublonner selon leur portée. Il serait trompeur d’annoncer 100 abonnés à la newsletter ou d’importer indistinctement ces adresses dans un outil de prospection.",
           "Une collecte n’est pas une preuve de fidélité ni une vente future. Elle peut créer une possibilité de suivi si la personne comprend ce qu’elle accepte et si le commerce est capable d’utiliser la donnée conformément à la finalité annoncée. Une petite collecte claire vaut mieux qu’une base volumineuse impossible à qualifier ou à maintenir.",
           "Le marchand reste responsable de l’usage des contacts qu’il collecte. Cet article propose des principes de conception et ne constitue pas une validation juridique globale : les finalités, textes, durées, droits, outils et responsabilités doivent être vérifiés selon le pays et le contexte.",
         ],
@@ -3516,6 +3999,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/attirer-clients-fleuriste",
+    takeaway: {
+      title: "Rendez l’achat ordinaire aussi facile que l’achat pour une fête",
+      text: "Pour un fleuriste, nous privilégions des repères concrets de budget, de format et de disponibilité avant une promotion générale. Un petit atelier peut ensuite montrer le savoir-faire, à condition de réserver les tiges et le temps nécessaires. Les tendances nationales ne remplacent pas le relevé des demandes du quartier.",
+    },
     title: "Comment attirer des clients chez un fleuriste ? 10 idées concrètes",
     seoTitle: "Attirer des clients chez un fleuriste : 10 idées",
     description:
@@ -3527,9 +4014,9 @@ export const blogPosts: BlogPost[] = [
       "Pour attirer des clients chez un fleuriste, commencez par une fiche locale à jour et une vitrine compréhensible, puis testez une action liée à un besoin précis : bouquet du quotidien, atelier, conseil ou partenariat de quartier. Réservez le stock et le temps nécessaires, puis mesurez les demandes, visites et commandes sans attribuer automatiquement chaque vente à l’animation.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "12 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "13 min de lecture",
     image: "/images/blog/attirer-clients-fleuriste.webp",
     imageAlt: "Illustration d’une fleuriste présentant un bouquet à une cliente dans une boutique de quartier",
     ctaLabel: "Voir comment préparer une animation par QR code",
@@ -3551,7 +4038,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Identifiez ce qui manque : être trouvé, faire entrer ou faire revenir",
         paragraphs: [
-          "Avant de choisir une animation, observez le parcours. Les personnes du quartier savent-elles que vous êtes ouvert ? Les passants comprennent-ils votre offre ? Les visiteurs hésitent-ils sur le budget ou sur les variétés ? Une boutique peu visible sur une carte et une boutique dont la vitrine ne donne aucun repère n’ont pas le même problème.",
+          "Pour attirer des clients chez un fleuriste, repérez la difficulté locale : trouver le magasin, comprendre un budget, choisir une composition ou organiser un retrait. Présentez en vitrine quelques formats réellement disponibles avec un prix lisible, puis notez les hésitations exprimées. Un problème de choix appelle des repères de gamme ; un problème de disponibilité appelle une meilleure préparation des commandes.",
+          "La [synthèse FranceAgriMer et VALHOR sur les achats de végétaux en 2024, publiée le 22 mai 2025](https://www.franceagrimer.fr/index.php/actualites/retour-sur-le-webinaire-achats-de-vegetaux-par-les-francais-en-2024), s’appuie sur un panel Kantar de 7 000 foyers. Elle indique que sept foyers français sur dix ont acheté au moins un végétal cette année-là. Le périmètre dépasse les bouquets et les seuls fleuristes. Notre lecture : proposer une petite attention du quotidien mérite un test local, mais ce chiffre national ne prédit pas les commandes de votre boutique.",
           "Pendant quelques jours comparables, notez les demandes reçues, les questions récurrentes et les horaires où l’équipe dispose de temps de conseil. Un relevé anonyme suffit pour commencer. Choisissez ensuite une difficulté principale et une preuve à observer ; les [leviers d’acquisition d’un commerce local](/blog/attirer-clients-commerce-local) donnent le cadre général, tandis que les actions ci-dessous répondent aux contraintes florales.",
         ],
       },
@@ -3630,7 +4118,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Quelle action choisir selon le problème observé ?",
         paragraphs: [
-          "Ce tableau sert à sélectionner un premier test. Il compare des contraintes de fleuriste, pas des performances promises. Choisissez une action dont vous pouvez vérifier l’exécution avec les données réellement disponibles.",
+          "Pour choisir une action chez un fleuriste, reliez le problème observé à une ressource disponible : visibilité locale, repères en vitrine, temps de démonstration ou organisation du retrait. La comparaison porte sur ces contraintes, pas sur des performances promises. Retenez un test dont l’exécution peut être vérifiée par l’équipe.",
         ],
         table: {
           caption: "Choisir un levier d’acquisition pour une boutique de fleurs",
@@ -3654,7 +4142,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Un plan de test sur 30 jours pour commencer",
         paragraphs: [
-          "Ce plan est une proposition d’organisation, pas une prévision commerciale. Il peut servir à tester une vitrine, une démonstration ou un partenariat. Pour une [période creuse](/blog/animer-periode-creuse-commerce-local), comparez des créneaux documentés et regardez aussi les plages voisines : une visite déplacée ne constitue pas nécessairement une nouvelle demande.",
+          "Un test de 30 jours chez un fleuriste peut porter sur une vitrine, une démonstration ou un partenariat. Le calendrier proposé sert à réserver du temps pour observer, préparer, diffuser et dresser le bilan. Pour une [période creuse](/blog/animer-periode-creuse-commerce-local), comparez des créneaux documentés et regardez aussi les plages voisines : une visite déplacée ne constitue pas nécessairement une nouvelle demande.",
         ],
         items: [
           "Jours 1 à 7 : relever les questions, les horaires et le parcours ; choisir un besoin et une mesure de départ.",
@@ -3714,6 +4202,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animation-boutique-vetements",
+    takeaway: {
+      title: "Le conseil disponible peut limiter l’événement avant les cabines",
+      text: "En boutique de vêtements, nous privilégions un thème précis et une sélection de tailles vérifiée. Des rendez-vous courts ne sont utiles que si le conseil, l’essayage et le rangement tiennent dans la capacité réelle. Annoncez ce qui sera disponible plutôt qu’une collection entière difficile à servir.",
+    },
     title: "Comment animer une boutique de vêtements sans multiplier les remises ?",
     seoTitle: "Animer une boutique de vêtements sans remise",
     description:
@@ -3725,9 +4217,9 @@ export const blogPosts: BlogPost[] = [
       "Commencez par un rendez-vous de découverte facile à organiser, comme une présentation de silhouettes ou un créneau de conseil. Vérifiez les références et tailles disponibles avant d’inviter, annoncez clairement les conditions et mesurez les demandes ou essayages observés. Une animation peut soutenir la découverte d’une collection ; elle ne garantit ni visite ni vente.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "10 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "11 min de lecture",
     image: "/images/blog/animation-boutique-vetements.webp",
     imageAlt: "Une commerçante conseille une cliente qui découvre des vêtements dans une boutique indépendante",
     ctaLabel: "Voir comment fonctionne une animation par QR code",
@@ -3747,7 +4239,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Définir le rendez-vous avant de choisir l’animation",
         paragraphs: [
-          "Une animation commerciale réussie commence par une question précise : souhaitez-vous faire connaître une nouvelle collection, aider les visiteurs à composer une tenue, rendre visible un savoir-faire ou créer une occasion de revenir ? Ces objectifs appellent des formats différents. Une présentation de silhouettes peut aider à découvrir des associations ; un rendez-vous de conseil demande du temps individuel ; un jeu ajoute une expérience, mais ne remplace ni l’essayage ni le conseil.",
+          "Pour animer une boutique de vêtements, partez d’une question d’essayage ou de choix : composer une tenue avec une pièce existante, comparer deux coupes ou découvrir une matière. Préparez les références, tailles et coloris nécessaires, puis choisissez entre présentation collective et conseil individuel. Le nombre de cabines n’est pas la seule limite : le temps du conseiller et le rangement comptent aussi.",
+          "Exemple entièrement fictif : trois cabines pourraient accueillir 18 essayages de 20 minutes en deux heures, sans battement. Mais une seule conseillère consacrant 20 minutes à chaque rendez-vous n’en accompagne que six sur la même période, avant rangement et service ordinaire. Réservez d’abord la capacité de conseil ; un formulaire proposant 18 places créerait une promesse impossible à tenir avec cette organisation.",
           "Observez d’abord les demandes fréquentes, les moments calmes, les tailles manquantes et les articles qui suscitent des questions. Cette observation informelle est un point de départ, pas une étude représentative. Choisissez un seul objectif et une preuve que l’équipe peut relever : questions reçues, essayages commencés, inscriptions volontaires ou utilisation d’une offre précise.",
           "Si le besoin concerne le lancement d’un produit ou d’une gamme, la [méthode pour préparer une animation de lancement](/blog/animation-lancement-nouveau-produit) complète ces idées. Pour le choix entre une offre certaine et une expérience avec participation, consultez aussi la comparaison [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion).",
         ],
@@ -3822,7 +4315,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Un test simple en quatre semaines",
         paragraphs: [
-          "Ce calendrier est un exemple d’organisation, pas une prévision de fréquentation :",
+          "Pour tester une animation de boutique de vêtements en quatre semaines, réservez successivement le diagnostic, la préparation, la diffusion et le bilan. Adaptez ce calendrier au stock et à l’équipe ; il organise le travail sans prévoir la fréquentation :",
         ],
         items: [
           "Semaine 1 : relever les questions, choisir une collection et un besoin client ; vérifier les tailles et le temps disponible.",
@@ -3866,6 +4359,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/attirer-clients-librairie-independante",
+    takeaway: {
+      title: "Une rencontre doit avoir une utilité éditoriale et un budget assumé",
+      text: "Pour une librairie, nous privilégions une programmation qui révèle un rayon, un auteur ou un savoir-faire de conseil. Le bilan peut justifier une rencontre par sa qualité et ses suites observées, sans la présenter artificiellement comme rentable. L’effort d’accueil et les livres à préparer se décident avant l’annonce.",
+    },
     title: "Comment attirer des clients dans une librairie indépendante ?",
     seoTitle: "Attirer des clients dans une librairie indépendante",
     description:
@@ -3877,9 +4374,9 @@ export const blogPosts: BlogPost[] = [
       "Commencez par une sélection thématique expliquée par le libraire, une rencontre à jauge définie ou un rendez-vous régulier autour de la lecture. Vérifiez les livres disponibles, préparez les modalités de commande ou de réservation réellement proposées, puis diffusez une invitation avec date, capacité et conditions claires. Le prix unique du livre en France limite les promotions : l’animation peut plutôt mettre en avant le conseil, la découverte et la vie culturelle locale.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "10 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "11 min de lecture",
     image: "/images/blog/attirer-clients-librairie-independante.webp",
     imageAlt: "Un libraire conseille un livre à une lectrice dans une librairie indépendante de quartier",
     ctaLabel: "Découvrir les animations par QR code",
@@ -3902,7 +4399,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Faire connaître une librairie par ce qui la rend singulière",
         paragraphs: [
-          "Une librairie ne se résume pas à une liste de références. Le conseil, les coups de cœur argumentés, les rayons spécialisés, les rencontres et la connaissance des lecteurs peuvent donner envie de pousser la porte. L’enjeu est de rendre ces atouts visibles aux personnes qui vivent, travaillent ou étudient à proximité.",
+          "Pour attirer des lecteurs en librairie indépendante, choisissez une proposition qu’une liste de titres en ligne ne rend pas seule : discussion sur un thème, conseil argumenté ou rencontre avec un invité confirmé. Identifiez le public du quartier concerné et préparez une sélection disponible à feuilleter. Une invitation nommant le sujet et le format aide davantage à décider qu’un simple « venez nombreux ».",
+          "Exemple économique entièrement fictif : une rencontre coûte 100 € de dépenses nouvelles. Si la contribution par livre vendu, après coût d’achat et frais variables, est estimée à 5 €, il faut 20 ventes additionnelles pour couvrir ces seules dépenses, avant le temps d’équipe. La présence de 20 visiteurs ne garantit pas ce résultat ; vous pouvez aussi assumer un objectif culturel ou relationnel et le budgéter comme tel.",
           "Avant de choisir une animation, demandez-vous ce que les visiteurs doivent découvrir : un rayon peu connu, une nouvelle sélection, un auteur invité, un club de lecture ou la possibilité de commander un ouvrage. Relevez les questions fréquentes au comptoir et les demandes que vous ne pouvez pas satisfaire. Ces observations de l’équipe guident le choix ; elles ne constituent pas une mesure représentative de tout le quartier.",
           "Fixez un objectif principal et un indicateur praticable : demandes sur un rayon, inscriptions, présence, commandes identifiées ou visites pendant un créneau. Une personne qui s’inscrit n’est pas nécessairement présente ; une vente à la librairie pendant un événement ne prouve pas que l’événement l’a provoquée.",
           "Pour structurer les dates et éviter de concentrer les efforts sur les seules périodes commerciales, consultez le [calendrier marketing pour un commerce local](/blog/calendrier-marketing-commerce-local). Les idées de cette page restent centrées sur les contraintes et les pratiques d’une librairie.",
@@ -3911,7 +4409,7 @@ export const blogPosts: BlogPost[] = [
       {
         title: "7 idées d’animation adaptées à une librairie indépendante",
         paragraphs: [
-          "Ces formats peuvent être gratuits ou payants selon votre organisation. Vérifiez les droits, coûts, disponibilités et accords nécessaires à chaque événement ; l’exemple décrit une façon de préparer l’action, pas un résultat commercial constaté.",
+          "Une rencontre d’auteur, un club de lecture ou un atelier en librairie peut être gratuit ou payant selon l’organisation retenue. Vérifiez les droits, coûts, disponibilités et accords nécessaires à chaque événement ; l’exemple décrit une façon de préparer l’action, pas un résultat commercial constaté.",
         ],
         items: [
           "Créer une sélection thématique courte — par exemple premiers romans, récits de voyage ou livres accessibles à lire en famille — accompagnée de recommandations signées par l’équipe. Indiquez les titres effectivement disponibles et actualisez la sélection quand le stock change.",
@@ -4001,6 +4499,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animations-jardinerie-saisons",
+    takeaway: {
+      title: "Choisissez le thème saisonnier à partir des usages et du stock local",
+      text: "Notre conseil est de faire correspondre une question de jardinage locale, une gamme disponible et une démonstration que l’équipe maîtrise. La saison donne un repère, pas une date universelle d’intervention ni une garantie de demande. Prévoyez un format de repli si les conditions empêchent l’atelier prévu.",
+    },
     title: "Quelles animations proposer dans une jardinerie au fil des saisons ?",
     seoTitle: "Animations en jardinerie : idées et calendrier",
     description:
@@ -4012,14 +4514,14 @@ export const blogPosts: BlogPost[] = [
       "Choisissez une animation par saison — démonstration, atelier pratique, séance de questions-réponses ou rencontre avec un spécialiste — puis vérifiez la météo, les références en stock, le matériel et le nombre de places. Préparez un format intérieur de repli et communiquez des horaires et conditions exacts. En période plus calme, privilégiez un rendez-vous ciblé et léger plutôt qu’un événement coûteux sans objectif mesurable.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "10 min de lecture",
     image: "/images/blog/animations-jardinerie-saisons.webp",
     imageAlt: "Une équipe de jardinerie anime une démonstration de rempotage sous serre",
     ctaLabel: "Découvrir les animations par QR code",
     ctaHref: "/comment-ca-marche",
-    source: [
+    source: [references.plants2024,
       {
         label: "FranceAgriMer et VALHOR — panel annuel des achats de végétaux",
         href: "https://www.franceagrimer.fr/index.php/chiffre-et-analyses-economiques/achats-de-vegetaux-et-prestations-pour-les-espaces-exterieurs",
@@ -4045,7 +4547,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Partir des usages du moment, pas d’un calendrier universel",
         paragraphs: [
-          "Une animation de jardinerie fonctionne d’abord comme un rendez-vous utile : voir une démonstration, poser une question, comparer des outils ou apprendre à utiliser une gamme. Les occasions se renouvellent au fil des saisons, mais leur calendrier varie selon les conditions locales et les habitudes des clients. Un thème pertinent pour une jardinerie urbaine avec une grande serre n’est pas forcément adapté à un magasin rural ou à une zone exposée à une météo différente.",
+          "Pour programmer une animation en jardinerie, rapprochez trois éléments : les questions réellement posées par les clients, les produits disponibles et les conditions locales. Un atelier de rempotage se prépare avec ses contenants et consommables ; une présentation d’outillage se prépare avec les références et consignes du fabricant. Prévoyez une solution de repli et une information des inscrits si la météo change le format.",
+          "Le [panel Kantar de 7 000 foyers pour FranceAgriMer et VALHOR, bilan 2024 publié en mai 2025](https://www.franceagrimer.fr/index.php/actualites/retour-sur-le-webinaire-achats-de-vegetaux-par-les-francais-en-2024), indique que 28 % des foyers français ont acheté des végétaux pour le potager en 2024 ; ce segment progresse de 2 % en volume mais recule de 13 % en valeur. Notre lecture : un atelier utile peut porter sur le choix et l’usage, sans ajouter automatiquement une remise. Ces évolutions nationales ne mesurent ni votre clientèle ni l’efficacité d’un atelier.",
           "Consultez les prévisions locales pour choisir le lieu et le format, ainsi que la Vigilance lorsqu’un phénomène dangereux est annoncé. Météo-France explique que [la Vigilance complète les prévisions météorologiques](https://meteofrance.com/vigilance-et-securite/5-questions-sur-la-vigilance-meteorologique). Demandez ensuite à une personne compétente de valider le contenu de jardinage : les idées ci-dessous organisent une animation, sans fixer des dates de plantation ni des traitements.",
           "Les [panels FranceAgriMer et VALHOR sur les achats de végétaux](https://www.franceagrimer.fr/index.php/chiffre-et-analyses-economiques/achats-de-vegetaux-et-prestations-pour-les-espaces-exterieurs) donnent un contexte de filière. Leur année de référence doit être lue avant toute utilisation ; les résultats nationaux ne prédisent pas les besoins de votre magasin. Complétez-les par les questions au comptoir, les stocks et les observations de votre zone.",
           "Pour planifier l’ensemble de vos campagnes locales, le [calendrier marketing du commerce de proximité](/blog/calendrier-marketing-commerce-local) aide à répartir les rendez-vous. L’article sur le [lancement d’un nouveau produit](/blog/animation-lancement-nouveau-produit) propose aussi une méthode transposable à une nouvelle gamme de jardinage.",
@@ -4150,6 +4653,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/fideliser-clients-animalerie",
+    takeaway: {
+      title: "La disponibilité et le suivi demandé peuvent fidéliser sans remise",
+      text: "En animalerie, nous privilégions une référence bien identifiée, un stock fiable et une information de réapprovisionnement réellement demandée. Le jeu reste un complément éventuel à cette utilité. Le conseil commercial s’arrête aux caractéristiques vérifiées du produit et ne remplace pas un avis vétérinaire.",
+    },
     title: "Comment fidéliser les clients d’une animalerie sans remise permanente ?",
     seoTitle: "Fidéliser les clients d’une animalerie sans remise",
     description:
@@ -4161,8 +4668,8 @@ export const blogPosts: BlogPost[] = [
       "Commencez par repérer les questions récurrentes et les catégories de produits qui demandent une explication. Organisez une démonstration courte, une rencontre avec un professionnel compétent ou un service de disponibilité clairement défini. Vérifiez les produits et les stocks, demandez l’accord avant toute interaction avec un animal, et mesurez les retours observables. Un achat ou un passage en magasin ne prouve pas à lui seul une fidélité durable.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
     readingTime: "10 min de lecture",
     image: "/images/blog/fideliser-clients-animalerie.webp",
     imageAlt: "Une vendeuse conseille une cliente sur un accessoire pour son chien dans une animalerie",
@@ -4194,7 +4701,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Fidéliser par l’utilité et la confiance",
         paragraphs: [
-          "La fidélité en animalerie ne se résume pas à faire revenir quelqu’un grâce à une remise. Les clients peuvent rechercher un produit précis, comparer des accessoires, comprendre une caractéristique ou savoir si une référence est disponible. Une réponse claire et un accueil cohérent peuvent rendre la prochaine visite plus simple, sans promettre de résultat commercial.",
+          "Pour fidéliser en animalerie sans remise permanente, commencez par les motifs de visite répétés : retrouver une référence exacte, vérifier une compatibilité d’accessoire ou connaître un réapprovisionnement. Notez les demandes non satisfaites par produit, sans créer de profil de santé de l’animal. Une disponibilité mieux annoncée peut rendre la prochaine visite plus utile qu’une récompense sans rapport avec le besoin.",
+          "Exemple fictif : sur 12 demandes de produits indisponibles relevées pendant une semaine, sept concernent la même référence. Vérifiez d’abord le délai fournisseur, le niveau de stock et la possibilité d’un avis de disponibilité demandé par le client. Ne préparez pas une campagne de réduction avant de savoir si le principal problème est simplement de trouver le bon produit en rayon.",
           "Commencez par noter les questions que l’équipe reçoit souvent : différence entre deux accessoires, taille, compatibilité annoncée par le fabricant, disponibilité d’un produit ou délai de réassort. Distinguez les questions auxquelles un vendeur formé peut répondre à partir des informations du produit de celles qui concernent la santé, un symptôme ou un traitement.",
           "Le Ministère de l’Agriculture rappelle que le vétérinaire est le référent en cas de maladie et que le bien-être d’un animal dépend de ses besoins physiologiques et comportementaux. L’article porte donc sur l’expérience en magasin et les produits ; il ne donne pas de diagnostic, de conseil de santé ou de recommandation vétérinaire.",
           "Pour construire une démarche de retour sans points ni remises systématiques, l’article [fidéliser ses clients sans programme de points](/blog/fideliser-clients-sans-programme-points) propose un cadre général. Les exemples ci-dessous l’adaptent aux catégories et aux responsabilités particulières d’une animalerie.",
@@ -4291,6 +4799,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animation-magasin-jouets-jeux",
+    takeaway: {
+      title: "Faites découvrir une mécanique de jeu que l’équipe peut expliquer",
+      text: "Pour un magasin de jeux, nous privilégions une séance courte qui fait comprendre la décision centrale d’une partie. Le nombre de places dépend autant de l’explication et du rangement que des chaises. Gardez les informations et inscriptions familiales adressées aux adultes accompagnants.",
+    },
     title: "Comment organiser une animation dans un magasin de jouets ou de jeux ?",
     seoTitle: "Animation en magasin de jouets : préparer un événement",
     description:
@@ -4302,9 +4814,9 @@ export const blogPosts: BlogPost[] = [
       "Définissez d’abord le public et l’âge recommandé des produits, puis choisissez une activité courte qui tient dans l’espace disponible. Désignez une personne responsable, comptez les places et le matériel, gardez les circulations accessibles, et adressez l’inscription aux adultes accompagnants. Pour un jeu avec lot ou tirage au sort, précisez ses règles et vérifiez le cadre applicable : ce n’est pas la même chose qu’une partie de démonstration ou un tournoi fondé sur les résultats.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "10 min de lecture",
     image: "/images/blog/animation-magasin-jouets-jeux.webp",
     imageAlt:
       "Un vendeur présente un jeu de société à deux adultes autour d’une table en boutique",
@@ -4336,7 +4848,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Choisir un format adapté au magasin et au public",
         paragraphs: [
-          "Une animation en magasin de jouets fonctionne mieux quand sa promesse est concrète : essayer un jeu, découvrir une nouveauté, apprendre une règle ou participer à une partie encadrée. Avant de choisir le format, demandez-vous qui joue, combien de temps dure une session, quel niveau d’explication l’équipe peut apporter et combien de personnes l’espace peut accueillir sans gêner les achats.",
+          "Pour organiser une animation en magasin de jouets ou de jeux, choisissez ce que le public découvrira : un tour commenté, une règle ou une partie complète. Vérifiez les indications du fabricant, la durée de prise en main et la disponibilité d’une personne pour expliquer. Annoncez clairement le format ; une démonstration de dix minutes ne doit pas être présentée comme une partie complète.",
+          "Exemple de planning entièrement fictif : une table de quatre joueurs accueille trois séances comprenant 15 minutes de découverte et cinq minutes de remise en place. Une heure offre au maximum 12 places de jeu, pas nécessairement 12 visiteurs différents. Réservez un temps d’accueil à part et indiquez qui accompagne les enfants selon l’organisation retenue par le magasin.",
           "Une démonstration présente les règles et le matériel ; une table de découverte permet de tester un jeu ; un tournoi ajoute des manches et un classement ; un jeu promotionnel fait espérer un gain. Le mot « animation » peut désigner ces formats différents, mais leurs conditions, leur durée et leurs obligations ne sont pas interchangeables. Pour comparer les mécanismes promotionnels, voir [jeu-concours ou promotion](/blog/jeu-concours-ou-promotion) et [organiser un jeu-concours lors d’un événement local](/blog/jeu-concours-evenement-local).",
           "Un premier événement peut rester simple : une table, un jeu, des créneaux annoncés et une personne de l’équipe qui explique les règles. Si l’intérêt est confirmé, le magasin pourra envisager plusieurs tables ou un rendez-vous récurrent. Ce test n’est pas une garantie de ventes ou de fidélisation ; il permet surtout de vérifier l’organisation et les retours observables.",
         ],
@@ -4427,6 +4940,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/attirer-clients-garage-automobile",
+    takeaway: {
+      title: "Obtenez des demandes que l’atelier est capable de traiter",
+      text: "Pour un garage, nous privilégions une fiche de prestation claire et un premier contact efficace plutôt qu’une promotion très large. Le coût d’un rendez-vous comprend aussi la qualification de la demande et la capacité technique mobilisée. La sécurité et les travaux nécessaires restent dans le parcours professionnel du garage.",
+    },
     title: "Comment attirer et faire revenir des clients dans un garage automobile ?",
     seoTitle: "Attirer des clients dans un garage automobile",
     description:
@@ -4438,9 +4955,9 @@ export const blogPosts: BlogPost[] = [
       "Commencez par vérifier vos horaires et coordonnées sur votre fiche locale et votre site, puis décrivez précisément les services réellement assurés. Facilitez une première demande avec les informations nécessaires au tri et annoncez les créneaux que l’atelier peut tenir. Avant les travaux, expliquez leur périmètre et leur prix selon la situation du client ; séparez les messages de suivi liés à une intervention de la prospection commerciale. Mesurez les appels, demandes et rendez-vous confirmés sans attribuer automatiquement chaque vente à une campagne.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "10 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "11 min de lecture",
     image: "/images/blog/attirer-clients-garage-automobile.webp",
     imageAlt:
       "Un mécanicien explique une intervention automobile à une cliente dans un atelier",
@@ -4472,7 +4989,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Rendre le garage facile à trouver et à contacter",
         paragraphs: [
-          "Un automobiliste compare souvent plusieurs ateliers avant d’appeler. Il veut savoir si le garage est ouvert, où il se trouve, comment prendre contact et si le type de prestation recherché est proposé. Vérifiez ces informations sur le site, les annuaires professionnels et la fiche d’établissement Google : nom, adresse, téléphone, horaires habituels et exceptionnels, lien vers le site et zone réellement desservie.",
+          "Pour attirer des clients dans un garage automobile, rendez visibles les informations nécessaires au premier contact : prestations réellement proposées, véhicules pris en charge, horaires, adresse et moyen de demande de rendez-vous. Préparez aussi les questions utiles au tri de la demande : prestation recherchée, modèle et année du véhicule, disponibilité et façon de rappeler le client. Une réponse doit distinguer demande reçue et créneau confirmé.",
+          "Exemple de capacité entièrement fictif : quatre heures d’atelier disponibles pour une opération de 45 minutes suivie de 15 minutes de préparation permettent de prévoir quatre créneaux, si le professionnel confirme ces durées et les moyens nécessaires. Annoncer huit rendez-vous parce que deux postes sont libres serait incohérent si une seule personne peut réaliser la prestation. Vérifiez la ressource réellement limitante avant de diffuser une offre.",
           "Google permet de modifier les horaires, coordonnées et photos de la fiche. Pour un garage qui reçoit les véhicules sur place, indiquez d’abord son adresse et son accès. Une zone desservie concerne les prestations effectivement proposées chez le client ou sur un secteur d’intervention ; ne l’utilisez pas comme une liste de villes à ajouter au nom du garage. L’aide [Google sur la mise à jour de la fiche](https://support.google.com/business/answer/3039617?hl=fr) précise les champs disponibles.",
           "Présentez les services disponibles avec des mots compris par les conducteurs : entretien périodique, pneumatiques, diagnostic, carrosserie ou autre prestation uniquement si l’atelier la réalise effectivement. Précisez les limites : types de véhicules pris en charge, équipement nécessaire, modalités de rendez-vous, prise en charge ou non à domicile. Ne laissez pas penser que le garage intervient sur tous les modèles ou toutes les pannes si ce n’est pas le cas.",
           "Pour structurer une présence locale sans créer de contenu générique, consultez aussi [comment attirer des clients dans un commerce local](/blog/attirer-clients-commerce-local). Pour un garage, la différenciation vient surtout de ses spécialités confirmées, de son accueil et de la clarté du parcours avant intervention.",
@@ -4558,6 +5076,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/portes-ouvertes-salle-sport",
+    takeaway: {
+      title: "La visite doit montrer une expérience que la salle pourra continuer à délivrer",
+      text: "Nous privilégions un parcours de découverte proche de l’accueil ordinaire, avec des groupes que l’équipe peut accompagner. Un événement très rempli mais impossible à servir ne renseigne pas sur la qualité d’une future adhésion. La visite, l’essai encadré et l’information contractuelle doivent avoir chacun leur organisation.",
+    },
     title: "Comment organiser une journée portes ouvertes dans une salle de sport ?",
     seoTitle: "Portes ouvertes en salle de sport : plan d’action",
     description:
@@ -4569,9 +5091,9 @@ export const blogPosts: BlogPost[] = [
       "Choisissez un objectif principal (faire visiter, présenter les cours ou proposer un essai), listez les espaces accessibles, les créneaux et les personnes qui encadrent, puis limitez les inscriptions à la capacité disponible. Expliquez à l’avance les activités, conditions, tarifs éventuels et modalités d’essai. Collectez séparément les coordonnées nécessaires à l’organisation et le consentement marketing ; ne demandez pas d’informations de santé sur un formulaire de prospection. Après l’événement, comptez les visites, essais, demandes et adhésions comme des étapes distinctes.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "10 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "11 min de lecture",
     image: "/images/blog/portes-ouvertes-salle-sport.webp",
     imageAlt:
       "Présentation d’un espace d’entraînement à une visiteuse lors de portes ouvertes en salle de sport",
@@ -4607,7 +5129,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Définir ce que les visiteurs pourront découvrir",
         paragraphs: [
-          "Une journée portes ouvertes peut servir à visiter les espaces, rencontrer l’équipe, comprendre le fonctionnement des cours ou essayer une activité. Choisissez un objectif principal avant de préparer le programme : il déterminera la durée des visites, les besoins d’encadrement, le nombre de personnes admises et les informations à communiquer.",
+          "Pour organiser des portes ouvertes en salle de sport, choisissez l’action principale : visiter les espaces, comprendre les cours ou participer à un essai préparé avec l’encadrement compétent. Prévoyez un parcours et une personne disponible pour répondre aux questions. Les adhérents habituels doivent aussi pouvoir utiliser les espaces dans les conditions annoncées.",
+          "Exemple fictif d’accueil, sans norme de sécurité implicite : trois visites de 30 minutes suivies chacune de 10 minutes de remise en place occupent deux heures. Avec six personnes par groupe, cela représente 18 places de visite, à confirmer selon le lieu et l’équipe. Les places d’un éventuel essai sportif se calculent séparément ; elles ne se déduisent pas automatiquement de cette jauge de visite.",
           "Décrivez ce qui est réellement accessible ce jour-là : plateau de musculation, studio de cours collectifs, espace cardio, vestiaires ou accueil, selon la configuration de votre établissement. Distinguez les zones ouvertes au public de celles réservées à l’équipe ou aux adhérents. Si un espace ne peut pas être visité pendant une activité, dites-le clairement plutôt que de le laisser supposer.",
           "Précisez le public concerné. Une visite sans séance ne présente pas les mêmes conditions qu’un essai physique. Si la journée accueille aussi des mineurs, les modalités d’accès, l’accompagnement et les activités doivent être définis séparément par l’établissement et son équipe ; cet article se concentre sur une découverte destinée aux adultes.",
           "Pour compléter la journée par une animation ou un jeu, examinez d’abord si ce format répond à un objectif utile. Le guide [jeu-concours lors d’un événement local](/blog/jeu-concours-evenement-local) distingue ce dispositif d’une visite et d’un essai : ne transformez pas une activité sportive ou une adhésion en lot tiré au sort sans vérifier le cadre applicable.",
@@ -4710,6 +5233,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/organiser-degustation-epicerie-fine",
+    takeaway: {
+      title: "La dégustation doit aider à choisir un produit précis",
+      text: "Pour une épicerie fine, nous privilégions une question de découverte simple et un service préparé en petites séries. Le coût se suit par portion et par produit, avec le temps d’équipe et les pertes. Une réaction positive aide au conseil ; elle ne doit pas être convertie en intention d’achat supposée.",
+    },
     title: "Comment organiser une dégustation en épicerie fine pour faire découvrir ses produits ?",
     seoTitle: "Dégustation en épicerie fine : organiser et mesurer",
     description:
@@ -4721,9 +5248,9 @@ export const blogPosts: BlogPost[] = [
       "Fixez l’objectif et la durée, sélectionnez un ou deux produits disponibles, puis calculez les portions prévues à partir des créneaux ou du flux estimé et du nombre de goûts proposés par personne. Vérifiez la liste d’ingrédients et les allergènes avec les informations du fournisseur, préparez les conditions d’hygiène et de conservation adaptées au produit, et placez le comptoir sans gêner la circulation. Annoncez les dates, les produits et les éventuelles limites, puis suivez portions servies, questions et achats observables sans leur attribuer automatiquement un lien causal.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "10 min de lecture",
     image: "/images/blog/organiser-degustation-epicerie-fine.webp",
     imageAlt:
       "Dégustation d’une tartinade au comptoir d’une épicerie fine",
@@ -4755,7 +5282,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Choisir un produit et un objectif de découverte",
         paragraphs: [
-          "Une dégustation réussie commence par une question simple : qu’aimeriez-vous que le visiteur découvre ? Une nouvelle confiture, une huile d’olive, un chocolat, une tartinade ou un fromage peuvent illustrer le savoir-faire de l’épicerie, à condition que le produit soit disponible et que l’équipe sache le présenter. Cet article privilégie des exemples sans alcool ; adaptez toujours le format aux produits réellement vendus et aux règles qui leur sont propres.",
+          "Pour organiser une dégustation en épicerie fine, choisissez un produit disponible et une question de découverte : texture, usage en cuisine ou différence entre deux références. Préparez une explication courte à partir des informations du fournisseur et les renseignements alimentaires correspondants. Le visiteur doit pouvoir retrouver facilement le produit, son prix et ses conditions de conservation. Les exemples proposés ici portent sur des produits sans alcool.",
+          "Exemple d’organisation entièrement fictif : au lieu de préparer 80 portions d’un seul coup, une épicerie prévoit quatre séries de 20 et désigne la personne qui décide du réassort selon le passage. Le choix des quantités reste soumis aux conditions de conservation et aux procédures du produit. Relevez les portions servies et restantes ; ajuster la préparation réduit les ressources engagées sans faire du nombre d’échantillons distribués un objectif en soi.",
           "Limitez le choix à un ou deux produits liés par une idée claire : origine indiquée par le fournisseur, ingrédient distinctif, méthode de fabrication documentée ou association de saveurs proposée à titre d’exemple. N’inventez pas une origine, une qualité nutritionnelle, un label ou une méthode artisanale. Pour comparer plusieurs nouveautés ou structurer leur lancement, l’article [animer le lancement d’un nouveau produit](/blog/animation-lancement-nouveau-produit) propose d’autres formats de présentation.",
           "Définissez aussi le but de la séance : faire connaître une référence, répondre aux questions sur sa composition ou recueillir des réactions spontanées. Évitez un objectif vague comme « augmenter le panier moyen » si vous n’avez ni méthode d’attribution ni données comparables. Une dégustation est un moment de découverte, pas une promesse de conversion.",
         ],
@@ -4839,6 +5367,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/animation-magasin-velos-journee-decouverte",
+    takeaway: {
+      title: "Mettez le savoir-faire d’atelier en valeur sans bloquer les réparations",
+      text: "Pour un vélociste, nous privilégions un thème concret d’usage ou d’entretien avec une personne dédiée. La place prise par la réparation dans la filière justifie d’examiner ce savoir-faire comme sujet de découverte ; elle ne permet pas de prévoir la fréquentation du magasin. Les essais éventuels gardent leur organisation propre.",
+    },
     title: "Comment animer un magasin de vélos avec une journée découverte ?",
     seoTitle: "Animation en magasin de vélos : journée découverte",
     description:
@@ -4850,15 +5382,15 @@ export const blogPosts: BlogPost[] = [
       "Choisissez un thème précis, une démonstration en magasin et une personne disponible pour l’animer. Vérifiez les références présentées, préservez les créneaux d’atelier et annoncez un programme avec ses conditions d’accès. Tout essai éventuel se prépare séparément avec le responsable du magasin. Comptez ensuite les visiteurs, démonstrations et demandes pour décider si le format mérite d’être renouvelé.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-18",
-    updatedAt: "2026-10-18",
-    reviewedAt: "2026-10-18",
-    readingTime: "9 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "10 min de lecture",
     image: "/images/blog/animation-magasin-velos-journee-decouverte.webp",
     imageAlt:
       "Un vélociste montre la transmission d’un vélo installé sur un pied d’atelier à une cliente",
     ctaLabel: "Découvrir le fonctionnement d’Okado",
     ctaHref: "/comment-ca-marche",
-    source: [
+    source: [references.cycle2024,
       {
         label: "Google Business Profile — créer et gérer des posts événementiels",
         href: "https://support.google.com/business/answer/7342169?hl=fr",
@@ -4880,7 +5412,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Choisir un thème utile aux clients du magasin",
         paragraphs: [
-          "Une animation vélo fonctionne mieux lorsqu’elle répond à une question concrète : comment choisir un antivol, comprendre les différences entre deux éclairages, vérifier la pression recommandée par le fabricant ou préparer son vélo avant une sortie ? Le sujet doit correspondre aux produits réellement disponibles et aux compétences de la personne qui fera la démonstration.",
+          "Pour animer un magasin de vélos, choisissez une question récurrente que l’équipe sait traiter : comparer des éclairages, comprendre un antivol ou présenter un geste d’entretien à partir des consignes du fabricant. Préparez les références montrées et protégez les rendez-vous d’atelier déjà promis. Une démonstration en magasin peut être utile sans essai sur route.",
+          "L’[Observatoire du cycle 2024 de l’UNION sport & cycle, publié le 25 avril 2025](https://www.unionsportcycle.com/observatoire-du-cycle/2025-04-25/l-observatoire-du-cycle-2024), estime qu’il se répare en France environ trois fois plus de vélos qu’il ne s’en vend de neufs. Ce rapport national de filière porte sur les réparations et les ventes, pas sur les personnes intéressées par votre événement. Notre lecture : présenter l’atelier mérite d’être envisagé autant qu’exposer des nouveautés, en vérifiant d’abord la disponibilité des techniciens.",
           "Concentrez la journée sur une famille cohérente : accessoires de visibilité, équipement pour les trajets quotidiens, préparation d’un vélo neuf ou découverte d’une gamme. Évitez de présenter un conseil général comme un diagnostic individuel. Pour un réglage, une réparation ou une question de compatibilité, indiquez quand un examen du vélo ou un rendez-vous d’atelier est nécessaire.",
           "Définissez un objectif observable : faire découvrir une nouveauté, répondre à des questions fréquentes, présenter les services de l’atelier ou recueillir des demandes de devis. Cet objectif aide à choisir le format et les indicateurs. Une journée découverte peut être pertinente même si elle ne débouche pas immédiatement sur une vente.",
         ],
@@ -4969,6 +5502,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/journee-decouverte-magasin-optique",
+    takeaway: {
+      title: "Montrez un choix de boutique concret et gardez du temps pour les échanges",
+      text: "Pour un magasin d’optique, nous privilégions une sélection courte de montures ou d’accessoires que l’équipe peut réellement présenter. La découverte collective aide à comprendre l’offre ; les besoins individuels de correction et les questions de santé suivent le parcours professionnel approprié.",
+    },
     title: "Comment organiser une journée découverte dans un magasin d’optique ?",
     seoTitle: "Journée découverte chez un opticien : idées et organisation",
     description:
@@ -4980,9 +5517,9 @@ export const blogPosts: BlogPost[] = [
       "Choisissez une famille de montures ou d’accessoires et un public, préparez un déroulé court à partir des références disponibles, puis désignez une personne pour l’animation et une autre pour l’accueil si l’activité le permet. Annoncez horaires et conditions d’accès. Gardez les questions individuelles de correction hors de la présentation collective et mesurez les présences et demandes sans les assimiler à des ventes.",
     author: "L’équipe Okado",
     publishedAt: "2026-10-25",
-    updatedAt: "2026-10-25",
-    reviewedAt: "2026-10-25",
-    readingTime: "8 min de lecture",
+    updatedAt: "2026-10-26",
+    reviewedAt: "2026-10-26",
+    readingTime: "10 min de lecture",
     image: "/images/blog/journee-decouverte-magasin-optique.webp",
     imageAlt:
       "Un opticien présente plusieurs montures à une cliente dans une boutique indépendante",
@@ -5022,7 +5559,8 @@ export const blogPosts: BlogPost[] = [
       {
         title: "Choisir un thème assez précis pour être utile",
         paragraphs: [
-          "Une invitation comme « journée de l’optique » reste difficile à se représenter. Préférez un thème visible en boutique : découvrir les formes de montures, comparer des matériaux à partir des fiches produit, présenter des accessoires, ou montrer comment l’équipe entretient et ajuste une monture dans le cadre de ses services. Ne retenez que les sujets que le magasin peut réellement préparer et expliquer.",
+          "Pour organiser une journée découverte en magasin d’optique, choisissez un sujet que le visiteur pourra voir et comparer : formes de montures, matériaux décrits par les fabricants, accessoires ou entretien proposé par le magasin. Préparez les modèles réellement disponibles et annoncez le format : présentation collective, découverte libre ou échange individuel sur rendez-vous.",
+          "Exemple de préparation fictif : six montures réparties en trois familles donnent un support concret pour comparer forme, matériau et finitions. Pour chacune, l’équipe prépare la référence, les coloris disponibles et les informations du fabricant ; elle ne promet pas qu’une forme conviendra à toutes les personnes. Gardez une place pour les questions individuelles sans transformer la présentation collective en examen de vue.",
           "Définissez aussi à qui s’adresse le rendez-vous : personnes qui cherchent une monture, parents accompagnant un enfant, clients curieux d’une nouvelle collection ou visiteurs qui veulent connaître les services de l’atelier. Ce choix guide les exemples, le nombre de places et le ton de l’annonce ; il ne justifie pas de collecter des informations de santé pour segmenter les invités.",
           "Pour construire une trame, notez une phrase de promesse, trois objets à présenter et les questions de boutique auxquelles l’équipe sait répondre. Les informations techniques doivent correspondre aux modèles réellement montrés et aux documents disponibles, pas être généralisées à toutes les montures ou à tous les verres.",
           "Trois formats à adapter au magasin : une présentation temporaire d’une collection invitée, si une marque ou un créateur peut participer ; une comparaison de matières et de finitions appuyée sur les fiches des références ; ou une démonstration d’entretien et des services d’atelier réellement proposés. Dans chaque cas, montrez les produits disponibles et annoncez ce qui nécessite ensuite un échange individuel.",

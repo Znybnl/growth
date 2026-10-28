@@ -1,4 +1,4 @@
-import {
+import type {
   ActionKind,
   BackgroundMode,
   ButtonSize,
@@ -70,6 +70,12 @@ const TEXT_FONTS = new Set<TextFont>([
 const BUTTON_SIZES = new Set<ButtonSize>(["sm", "md", "lg"]);
 const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
 const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
+  "scratch-christmas-rose",
+  "scratch-christmas-natural",
+  "scratch-christmas-traditional",
+  "christmas-rose",
+  "christmas-natural",
+  "christmas-traditional",
   "halloween-gold",
   "classic",
   "restaurant-pop",
@@ -495,6 +501,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
       estimatedUnitCostKnown: prize.estimatedUnitCostKnown === false || prize.estimatedUnitCost == null || prize.estimatedUnitCost === "" ? false : undefined,
       purchaseRequired: Boolean(prize.purchaseRequired),
       usageConditions: normalizeMultiline(prize.usageConditions, 1200),
+      reusedFromPrizeId: normalizeString(prize.reusedFromPrizeId, 120) || undefined,
     };
   });
 

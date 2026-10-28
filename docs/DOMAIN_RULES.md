@@ -25,6 +25,31 @@ donne « Indisponible ». Lecture administrative côté serveur uniquement, sans
 modifier les sessions ni transmettre les identifiants internes Auth. Voir
 [la livraison et les limites](releases/2026-10-25-admin-last-sign-in-411.md).
 
+## Affiliation du compte marchand — #677
+
+Décision propriétaire du 28 octobre 2026 : l'affiliation appartient au compte
+marchand (workspace), indépendamment de l'établissement sélectionné. Un seul
+programme et un seul parrainage par compte ; les sites d'un même compte ne
+peuvent pas se parrainer entre eux. Seul l'administrateur plateforme active le
+programme, désactivé par défaut, et modifie son taux ou sa durée.
+
+La gestion des affiliés recense les comptes inscrits depuis les propriétaires
+du workspace, avec leur identité/e-mail de connexion et les plus récents en
+premier. Elle ne dépend ni de l'existence d'une fiche d'affiliation ni de la
+consultation de sa carte. Les anciens codes des établissements sont conservés
+comme alias d'un programme commun, sans supprimer ni recalculer l'historique.
+La carte apparaît dans Mon compte, onglet Utilisateur, pour les propriétaires
+et administrateurs d'un compte dont l'affiliation est activée.
+
+La période d'éligibilité court pendant 12 mois calendaires par défaut à partir
+du premier paiement, avec une borne de fin exclusive. Une résiliation ne rompt
+pas l'attribution au parrain. Une reprise avec un nouvel abonnement pendant la
+période initiale génère à nouveau des commissions sur les factures payées ; les
+pauses ne prolongent pas cette période. Deux mois payés, trois mois interrompus
+puis deux mois payés donnent quatre mois commissionnés. Une facture ne peut
+produire qu'une commission, même si Stripe la renvoie. Les versements restent
+manuels ; aucun transfert n'est déclenché par le marquage « Payée ».
+
 ## Autorité et périmètre
 
 - Pierre-Henri BRUNELLE est l'administrateur de la plateforme et l'unique valideur des PR, merges et déploiements en production.
@@ -216,5 +241,7 @@ Décisions propriétaire du 12 octobre 2026 : préférence commune au compte mar
 - Les tentatives ambiguës ne sont pas rejouées automatiquement au-delà de la fenêtre d’idempotence du fournisseur. Une désactivation stoppe les envois non encore acceptés. Les noms sont lus lors de la préparation, uniquement dans le snapshot/payload privé, jamais dans les événements ni les logs. Ces snapshots sont expurgés après acceptation, annulation et effacement d’une participation ; aucun archivage nominatif supplémentaire.
 
 ## Règle de changement
+
+- Décision propriétaire du 25 octobre 2026 (#609) : dans « Mes lots », la dernière utilisation correspond à la dernière réutilisation enregistrée dans un jeu. La date est produite côté serveur et sauvegardée atomiquement avec la copie ; annuler un ajout ou sauvegarder sans nouvelle réutilisation ne l'avance pas. Les preuves du jeu courant contribuent au classement, mais ses lots restent exclus des choix. Sans preuve historique, conserver la date de création connue sans inventer de date de réutilisation. Voir `docs/releases/2026-10-25-prize-last-reuse-609.md`.
 
 Toute modification de ce document exige une Issue non triviale, une analyse d'impact et les tests adaptés. Les changements de ce document priment sur les comportements implicites du code existant.

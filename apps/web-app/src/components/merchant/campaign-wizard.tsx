@@ -76,6 +76,8 @@ import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelFontOptions, beautyWheelLogoColor, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
+import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme } from "@/lib/christmas-wheel-themes";
+import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
@@ -2335,6 +2337,10 @@ export function CampaignWizard({
                 {(
                   draft.gameType === "scratch"
                     ? [
+                        ...CHRISTMAS_SCRATCH_TEMPLATES.map(item => {
+                          const theme = christmasScratchTemplate(item.id)!;
+                          return { id: item.id, label: theme.name, text: theme.description };
+                        }),
                         { id: "scratch-nude-classic", label: "Nude", text: "Un fond doux et neutre, personnalisable avec votre image" },
                         { id: "scratch-vault", label: "Coffre néon", text: "Coffre illustré avant grattage" },
                         { id: "scratch-confetti", label: "Carte confettis", text: "Solaire et festif" },
@@ -2343,6 +2349,7 @@ export function CampaignWizard({
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
+                     ...CHRISTMAS_WHEEL_THEMES.map(theme => ({ id: theme.id, label: theme.name, text: theme.description })),
                      { id: "halloween-gold", label: "Halloween doré", text: "Roses noires et dorures, décor et palette fixes" },
                      {
                        id: "cocorico-wheel",
@@ -2422,11 +2429,9 @@ export function CampaignWizard({
                         const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
                         const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.id, current.presentation.background.color, wheel.loseColor);
                         const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
-                        const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.id, wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
-                        const firstSelectionHeadingFont = template.id === "classic" || template.id === "halloween-gold"
-                          ? wheelHeadingFontForTemplateSelection(template.id, current.presentation.heading.fontFamily)
-                          : current.presentation.heading.fontFamily;
-                        const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
+                        const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? christmasScratchTemplate(template.id)?.logo ?? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.id, wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
+                        const firstSelectionHeadingFont = wheelHeadingFontForTemplateSelection(template.id, current.presentation.heading.fontFamily);
+                        const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? christmasWheelTheme(template.id)?.button ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                         const scratchSignal =
                           remembered?.scratchSignal ??
                           (scratchTemplateDefaultPrimaryColor(template.id) &&

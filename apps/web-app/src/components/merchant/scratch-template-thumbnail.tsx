@@ -2,6 +2,8 @@ import { Gift, LockKeyhole, PartyPopper, Sparkles, Sun } from "lucide-react";
 
 import type { GamePageTemplateId } from "@/lib/types";
 import { defaultScratchTextColor } from "@/lib/campaign-defaults";
+import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
+import { ChristmasScratchThumbnail } from "./christmas-scratch-thumbnail";
 
 const SCRATCH_THUMBNAILS = {
   "scratch-vault": {
@@ -99,6 +101,8 @@ const MOTIF_ICONS = {
 } as const;
 
 export function ScratchTemplateThumbnail({ templateId, card = false }: { templateId: GamePageTemplateId; card?: boolean }) {
+  const christmas = christmasScratchTemplate(templateId);
+  if (christmas) return <ChristmasScratchThumbnail templateId={christmas.id} card={card} />;
   if (!isScratchThumbnailId(templateId)) return null;
 
   const template = SCRATCH_THUMBNAILS[templateId];

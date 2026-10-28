@@ -40,6 +40,12 @@ export type PosterTemplateId =
   | "pastel-editorial-wheel"
   | "ivory-editorial-wheel";
 export type GamePageTemplateId =
+  | "scratch-christmas-rose"
+  | "scratch-christmas-natural"
+  | "scratch-christmas-traditional"
+  | "christmas-rose"
+  | "christmas-natural"
+  | "christmas-traditional"
   | "halloween-gold"
   | "classic"
   | "restaurant-pop"
@@ -208,6 +214,7 @@ export type AffiliateCommissionStatus = "pending" | "payable" | "paid" | "void";
 export interface AffiliateAccount {
   id: string;
   merchantId: string;
+  workspaceId: string;
   code: string;
   status: AffiliateAccountStatus;
   commissionRateBps: number;
@@ -264,6 +271,10 @@ export interface AffiliateAdminCommissionItem {
 export interface AffiliateAdminAccountItem {
   id: string;
   merchantId: string;
+  workspaceId: string;
+  workspaceName: string;
+  locationCount: number;
+  createdAt: string;
   merchantName: string;
   merchantEmail?: string;
   code: string;
@@ -961,5 +972,7 @@ export interface CampaignSetupInput {
     estimatedUnitCostKnown?: boolean;
     purchaseRequired?: boolean;
     usageConditions?: string;
+    /** Source selected in Mes lots; its reuse date is assigned by the server on save. */
+    reusedFromPrizeId?: string;
   }>;
 }
