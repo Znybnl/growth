@@ -349,7 +349,7 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
-        title: "Optimisations avancées : distinguer classement, information et réservation",
+        title: "Améliorer une fiche Google déjà validée",
         id: "optimiser",
         paragraphs: [
           "Google explique le classement local par la pertinence, la distance et la popularité de l’établissement. Une fiche complète aide à comprendre l’activité ; la distance dépend notamment de la personne qui cherche ; la notoriété s’appuie sur plusieurs signaux, dont les liens et les avis. Les [conseils officiels de classement local](https://support.google.com/business/answer/7091?hl=fr) ne proposent pas de payer pour une meilleure position naturelle. Les avis et notes peuvent contribuer au classement, sans fournir un seuil magique à atteindre.",
@@ -377,8 +377,8 @@ export const blogPosts: BlogPost[] = [
         id: "mesurer",
         paragraphs: [
           "Avec un compte autorisé sur une fiche validée, ouvrez les performances et choisissez une période. Google présente des [indicateurs de visibilité et d’interaction](https://support.google.com/business/answer/9918094?hl=fr), selon les fonctionnalités : recherches, vues, clics vers le site, demandes d’itinéraire ou appels. Certaines données peuvent réunir des interactions naturelles et publicitaires. Le bouton d’appel mesure une action sur le bouton, pas un appel décroché ; un itinéraire demandé ne prouve pas une visite.",
-          "Exemple entièrement fictif : sur quatre semaines, la fiche enregistre 60 clics vers le site. L’agenda identifie six réservations issues du lien balisé et quatre rendez-vous honorés. Les rapports observés sont 6 ÷ 60 = 10 % de réservations par clic et 4 ÷ 60 ≈ 6,7 % de rendez-vous honorés par clic. Ce ne sont ni des moyennes du secteur ni un taux de clientes uniques : une personne peut cliquer plusieurs fois, et le suivi peut perdre une partie du parcours.",
-          "Dans cet exemple, nous examinerions d’abord pourquoi deux rendez-vous réservés n’ont pas été honorés avant de chercher davantage de clics. Comparez ensuite une période de même durée et notez vacances, publicité, jours ouverts et changements de prestations. Ne mesurez pas votre position depuis votre seul téléphone : le lieu de recherche et le contexte changent les résultats. Le rapprochement avec l’agenda est une aide à la décision, pas une preuve que la dernière modification de la fiche a causé les réservations.",
+          "Exemple entièrement fictif : sur quatre semaines, la fiche enregistre 60 clics vers le site, auxquels l’agenda attribue six réservations. À la date du bilan, les six créneaux sont tous passés : quatre rendez-vous ont été honorés, un a été annulé et un correspond à une absence non annoncée. Les rapports sont 6 ÷ 60 = 10 % de réservations par clic et 4 ÷ 60 ≈ 6,7 % de rendez-vous honorés par clic. Ce ne sont ni des moyennes sectorielles ni des taux de clientes uniques ; le suivi peut perdre une partie du parcours.",
+          "Pour ce bilan fictif, l’annulation et l’absence demandent des vérifications différentes. Un rendez-vous futur ne doit pas être classé parmi les rendez-vous manqués : attendez sa date ou isolez-le dans « à venir ». Comparez les mêmes réservations entre leur création et leur issue, puis des périodes de même durée en notant congés et publicité. Ces observations orientent les décisions sans prouver que la dernière modification de la fiche a causé les réservations.",
         ],
       },
       {
@@ -392,7 +392,7 @@ export const blogPosts: BlogPost[] = [
         title: "Dépannage : que vérifier lorsque le parcours bloque ?",
         id: "depannage",
         paragraphs: [
-          "Commencez par le symptôme affiché et le compte Google utilisé. Une option absente, une validation en cours et une suspension demandent des actions différentes. Le tableau propose une première vérification et le recours officiel adapté ; il ne remplace pas la notification liée à votre fiche.",
+          "Repérez votre problème ci-dessous, vérifiez le compte utilisé puis suivez l’aide correspondante. Gardez la notification Google sous les yeux pour traiter le motif précis.",
         ],
         table: {
           caption: "Fiche Google : première vérification et prochaine action",
@@ -412,7 +412,7 @@ export const blogPosts: BlogPost[] = [
         title: "Checklist : la fiche est-elle prête à accueillir une nouvelle cliente ?",
         id: "checklist",
         paragraphs: [
-          "Ouvrez la fiche publique depuis un téléphone qui n’utilise pas votre compte de gestion. Cochez chaque point après contrôle. Cette liste sert à vérifier la qualité du parcours ; elle n’annonce pas un score de référencement.",
+          "Depuis un téléphone qui n’utilise pas votre compte de gestion, ouvrez la fiche publique et cochez les points vérifiés.",
         ],
         checklist: [
           "Je gère la bonne fiche, sans doublon, avec un compte conservé par l’institut.",
@@ -431,8 +431,6 @@ export const blogPosts: BlogPost[] = [
         id: "questions",
         paragraphs: [
           "La création d’une fiche Google est-elle payante ? Non, l’ajout ou la revendication est gratuit, comme le rappelle l’[aide à la création](https://support.google.com/business/answer/2911778?hl=fr). Une agence peut facturer son accompagnement et Google Ads propose de la publicité, mais ni l’un ni l’autre n’est nécessaire pour créer la fiche ou acheter une meilleure position naturelle.",
-          "Une esthéticienne à domicile peut-elle avoir une fiche ? Une activité éligible qui se déplace chez les clientes peut disposer d’une fiche de services de proximité. Elle masque son adresse si elle n’y reçoit pas de clientèle et indique sa zone réelle. Pour recevoir chez soi avec une adresse publique, il faut examiner les conditions d’accueil et de signalétique ; une simple domiciliation ne suffit pas.",
-          "Pourquoi les boutons du guide n’apparaissent-ils pas sur ma fiche ? L’interface, les catégories, la région, les droits du compte et l’état de validation peuvent modifier les fonctions proposées. Les deux captures montrent seulement le démarrage vérifié le 27 octobre 2026. Pour la suite, utilisez le lien officiel de l’étape concernée et le [tableau de dépannage](/blog/creer-fiche-google-institut-beaute#depannage).",
           "Que faire si la fiche ne remonte pas sur « institut de beauté + ville » ? Distinguez l’absence de fiche publique d’une position éloignée sur une recherche concurrentielle. Vérifiez d’abord validation, catégorie, informations et éventuelles notifications. Si la fiche est publique, une optimisation ne supprime pas le facteur distance et ne garantit pas les premières places. Gardez un suivi des demandes et rendez-vous plutôt que d’ajouter des mots-clés au nom.",
         ],
       },

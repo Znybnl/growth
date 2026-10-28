@@ -4,6 +4,7 @@ import { BlogInlineText } from "@/components/marketing/blog-inline-text";
 import { PrimaryButton } from "@/components/marketing/primary-button";
 import { blogPostByPath, type BlogPost } from "@/lib/blog";
 import { APP_URL } from "@/lib/site";
+import styles from "./blog-post.module.css";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -209,7 +210,7 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
                     aria-label={section.table.caption}
                     tabIndex={0}
                   >
-                    <table className="w-full text-left text-sm leading-6 text-[#4b5563]">
+                    <table role="table" className={`w-full text-left text-sm leading-6 text-[#4b5563]${practical ? ` ${styles.guideTable}` : ""}`}>
                       <caption className="px-4 py-3 text-left font-semibold text-[#111827]">
                         {section.table.caption}
                       </caption>
@@ -225,7 +226,10 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
                               <BlogInlineText text={cell} />
                             </th>
                           ) : (
-                            <td key={cellIndex} className="px-4 py-3 align-top"><BlogInlineText text={cell} /></td>
+                            <td key={cellIndex} className="px-4 py-3 align-top">
+                              {practical ? <span aria-hidden="true" className={styles.mobileLabel}>{section.table!.headers[cellIndex]}</span> : null}
+                              <BlogInlineText text={cell} />
+                            </td>
                           ))}
                         </tr>
                       ))}</tbody>

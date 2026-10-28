@@ -243,7 +243,12 @@ test("tous les articles exposent liens, sources et métadonnées cohérentes dan
       await expect(region).toBeFocused();
       if (page.viewportSize()!.width <= 390) {
         await page.keyboard.press("ArrowRight");
-        expect(await region.evaluate((element) => element.scrollWidth)).toBeGreaterThan(await region.evaluate((element) => element.clientWidth));
+        const dimensions = await region.evaluate(element => ({ width: element.clientWidth, content: element.scrollWidth }));
+        if (post.guide) {
+          expect(dimensions.content).toBeLessThanOrEqual(dimensions.width);
+        } else {
+          expect(dimensions.content).toBeGreaterThan(dimensions.width);
+        }
       }
       if (["/blog/idees-animations-commerciales-boutique", "/blog/cout-animation-commerciale-commerce", "/blog/attirer-clients-fleuriste"].includes(post.path)) {
         await region.screenshot({ path: testInfo.outputPath(`${post.path.split("/").pop()}-table.png`) });

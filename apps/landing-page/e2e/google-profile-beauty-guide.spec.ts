@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { ANALYTICS_CONSENT_COOKIE, ANALYTICS_CONSENT_VERSION } from "../src/lib/analytics-consent";
 
 // Capture the settled layout using the site's supported reduced-motion preference.
-test.use({ reducedMotion: "reduce" });
+test.use({ contextOptions: { reducedMotion: "reduce" } });
 
 test("guide Google : captures lisibles, agrandissement et tableaux sans débordement @visual-1280", async ({ page, context, baseURL, request }, testInfo) => {
   if (testInfo.project.name === "desktop") {
@@ -94,8 +94,24 @@ test("guide Google : captures lisibles, agrandissement et tableaux sans déborde
     await region.scrollIntoViewIfNeeded();
     await region.focus();
     await expect(region).toBeFocused();
+    if (page.viewportSize()!.width < 768) {
+      const bounds = (await region.boundingBox())!;
+      expect(await region.evaluate(element => element.scrollWidth)).toBeLessThanOrEqual(Math.ceil(bounds.width));
+      for (const row of await region.locator("tbody tr").all()) {
+        for (const cell of await row.locator("th, td").all()) {
+          const box = (await cell.boundingBox())!;
+          expect(box.x).toBeGreaterThanOrEqual(bounds.x);
+          expect(box.x + box.width).toBeLessThanOrEqual(bounds.x + bounds.width);
+        }
+        for (const label of await row.locator('td > span[aria-hidden="true"]').all()) {
+          await expect(label).toBeVisible();
+        }
+      }
+    }
     await page.screenshot({ path: testInfo.outputPath(`google-guide-table-${index + 1}.png`) });
   }
+  await expect(page.locator("#optimiser h2")).toHaveText("Améliorer une fiche Google déjà validée");
+  await expect(page.locator("#mesurer")).toContainText("les six créneaux sont tous passés");
   const takeaway = page.getByText("À retenir", { exact: true }).locator("..");
   await takeaway.scrollIntoViewIfNeeded();
   await expect(takeaway.getByRole("link")).toHaveAttribute("href", "/instituts-beaute#demo");

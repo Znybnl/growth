@@ -66,9 +66,21 @@ Il n’existe pas de garantie d’immunité à cette mise à jour. Le travail po
 - Preuves finales inspectées : `apps/landing-page/test-results/guide-final/google-profile-beauty-guid-fb3f3-ans-débordement-visual-1280-{desktop,mobile}/google-guide-{header,checklist,step-1,step-2,table-1,table-2,table-3,table-4,analysis}.png`, ainsi que les captures `google-guide-600-{header,help}.png` du second cas desktop. La checklist montre bien ses cases, le focus et le titre sans recouvrement par le menu.
 - Aperçu de production local redémarré et onglet existant actualisé : `http://localhost:3253/blog/creer-fiche-google-institut-beaute`. Les renvois vers le dépannage, les situations et le suivi facultatif ont aussi été constatés dans l’interface.
 
+## Finition du 28 octobre — mobile et analyse des rendez-vous
+
+- Les quatre tableaux de ce guide deviennent des fiches empilées sous 768 px, avec intitulé de ligne puis libellé et valeur de chaque colonne. Une seule table reste dans le HTML, avec caption, en-têtes et rôle explicite ; les libellés visuels répétés sont ignorés par les technologies d’assistance. Sur ordinateur, le rendu en colonnes est conservé ; les autres articles ne prennent pas ce style.
+- L’exemple fictif précise que les six créneaux étaient tous passés à la date du bilan : quatre honorés, une annulation et une absence non annoncée. Les rendez-vous futurs sont isolés au lieu d’être assimilés à des absences. Les calculs par clic restent 6/60 et 4/60, avec leurs limites d’attribution.
+- La section devient « Améliorer une fiche Google déjà validée ». Deux questions répétées de la FAQ sont retirées, ainsi que des précautions redondantes dans les introductions de la checklist et du dépannage.
+- `npm run lint:landing` : succès. `npm run build:landing` : succès, 63 pages précompilées. Correction d’une option de test mal typée détectée par le build : réduction des animations désormais définie dans `contextOptions`, selon les types installés de Playwright.
+- Même commande de suite desktop/mobile que ci-dessus : neuf succès en 1,4 minute ; le seul cas ignoré sur mobile est le contrôle desktop 1280 × 600. Les 35 articles conservent les validations HTML, liens, sources et métadonnées.
+- Contrôle supplémentaire : `npm run test:e2e -w @okado/landing-page -- google-profile-beauty-guide.spec.ts --grep 'captures lisibles' --project=small-mobile --output=test-results/guide-320` : un succès en 10,8 secondes.
+- Les tests vérifient les quatre tableaux sans débordement horizontal à 320/390 px, les cellules entièrement dans la largeur disponible, leurs libellés visibles, les liens de dépannage, le nouveau titre et la précision du cas chiffré. Les autres articles gardent leurs tableaux à défilement horizontal.
+- Captures inspectées : prestations et dépannage à 390 px, prestations à 320 px, colonnes conservées à 1280 × 720 et contrôle 1280 × 600. Preuves : `apps/landing-page/test-results/google-profile-beauty-guid-fb3f3-ans-débordement-visual-1280-{desktop,mobile}/google-guide-table-{1,2,3,4}.png` et `test-results/guide-320/google-profile-beauty-guid-fb3f3-ans-débordement-visual-1280-small-mobile/google-guide-table-2.png`.
+- L’aperçu existant sur le port 3253 a été redémarré et actualisé ; le titre corrigé et l’exemple précisant l’issue des six réservations ont été vérifiés dans l’interface.
+
 ## Test fonctionnel proposé au propriétaire
 
-Choisir « Je gère une fiche validée » et vérifier l’arrivée sur la description. Sur mobile, ouvrir/replier le sommaire, rejoindre les prestations, lire le tableau en le faisant défiler, agrandir une capture puis cocher la checklist. Tester aussi les renvois de dépannage et l’ouverture de l’option UTM. Les liens Google ouvrent les procédures officielles ; aucune création de fiche n’est nécessaire pour relire le guide. Le CTA final mène à la démonstration pour institut.
+Choisir « Je gère une fiche validée » et vérifier l’arrivée sur la description. Sur mobile, ouvrir/replier le sommaire, rejoindre les prestations et lire chaque fiche de soin sans défilement horizontal, agrandir une capture puis cocher la checklist. Tester aussi les renvois de dépannage et l’ouverture de l’option UTM. Les liens Google ouvrent les procédures officielles ; aucune création de fiche n’est nécessaire pour relire le guide. Le CTA final mène à la démonstration pour institut.
 
 ## Risques et retour arrière
 
