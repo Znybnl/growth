@@ -3,6 +3,8 @@
 import { useEffect, useId, useState } from "react";
 import { BeautyPopRim } from "./beauty-pop-rim";
 import { HalloweenWheelVisual } from "@/components/public/halloween-wheel-art";
+import { ChristmasWheelVisual } from "@/components/public/christmas-wheel-art";
+import { isChristmasWheelTemplate, type ChristmasWheelTemplateId } from "@/lib/christmas-wheel-themes";
 import { halloweenWheelVisualSegments } from "@/lib/halloween-wheel-theme";
 import { BeautyWheelPointer, BeautyWheelRim } from "@/components/public/beauty-wheel-finishes";
 import { beautyCenterFinish, beautyCenterRelief, beautyPopCenterFinish, beautyPopCenterRelief, beautyWheelRimColor } from "@/lib/beauty-wheel-finishes";
@@ -49,7 +51,7 @@ type WheelOfFortuneProps = {
     borderColor?: string;
   };
   framing?: "default" | "public" | "editor" | "mobile-preview";
-  pageTemplate?: "classic" | "restaurant-pop" | "rose-institut" | "halloween-gold" | BeautyWheelTemplateId;
+  pageTemplate?: "classic" | "restaurant-pop" | "rose-institut" | "halloween-gold" | BeautyWheelTemplateId | ChristmasWheelTemplateId;
 };
 
 const SVG_SIZE = 640;
@@ -268,7 +270,9 @@ export function WheelOfFortune({
     ? pageTemplate as Exclude<BeautyWheelTemplateId, "beauty-rose">
     : null;
   const beautyTheme = beautyWheelTheme(pageTemplate);
-  const baseVisualSegments = pageTemplate === "halloween-gold"
+  const baseVisualSegments = isChristmasWheelTemplate(pageTemplate)
+    ? selectWheelVisualSegments(segments, winningSegmentId, 6)
+    : pageTemplate === "halloween-gold"
     ? halloweenWheelVisualSegments(segments, winningSegmentId)
     : isRosePowderTemplate
     ? rosePowderVisualSegments(segments, winningSegmentId)
@@ -446,6 +450,11 @@ export function WheelOfFortune({
 
   if (pageTemplate === "halloween-gold") {
     return <HalloweenWheelVisual segments={visualSegments} rotation={rotation} spinning={isSpinning} disabled={!buttonEnabled || isSpinning || hasSpun} buttonLabel={buttonLabel} onClick={handleCentralButton} />;
+  }
+  if (isChristmasWheelTemplate(pageTemplate)) {
+    return <ChristmasWheelVisual templateId={pageTemplate} palette={wheelStyle} segments={visualSegments} rotation={rotation} spinning={isSpinning}
+      disabled={!buttonEnabled || isSpinning || hasSpun} buttonLabel={buttonLabel} onClick={handleCentralButton}
+      buttonBackground={buttonStyle?.backgroundColor} buttonTextColor={buttonStyle?.textColor} />;
   }
 
   return (

@@ -28,6 +28,9 @@ jobs:
         env:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
           NEXT_PUBLIC_POSTHOG_ENABLED: "true"
+      - name: Verify Christmas templates on mobile, rotation and scratch gestures
+        run: npx playwright test e2e/christmas-wheels.spec.ts e2e/christmas-scratch.spec.ts --project=chromium --grep-invert @visual-1280 --output=test-results/christmas
+        working-directory: apps/web-app
       - name: Upload visual evidence for inspection
         if: always()
         uses: actions/upload-artifact@v4
@@ -84,6 +87,10 @@ jobs:
         run: npm run test:dependency-audit -w @okado/web-app
       - name: Test every configured wheel reward and exact drawn result stays visible
         run: npm run test:wheel-segments -w @okado/web-app
+      - name: Test Christmas template settings, backgrounds and contrast
+        run: npm run test:christmas-wheels -w @okado/web-app
+      - name: Test Christmas scratch templates, original foils and manual backgrounds
+        run: npm run test:christmas-scratch -w @okado/web-app
       - name: Test guaranteed draw weights, stock and private SQL functions
         run: npm run test:guaranteed-draw -w @okado/web-app
       - name: Test Google click acceptance versions, API and private SQL controls
