@@ -4,6 +4,7 @@ import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
 import { syncMerchantContactToBrevo } from "@/lib/brevo";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
+import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { setSessionSecurityCookies } from "@/lib/session-security-server";
 import { createRouteSupabaseClient } from "@/lib/supabase-server-auth";
 
@@ -101,6 +102,15 @@ export async function GET(request: Request) {
 
       if (session.isNew) {
         sideEffects.push(
+          captureProductEvent(
+            "signup_completed",
+            merchantDistinctId(session.user.merchantId, session.user.id),
+            {
+              merchantId: session.merchant.id,
+              merchantUserId: session.user.id,
+              authProvider: "google",
+            },
+          ),
           notifyAdministratorsOfMerchantSignup({
             merchant: session.merchant,
             user: session.user,

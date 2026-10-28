@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { GoogleReviewPlacePicker } from "@/components/merchant/google-review-place-picker";
 import {
@@ -12,11 +12,24 @@ import {
 } from "@/lib/merchant-options";
 import { ONBOARDING_STEPS, shouldShowAppointmentUrl, validateOnboardingStep } from "@/lib/onboarding-configuration";
 import { Merchant } from "@/lib/types";
+import { ANALYTICS_CONSENT_EVENT, hasAnalyticsConsent } from "@/lib/analytics-consent";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 
 const inputClass =
   "w-full rounded-[12px] border border-fog bg-white px-4 py-3 text-carbon outline-none transition focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]";
 
 type OnboardingFlowProps = { merchant: Merchant };
+type OnboardingStep = (typeof ONBOARDING_STEPS)[number]["id"];
+type OnboardingEvent = "onboarding_started" | "onboarding_step_viewed" | "onboarding_step_completed" | "onboarding_failed";
+type OnboardingFailure = "validation" | "network_error" | "http_error" | "invalid_response" | "navigation_error";
+
+function trackOnboarding(event: OnboardingEvent, step: OnboardingStep, errorType?: OnboardingFailure) {
+  try {
+    captureClientProductEvent(event, { step, errorType });
+  } catch {
+    // Measurement must never interrupt onboarding or its saved result.
+  }
+}
 
 function FieldLabel({ children, required = false }: { children: ReactNode; required?: boolean }) {
   return (
@@ -62,6 +75,25 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
 
   const activeStep = ONBOARDING_STEPS[activeIndex];
   const isRestaurant = isRestaurantIndustry(industry);
+  const trackedStart = useRef(false);
+  const trackedStep = useRef<string | null>(null);
+
+  useEffect(() => {
+    const trackView = () => {
+      if (!hasAnalyticsConsent()) return;
+      if (!trackedStart.current) {
+        trackOnboarding("onboarding_started", activeStep.id);
+        trackedStart.current = true;
+      }
+      if (trackedStep.current !== activeStep.id) {
+        trackOnboarding("onboarding_step_viewed", activeStep.id);
+        trackedStep.current = activeStep.id;
+      }
+    };
+    trackView();
+    window.addEventListener(ANALYTICS_CONSENT_EVENT, trackView);
+    return () => window.removeEventListener(ANALYTICS_CONSENT_EVENT, trackView);
+  }, [activeStep.id]);
 
   function validateStep(stepIndex: number) {
     return validateOnboardingStep(ONBOARDING_STEPS[stepIndex].id, { companyName, industry, city, redemptionPin });
@@ -70,28 +102,33 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
   function goToNextStep() {
     const validationError = validateStep(activeIndex);
     if (validationError) {
+      trackOnboarding("onboarding_failed", activeStep.id, "validation");
       setError(validationError);
       return;
     }
     setError(null);
+    trackOnboarding("onboarding_step_completed", activeStep.id);
     setActiveIndex((current) => Math.min(current + 1, ONBOARDING_STEPS.length - 1));
   }
 
   async function saveOnboarding() {
     const profileError = validateStep(0);
     if (profileError) {
+      trackOnboarding("onboarding_failed", "profil", "validation");
       setActiveIndex(0);
       setError(profileError);
       return;
     }
     const pinError = validateStep(ONBOARDING_STEPS.length - 1);
     if (pinError) {
+      trackOnboarding("onboarding_failed", "pin", "validation");
       setError(pinError);
       return;
     }
 
     setIsSaving(true);
     setError(null);
+    let errorType: OnboardingFailure = "network_error";
 
     try {
       const response = await fetch("/api/onboarding", {
@@ -125,11 +162,15 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
           redemptionPin,
         }),
       });
+      errorType = response.ok ? "invalid_response" : "http_error";
       const payload = (await response.json()) as { error?: string };
 
       if (!response.ok) throw new Error(payload.error ?? "Onboarding impossible.");
+      trackOnboarding("onboarding_step_completed", "pin");
+      errorType = "navigation_error";
       router.push("/?welcome=1");
     } catch (submitError) {
+      trackOnboarding("onboarding_failed", "pin", errorType);
       setError(submitError instanceof Error ? submitError.message : "Onboarding impossible.");
     } finally {
       setIsSaving(false);
