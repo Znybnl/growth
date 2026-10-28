@@ -28,8 +28,9 @@ export function AdminDashboard({ overview, query = "" }: { overview: SaasAdminOv
       />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Comptes" value={overview.totals.merchants} detail={`${overview.totals.onboardedMerchants} onboarding terminés`} />
-        <MetricCard label="Établissements avec accès actif" value={overview.totals.activeSubscriptions} detail="Essais valides et abonnements actifs" />
+        <MetricCard label="Comptes" value={overview.totals.accounts} detail="Comptes marchands inscrits" />
+        <MetricCard label="Établissements" value={overview.totals.merchants}
+          detail={`${overview.totals.onboardedMerchants} onboarding terminés · ${overview.totals.activeSubscriptions} avec accès actif`} />
         <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} contacts collectés`} />
         <MetricCard label="Gains à suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
       </section>

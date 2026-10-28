@@ -136,6 +136,8 @@ jobs:
         run: npm run test:admin-profiles -w @okado/web-app
       - name: Test administrator last sign-in source and permissions
         run: npm run test:admin-last-sign-in -w @okado/web-app
+      - name: Admin account and establishment counts
+        run: npm run test:admin-account-counts -w @okado/web-app
       - name: Test support email incident permissions and migration
         run: npm run test:support-incidents -w @okado/web-app
       - name: Test metric consistency and private SQL aggregates
