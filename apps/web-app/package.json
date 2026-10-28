@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "test:affiliates": "node --test src/lib/affiliate-accounts.test.mjs src/lib/affiliate-accounts-sql.test.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

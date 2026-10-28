@@ -641,3 +641,17 @@ y compris en repli sur le résultat préparé si la réponse finale les omet. Le
 tests contrôlent aussi dates/QR/téléchargement, consentement inchangé, échec et
 nouvelle tentative, absence de lot et captures mobile/desktop. Serveur local en
 mémoire, mutations et sorties HTTPS interceptées : aucun envoi ni écriture réelle.
+
+
+## Affiliation du compte — #677
+
+`npm run test:affiliates -w @okado/web-app` teste le vrai repository, la route
+administrative et la page Mon compte avec infrastructure simulée, puis les vrais
+SQL/migration/rollback sous PGlite : pagination, comptes nouvellement inscrits,
+activation unique multi-sites, alias, accès et origine refusés, calcul après
+interruption/reprise, absence de doublon, fenêtre initiale et droits service_role.
+Les fixtures financières sont synthétiques ; aucun paiement réel n’est effectué.
+`e2e/affiliate-accounts.spec.ts` exerce les vrais tableau, réglages, formulaire
+Mon compte et copie du lien dans le cadre de navigation à 1280×720/600 et sur
+mobile 320/390 px. API et sorties HTTPS sont interceptées. La fixture dédiée
+est inaccessible hors développement (404 en production).

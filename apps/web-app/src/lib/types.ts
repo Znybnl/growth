@@ -214,6 +214,7 @@ export type AffiliateCommissionStatus = "pending" | "payable" | "paid" | "void";
 export interface AffiliateAccount {
   id: string;
   merchantId: string;
+  workspaceId: string;
   code: string;
   status: AffiliateAccountStatus;
   commissionRateBps: number;
@@ -270,6 +271,10 @@ export interface AffiliateAdminCommissionItem {
 export interface AffiliateAdminAccountItem {
   id: string;
   merchantId: string;
+  workspaceId: string;
+  workspaceName: string;
+  locationCount: number;
+  createdAt: string;
   merchantName: string;
   merchantEmail?: string;
   code: string;

@@ -66,6 +66,8 @@ async function checkPublicAccessIsBlocked(table, columns = "id", strict = false)
 }
 
 for (const [table, columns] of [
+  ["affiliate_accounts", "id,workspace_id,canonical_account_id,status,commission_rate_bps,commission_duration_months"],
+  ["affiliate_referrals", "id,affiliate_workspace_id,referred_workspace_id,first_subscription_paid_at,commission_eligible_until"],
   ["merchants", "id,restaurant_email,redemption_pin_hash,appointment_url,google_place_name,google_place_address,google_place_rating,google_place_review_count"],
   ["campaigns", "id,merchant_id"],
   ["leads", "id,campaign_id,redemption_code"],
@@ -115,6 +117,15 @@ for (const [table, columns] of [
   await checkPublicAccessIsBlocked(table, columns, true);
 }
 // Read-only permission probe: never call a claim/enqueue RPC on real data here.
+const affiliateProbe = { p_merchant_id: "schema-probe-no-merchant", p_invoice_id: "schema-probe-no-invoice",
+  p_paid_at: "2030-01-01T00:00:00Z", p_amount_cents: 0, p_currency: "eur", p_subscription_id: null };
+// Amount zero returns before reading or writing any real attribution/invoice.
+await checkRpc("record_affiliate_paid_invoice_677", affiliateProbe);
+const affiliatePublic = await supabasePublic.rpc("record_affiliate_paid_invoice_677", affiliateProbe);
+if (affiliatePublic.error?.code !== "42501") throw new Error("La RPC de commission doit être privée.");
+for (const table of ["affiliate_accounts", "affiliate_referrals", "affiliate_commissions", "affiliate_payouts"]) {
+  await checkPublicAccessIsBlocked(table);
+}
 await checkRpc("get_merchant_participation_activity", {p_merchant_id:"schema-probe-no-merchant"});
 await checkRpc("get_merchant_participation_counts", {p_merchant_id:"schema-probe-no-merchant"});
 await checkRpc("get_campaign_metric_counts", {p_campaign_ids:["schema-probe-no-campaign"]});

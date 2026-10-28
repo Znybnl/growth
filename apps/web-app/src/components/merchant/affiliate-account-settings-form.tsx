@@ -29,7 +29,7 @@ export function AffiliateAccountSettingsForm({
 
     try {
       const formData = new FormData(event.currentTarget);
-      const response = await fetch(`/api/affiliates/accounts/${accountId}`, {
+      const response = await fetch(`/api/affiliates/accounts/${encodeURIComponent(accountId)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
@@ -80,7 +80,7 @@ export function AffiliateAccountSettingsForm({
           />
         </label>
         <label className="text-xs">
-          <span className="mb-1 block text-[#7b8496]">Durée</span>
+          <span className="mb-1 block text-[#7b8496]">Durée (mois)</span>
           <input
             name="commissionDurationMonths"
             type="number"

@@ -30,6 +30,8 @@ jobs:
           NEXT_PUBLIC_POSTHOG_ENABLED: "true"
       - name: Verify Christmas templates on mobile, rotation and scratch gestures
         run: npx playwright test e2e/christmas-wheels.spec.ts e2e/christmas-scratch.spec.ts --project=chromium --grep-invert @visual-1280 --output=test-results/christmas
+      - name: Verify affiliate account card and administration on mobile
+        run: npx playwright test e2e/affiliate-accounts.spec.ts --grep-invert @visual-1280 --output=test-results/affiliate-mobile
         working-directory: apps/web-app
       - name: Upload visual evidence for inspection
         if: always()
@@ -133,6 +135,8 @@ jobs:
         run: npm run test:metrics -w @okado/web-app
       - name: Test merchant page reads, session isolation and private timings
         run: npm run test:page-performance -w @okado/web-app
+      - name: Test merchant account affiliation, permissions, resubscription and migration
+        run: npm run test:affiliates -w @okado/web-app
       - name: Build web app
         run: npm run build:web
       - name: Verify prize library with compiled production CSS
