@@ -7,6 +7,7 @@ import ts from "typescript";
 import * as rules from "./metric-rules.ts";
 import { readAllRows } from "./paginated-read.ts";
 import * as merchantLogoText from "./merchant-logo-text.ts";
+import { readAdminLastSignIns } from "./admin-last-sign-in.ts";
 const require=createRequire(import.meta.url);
 function load(relative,dependencies={}) {
   const testModule={exports:{}};
@@ -97,15 +98,20 @@ test('vrai Pilotage : essais applicatifs inclus, unité établissement, aucun ap
   const merchants=[{id:'m',stripe_subscription_status:null,trial_end_date:new Date(Date.now()+86400000).toISOString()},
     {id:'subscribed',stripe_subscription_status:'active',trial_end_date:null},
     {id:'expired',stripe_subscription_status:null,trial_end_date:new Date(Date.now()-86400000).toISOString()}];
-  const db={from:table=>query(table==='merchants'?merchants:[]),
+  const db={auth:{admin:{listUsers:async()=>({data:{users:[{app_metadata:{merchant_user_id:'user'},last_sign_in_at:'2026-10-24T23:30:00Z'}]},error:null})}},
+    from:table=>query(table==='merchants'?merchants:table==='merchant_users'?[{id:'user',merchant_id:'m',created_at:'2026-01-01',email:'demo@example.test'}]:[]),
     rpc:name=>{assert.equal(name,'get_platform_operational_metrics');return query([{merchant_id:'m',contacts:1203,pending_rewards:5,low_stock:0,exhausted_stock:1,failed_emails:0}]);}};
   const repo=load('./admin-repository.ts',{
+    '@/lib/admin-last-sign-in':{readAdminLastSignIns},
     '@/lib/paginated-read':{readAllRows},'@/lib/metric-rules':rules,'@/lib/supabase':{getSupabaseAdmin:()=>db},
     '@/lib/stripe':{getStripeClient:()=>{throw Error('Unexpected Stripe call')}},
   });
   const result=await repo.getSaasAdminOverview();
   assert.equal(result.totals.activeSubscriptions,2);assert.equal(result.totals.pendingRewards,5);
   assert.equal(result.totals.leads,1203);assert.equal(result.totals.lowStockPrizes,0);
+  assert.equal(result.users[0].lastSignIn.status,'available');
+  assert.equal(result.users[0].lastSignIn.at,'2026-10-24T23:30:00.000Z');
+  assert.equal('app_metadata' in result.users[0],false);
 });
 test('vrai handler public : action étrangère ou type falsifié refusé, legacy accepté sans fabriquer de partie',async()=>{
   const api=load('./public-api.ts');let calls=0;

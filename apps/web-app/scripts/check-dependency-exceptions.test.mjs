@@ -35,9 +35,11 @@ test("audit propre et Next/ESLint corrigés sur les deux applications", () => {
   assert.match(run().output, /16\.4\.2.*deux applications/);
 });
 
-test("audit complet couvre le développement sur Linux et Windows sans exception", () => {
+test("audit complet autorise uniquement lavis faible shadcn documente", () => {
   for (const platform of ["linux", "win32"]) {
     const options = { includeDevelopment: true, platform };
+    const reviewed = { vulnerabilities: { "@shadcn/registry": { severity: "low" }, deepmerge: { severity: "low", via: [{ url: "https://github.com/advisories/GHSA-gcqx-w48m-w2h4" }] }, shadcn: { severity: "low" } }, metadata: { vulnerabilities: { total: 3 } } };
+    assert.equal(run({ ...options, audit: reviewed, status: 1 }).code, 0);
     assert.equal(run(options).code, 0);
     assert.match(run(options).output, /complet.*développement/);
     assert.equal(run({ ...options, audit: { vulnerabilities: { zod: { severity: "high" } }, metadata: { vulnerabilities: { total: 1 } } }, status: 1 }).code, 1);

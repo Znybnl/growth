@@ -181,7 +181,7 @@ test("le bouton n'embarque pas de profil ni ne précharge les données", () => {
   assert.deepEqual(state.reads,[]);
 });
 test("Pilotage utilise le compte de la ligne sans ajouter un chargement global", () => {
-  const source = readFileSync(new URL("../app/(merchant)/admin/page.tsx",import.meta.url),"utf8");
+  const source = readFileSync(new URL("../components/merchant/admin-dashboard.tsx",import.meta.url),"utf8");
   assert.ok(source.includes("<AdminEstablishmentProfileButton merchantId={user.merchantId} userId={user.id} />"));
   assert.ok(!source.includes("getAdminEstablishmentProfiles("));
 });

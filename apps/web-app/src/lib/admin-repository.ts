@@ -1,4 +1,5 @@
 import { readAllRows } from "@/lib/paginated-read";
+import { readAdminLastSignIns, type AdminLastSignIn } from "@/lib/admin-last-sign-in";
 import { activeSubscriptionOrTrial } from "@/lib/metric-rules";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { updateMerchantBillingFromStripeSubscriptionInSupabase } from "@/lib/merchant-account-repository";
@@ -39,6 +40,7 @@ export type SaasAdminUserRow = {
   lastName: string;
   email: string;
   createdAt: string;
+  lastSignIn: AdminLastSignIn;
   onboardingCompleted: boolean;
   subscriptionStatus: string | null;
   stripeSubscriptionId: string | null;
@@ -69,12 +71,17 @@ export type SaasAdminOverview = {
 
 export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOverview> {
   const supabase = getSupabaseAdmin();
-  const [merchantResult, userResult, campaignResult, metricResult] =
+  const userRead = readAllRows((offset,end) => supabase.from("merchant_users").select("id, merchant_id, first_name, last_name, email, created_at", { count: "exact" }).order("id").range(offset,end));
+  const lastSignInRead = userRead.then((result) => result.error
+    ? new Map<string, AdminLastSignIn>()
+    : readAdminLastSignIns(supabase, (result.data as MerchantUserRow[] ?? []).map((user) => user.id)));
+  const [merchantResult, userResult, campaignResult, metricResult, lastSignIns] =
     await Promise.all([
       readAllRows((offset,end) => supabase.from("merchants").select("id, company_name, onboarding_completed, stripe_subscription_status, stripe_subscription_id, trial_end_date, subscription_current_period_end, subscription_cancel_at_period_end, created_at", { count: "exact" }).order("id").range(offset,end)),
-      readAllRows((offset,end) => supabase.from("merchant_users").select("id, merchant_id, first_name, last_name, email, created_at", { count: "exact" }).order("id").range(offset,end)),
+      userRead,
       readAllRows((offset,end) => supabase.from("campaigns").select("id, merchant_id, is_active", { count: "exact" }).order("id").range(offset,end)),
       readAllRows((offset,end) => supabase.rpc("get_platform_operational_metrics", {}, { count: "exact" }).order("merchant_id").range(offset,end)),
+      lastSignInRead,
     ]);
 
   const error = [
@@ -120,6 +127,7 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
         lastName: user.last_name,
         email: user.email,
         createdAt: user.created_at,
+        lastSignIn: lastSignIns.get(user.id) ?? { status: "unavailable" },
         onboardingCompleted: merchant?.onboarding_completed ?? false,
         subscriptionStatus: merchant?.stripe_subscription_status ?? null,
         stripeSubscriptionId: merchant?.stripe_subscription_id ?? null,
