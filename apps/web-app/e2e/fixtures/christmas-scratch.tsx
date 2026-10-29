@@ -11,9 +11,9 @@ import type { LogoMode, Merchant, PublicCampaign } from "@/lib/types";
 import { halloweenFixture } from "./halloween-wheel";
 
 const subscribe = () => () => {};
-export function ChristmasScratchFixture({ templateId, mode }: { templateId: ChristmasScratchTemplateId; mode?: string }) {
+export function ChristmasScratchFixture({ templateId, mode, initialBackground = "native" }: { templateId: ChristmasScratchTemplateId; mode?: string; initialBackground?: string }) {
   const ready = useSyncExternalStore(subscribe, () => true, () => false);
-  const [selected, setSelected] = useState(templateId), [background, setBackground] = useState("native");
+  const [selected, setSelected] = useState(templateId), [background, setBackground] = useState(initialBackground);
   const [title, setTitle] = useState("Grattez &\ngagnez"), [logo, setLogo] = useState<LogoMode>("text");
   const [starts, setStarts] = useState(0), [reveals, setReveals] = useState(0);
   const theme = christmasScratchTemplate(selected)!;

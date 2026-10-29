@@ -15,17 +15,17 @@ const unit = (px: number) => `${px / 3.9}cqw`;
 export function ChristmasWheelScene({ templateId, background, logoMode = "text", logoText, logoUrl,
   logoWidthPx, logoTextSizePx, logoTextColor, logoAlign, logoBottomSpacingPx, title,
   titleColor, titleFontSizePx, titleFontFamily, titleFontWeight, titleAlign, secondaryText,
-  subtitleSpacingPx, blockSpacingPx, publicPage = false, children }: {
+  subtitleSpacingPx, blockSpacingPx, publicPage = false, renderBackgroundArt = true, children }: {
   templateId: ChristmasWheelTemplateId; background: { color: string; imageUrl?: string };
   logoMode?: LogoMode; logoText: string; logoUrl?: string; logoWidthPx: number; logoTextSizePx: number;
   logoTextColor: string; logoAlign: TextAlign; logoBottomSpacingPx: number;
   title: string; titleColor: string; titleFontSizePx: number; titleFontFamily: string;
   titleFontWeight: number; titleAlign: TextAlign; secondaryText: string;
-  subtitleSpacingPx: number; blockSpacingPx: number; publicPage?: boolean; children: ReactNode;
+  subtitleSpacingPx: number; blockSpacingPx: number; publicPage?: boolean; renderBackgroundArt?: boolean; children: ReactNode;
 }) {
-  const artwork = background.imageUrl || christmasWheelDefaultBackground(templateId, background);
+  const artwork = renderBackgroundArt ? background.imageUrl || christmasWheelDefaultBackground(templateId, background) : null;
   const gildedTitle = templateId === "christmas-traditional" && titleColor.toLowerCase() === christmasWheelTheme(templateId)!.text;
-  return <section className={`${styles.scene} ${publicPage ? styles.public : ""}`} data-testid="christmas-wheel-scene" style={{ position: "relative", backgroundColor: background.color, color: logoTextColor }}>
+  return <section className={`${styles.scene} ${publicPage ? styles.public : ""}`} data-testid="christmas-wheel-scene" style={{ position: "relative", backgroundColor: renderBackgroundArt ? background.color : "transparent", color: logoTextColor }}>
     {artwork ? <Image src={artwork} alt="" fill sizes="(max-width: 600px) 100vw, 600px" loading="eager" className={styles.art} data-template-art={background.imageUrl ? undefined : templateId} unoptimized={Boolean(background.imageUrl)} /> : null}
     <div className={styles.content}>
       {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign }}>

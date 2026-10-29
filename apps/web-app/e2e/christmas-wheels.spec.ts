@@ -33,9 +33,17 @@ for (const theme of CHRISTMAS_WHEEL_THEMES) {
       await page.goto(`/dev/christmas-wheels?template=${theme.id}&mode=public`);
       await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
       const scene = page.getByTestId("christmas-wheel-scene");
-      const artwork = scene.locator(`img[data-template-art="${theme.id}"]`);
+      const experience = page.locator(".okado-public-experience");
+      const artwork = experience.locator(`img[data-template-art="${theme.id}"]`);
       await expect(artwork).toHaveJSProperty("complete", true);
       expect(await artwork.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+      const experienceBounds = (await experience.boundingBox())!;
+      const artworkBounds = (await artwork.boundingBox())!;
+      expect(artworkBounds.x).toBeCloseTo(experienceBounds.x, 0);
+      expect(artworkBounds.y).toBeCloseTo(experienceBounds.y, 0);
+      expect(artworkBounds.width).toBeCloseTo(experienceBounds.width, 0);
+      expect(artworkBounds.height).toBeCloseTo(experienceBounds.height, 0);
+      await expect(scene.locator(`img[data-template-art="${theme.id}"]`)).toHaveCount(0);
       await expect(scene.getByRole("heading")).toHaveText("JOUEZ & GAGNEZ");
       const button = scene.getByRole("button", { name: "Jouer à la roue" });
       await expect(button).toBeInViewport();
@@ -125,7 +133,27 @@ test("@visual-1280 les trois modèles dans le vrai wizard, 1280×720 et 1280×60
       await page.keyboard.press("Escape");
     }
   }
+
   expect(warnings).toEqual([]);
+});
+
+test("fond Noël : couverture intégrale sur un mobile haut", async ({ page }, info) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const theme of CHRISTMAS_WHEEL_THEMES) {
+    await page.goto(`/dev/christmas-wheels?template=${theme.id}&mode=public`);
+    await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
+    const experience = page.locator(".okado-public-experience");
+    const scene = page.getByTestId("christmas-wheel-scene");
+    const artwork = experience.locator(`img[data-template-art="${theme.id}"]`);
+    await expect(artwork).toHaveJSProperty("complete", true);
+    const experienceBounds = (await experience.boundingBox())!;
+    const artworkBounds = (await artwork.boundingBox())!;
+    expect(artworkBounds.y + artworkBounds.height).toBeGreaterThanOrEqual(experienceBounds.y + experienceBounds.height - 1);
+    await expect(scene.locator(`img[data-template-art="${theme.id}"]`)).toHaveCount(0);
+    const path = info.outputPath(`${theme.id}-mobile-fond-integral.png`);
+    await page.screenshot({ path, fullPage: true, animations: "disabled" });
+    await info.attach(`${theme.name} — mobile 390×844`, { path, contentType: "image/png" });
+  }
 });
 
 test("@visual-1280 sélection dans l'éditeur classique et le wizard d'un commerce", async ({ page }, info) => {

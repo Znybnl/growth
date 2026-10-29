@@ -4,7 +4,7 @@
   min-height: 100%; aspect-ratio: 390 / 740; margin: auto;
   container-type: inline-size; overflow: hidden;
 }
-.public { min-height: 100dvh; }
+.public { min-height: 100vh; z-index: 10; }
 .art { object-fit: cover; object-position: center; z-index: -1; pointer-events: none; }
 .content { position: relative; padding: 9.2cqw 0 21cqw; }
 .brand { width: 76%; margin-inline: auto; }
