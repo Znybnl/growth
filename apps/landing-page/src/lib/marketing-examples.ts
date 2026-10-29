@@ -8,6 +8,8 @@ import noirOrWheel from "../../public/images/game-noir-or-wheel.webp";
 import nudeWheel from "../../public/images/game-nude-wheel.webp";
 import restaurant from "../../public/images/game-restaurant.webp";
 import commerce from "../../public/images/game-commerce.webp";
+import christmas from "../../public/images/game-christmas.webp";
+import halloween from "../../public/images/game-halloween.webp";
 
 // These images are captures of the real Okado preview renderer with synthetic data.
 // Template IDs/names match the product; examples are not customer campaigns.
@@ -24,6 +26,11 @@ export type GameModel = { id: string; name: string; type: string; image: StaticI
 export const heroModel: GameModel = { id: "beauty-nude", name: "Nude & Or", type: "Roue de la fortune", image: nudeWheel };
 export const restaurantModel: GameModel = { id: "classic", name: "Classique", type: "Roue de la fortune", image: restaurant };
 export const commerceModel: GameModel = { id: "scratch-confetti", name: "Confetti", type: "Ticket à gratter", image: commerce };
+export const christmasModel: GameModel = { id: "christmas-traditional", name: "Noël traditionnel", type: "Roue de la fortune", image: christmas };
+export const halloweenModel: GameModel = { id: "halloween-gold", name: "Halloween", type: "Roue de la fortune", image: halloween };
+export const homeGameModels: readonly GameModel[] = [
+  gameModels[0], restaurantModel, gameModels[4], gameModels[1], christmasModel, halloweenModel,
+];
 
 export const beautySpecialties = [
   { id: "nails", label: "Ongles", model: gameModels[3], title: "Une petite attention en plus de la pose.",

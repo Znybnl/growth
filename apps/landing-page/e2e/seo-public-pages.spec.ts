@@ -164,6 +164,8 @@ test("sitemap, robots, OG et fichiers distribués sont utilisables", async ({
     "game-nude-wheel.webp",
     "game-restaurant.webp",
     "game-commerce.webp",
+    "game-christmas.webp",
+    "game-halloween.webp",
   ]) {
     const response = await request.get(`/images/${imagePath}`);
     expect(response.status(), imagePath).toBe(200);
