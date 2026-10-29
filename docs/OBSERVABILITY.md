@@ -1,5 +1,15 @@
 # Observabilité applicative
 
+## Audit des durées de page — 29 octobre 2026, #708
+
+Le [rapport de mesure](audits/2026-10-29-page-loading-708/README.md) distingue
+les vitals navigateur historiques, les vues sans chronométrage et les durées
+de fonction serveur. La collecte navigateur est désactivée depuis la refonte
+du consentement ; les logs `okado.performance` ne constituent pas un historique
+hebdomadaire conservé. Les recommandations du rapport ne sont pas activées
+par sa publication. Ne pas utiliser la durée de consultation d'une page comme
+son temps de chargement.
+
 ## Décision issue #102
 
 Okado conserve ses signaux existants (logs runtime Vercel, événements métier `business_logs` et analytics PostHog) et ajoute une instrumentation ciblée des erreurs de sauvegarde de campagne. Les erreurs serveur de `POST /api/campaigns/setup` et l'échec correspondant côté wizard peuvent être envoyés à PostHog Logs au format OpenTelemetry (OTLP).
