@@ -1,5 +1,21 @@
 # Stratégie de test — Okado
 
+### Démarrage du Quality gate — #706
+
+En CI, le serveur lancé par Playwright utilise `next dev --webpack` afin
+d'éviter l'échec intermittent de résolution des polices Google par Turbopack
+observé sur #703 (`next/font/google queries have exactly one entry`). Le délai
+de démarrage de 120 secondes, les tests, leurs assertions et les contrôles de
+consentement restent inchangés. Le développement local et le build de
+production conservent leurs commandes habituelles. `PLAYWRIGHT_BASE_URL`
+continue de permettre les contrôles sur un serveur externe.
+
+Un échec « Quality gate » désigne un groupe de contrôles ; examiner le job et
+la première erreur des logs avant de conclure à une régression produit.
+Un serveur qui ne démarre pas signifie que les tests n'ont pas été exécutés.
+Une relance ciblée permet de qualifier l'intermittence sans rejouer les jobs
+déjà réussis. Retour arrière : rétablir la commande du serveur Playwright.
+
 `e2e/wizard-published-save.spec.ts` (#645) vérifie les commandes d’un jeu publié
 dans MerchantShell à 1280×720, 1280×600 et 390×844, les sauvegardes marchand/admin
 pour roue et ticket, l’erreur serveur avec reprise, la conservation des lots et

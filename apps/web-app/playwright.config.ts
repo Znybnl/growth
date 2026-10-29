@@ -29,7 +29,8 @@ export default defineConfig({
   webServer: useExternalServer
     ? undefined
     : {
-        command: `npm run dev -- --port ${port}`,
+        // Avoid intermittent Turbopack next/font resolution failures on CI runners.
+        command: `npm run dev -- ${process.env.CI ? "--webpack " : ""}--port ${port}`,
         url: `${baseURL}/connexion`,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
