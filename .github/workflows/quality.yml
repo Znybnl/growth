@@ -29,7 +29,7 @@ jobs:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
           NEXT_PUBLIC_POSTHOG_ENABLED: "true"
       - name: Verify Christmas templates on mobile, rotation and scratch gestures
-        run: npx playwright test e2e/christmas-wheels.spec.ts e2e/christmas-scratch.spec.ts --grep-invert @visual-1280 --output=test-results/christmas
+        run: npx playwright test e2e/christmas-wheels.spec.ts e2e/christmas-scratch.spec.ts e2e/christmas-background-coverage.spec.ts --grep-invert @visual-1280 --output=test-results/christmas
         working-directory: apps/web-app
       - name: Verify affiliate account card and administration on mobile
         run: npx playwright test e2e/affiliate-accounts.spec.ts --grep-invert @visual-1280 --output=test-results/affiliate-mobile
@@ -140,6 +140,8 @@ jobs:
         run: npm run test:admin-profiles -w @okado/web-app
       - name: Test administrator last sign-in source and permissions
         run: npm run test:admin-last-sign-in -w @okado/web-app
+      - name: Admin account and establishment counts
+        run: npm run test:admin-account-counts -w @okado/web-app
       - name: Test support email incident permissions and migration
         run: npm run test:support-incidents -w @okado/web-app
       - name: Test metric consistency and private SQL aggregates

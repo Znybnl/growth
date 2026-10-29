@@ -10,24 +10,14 @@ export const contentType = "image/png";
 export default function AppleIcon() {
   return new ImageResponse(
     (
-      <div
-        style={{
-          alignItems: "center",
-          backgroundColor: "#6c00f6",
-          borderRadius: 40,
-          display: "flex",
-          height: "100%",
-          justifyContent: "center",
-          width: "100%",
-        }}
-      >
-        <svg aria-hidden="true" height="112" viewBox="0 0 64 64" width="112">
-          <path
-            d="m32 8 7.4 15 16.6 2.4-12 11.7 2.8 16.5L32 45.8 17.2 53.6 20 37.1 8 25.4 24.6 23z"
-            fill="#fff"
-          />
-        </svg>
-      </div>
+      <svg aria-hidden="true" height="180" viewBox="0 0 64 64" width="180" fill="none">
+        <rect x="2" y="2" width="60" height="60" rx="18" fill="#611F69" />
+        <path
+          d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"
+          transform="translate(5.33 5.57) scale(2.22)"
+          fill="#FFFFFF"
+        />
+      </svg>
     ),
     size,
   );

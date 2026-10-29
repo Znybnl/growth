@@ -25,7 +25,12 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     expect(pixel).toEqual([255, 255]);
     await expect(page.getByTestId("scratch-ticket-surface")).toBeInViewport();
     await expect(page.getByText("Le résultat s'affiche automatiquement.", { exact: true })).toHaveCount(0);
-    await expect(page.locator(`img[data-template-art="${theme.id}"]`)).toHaveJSProperty("complete", true);
+    const experience = page.locator(".okado-public-experience");
+    const artwork = experience.locator(`img[data-template-art="${theme.id}"]`);
+    await expect(artwork).toHaveJSProperty("complete", true);
+    const experienceBounds = (await experience.boundingBox())!;
+    const artworkBounds = (await artwork.boundingBox())!;
+    expect(artworkBounds.y + artworkBounds.height).toBeGreaterThanOrEqual(experienceBounds.y + experienceBounds.height - 1);
     await assertNoPageOverflow(page);
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: info.outputPath(`${theme.id}-public-${width}.png`), fullPage: true, caret: "initial" });
@@ -41,6 +46,7 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
     const foil = page.locator("canvas");
     await expect(foil).toHaveAttribute("data-foil-loaded", "true");
+    await page.evaluate(() => document.fonts.ready);
     const box = (await foil.boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
     for (let row = 1; row < 12 && await foil.count(); row++) {

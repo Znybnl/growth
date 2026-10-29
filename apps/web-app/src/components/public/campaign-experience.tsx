@@ -26,7 +26,7 @@ import { ScratchGame } from "@/components/public/scratch-game";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { HalloweenWheelScene } from "@/components/public/halloween-wheel-art";
 import { ChristmasWheelScene } from "@/components/public/christmas-wheel-art";
-import { isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
+import { christmasWheelDefaultBackground, isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
 import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
@@ -897,7 +897,12 @@ export function CampaignExperience({
     : null;
   const hasCustomSelectedBackground = campaign.presentation.background.mode === "image" && Boolean(campaign.presentation.background.imageUrl);
   const nativeWheelBackgroundUrl = campaign.gameType === "wheel"
-    ? beautyWheelDefaultBackground(pageTemplate, campaign.presentation.background)
+    ? isChristmasWheelTemplate(pageTemplate)
+      ? christmasWheelDefaultBackground(pageTemplate, {
+          color: campaign.presentation.background.color,
+          imageUrl: campaign.presentation.background.mode === "image" ? campaign.presentation.background.imageUrl : undefined,
+        }) ?? undefined
+      : beautyWheelDefaultBackground(pageTemplate, campaign.presentation.background)
     : null;
   const templateDefaultBackground = scratchTemplateDefaultBackground(pageTemplate, campaign.presentation.background);
   const nativeChristmasScratchBackground = campaign.gameType === "scratch" && christmasScratchTemplate(pageTemplate) ? templateDefaultBackground : undefined;
@@ -911,7 +916,7 @@ export function CampaignExperience({
       ? userBackgroundImageStyle(campaign.presentation.background.imageUrl)
       : templateDefaultBackground
         ? `url("${templateDefaultBackground}")`
-      : christmasScratchTemplate(pageTemplate) ? "none"
+      : christmasScratchTemplate(pageTemplate) || isChristmasWheelTemplate(pageTemplate) ? "none"
       : isScratchVaultTemplate
         ? `radial-gradient(circle at 50% 108%, ${withHexAlpha(primaryColor, "58")} 0 27%, transparent 48%), radial-gradient(circle at 15% 10%, ${withHexAlpha(secondaryColor, "4d")} 0 12%, transparent 22%), linear-gradient(155deg, #071126b8 0%, #111b3b99 56%, #071126b8 100%)`
         : isScratchConfettiTemplate
@@ -1026,6 +1031,7 @@ export function CampaignExperience({
         logoMode={campaign.logoMode} logoText={campaign.logoText ?? campaign.merchantLogoText} logoUrl={campaign.logoUrl}
         logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor} logoAlign={campaign.presentation.logo.align} logoBottomSpacingPx={clampCampaignSpacingPx(campaign.presentation.logo.marginBottomPx)}
         title={safeSubtitle} titleColor={headingTextColor} titleFontSizePx={campaign.presentation.heading.fontSizePx} titleFontFamily={textFontFamily(campaign.presentation.heading.fontFamily)} titleFontWeight={campaign.presentation.heading.fontWeight ?? 500} titleAlign={campaign.presentation.heading.align}
+        renderBackgroundArt={false}
         secondaryText={wheelSubtitle} subtitleSpacingPx={clampCampaignSpacingPx(campaign.presentation.layout.subtitleSpacingPx)} blockSpacingPx={clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)} publicPage>
         <WheelOfFortune key={`${campaign.id}-${drawSession?.id ?? "idle"}`} accent={campaign.accent} pageTemplate={pageTemplate} wheelStyle={campaign.presentation.wheel} buttonStyle={campaign.presentation.button}
           segments={segments} winningSegmentId={winningSegmentId} canSpin={stage === "ready"} buttonEnabled={stage === "idle" || stage === "ready"} buttonLabel="JOUER"

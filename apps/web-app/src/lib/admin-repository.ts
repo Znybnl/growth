@@ -1,4 +1,5 @@
 import { readAllRows } from "@/lib/paginated-read";
+import { buildAffiliateAccountDirectory } from "@/lib/affiliate-account-directory";
 import { readAdminLastSignIns, type AdminLastSignIn } from "@/lib/admin-last-sign-in";
 import { activeSubscriptionOrTrial } from "@/lib/metric-rules";
 import { getSupabaseAdmin } from "@/lib/supabase";
@@ -13,6 +14,7 @@ import {
 
 type MerchantRow = {
   id: string;
+  workspace_id: string;
   company_name: string;
   onboarding_completed: boolean;
   stripe_subscription_status: string | null;
@@ -31,6 +33,9 @@ type MerchantUserRow = {
   email: string;
   created_at: string;
 };
+
+type WorkspaceRow = { id: string; name: string; created_at: string };
+type MembershipRow = { workspace_id: string; merchant_user_id: string; role: string; status: string };
 
 export type SaasAdminUserRow = {
   id: string;
@@ -56,6 +61,8 @@ export type SaasAdminUserRow = {
 
 export type SaasAdminOverview = {
   totals: {
+    accounts: number;
+    /** Historical name: rows in merchants represent establishments. */
     merchants: number;
     onboardedMerchants: number;
     activeSubscriptions: number;
@@ -75,13 +82,15 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
   const lastSignInRead = userRead.then((result) => result.error
     ? new Map<string, AdminLastSignIn>()
     : readAdminLastSignIns(supabase, (result.data as MerchantUserRow[] ?? []).map((user) => user.id)));
-  const [merchantResult, userResult, campaignResult, metricResult, lastSignIns] =
+  const [merchantResult, userResult, campaignResult, metricResult, lastSignIns, membershipResult, workspaceResult] =
     await Promise.all([
-      readAllRows((offset,end) => supabase.from("merchants").select("id, company_name, onboarding_completed, stripe_subscription_status, stripe_subscription_id, trial_end_date, subscription_current_period_end, subscription_cancel_at_period_end, created_at", { count: "exact" }).order("id").range(offset,end)),
+      readAllRows((offset,end) => supabase.from("merchants").select("id, workspace_id, company_name, onboarding_completed, stripe_subscription_status, stripe_subscription_id, trial_end_date, subscription_current_period_end, subscription_cancel_at_period_end, created_at", { count: "exact" }).order("id").range(offset,end)),
       userRead,
       readAllRows((offset,end) => supabase.from("campaigns").select("id, merchant_id, is_active", { count: "exact" }).order("id").range(offset,end)),
       readAllRows((offset,end) => supabase.rpc("get_platform_operational_metrics", {}, { count: "exact" }).order("merchant_id").range(offset,end)),
       lastSignInRead,
+      readAllRows((offset,end) => supabase.from("merchant_workspace_memberships").select("id, workspace_id, merchant_user_id, role, status", { count: "exact" }).order("id").range(offset,end)),
+      readAllRows((offset,end) => supabase.from("merchant_workspaces").select("id, name, created_at", { count: "exact" }).order("id").range(offset,end)),
     ]);
 
   const error = [
@@ -89,11 +98,15 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
     userResult.error,
     campaignResult.error,
     metricResult.error,
+    membershipResult.error,
+    workspaceResult.error,
   ].find(Boolean);
   if (error) throw new Error("Lecture du pilotage impossible.");
 
   const merchants = (merchantResult.data ?? []) as MerchantRow[];
   const users = (userResult.data ?? []) as MerchantUserRow[];
+  const accounts = buildAffiliateAccountDirectory(merchants, users,
+    (membershipResult.data ?? []) as MembershipRow[], (workspaceResult.data ?? []) as WorkspaceRow[]);
   const campaigns = campaignResult.data ?? [];
   const metrics = (metricResult.data ?? []) as Array<{ merchant_id: string; contacts: number; pending_rewards: number; low_stock: number; exhausted_stock: number; failed_emails: number }>;
 
@@ -151,6 +164,7 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
 
   return {
     totals: {
+      accounts: accounts.length,
       merchants: merchants.length,
       onboardedMerchants: merchants.filter((merchant) => merchant.onboarding_completed).length,
       activeSubscriptions: merchants.filter((merchant) =>

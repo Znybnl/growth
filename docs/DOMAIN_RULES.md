@@ -15,6 +15,21 @@ Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne rempl
 
 La fiche dans Pilotage est réservée à l’administration de la plateforme et consultable uniquement en lecture seule. Chaque site présenté est résolu via les associations existantes du compte, sans modifier le site actif de la session. La réponse serveur utilise une liste explicite de champs : coordonnées, identité, liens marketing et paramètres non secrets. Aucun PIN, empreinte/chiffrement de PIN, jeton, mot de passe ou identifiant privé Stripe n’est transmis. Le navigateur ne mémorise pas ces profils dans un stockage persistant et la réponse HTTP est privée et non mise en cache.
 
+### Comptes et établissements dans Pilotage — #688
+
+Le KPI « Comptes » compte les comptes marchands inscrits, une seule fois par
+workspace possédant au moins un établissement et un propriétaire actif associé
+à un utilisateur existant. Il reprend l'annuaire de comptes déjà utilisé en
+administration des affiliés, indépendamment de l'activation de l'affiliation.
+Plusieurs sites ou utilisateurs ne multiplient pas le compte. Un conteneur
+technique sans propriétaire inscrit n'est pas un compte marchand inscrit.
+
+Le KPI « Établissements » compte tous les établissements enregistrés, en
+conservant le périmètre historique, y compris les établissements archivés.
+Les nombres d'onboarding terminés et d'établissements avec accès actif sont
+affichés en complément de ce KPI ; la règle d'accès existante ne change pas.
+Les totaux restent globaux lorsque l'annuaire des utilisateurs est filtré.
+
 ### Dernière connexion dans Pilotage — #411
 
 Chaque ligne affiche la dernière connexion réussie de son utilisateur, fournie
