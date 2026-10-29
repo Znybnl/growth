@@ -1,5 +1,27 @@
 # Stratégie de test — Okado
 
+## Mesures opérationnelles serveur — #710
+
+`test:operational-telemetry` vérifie le vrai SDK de traces et le schéma fermé :
+inventaire de toutes les API, priorité des routes statiques, IDs/query privés,
+durées et statuts, refus de cookies, arrêt/configuration, repli de cycle de vie,
+pré-rendu hors HTTP, erreurs Next et redirections. Les tests du rapport
+contrôlent moyennes sur les valeurs, percentiles par rang, séparation des
+versions/environnements/statuts, durée absente et absence de données privées.
+
+Après `build:web`, `smoke:operational-telemetry` démarre le vrai serveur compilé
+et un collecteur OTLP local, avec token fictif et services externes désactivés.
+Réponses 200/401/404/500 et redirection sont contrôlées, un seul log HTTP par
+requête est attendu, l’étape de page est exportée, aucun trace ID ni donnée
+privée injectée ne doit être transmis. Le collecteur refuse ensuite les lots :
+la réponse métier reste correcte et le défaut d’export devient visible.
+
+La notice publique est contrôlée à 1280×720, 1280×600 et 390×844 par
+`e2e/operational-privacy.spec.ts` de la landing, avec captures inspectées.
+La CI exécute les tests et le smoke. La recette de déploiement doit confirmer
+le token de 212872 EU, la réception et la rétention réelle : une recette locale
+ne prouve pas l’activation en production.
+
 `e2e/wizard-published-save.spec.ts` (#645) vérifie les commandes d’un jeu publié
 dans MerchantShell à 1280×720, 1280×600 et 390×844, les sauvegardes marchand/admin
 pour roue et ticket, l’erreur serveur avec reprise, la conservation des lots et
