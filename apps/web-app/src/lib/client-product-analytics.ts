@@ -21,17 +21,20 @@ export function captureClientProductEvent(
   event: ProductAnalyticsEvent,
   properties?: ProductAnalyticsProperties,
 ) {
-  if (!posthogKey || !posthogEnabled || !hasAnalyticsConsent()) {
-    return;
+  try {
+    if (!posthogKey || !posthogEnabled || !hasAnalyticsConsent()) return false;
+    syncAnalyticsConsent();
+    posthog.capture(event, {
+      ...sanitizeAnalyticsProperties(properties),
+      source: "client",
+      trackingVersion: PRODUCT_ANALYTICS_VERSION,
+      environment: analyticsEnvironment(),
+    }, event === "signup_started" || event === "login_completed" ? { transport: "sendBeacon", send_instantly: true } : undefined);
+    return true;
+  } catch {
+    // Measurement must not turn a successful business action into an error.
+    return false;
   }
-
-  syncAnalyticsConsent();
-  posthog.capture(event, {
-    ...sanitizeAnalyticsProperties(properties),
-    source: "client",
-    trackingVersion: PRODUCT_ANALYTICS_VERSION,
-    environment: analyticsEnvironment(),
-  }, event === "signup_started" || event === "login_completed" ? { transport: "sendBeacon", send_instantly: true } : undefined);
 }
 
 export function identifyMerchantForAnalytics(accountMerchantId: string, userId: string, activeMerchantId = accountMerchantId, email?: string) {

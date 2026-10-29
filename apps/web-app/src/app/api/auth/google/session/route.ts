@@ -101,6 +101,9 @@ export async function POST(request: Request) {
         }),
       ];
 
+      if (!session.isNew) sideEffects.push(captureProductEvent("login_completed",
+        merchantDistinctId(session.user.merchantId, session.user.id),
+        { method: "google", merchantId: session.merchant.id, merchantUserId: session.user.id }));
       if (session.isNew) {
         sideEffects.push(
           captureProductEvent(

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Clock3 } from "lucide-react";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
 import type { RewardReminderSettings as Settings } from "@/lib/reward-reminder-settings";
 
@@ -28,8 +29,12 @@ export function RewardReminderSettings({ accountKey }: { accountKey: string }) {
         body: JSON.stringify({ enabled, days: Number(days) }) });
       if (!response.ok) throw new Error("Enregistrement impossible. Réessayez.");
       const settings = await response.json() as Settings;
+      captureClientProductEvent("notification_preferences_saved", { preferenceKind: "reward_reminder", enabled: settings.enabled });
       setSaved(settings); setEnabled(settings.enabled); setDays(String(settings.days)); setMessage("Le réglage commun du compte est enregistré.");
-    } catch { setError("Enregistrement impossible. Réessayez."); } finally { setBusy(false); }
+    } catch {
+      captureClientProductEvent("notification_preferences_save_failed", { preferenceKind: "reward_reminder", errorType: "request_failed" });
+      setError("Enregistrement impossible. Réessayez.");
+    } finally { setBusy(false); }
   }
   return <AccountSectionCard icon={Clock3} eyebrow="E-mails aux gagnants" title="Relance avant expiration"
     description="Un réglage commun à tous les établissements de votre compte marchand.">

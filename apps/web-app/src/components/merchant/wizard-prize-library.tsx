@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useProductStepTracking } from "@/components/analytics/product-step-tracking";
 import { BadgePercent, Check, ChevronLeft, CirclePlus, Coffee, Gift, History, Layers3, Loader2, Plus, Soup, Sparkles, UtensilsCrossed, X } from "lucide-react";
 import { DialogShell } from "@/components/ui/dialog";
 import type { PrizeSuggestion } from "@/lib/types";
@@ -59,6 +60,8 @@ export function WizardPrizeLibrary({ suggestions, addedIds, remainingProbability
   const [adjustment, setAdjustment] = useState<{ suggestion: LibraryEntry; probability: number; quantity: number | null } | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [lastAdded, setLastAdded] = useState("");
+  useProductStepTracking("prize_library_step_viewed", confirmReplacement ? "composition_confirm"
+    : adjustment ? "prize_adjustment" : tab === "compositions" && compositionId ? "composition_detail" : tab);
   const contentRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef<HTMLButtonElement>(null);
   const originRef = useRef<{ id: string; scrollTop: number } | null>(null);

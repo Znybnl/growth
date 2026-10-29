@@ -30,7 +30,8 @@ import { PosterTemplateSelector } from "@/components/merchant/poster-template-se
 import { DownloadFeedbackDialog, downloadBlob, useDownloadTask } from "@/components/merchant/download-feedback";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { PageHeader } from "@/components/ui/workspace";
-import { isMerchantOptimizedImageUrl, uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
+import { isMerchantOptimizedImageUrl, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
+import { uploadMerchantImageFile } from "@/lib/client-merchant-image-upload";
 
 type PosterEditorProps = {
   campaign: Campaign;
@@ -707,10 +708,12 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
 
       setLastSavedPosterSnapshot(currentPosterDraftSnapshot);
       setMessage("Affiche enregistrée.");
+      captureClientProductEvent("editor_settings_saved", { editorKind: "poster", campaignId: campaign.id });
       router.refresh();
       return true;
     } catch (error) {
       if (signal?.aborted) return false;
+      captureClientProductEvent("editor_settings_save_failed", { editorKind: "poster", errorType: "request_failed" });
       setMessage(error instanceof Error ? error.message : "Enregistrement impossible.");
       return false;
     } finally {
@@ -771,7 +774,7 @@ export function PosterEditor({ campaign, prizes, settingsEndpoint, returnHref, a
         gameType: campaign.gameType,
       });
       return "L’affiche PNG a été transmise au navigateur. Retrouvez-la dans vos téléchargements.";
-    }, isDirty ? "Enregistrement des modifications de l’affiche…" : "Préparation de votre affiche PNG…");
+    }, isDirty ? "Enregistrement des modifications de l’affiche…" : "Préparation de votre affiche PNG…", { fileKind: "poster", operation: "download" });
   }
 
   return (

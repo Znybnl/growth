@@ -15,6 +15,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
+import { useProductStepTracking } from "@/components/analytics/product-step-tracking";
 import { requiresGoogleClick } from "@/lib/google-click-policy";
 import { BrandMark } from "@/components/brand-mark";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
@@ -472,6 +473,7 @@ export function CampaignExperience({
 }: CampaignExperienceProps) {
   const [campaign, setCampaign] = useState(initialCampaign);
   const [stage, setStage] = useState<ExperienceStage>("idle");
+  useProductStepTracking("game_stage_viewed", isPreview ? undefined : stage, { campaignId, gameType: campaign.gameType });
   const [blockedMessage, setBlockedMessage] = useState(
     "Une seule participation est possible par jour. Revenez demain pour tenter votre chance à nouveau.",
   );
@@ -744,6 +746,7 @@ export function CampaignExperience({
       setDrawSession(payload.session);
       setStage(nextStage);
     } catch (sessionError) {
+      if (!isPreview) captureClientProductEvent("game_request_failed", { campaignId, gameType: campaign.gameType, operation: "prepare", errorType: "request_failed" });
       setError(
         sessionError instanceof Error ? sessionError.message : "Une erreur est survenue.",
       );
@@ -835,6 +838,7 @@ export function CampaignExperience({
       // announcement step. The winner form already announces the prize.
       setStage(result.prize && contactCaptured ? "won" : "success");
     } catch (submitError) {
+      if (!isPreview) captureClientProductEvent("game_request_failed", { campaignId, gameType: campaign.gameType, operation: "finalize", errorType: "request_failed" });
       setError(
         submitError instanceof Error ? submitError.message : "Une erreur est survenue.",
       );

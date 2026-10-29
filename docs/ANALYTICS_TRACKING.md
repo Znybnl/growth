@@ -1,5 +1,8 @@
 # Plan de tracking produit
 
+Audit de couverture du 29 octobre 2026 : [matrice des 29 familles de pages,
+étapes, preuves et limites — #691](releases/2026-10-29-tracking-coverage-691.md).
+
 PostHog sert à comprendre l’usage produit et les erreurs de parcours. Le
 tracking ne doit jamais conditionner une opération métier ni transmettre de
 contenu utilisateur.
@@ -81,6 +84,57 @@ Référence : [API PostHog — endpoints publics et privés, authentification](h
 La liste typée de référence se trouve dans
 `apps/web-app/src/lib/product-analytics-events.ts`. Toute nouvelle capture
 doit passer par `captureClientProductEvent` ou `captureProductEvent`.
+
+## Complément de couverture applicative — #691
+
+Les `$pageview` automatiques du SDK restent la seule source de pages vues ;
+aucun second émetteur manuel n'est ajouté. `page` distingue maintenant les
+29 familles réelles de l'application. Les routes dynamiques sont normalisées
+en `/campaigns/[id]/…`, `/campaign/[id]` ou `/redeem/[code]`, sans leurs segments
+libres. API, fixtures et chemins inconnus restent `/other`. Un test compare cet
+inventaire aux fichiers `page.tsx` et échoue si une nouvelle page n'est pas
+classifiée. `pageMode=preview|public` distingue les pages de jeu selon le seul
+flag public `preview=1` ou la route d'aperçu ; les tokens ne sont jamais envoyés.
+
+| Événement | Signification et propriétés fermées |
+| --- | --- |
+| `campaign_wizard_step_viewed` | étape visible : `game`, `identity` (La promesse), `appearance`, `prizes`, `action` ; `wizardMode`, `actor`, `gameType` |
+| `campaign_wizard_step_completed` | Continuer accepté après validation, avant passage à l'étape suivante ; aucun succès sur validation refusée |
+| `campaign_wizard_validation_failed` | Continuer refusé, `stepKey`, code `invalid_step` ou `invalid_probability`, jamais le texte saisi |
+| `campaign_save_failed` | échec de requête d'enregistrement dans les éditeurs classique/wizard ; codes fixes |
+| `prize_library_step_viewed` | bibliothèque : `suggestions`, `mine`, `compositions`, `composition_detail`, `composition_confirm`, `prize_adjustment` |
+| `account_tab_viewed` | onglet réellement affiché : `establishment`, `user`, `subscription` ; pas le repli SSR avant résolution du fragment |
+| `editor_settings_saved`, `editor_settings_save_failed` | réponse d'enregistrement de l'affiche ou de l'e-mail ; `editorKind=poster|reward_email` ; aucun contenu de message |
+| `notification_preferences_saved`, `notification_preferences_save_failed` | réponse d'enregistrement des notifications/relances ; catégorie et nombre d'options, sans destinataire |
+| `merchant_image_upload_started`, `merchant_image_upload_completed`, `merchant_image_upload_failed` | début, réponse acceptée ou erreur ; usage logo/fond, poids source/final et dimensions, sans nom de fichier ni URL |
+| `file_preparation_started`, `file_preparation_completed`, `file_preparation_failed`, `file_preparation_canceled` | préparation QR/PNG/CSV ; `fileKind` et `operation=preview|download` ; annulation explicite pendant le travail |
+| `game_stage_viewed` | état visible du jeu réel : `idle`, `intro`, `ready`, `collect`, `won`, `success`, `lost`, `blocked` ; campagnes de prévisualisation exclues |
+| `game_request_failed` | échec préparation/finalisation ; `operation=prepare|finalize` et code fixe, aucune coordonnée |
+
+Les événements historiques restent conservés. `results_campaign_selected`,
+déjà déclaré, est désormais émis au changement explicite de jeu dans Résultats ;
+ce clic ne prouve pas le chargement réussi de ses résultats. La connexion Google
+d'un compte existant émet `login_completed` une fois, côté serveur, dans les deux
+chemins de retour. Un nouveau compte émet `signup_completed`, sans login artificiel
+supplémentaire. Le formulaire de connexion peut signaler un retour Google en
+erreur avec un code fixe, sans lire son motif libre dans la mesure.
+
+Les vues d'étape attendent l'hydratation et sont dédupliquées au rendu/focus.
+Après accord tardif ou nouvel accord, seule l'étape actuelle est émise ; les
+étapes précédemment refusées ne sont pas rejouées. Revenir à une étape peut
+produire une nouvelle vue, ce qui décrit la navigation réelle.
+Un `campaign_creation_started` non observé à l'ouverture du wizard n'est pas
+fabriqué après un accord tardif ; seule la vue de l'étape actuelle est capturée.
+
+La préparation terminée n'est pas une preuve de sauvegarde sur le disque,
+et une consultation QR n'est pas son téléchargement. `game_stage_viewed` ne
+remplace pas une participation, un gain ou un retrait. Les succès de tirage
+restent côté serveur ; les KPI métier restent dans Supabase. Les captures
+client sont protégées contre les erreurs du SDK et ne bloquent pas l'opération.
+
+La PR de cet audit complète la PR #687 (onboarding) : fusionner #687 en premier.
+Il n'y a ni changement de consentement/replay, ni nouvelle exception personnelle,
+ni rétroattribution des anciennes pages `/other`, ni changement de dashboard.
 
 ## Identification et confidentialité
 

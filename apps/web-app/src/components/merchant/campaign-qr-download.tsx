@@ -18,7 +18,7 @@ function useCampaignQr(campaignId: string, admin: boolean) {
     if (signal.aborted) { URL.revokeObjectURL(nextUrl); return ""; }
     setImageUrl(nextUrl);
     return "Scannez ce QR code ou enregistrez son image avec un clic droit.";
-  }, "Préparation de votre QR code…");
+  }, "Préparation de votre QR code…", { fileKind: "qr", operation: "preview" });
   // Read-only request; the actual download remains an explicit action.
   useEffect(() => {
     load();
@@ -30,7 +30,7 @@ function useCampaignQr(campaignId: string, admin: boolean) {
     const blob = await fetchDownload(endpoint, signal, "image/svg+xml");
     downloadBlob(blob, `${encodeURIComponent(campaignId)}-qr.svg`);
     return "Le QR code a été transmis au navigateur. Retrouvez-le dans vos téléchargements.";
-  }, "Préparation du téléchargement du QR code…");
+  }, "Préparation du téléchargement du QR code…", { fileKind: "qr", operation: "download" });
   return { imageUrl, imageReady, imageError, setImageReady, setImageError, task, load, download };
 }
 

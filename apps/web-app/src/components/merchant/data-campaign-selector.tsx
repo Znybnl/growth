@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Check, ChevronDown, Loader2, Search } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 
 type CampaignOption = {
   id: string;
@@ -48,6 +49,7 @@ export function DataCampaignSelector({ campaigns, selectedCampaignId, query, ema
   }, []);
 
   function selectCampaign(campaignId: string) {
+    if (campaignId !== selectedCampaignId) captureClientProductEvent("results_campaign_selected", { campaignId });
     const params = new URLSearchParams({ campaign: campaignId });
     if (query) params.set("q", query);
     if (emailStatus) params.set("emailStatus", emailStatus);

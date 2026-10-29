@@ -3,24 +3,30 @@
 import { Check, Download, Loader2, X } from "lucide-react";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { DialogShell } from "@/components/ui/dialog";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 
 type DownloadState = { status: "loading" | "success" | "error"; message: string };
 type DownloadTask = (signal: AbortSignal, report: (message: string) => void) => Promise<string>;
+type FilePreparationContext = { fileKind: "qr" | "poster" | "csv"; operation: "preview" | "download" };
 
 /** Explicit actions start work; closing aborts it and ignores late results. */
 export function useDownloadTask() {
   const [state, setState] = useState<DownloadState | null>(null);
   const pending = useRef<AbortController | null>(null);
+  const preparation = useRef<FilePreparationContext | undefined>(undefined);
   useEffect(() => () => { pending.current?.abort(); pending.current = null; }, []);
   function close() {
+    if (pending.current && preparation.current) captureClientProductEvent("file_preparation_canceled", preparation.current);
     pending.current?.abort();
     pending.current = null;
     setState(null);
   }
-  async function start(task: DownloadTask, message = "Préparation du fichier…") {
+  async function start(task: DownloadTask, message = "Préparation du fichier…", context?: FilePreparationContext) {
     if (pending.current) return;
     const controller = new AbortController();
     pending.current = controller;
+    preparation.current = context;
+    if (context) captureClientProductEvent("file_preparation_started", context);
     setState({ status: "loading", message });
     try {
       // Paint feedback even when the file is already cached, without a fake progress bar.
@@ -29,9 +35,15 @@ export function useDownloadTask() {
       const result = await task(controller.signal, (next) => {
         if (!controller.signal.aborted) setState({ status: "loading", message: next });
       });
-      if (!controller.signal.aborted) setState({ status: "success", message: result });
+      if (!controller.signal.aborted) {
+        if (context) captureClientProductEvent("file_preparation_completed", context);
+        setState({ status: "success", message: result });
+      }
     } catch (error) {
-      if (!controller.signal.aborted) setState({ status: "error", message: error instanceof Error ? error.message : "Préparation impossible. Réessayez." });
+      if (!controller.signal.aborted) {
+        if (context) captureClientProductEvent("file_preparation_failed", { ...context, errorType: "preparation_failed" });
+        setState({ status: "error", message: error instanceof Error ? error.message : "Préparation impossible. Réessayez." });
+      }
     } finally {
       if (pending.current === controller) pending.current = null;
     }
@@ -91,7 +103,7 @@ export function FileDownloadButton({ href, fileName, title, children, className 
     const blob = await fetchDownload(href, signal, "text/csv");
     downloadBlob(blob, fileName);
     return "Le fichier a été transmis au navigateur. Retrouvez-le dans vos téléchargements.";
-  }, "Préparation de votre export CSV…");
+  }, "Préparation de votre export CSV…", { fileKind: "csv", operation: "download" });
   return <>
     <button type="button" className={className} onClick={start}>{children}</button>
     <DownloadFeedbackDialog state={task.state} title={title} onClose={task.close} onRetry={start} />

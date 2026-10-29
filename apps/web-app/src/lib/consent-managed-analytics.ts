@@ -1,6 +1,7 @@
 "use client";
 
 import posthog from "posthog-js";
+import { safeApplicationAnalyticsPage } from "@/lib/analytics-routes";
 import {
   ANALYTICS_CONSENT_EVENT, ANALYTICS_CONSENT_VERSION,
   analyticsCookieDomain, hasAnalyticsConsent, readAnalyticsConsent, saveAnalyticsConsent,
@@ -88,17 +89,20 @@ const measuredPages = new Set([
 ]);
 
 export function safeAnalyticsPage(pathname: string) {
-  return measuredPages.has(pathname) ? pathname : "/other";
+  return safeApplicationAnalyticsPage(pathname) ?? (measuredPages.has(pathname) ? pathname : "/other");
 }
 
 function acquisitionContext() {
   const params = new URLSearchParams(window.location.search);
+  const page = safeAnalyticsPage(window.location.pathname);
   const utm = (key: string) => {
     const value = params.get(key);
     return value && /^[a-z0-9_-]{1,80}$/i.test(value) ? value : undefined;
   };
   return {
-    page: safeAnalyticsPage(window.location.pathname),
+    page,
+    pageMode: page === "/campaign/[id]/preview-embed" || (page === "/campaign/[id]" && params.get("preview") === "1")
+      ? "preview" : page === "/campaign/[id]" ? "public" : undefined,
     utmSource: utm("utm_source"),
     utmMedium: utm("utm_medium"),
     utmCampaign: utm("utm_campaign"),

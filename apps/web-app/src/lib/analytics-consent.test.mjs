@@ -147,9 +147,11 @@ for (const app of ["web-app", "landing-page"]) {
       "/blog/unknown-article", "/blog/person@example.test", "/blog/123456",
       publicBlogPages[1] + "/private-id", publicBlogPages[1] + "?email=private",
       "/blog/%61ttirer-clients-fleuriste", "/blog//attirer-clients-fleuriste"]) {
-      assert.equal(client.safeAnalyticsPage(path), "/other");
+      const expected = app === "web-app" && path === "/campaign/private-id" ? "/campaign/[id]"
+        : app === "web-app" && path === "/redeem/secret" ? "/redeem/[code]" : "/other";
+      assert.equal(client.safeAnalyticsPage(path), expected);
       window.location.pathname = path;
-      assert.equal(config.before_send({ event: "$pageview", properties: {} }).properties.page, "/other");
+      assert.equal(config.before_send({ event: "$pageview", properties: {} }).properties.page, expected);
     }
     window.location.pathname = "/inscription";
     window.location.search = "?utm_source=google&utm_medium=cpc&utm_campaign=launch_2026&email=private%40example.test#secret";
@@ -162,7 +164,7 @@ for (const app of ["web-app", "landing-page"]) {
     window.location.pathname = "/redeem/private-gain";
     window.location.search = "?utm_source=private%40example.test&utm_medium=cpc&utm_campaign=launch_2026";
     const restricted = config.before_send({ event: "$pageview", properties: {} }).properties;
-    assert.equal(restricted.page, "/other");
+    assert.equal(restricted.page, app === "web-app" ? "/redeem/[code]" : "/other");
     assert.equal(restricted.utmSource, undefined);
     assert.equal(restricted.utmCampaign, "launch_2026");
     window.location.pathname = "/inscription";
@@ -229,7 +231,35 @@ test("identité : envoi immédiat unique, options préservées et capture restau
     sdk.identify = () => { throw Error("SDK unavailable"); };
     assert.doesNotThrow(() => analytics.identifyMerchantForAnalytics("merchant", "user"));
     assert.equal(sdk.capture, originalCapture);
+    sdk.capture = () => { throw Error("SDK unavailable"); };
+    assert.equal(analytics.captureClientProductEvent("campaign_saved"), false);
+    sdk.capture = originalCapture;
   } finally { sdk.identify = originalIdentify; sdk.capture = originalCapture; }
+});
+
+test("uploads : début/confirmation/échec réels, aucun nom de fichier, URL ou message libre", async () => {
+  browser();
+  const consent = await import("./analytics-consent.ts");
+  consent.saveAnalyticsConsent("accepted");
+  const { uploadMerchantImageFile } = await import("./client-merchant-image-upload.ts");
+  const previousFetch = globalThis.fetch;
+  try {
+    const file = new File(["image-fixture"], "private@example.test.png", { type: "image/png" });
+    globalThis.fetch = async () => Response.json({ image: { url: "https://example.test/private-logo", bytes: 120, width: 20, height: 10 } });
+    const image = await uploadMerchantImageFile(file, "logo");
+    assert.equal(image.bytes, 120);
+    assert.deepEqual(state.events.map(event => event[0]), ["merchant_image_upload_started", "merchant_image_upload_completed"]);
+    assert.equal(state.events[1][1].outputBytes, 120);
+    globalThis.fetch = async () => Response.json({ error: "private@example.test failure" }, { status: 500 });
+    await assert.rejects(() => uploadMerchantImageFile(file, "background"));
+    assert.equal(state.events.at(-1)[0], "merchant_image_upload_failed");
+    assert.doesNotMatch(JSON.stringify(state.events), /private|https:|\.png|failure/);
+    consent.saveAnalyticsConsent("rejected");
+    const count = state.events.length;
+    globalThis.fetch = async () => Response.json({ image: { url: "https://example.test/image", bytes: 120, width: 20, height: 10 } });
+    await uploadMerchantImageFile(file, "logo");
+    assert.equal(state.events.length, count, "refusal does not break the upload and emits nothing");
+  } finally { globalThis.fetch = previousFetch; }
 });
 
 test("serveur : absence, refus, expiration et contexte manquant ne déclenchent aucun envoi", async () => {

@@ -6,9 +6,12 @@ import { useMemo, useState } from "react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { captureClientProductEvent, identifyMerchantForAnalytics } from "@/lib/client-product-analytics";
+import { useProductStepTracking } from "@/components/analytics/product-step-tracking";
 
 export function SignInForm() {
   const searchParams = useSearchParams();
+  useProductStepTracking("login_failed", searchParams.get("error") === "google_oauth" ? "google_callback" : undefined,
+    { method: "google", errorType: "callback_failed" });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);

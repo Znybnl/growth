@@ -62,6 +62,39 @@ function callbackFixture() {
   return { state, get };
 }
 
+test("JSON Google exchange: a returning account logs in once, a new account only signs up", async () => {
+  for (const isNew of [false, true]) {
+    const deferred = [], events = [];
+    const route = load("../app/api/auth/google/session/route.ts", {
+      "next/server": { NextResponse, after: task => deferred.push(task) },
+      "@/lib/affiliate-repository": { createAffiliateReferralForMerchant: async () => undefined },
+      "@/lib/admin-notifications": { notifyAdministratorsOfMerchantSignup: async () => undefined },
+      "@/lib/brevo": { syncMerchantContactToBrevo: async () => undefined },
+      "@/lib/merchant-account-repository": { authenticateOrProvisionMerchantWithGoogle: async () => ({ isNew,
+        merchant: { id: "merchant-active", onboardingCompleted: true }, user: { id: "user-fixture", merchantId: "merchant-primary" } }) },
+      "@/lib/product-analytics": { merchantDistinctId: merchantAnalyticsDistinctId, captureProductEvent: async (...args) => events.push(args) },
+      "@/lib/public-api": { getPublicErrorStatus: () => 500 },
+      "@/lib/public-security-store": { assertPersistentPublicRateLimit: async () => undefined },
+      "@/lib/request-security": { assertTrustedMutationRequest: () => undefined, getRequestSecurityErrorStatus: () => 500 },
+      "@/lib/session-security-server": { setSessionSecurityCookies: () => undefined },
+      "@/lib/supabase-server-auth": { createRouteSupabaseClient: () => ({ auth: {
+        exchangeCodeForSession: async () => ({ error: null }),
+        getUser: async () => ({ data: { user: { id: "private-auth-id", email: "private@example.test", user_metadata: {} } }, error: null }),
+      } }) },
+    });
+    const response = await route.POST(new Request("https://app.okado.app/api/auth/google/session", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: "private-code" }),
+    }));
+    assert.equal(response.status, 200);
+    assert.equal(events.length, 0);
+    await deferred[0]();
+    assert.equal(events.length, 1);
+    assert.equal(events[0][0], isNew ? "signup_completed" : "login_completed");
+    assert.equal(events[0][1], "merchant-primary:user-fixture");
+    assert.doesNotMatch(JSON.stringify(events), /private|@|code/);
+  }
+});
+
 test("new Google account: signup captured after the response, onboarding redirect and cookies preserved", async () => {
   const { state, get } = callbackFixture();
   const response = await get();
@@ -89,7 +122,10 @@ test("returning Google accounts never produce another signup; incomplete/complet
     const response = await get();
     assert.equal(new URL(response.headers.get("location")).pathname, completed ? "/campaigns" : "/onboarding");
     await state.deferred[0]();
-    assert.equal(state.events.length, 0);
+    assert.equal(state.events.length, 1);
+    assert.equal(state.events[0].event, "login_completed");
+    assert.equal(state.events[0].properties.method, "google");
+    assert.equal(state.events[0].distinctId, "merchant-fixture:user-fixture");
   }
 });
 
