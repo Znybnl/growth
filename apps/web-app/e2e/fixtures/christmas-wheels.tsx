@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { CampaignLivePreview, buildCampaignLivePreviewModel } from "@/components/merchant/campaign-live-preview";
 import { WizardPhoneFrame } from "@/components/merchant/campaign-wizard";
 import { FittedWizardPhone } from "@/components/merchant/wizard-responsive-layout";
+import { DraftPreviewViewport } from "@/components/merchant/draft-preview-viewport";
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { WheelOfFortune } from "@/components/public/wheel-of-fortune";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme, christmasWheelPalette, type ChristmasWheelTemplateId } from "@/lib/christmas-wheel-themes";
@@ -51,7 +52,9 @@ export function ChristmasWheelsFixture({ templateId, mode, initialBackground = "
     <p data-testid="action-count">{clicks}</p><p data-testid="result-count">{finished}</p>
   </main>;
   return <main data-fixture-ready={ready} style={{ maxWidth: 390, margin: "auto" }}>
-    <FittedWizardPhone><WizardPhoneFrame><CampaignLivePreview merchant={merchant} preview={preview} compact flushTop /></WizardPhoneFrame></FittedWizardPhone>
+    <FittedWizardPhone><WizardPhoneFrame>{mode === "live"
+      ? ready && <DraftPreviewViewport><CampaignLivePreview merchant={merchant} preview={preview} mobileViewport flushTop /></DraftPreviewViewport>
+      : <CampaignLivePreview merchant={merchant} preview={preview} compact flushTop />}</WizardPhoneFrame></FittedWizardPhone>
     <div style={{ padding: 16, color: "black", background: "white" }}>
       <label>Modèle de test<select value={selected} onChange={event => setSelected(event.target.value as ChristmasWheelTemplateId)}>{CHRISTMAS_WHEEL_THEMES.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
       <label>Titre de test<textarea value={heading} onChange={event => setHeading(event.target.value)} /></label>

@@ -5,6 +5,7 @@ import { CampaignExperience } from "@/components/public/campaign-experience";
 import { ImmersiveScratchTicket } from "@/components/public/immersive-scratch-ticket";
 import { WizardPhoneFrame } from "@/components/merchant/campaign-wizard";
 import { FittedWizardPhone } from "@/components/merchant/wizard-responsive-layout";
+import { DraftPreviewViewport } from "@/components/merchant/draft-preview-viewport";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate, type ChristmasScratchTemplateId } from "@/lib/christmas-scratch-templates";
 import { DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX } from "@/lib/campaign-defaults";
 import type { LogoMode, Merchant, PublicCampaign } from "@/lib/types";
@@ -39,7 +40,9 @@ export function ChristmasScratchFixture({ templateId, mode, initialBackground = 
     <output data-testid="scratch-starts">{starts}</output><output data-testid="scratch-reveals">{reveals}</output>
   </main>;
   return <main data-fixture-ready={ready} className="mx-auto max-w-[390px]">
-    <FittedWizardPhone><WizardPhoneFrame><CampaignLivePreview merchant={merchant} preview={preview} compact flushTop /></WizardPhoneFrame></FittedWizardPhone>
+    <FittedWizardPhone><WizardPhoneFrame>{mode === "live"
+      ? ready && <DraftPreviewViewport><CampaignLivePreview merchant={merchant} preview={preview} mobileViewport flushTop /></DraftPreviewViewport>
+      : <CampaignLivePreview merchant={merchant} preview={preview} compact flushTop />}</WizardPhoneFrame></FittedWizardPhone>
     <div className="bg-white p-4 text-black">
       <label>Titre de test<textarea value={title} onChange={event => setTitle(event.target.value)} /></label>
       <label>Modèle de test<select value={selected} onChange={event => setSelected(event.target.value as ChristmasScratchTemplateId)}>{CHRISTMAS_SCRATCH_TEMPLATES.map(item => <option key={item.id}>{item.id}</option>)}</select></label>
