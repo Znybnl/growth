@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 
 import {
   CAMPAIGN_EMAIL_VARIABLES,
@@ -76,6 +77,7 @@ export function EmailEditor({ campaign, merchant, prizes }: EmailEditorProps) {
 
   async function saveEmailSettings() {
     if (validationErrors.length) {
+      captureClientProductEvent("editor_settings_save_failed", { editorKind: "reward_email", errorType: "invalid_settings" });
       setMessage("Corrigez les informations obligatoires avant d’enregistrer.");
       return;
     }
@@ -96,8 +98,10 @@ export function EmailEditor({ campaign, merchant, prizes }: EmailEditorProps) {
       }
 
       setMessage("Email enregistré.");
+      captureClientProductEvent("editor_settings_saved", { editorKind: "reward_email", campaignId: campaign.id });
       router.refresh();
     } catch (error) {
+      captureClientProductEvent("editor_settings_save_failed", { editorKind: "reward_email", errorType: "request_failed" });
       setMessage(error instanceof Error ? error.message : "Enregistrement impossible.");
     } finally {
       setIsSaving(false);

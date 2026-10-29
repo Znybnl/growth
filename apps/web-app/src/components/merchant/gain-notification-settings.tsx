@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
+import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
 import {
   GAIN_NOTIFICATION_FREQUENCIES, GAIN_NOTIFICATION_LABELS, type GainNotificationFrequency,
@@ -36,8 +37,10 @@ export function GainNotificationSettings(props: Props) {
       });
       if (!response.ok) throw new Error("Enregistrement impossible. Réessayez.");
       const preference = await response.json() as GainNotificationPreference;
+      captureClientProductEvent("notification_preferences_saved", { preferenceKind: "gain_notifications", merchantId: props.locationId, enabledCount: preference.frequencies.length });
       setSaved(preference); setValue(preference.frequencies); setMessage("Vos préférences de notification sont enregistrées.");
     } catch {
+      captureClientProductEvent("notification_preferences_save_failed", { preferenceKind: "gain_notifications", errorType: "request_failed" });
       setError("Enregistrement impossible. Réessayez.");
     } finally { setBusy(false); }
   }

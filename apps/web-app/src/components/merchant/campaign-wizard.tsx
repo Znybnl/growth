@@ -73,7 +73,9 @@ import { createCampaignEmailDefaults } from "@/lib/email-settings";
 import { normalizeCampaignEmailSettings } from "@/lib/email-settings";
 import { captureClientError } from "@/lib/client-observability";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
-import { uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
+import { useProductStepTracking } from "@/components/analytics/product-step-tracking";
+import { MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
+import { uploadMerchantImageFile } from "@/lib/client-merchant-image-upload";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelFontOptions, beautyWheelLogoColor, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme } from "@/lib/christmas-wheel-themes";
@@ -858,10 +860,10 @@ export function CampaignWizard({
   const { confirmNoMarketingAction, noMarketingActionDialog } = useNoMarketingActionConfirmation();
   const [marketingLinks, setMarketingLinks] = useState(merchant);
   const isEditing = Boolean(initialCampaign);
+  const creationTracked = useRef(false);
   useEffect(() => {
-    if (!isEditing && !adminSaveEndpoint) {
-      captureClientProductEvent("campaign_creation_started", { wizardMode: "guided" });
-    }
+    if (!isEditing && !adminSaveEndpoint && !creationTracked.current
+      && captureClientProductEvent("campaign_creation_started", { wizardMode: "guided" })) creationTracked.current = true;
   }, [adminSaveEndpoint, isEditing]);
   const [draft, setDraft] = useState<WizardDraft>(() => {
     if (initialCampaign) return draftFromCampaign(merchant, initialCampaign);
@@ -1224,6 +1226,9 @@ export function CampaignWizard({
   }, [isDirty, savedCampaignId]);
 
   const step = WIZARD_STEPS[stepIndex];
+  useProductStepTracking("campaign_wizard_step_viewed", step.id, {
+    wizardMode: isEditing ? "edit" : "create", actor: adminSaveEndpoint ? "admin" : "merchant", gameType: draft.gameType,
+  });
   const previewCampaignId = savedCampaignId ?? draft.id;
   const totalProbability = useMemo(
     () =>
@@ -1401,15 +1406,18 @@ export function CampaignWizard({
 
   function nextStep() {
     if (step.id === "prizes" && (totalProbability > 100.0001 || totalProbability <= 0)) {
+      captureClientProductEvent("campaign_wizard_validation_failed", { stepKey: step.id, errorType: "invalid_probability" });
       setError(null);
       return;
     }
     const validationError = validateStep(step.id, draft, actionEnabled);
     if (validationError) {
+      captureClientProductEvent("campaign_wizard_validation_failed", { stepKey: step.id, errorType: "invalid_step" });
       setError(validationError);
       return;
     }
     setError(null);
+    captureClientProductEvent("campaign_wizard_step_completed", { stepKey: step.id, gameType: draft.gameType, actor: adminSaveEndpoint ? "admin" : "merchant" });
     setStepIndex((current) => {
       const next = Math.min(WIZARD_STEPS.length - 1, current + 1);
       setFurthestStepIndex((furthest) => Math.max(furthest, next));
@@ -1495,6 +1503,7 @@ export function CampaignWizard({
       }
       return campaignId ?? null;
     } catch (saveFailure) {
+      captureClientProductEvent("campaign_save_failed", { creationMode: "wizard", operation: mode, errorType: "request_failed" });
       captureClientError("campaign_setup_failed", saveFailure, {
         campaign_id: draft.id,
         creation_mode: "wizard",

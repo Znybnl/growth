@@ -80,7 +80,8 @@ import {
 } from "@/lib/format";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
-import { uploadMerchantImageFile, MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
+import { MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
+import { uploadMerchantImageFile } from "@/lib/client-merchant-image-upload";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelLogoColor, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
@@ -2671,6 +2672,7 @@ export function CampaignEditor({
       router.replace(`/campaigns?updated=${encodeURIComponent(savedId ?? "saved")}`);
       return savedId ?? null;
     } catch (error) {
+      captureClientProductEvent("campaign_save_failed", { creationMode: "classic", errorType: "request_failed" });
       const readableError = readableCampaignSaveError(
         error instanceof Error ? error.message : "La campagne n'a pas pu être enregistrée.",
       );

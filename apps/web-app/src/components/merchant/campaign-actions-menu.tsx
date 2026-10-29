@@ -63,7 +63,7 @@ export function CampaignActionsMenu({
     const blob = await fetchDownload(`/api/campaigns/${id}/poster`, signal, "image/png");
     downloadBlob(blob, `${id}-affiche-a4-a5.png`);
     return "L’affiche a été transmise au navigateur. Retrouvez-la dans vos téléchargements.";
-  }, "Préparation de votre affiche PNG…");
+  }, "Préparation de votre affiche PNG…", { fileKind: "poster", operation: "download" });
 
   return (
     <>

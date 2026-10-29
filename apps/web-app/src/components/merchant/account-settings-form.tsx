@@ -16,6 +16,7 @@ import { MARKETING_ACTION_CATALOG } from "@/lib/marketing-action-library";
 import { Button } from "@/components/ui/button";
 import { ValidationDialog } from "@/components/ui/validation-dialog";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
+import { useProductStepTracking } from "@/components/analytics/product-step-tracking";
 import {
   beautySubsectorOptions,
   isLegacyBeautySubsector,
@@ -132,6 +133,7 @@ export function AccountSettingsForm({
       ? merchant
       : locations.find(({ merchant: location }) => location.id === selectedLocationId)?.merchant ?? merchant;
   const selectedPinState = redemptionPinStates[selectedMerchant.id];
+  useProductStepTracking("account_tab_viewed", activeTab);
 
   function applyTabSelection(tab: AccountTab) {
     const nextHash = `#account-${tab === "establishment" ? "establishment" : tab === "user" ? "user" : "subscription"}`;

@@ -5,6 +5,7 @@ import { CampaignEditor } from "@/components/merchant/campaign-editor";
 import { CampaignLivePreview, buildCampaignLivePreviewModel } from "@/components/merchant/campaign-live-preview";
 import { CampaignWizard } from "@/components/merchant/campaign-wizard";
 import { PosterEditor } from "@/components/merchant/poster-editor";
+import { EmailEditor } from "@/components/merchant/email-editor";
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { MerchantShell } from "@/components/merchant/merchant-shell";
@@ -125,6 +126,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       </div>
     </MerchantShell>;
   }
+  if (mode === "email-tracking") return <EmailEditor campaign={performance.campaign} merchant={merchant} prizes={performance.prizes} />;
   if (mode === "editor-prize-budget") {
     return <MerchantShell merchant={merchant} user={{ id: "cost-user", merchantId: merchant.id,
       role: "owner", firstName: "Camille", lastName: "Test", email: "cost@example.test", password: "", createdAt: merchant.createdAt }}
