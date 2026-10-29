@@ -16,6 +16,11 @@ node_modules
 !apps/landing-page/public/images/*.png
 !apps/landing-page/public/images/*.webp
 !apps/landing-page/public/images/blog/*.webp
+# Include nested guide screenshots and future public marketing image folders.
+!apps/landing-page/public/images/**/*.png
+!apps/landing-page/public/images/**/*.jpg
+!apps/landing-page/public/images/**/*.jpeg
+!apps/landing-page/public/images/**/*.webp
 # The *.png exclusion also matches directory names: keep the static OG route.
 !apps/landing-page/src/app/og-image.png
 !apps/landing-page/src/app/og-image.png/**
