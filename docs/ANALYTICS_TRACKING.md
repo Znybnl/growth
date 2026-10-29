@@ -49,7 +49,11 @@ Référence : [API PostHog — endpoints publics et privés, authentification](h
 
 | Événement | Déclenchement | Propriétés utiles |
 | --- | --- | --- |
-| `signup_completed` | compte créé côté serveur | `source`, `environment` |
+| `signup_completed` | compte créé côté serveur, y compris callback Google actif, uniquement si compte nouveau | `authProvider`, `source`, `environment` |
+| `onboarding_started` | première étape observée avec consentement pendant ce montage de l’écran | `step` |
+| `onboarding_step_viewed` | étape affichée ou observée après accord ; dédupliquée tant que l’étape reste la même | `step` |
+| `onboarding_step_completed` | passage à l’étape suivante après validation ; PIN après réponse de sauvegarde réussie | `step` |
+| `onboarding_failed` | validation, requête, réponse ou navigation en erreur côté client | `step`, `errorType` |
 | `onboarding_completed` | onboarding enregistré côté serveur | `source`, `environment` |
 | `campaign_creation_started` | ouverture d’une création dans le wizard | `wizardMode` |
 | `campaign_created` | première sauvegarde d’une campagne | `gameType`, `creationMode` |
@@ -87,6 +91,28 @@ utilisateur, **jamais l'établissement actif** (#592). Décision propriétaire d
 accord de mesure. C'est la seule exception personnelle autorisée à ce mécanisme.
 La capture est désactivable sans modifier les parcours métier en supprimant la
 clé PostHog de l’environnement.
+
+### Onboarding Google — #685
+
+Le callback serveur Google actif émet `signup_completed` dans `after()` après
+création du compte, avec le même mécanisme de consentement que la route de
+session alternative. Une reconnexion à un compte existant n’émet pas une
+nouvelle inscription. L’écran d’onboarding réutilise `MerchantAnalyticsIdentity`
+avant les événements du formulaire ; il identifie le compte authentifié au
+montage et après accord de mesure, même lorsque l’utilisateur n’a pas encore
+accès au shell marchand.
+
+Les identifiants d’étape sont `profil`, `reseaux` et `pin`. Le début est tenté
+une seule fois par montage avec consentement, sans reconstruction des étapes
+parcourues avant accord. Revenir puis avancer peut produire une nouvelle
+transition d’étape. `onboarding_completed` reste le succès serveur existant :
+le client ne le duplique pas. Les erreurs utilisent seulement `validation`,
+`http_error`, `network_error`, `invalid_response` ou `navigation_error` ; aucun
+message d’erreur libre, champ, URL ou PIN n’est transmis. Une panne du suivi ne
+bloque pas les boutons ni la sauvegarde. Refus et retrait de consentement
+continuent à interrompre la collecte. Les inscriptions passées manquantes ne
+sont pas recréées ; le rapprochement peut reprendre lors d’une prochaine visite
+consentie si le navigateur conserve encore son identité anonyme.
 
 ### Identité stable entre établissements — #592
 
