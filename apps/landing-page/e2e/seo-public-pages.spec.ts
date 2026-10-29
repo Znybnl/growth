@@ -258,6 +258,7 @@ test("tous les articles exposent liens, sources et métadonnées cohérentes dan
     const graph = (await page.locator('script[type="application/ld+json"]').allTextContents())
       .flatMap((value) => JSON.parse(value)["@graph"] ?? []);
     const schema = graph.find((item) => item["@type"] === "BlogPosting");
+    expect(schema).not.toHaveProperty("about");
     expect(schema).toMatchObject({
       headline: post.title,
       description: post.description,

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="800" viewBox="0 0 1600 800">
+  <rect width="1600" height="800" fill="#f7f3ed"/>
+  <rect x="64" y="64" width="1472" height="672" rx="32" fill="#173e35"/>
+  <g font-family="Arial,sans-serif">
+    <text x="128" y="164" fill="#f4c58b" font-size="24" letter-spacing="3">GUIDE PRATIQUE · RESTAURANT</text>
+    <text x="128" y="290" fill="#fffaf3" font-size="67" font-weight="700">Votre fiche Google,</text>
+    <text x="128" y="374" fill="#fffaf3" font-size="67" font-weight="700">du menu à la réservation.</text>
+    <text x="128" y="455" fill="#d6e3dc" font-size="28">Des informations utiles pour choisir votre table.</text>
+    <g fill="#fffaf3" font-size="28" font-weight="700">
+      <text x="180" y="591">Carte lisible</text>
+      <text x="640" y="591">Horaires fiables</text>
+      <text x="1100" y="591">Lien testé</text>
+    </g>
+    <g stroke="#f4c58b" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="145" cy="580" r="17"/><path d="m137 580 6 6 11-12"/>
+      <circle cx="605" cy="580" r="17"/><path d="m597 580 6 6 11-12"/>
+      <circle cx="1065" cy="580" r="17"/><path d="m1057 580 6 6 11-12"/>
+    </g>
+    <path d="M128 644H1472" stroke="#47695c" stroke-width="2"/>
+    <text x="128" y="696" fill="#d6e3dc" font-size="22">CRÉER · REVENDIQUER · VALIDER · OPTIMISER</text>
+  </g>
+</svg>
