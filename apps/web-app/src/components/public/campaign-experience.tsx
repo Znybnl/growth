@@ -28,6 +28,7 @@ import { HalloweenWheelScene } from "@/components/public/halloween-wheel-art";
 import { ChristmasWheelScene } from "@/components/public/christmas-wheel-art";
 import { christmasWheelDefaultBackground, isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
 import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
+import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
 import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
@@ -905,7 +906,7 @@ export function CampaignExperience({
       : beautyWheelDefaultBackground(pageTemplate, campaign.presentation.background)
     : null;
   const templateDefaultBackground = scratchTemplateDefaultBackground(pageTemplate, campaign.presentation.background);
-  const nativeChristmasScratchBackground = campaign.gameType === "scratch" && christmasScratchTemplate(pageTemplate) ? templateDefaultBackground : undefined;
+  const nativeChristmasScratchBackground = campaign.gameType === "scratch" && (christmasScratchTemplate(pageTemplate) || halloweenScratchTemplate(pageTemplate)) ? templateDefaultBackground : undefined;
   const backgroundStyle =
     (beautyScratchTheme && !hasCustomSelectedBackground) || nativeWheelBackgroundUrl || nativeChristmasScratchBackground
       ? "none"
@@ -978,7 +979,7 @@ export function CampaignExperience({
         fontFamily: textFontFamily(campaign.presentation.heading.fontFamily),
       }}
     >
-      {managedBackgroundUrl && !isHalloweenTemplate ? (
+      {managedBackgroundUrl && !isHalloweenTemplate && !halloweenScratchTemplate(pageTemplate) ? (
         <Image
           src={managedBackgroundUrl}
           alt=""

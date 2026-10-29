@@ -2,6 +2,8 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseCampaignSetupInput } from "../src/lib/merchant-input";
+import { selectWizardStep } from "./helpers/wizard-step";
+import { rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
 import {
   defaultWheelBlockSpacingForTemplate,
   DEFAULT_WHEEL_SPACING_PX,
@@ -81,12 +83,16 @@ test("le packaging Vercel inclut les assets Halloween malgré l’exclusion glob
   expect(lines.lastIndexOf(allowRule)).toBeGreaterThan(lines.lastIndexOf("*.webp"));
 });
 
-test("le sélecteur Halloween affiche un blanc désactivé avec Palette fixe", () => {
-  const wizard = readFileSync(resolve(__dirname, "../src/components/merchant/campaign-wizard.tsx"), "utf8");
-  const control = wizard.slice(wizard.indexOf('>Couleur du logo et sous-titre'), wizard.indexOf('aria-label="Couleur du logo et sous-titre"'));
-  expect(control).toContain('>Palette fixe</span>');
-  expect(control).toContain('disabled={draft.presentation.layout.templateId === "halloween-gold"}');
-  expect(control).toContain('draft.presentation.layout.templateId === "halloween-gold" ? "#ffffff"');
+test("le sélecteur Halloween affiche un blanc désactivé avec Palette fixe", async ({ page, context, baseURL }) => {
+  await rejectAnalyticsForVisualTests(context, baseURL!);
+  await page.route(/https:\/\//, route => route.abort());
+  await page.route("**/api/**", route => route.fulfill({ json: { items: [], assets: {}, suggestions: [] } }));
+  await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-edit&template=halloween-gold&business=retail");
+  await selectWizardStep(page, 2);
+  const control = page.getByLabel("Couleur du logo et sous-titre", { exact: true });
+  await expect(control).toBeDisabled();
+  await expect(control).toHaveValue("#ffffff");
+  await expect(control.locator("..")).toContainText("Palette fixe");
 });
 
 for (const width of [320, 390, 600, 1280]) {
@@ -296,20 +302,22 @@ for (const width of [320, 390, 1280]) {
           sceneBottom: sceneBox.bottom,
           backgroundBottom: scene.querySelector("img")!.getBoundingClientRect().bottom,
           sceneWidth: sceneBox.width,
+          sceneClientWidth: scene.clientWidth,
           sceneScrollWidth: scene.scrollWidth,
           wheelWidth: wheelBox.width,
           wheelHeight: wheelBox.height,
           secondaryWidth: secondaryBox?.width,
+          secondaryClientWidth: secondary?.clientWidth,
           secondaryScrollWidth: secondary?.scrollWidth,
         };
       });
       expect(geometry.sceneBottom).toBeGreaterThanOrEqual(geometry.screenBottom - 1);
       expect(geometry.backgroundBottom).toBeGreaterThanOrEqual(geometry.screenBottom - 1);
       expect(geometry.wheelWidth).toBeCloseTo(geometry.wheelHeight, 0);
-      expect(geometry.sceneScrollWidth).toBeLessThanOrEqual(Math.ceil(geometry.sceneWidth));
+      expect(geometry.sceneScrollWidth).toBeLessThanOrEqual(geometry.sceneClientWidth);
       if (withSubtitle) {
         expect(geometry.secondaryWidth! / geometry.sceneWidth).toBeCloseTo(.60, 2);
-        expect(geometry.secondaryScrollWidth!).toBeLessThanOrEqual(Math.ceil(geometry.secondaryWidth!));
+        expect(geometry.secondaryScrollWidth!).toBeLessThanOrEqual(geometry.secondaryClientWidth!);
       }
       await page.evaluate(() => document.fonts.ready);
       await expect.poll(() => page.getByTestId("halloween-wheel-scene").locator("img").evaluateAll(images => images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);

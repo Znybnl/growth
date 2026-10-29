@@ -42,9 +42,10 @@ import {
 import { BrandMark } from "@/components/brand-mark";
 import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
 import { ChristmasCampaignPreview } from "./christmas-campaign-preview";
-import { ChristmasScratchPreview } from "./christmas-scratch-preview";
+import { SeasonalScratchPreview } from "./seasonal-scratch-preview";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme, isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate, christmasScratchBackgroundImage } from "@/lib/christmas-scratch-templates";
+import { HALLOWEEN_SCRATCH_TEMPLATE, halloweenScratchTemplate, isHalloweenFixedPalette } from "@/lib/halloween-scratch-template";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
@@ -103,6 +104,7 @@ import {
   defaultScratchTemplateFont,
   defaultScratchTemplateForIndustry,
   defaultScratchTextColor,
+  defaultScratchLogoColor,
   scratchTemplateDefaultPrimaryColor,
   shouldApplyScratchTemplateDefaultPrimaryColor,
   campaignSubtitleForGameTypeChange,
@@ -426,6 +428,7 @@ const scratchPageTemplateOptions: Array<{
   title: string;
   description: string;
 }> = [
+  { value: HALLOWEEN_SCRATCH_TEMPLATE.id, title: HALLOWEEN_SCRATCH_TEMPLATE.name, description: HALLOWEEN_SCRATCH_TEMPLATE.description },
   ...CHRISTMAS_SCRATCH_TEMPLATES.map(item => {
     const theme = christmasScratchTemplate(item.id)!;
     return { value: item.id, title: theme.name, description: theme.description };
@@ -989,8 +992,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       ? "relative isolate min-h-[480px] max-w-[360px] rounded-[30px] px-3 pb-5 pt-7"
       : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8";
 
-  if (preview.gameType === "scratch" && christmasScratchTemplate(preview.gamePageTemplateId)) {
-    return <ChristmasScratchPreview preview={preview} />;
+  if (preview.gameType === "scratch" && (christmasScratchTemplate(preview.gamePageTemplateId) || preview.gamePageTemplateId === HALLOWEEN_SCRATCH_TEMPLATE.id)) {
+    return <SeasonalScratchPreview preview={preview} />;
   }
   if (preview.gameType === "wheel" && isChristmasWheelTemplate(preview.gamePageTemplateId)) {
     return <ChristmasCampaignPreview preview={preview} />;
@@ -1562,7 +1565,7 @@ function toEditorState(merchant: Merchant, campaign: CampaignPerformance | null)
       logo: {
         ...campaign.campaign.presentation.logo,
         textColor: campaign.campaign.gameType === "scratch"
-          ? resolveScratchTemplateTextColor(campaign.campaign.presentation.logo.textColor ?? campaign.campaign.presentation.heading.textColor, templateId)
+          ? (halloweenScratchTemplate(templateId)?.logo ?? resolveScratchTemplateTextColor(campaign.campaign.presentation.logo.textColor ?? campaign.campaign.presentation.heading.textColor, templateId))
           : campaign.campaign.presentation.logo.textColor,
         marginBottomPx: clampCampaignSpacingPx(
           campaign.campaign.presentation.logo.marginBottomPx ??
@@ -1712,7 +1715,7 @@ export function buildCampaignLivePreviewModel(
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
       logoTextColor: form.gameType === "scratch"
-        ? resolveScratchTemplateTextColor(form.presentation.logo.textColor ?? form.presentation.heading.textColor, templateId)
+        ? (halloweenScratchTemplate(templateId)?.logo ?? resolveScratchTemplateTextColor(form.presentation.logo.textColor ?? form.presentation.heading.textColor, templateId))
         : form.presentation.logo.textColor ?? form.presentation.heading.textColor,
       headingAlignmentClass,
       headingFontClass,
@@ -2076,7 +2079,7 @@ export function CampaignEditor({
         : "text-center";
   const headingFontClass = textFontClass(form.presentation.heading.fontFamily);
   const currentTemplateId = form.presentation.layout.templateId ?? "classic";
-  const isHalloweenTemplate = form.gameType === "wheel" && currentTemplateId === "halloween-gold";
+  const isHalloweenTemplate = isHalloweenFixedPalette(currentTemplateId);
   const showBackgroundColor =
     currentTemplateId === "classic" ||
     currentTemplateId === "restaurant-pop" ||
@@ -2146,7 +2149,7 @@ export function CampaignEditor({
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
       logoTextColor: form.gameType === "scratch"
-        ? resolveScratchTemplateTextColor(form.presentation.logo.textColor ?? form.presentation.heading.textColor, currentTemplateId)
+        ? (halloweenScratchTemplate(currentTemplateId)?.logo ?? resolveScratchTemplateTextColor(form.presentation.logo.textColor ?? form.presentation.heading.textColor, currentTemplateId))
         : form.presentation.logo.textColor ?? form.presentation.heading.textColor,
       headingAlignmentClass,
       headingFontClass,
@@ -3110,7 +3113,7 @@ export function CampaignEditor({
                           const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.value, current.presentation.wheel);
                           const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.value, current.presentation.background.color, wheel.loseColor);
                           const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
-                          const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? christmasScratchTemplate(template.value)?.logo ?? defaultScratchTextColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.value, wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
+                          const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchLogoColor(template.value) : template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.value, wheelHeadingColorForTemplateSelection(template.value, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
                           const firstSelectionHeadingFont = wheelHeadingFontForTemplateSelection(template.value, current.presentation.heading.fontFamily);
                           const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? christmasWheelTheme(template.value)?.button ?? (template.value === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                           const scratchSignal =
@@ -3122,7 +3125,7 @@ export function CampaignEditor({
 
                           return {
                             ...current,
-                            subtitle: template.value === "halloween-gold" && current.subtitle === DEFAULT_WHEEL_SUBTITLE ? "TOURNEZ\nLA ROUE" : current.subtitle,
+                            subtitle: template.value === "scratch-halloween-gold" && current.subtitle === DEFAULT_SCRATCH_SUBTITLE ? "GRATTEZ &\nGAGNEZ" : template.value === "halloween-gold" && current.subtitle === DEFAULT_WHEEL_SUBTITLE ? "TOURNEZ\nLA ROUE" : current.subtitle,
                             presentation: {
                               ...current.presentation,
                               background: {
@@ -3160,7 +3163,7 @@ export function CampaignEditor({
                                 },
                               logo: {
                                 ...current.presentation.logo,
-                                textColor: current.gameType === "scratch" ? resolveScratchTemplateTextColor(logoTextColor, template.value) : logoTextColor,
+                                textColor: current.gameType === "scratch" ? (halloweenScratchTemplate(template.value)?.logo ?? resolveScratchTemplateTextColor(logoTextColor, template.value)) : logoTextColor,
                                 marginBottomPx: wheelLogoGapForTemplateSelection(template.value, currentTemplateId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
                                 align: remembered?.logoAlign ?? (isBeautyWheelTemplate(currentTemplateId) ? "center" : current.presentation.logo.align),
                               },
@@ -3203,7 +3206,7 @@ export function CampaignEditor({
                 })}
               </div>
             </div>
-            {isHalloweenTemplate ? <p className="mt-5 text-sm leading-6 text-[#616b7c]">Décor Halloween, dorures du titre et roue fixes. Le logo, les textes, leurs tailles et espacements restent personnalisables.</p> : null}
+            {isHalloweenTemplate ? <p className="mt-5 text-sm leading-6 text-[#616b7c]">Décor Halloween et palette fixes. Le logo, les textes, leurs tailles et espacements restent personnalisables.</p> : null}
             {form.gameType === "scratch" && currentTemplateId !== CLASSIC_NUDE_SCRATCH_TEMPLATE_ID ? (
               <label className="mt-6 block max-w-md text-sm">
                 <span className="mb-1 block font-semibold text-[#111827]">

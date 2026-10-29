@@ -9,7 +9,8 @@ import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
 import { ChristmasCampaignPreview } from "./christmas-campaign-preview";
 import { isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
 import { christmasScratchBackgroundImage, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
-import { ChristmasScratchPreview } from "./christmas-scratch-preview";
+import { SeasonalScratchPreview } from "./seasonal-scratch-preview";
+import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
 import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
@@ -347,8 +348,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
     ? preview.logoTextSizePx * (isRosePowderTemplate || isRoseInstitutTemplate ? 0.9 : 1)
     : scalePreviewValue(preview.logoTextSizePx) * (isBeautyTemplate || isRoseInstitutTemplate ? 0.9 : 1);
 
-  if (preview.gameType === "scratch" && christmasScratchTemplate(preview.gamePageTemplateId)) {
-    return <ChristmasScratchPreview preview={preview} />;
+  if (preview.gameType === "scratch" && (christmasScratchTemplate(preview.gamePageTemplateId) || halloweenScratchTemplate(preview.gamePageTemplateId))) {
+    return <SeasonalScratchPreview preview={preview} />;
   }
   if (preview.gameType === "wheel" && isChristmasWheelTemplate(preview.gamePageTemplateId)) {
     return <ChristmasCampaignPreview preview={preview} publicPage={mobileViewport} />;
