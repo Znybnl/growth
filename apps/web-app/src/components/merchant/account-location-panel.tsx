@@ -67,7 +67,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-charcoal">Établissements disponibles</p>
             <span className="text-xs text-ash">{locations.length} sélectionnable{locations.length > 1 ? "s" : ""}</span>
           </div>
-          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
             {locations.map(({ merchant: location }) => {
               const isSelected = location.id === merchant.id;
               return (
