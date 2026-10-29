@@ -8,7 +8,7 @@ export default function Page() {
   const merchant = { id: "demo", companyName: "Institut de démonstration", logoText: "Démo",
     onboardingCompleted: true, createdAt: "2026-10-01T12:00Z" };
   const overview: SaasAdminOverview = {
-    totals: { merchants: 3, onboardedMerchants: 2, activeSubscriptions: 2, activeCampaigns: 4,
+    totals: { accounts: 1, merchants: 3, onboardedMerchants: 2, activeSubscriptions: 2, activeCampaigns: 4,
       leads: 18, pendingRewards: 6, lowStockPrizes: 0, failedRewardEmails: 0 },
     users: [
       { status: "available", at: "2026-10-24T23:30:00.000Z" } as const,

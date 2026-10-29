@@ -13,6 +13,13 @@ for (const size of [{ width: 1280, height: 720 }, { width: 1280, height: 600 }, 
     const page = await context.newPage();
     await page.route("**/api/**", route => route.fulfill({ status: 200, json: {} }));
     await page.goto("/dev/admin-last-sign-in");
+    const accounts = page.locator(".okado-metric-card").filter({ has: page.getByText("Comptes", { exact: true }) });
+    const establishments = page.locator(".okado-metric-card").filter({ has: page.getByText("Établissements", { exact: true }) });
+    await expect(accounts.locator(".okado-metric-card__value")).toHaveText("1");
+    await expect(establishments.locator(".okado-metric-card__value")).toHaveText("3");
+    await expect(establishments).toContainText("2 onboarding terminés · 2 avec accès actif");
+    if (size.width === 1280) await captureVisualAt1280(page, info, "pilotage-account-establishment-kpis", size.height);
+    else await page.screenshot({ path: info.outputPath("pilotage-kpis-mobile.png") });
     const table = page.locator(".okado-admin-table");
     await expect(table.getByText("Jamais connecté", { exact: true })).toBeVisible();
     await expect(table.getByText("Indisponible", { exact: true })).toBeVisible();

@@ -95,18 +95,20 @@ test('erreur SQL de clic : indisponibilité sans détail privé dans le message 
     error=>error.status===503 && !/private|secret/.test(error.message));
 });
 test('vrai Pilotage : essais applicatifs inclus, unité établissement, aucun appel Stripe',async()=>{
-  const merchants=[{id:'m',stripe_subscription_status:null,trial_end_date:new Date(Date.now()+86400000).toISOString()},
-    {id:'subscribed',stripe_subscription_status:'active',trial_end_date:null},
-    {id:'expired',stripe_subscription_status:null,trial_end_date:new Date(Date.now()-86400000).toISOString()}];
+  const merchants=[{id:'m',workspace_id:'w',stripe_subscription_status:null,trial_end_date:new Date(Date.now()+86400000).toISOString()},
+    {id:'subscribed',workspace_id:'w',stripe_subscription_status:'active',trial_end_date:null},
+    {id:'expired',workspace_id:'w',stripe_subscription_status:null,trial_end_date:new Date(Date.now()-86400000).toISOString()}];
   const db={auth:{admin:{listUsers:async()=>({data:{users:[{app_metadata:{merchant_user_id:'user'},last_sign_in_at:'2026-10-24T23:30:00Z'}]},error:null})}},
-    from:table=>query(table==='merchants'?merchants:table==='merchant_users'?[{id:'user',merchant_id:'m',created_at:'2026-01-01',email:'demo@example.test'}]:[]),
+    from:table=>query(table==='merchants'?merchants:table==='merchant_users'?[{id:'user',merchant_id:'m',created_at:'2026-01-01',email:'demo@example.test'}]:table==='merchant_workspaces'?[{id:'w'}]:table==='merchant_workspace_memberships'?[{workspace_id:'w',merchant_user_id:'user',role:'owner',status:'active'}]:[]),
     rpc:name=>{assert.equal(name,'get_platform_operational_metrics');return query([{merchant_id:'m',contacts:1203,pending_rewards:5,low_stock:0,exhausted_stock:1,failed_emails:0}]);}};
   const repo=load('./admin-repository.ts',{
+    '@/lib/affiliate-account-directory':load('./affiliate-account-directory.ts'),
     '@/lib/admin-last-sign-in':{readAdminLastSignIns},
     '@/lib/paginated-read':{readAllRows},'@/lib/metric-rules':rules,'@/lib/supabase':{getSupabaseAdmin:()=>db},
     '@/lib/stripe':{getStripeClient:()=>{throw Error('Unexpected Stripe call')}},
   });
   const result=await repo.getSaasAdminOverview();
+  assert.equal(result.totals.accounts,1);assert.equal(result.totals.merchants,3);
   assert.equal(result.totals.activeSubscriptions,2);assert.equal(result.totals.pendingRewards,5);
   assert.equal(result.totals.leads,1203);assert.equal(result.totals.lowStockPrizes,0);
   assert.equal(result.users[0].lastSignIn.status,'available');
