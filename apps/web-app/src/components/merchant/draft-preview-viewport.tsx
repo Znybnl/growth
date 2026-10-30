@@ -4,7 +4,9 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { GAME_PREVIEW_VIEWPORT } from "@/lib/game-preview-viewport";
 
-const DOCUMENT = '<!doctype html><html lang="fr"><head></head><body style="margin:0;overflow-x:hidden"><div id="draft-preview-root" inert></div></body></html>';
+// Percentage-height preview backgrounds need a definite height through every
+// ancestor; body min-height alone leaves a content-sized root and a blank footer.
+const DOCUMENT = '<!doctype html><html lang="fr" style="height:100%"><head></head><body style="height:100%;margin:0;overflow-x:hidden"><div id="draft-preview-root" style="height:100%" inert></div></body></html>';
 
 /** A real mobile CSS viewport; no game endpoint, persisted draft, or player API. */
 export function DraftPreviewViewport({ children }: { children: ReactNode }) {
