@@ -16,6 +16,12 @@ test("les miniatures Beauté et Éclat restent fidèles et les lots suivent leur
     test.skip(true, "Le compte de test courant n'appartient pas au secteur Beauté.");
   }
   await expect(gallery).toBeVisible();
+  await expect(gallery.getByText("Sept styles de roue, personnalisables aux couleurs de votre établissement.", { exact: true })).toHaveCount(0);
+  const christmasRose = gallery.getByRole("button", { name: /Noël rose poudré/ });
+  await expect(christmasRose).toBeVisible();
+  await expect(page.getByTestId("classic-template-options").getByRole("button", { name: /Noël rose poudré/ })).toHaveCount(0);
+  await christmasRose.click();
+  await expect(christmasRose).toHaveAttribute("aria-pressed", "true");
   await expect(gallery.getByTestId("beauty-thumbnail-logo")).toHaveCount(7);
   for (const logo of await gallery.getByTestId("beauty-thumbnail-logo").all()) {
     await expect(logo).toHaveText("Votre établissement");

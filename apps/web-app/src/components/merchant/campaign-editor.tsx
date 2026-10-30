@@ -1839,6 +1839,38 @@ export function CampaignEditor({
   );
 
   function selectBeautyWheelTemplate(templateId: GamePageTemplateId) {
+    const seasonalTheme = christmasWheelTheme(templateId);
+    if (seasonalTheme) {
+      captureClientProductEvent("campaign_template_selected", { campaignType: "wheel", templateKey: templateId, wizardMode: "classic" });
+      setForm((current) => {
+        const previousId = current.presentation.layout.templateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
+        if (previousId === templateId) return current;
+        wheelTemplateState.current[previousId] = {
+          wheel: current.presentation.wheel, backgroundColor: current.presentation.background.color,
+          scratchSignal: current.accent.signal, scratchTextColor: current.accent.ink,
+          headingTextColor: current.presentation.heading.textColor,
+          logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
+          headingFontFamily: current.presentation.heading.fontFamily, headingAlign: current.presentation.heading.align,
+          logoAlign: current.presentation.logo.align, logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
+          buttonBackgroundColor: current.presentation.button.backgroundColor,
+          blockSpacingPx: current.presentation.layout.blockSpacingPx, subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
+        };
+        const remembered = wheelTemplateState.current[templateId];
+        return {
+          ...current,
+          presentation: {
+            ...current.presentation,
+            layout: { ...current.presentation.layout, templateId, wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] }, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId) },
+            background: { ...current.presentation.background, color: remembered?.backgroundColor ?? seasonalTheme.background },
+            wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
+            heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? wheelHeadingFontForTemplateSelection(templateId, current.presentation.heading.fontFamily), textColor: remembered?.headingTextColor ?? wheelHeadingColorForTemplateSelection(templateId, current.presentation.heading.textColor), align: remembered?.headingAlign ?? "center" },
+            logo: { ...current.presentation.logo, textColor: remembered?.logoTextColor ?? wheelLogoColorForTemplateSelection(templateId, current.presentation.logo.textColor ?? current.presentation.heading.textColor), marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx), align: remembered?.logoAlign ?? "center" },
+            button: { ...current.presentation.button, backgroundColor: remembered?.buttonBackgroundColor ?? seasonalTheme.button },
+          },
+        };
+      });
+      return;
+    }
     if (templateId === "rose-institut") {
       captureClientProductEvent("campaign_template_selected", {
         campaignType: "wheel",
@@ -3063,12 +3095,10 @@ export function CampaignEditor({
                   onSelect={selectBeautyScratchTemplate}
                 />
               ) : null}
-              <p className="text-xs uppercase tracking-[0.24em] text-[#7b8496]">
-                {form.gameType === "wheel" ? "Autres templates de roue" : "Template de page de jeu"}
-              </p>
+              <h3 className="text-base font-semibold text-carbon">Autres templates</h3>
               <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="classic-template-options">
                 {(form.gameType === "wheel"
-                  ? wheelPageTemplateOptions.filter((template) => !isBeautyIndustry(merchant.industry) || template.value !== "rose-institut")
+                  ? wheelPageTemplateOptions.filter((template) => !isBeautyIndustry(merchant.industry) || (template.value !== "rose-institut" && template.value !== "christmas-rose"))
                   : scratchPageTemplateOptions.filter((template) => !isHiddenScratchTemplate(template.value))
                 ).map((template) => {
                   const active =
