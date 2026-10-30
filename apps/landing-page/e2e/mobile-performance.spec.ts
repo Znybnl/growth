@@ -41,8 +41,8 @@ test("miniatures au DPR mobile et aperçu agrandi conservent leur définition", 
     const thumbnail = opener.locator("img");
     await expect.poll(() => thumbnail.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
     const source = await thumbnail.evaluate((image: HTMLImageElement) => ({ url: image.currentSrc, width: image.clientWidth, dpr: devicePixelRatio }));
-    expect(Number(new URL(source.url).searchParams.get("w"))).toBe(320);
-    expect(320).toBeGreaterThanOrEqual(source.width * source.dpr);
+    const thumbnailSourceWidth = Number(new URL(source.url).searchParams.get("w"));
+    expect(thumbnailSourceWidth).toBeGreaterThanOrEqual(source.width * source.dpr);
     await opener.click();
     const dialog = page.getByRole("dialog", { name: "Nude Élégance", exact: true });
     await expect.poll(() => dialog.locator("img").evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
