@@ -74,16 +74,19 @@ test("l’accueil expose les bons secteurs et un suivi compact", async ({ page }
   await page.locator("#fonctionnalites").screenshot({ path: info.outputPath("gift-suggestions.png"), style: "header.sticky { visibility: hidden !important; }" });
 });
 
-test("l’accueil compact aligne le hero et la démo aux largeurs du brief", async ({ page }, info) => {
+test("hero centré : respiration, CTA et entrée de démo visibles @visual-1280", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "La matrice complète est exécutée une seule fois.");
-  for (const width of [320, 360, 390, 768, 1280, 1440]) {
-    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+  test.setTimeout(45_000);
+  const measurements: object[] = [];
+  for (const [width, height] of [[320, 740], [360, 800], [390, 844], [768, 1024], [1280, 720], [1280, 600], [1440, 900]]) {
+    await page.setViewportSize({ width, height });
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
     expect(await page.evaluate(() => document.documentElement.scrollWidth), String(width)).toBeLessThanOrEqual(width);
     const hero = page.getByRole("region", { name: /Donnez à vos clients/ });
     const intro = (await hero.locator("div").first().boundingBox())!;
     const cta = (await hero.getByRole("link", { name: "Essayer gratuitement", exact: true }).boundingBox())!;
+    const conditions = hero.getByText("30 jours sans carte bancaire, sans engagement.", { exact: true });
     const frame = (await page.locator('#demo [class*="workspace"]').boundingBox())!;
     const demoHeading = (await page.locator("#demo").getByRole("heading", { level: 2 }).boundingBox())!;
     const heroBounds = (await hero.boundingBox())!;
@@ -92,12 +95,23 @@ test("l’accueil compact aligne le hero et la démo aux largeurs du brief", asy
     expect(Math.abs(heroBounds.width - frame.width)).toBeLessThan(1);
     expect(Math.round(toolbar.y - heroBounds.y - heroBounds.height)).toBe(width < 768 ? 24 : 32);
     expect(Math.round(frame.y - toolbar.y - toolbar.height)).toBe(20);
-    if (width < 768) {
-      expect(cta.y).toBeGreaterThanOrEqual(intro.y + intro.height);
-      if (width === 390) expect(demoHeading.y + demoHeading.height).toBeLessThan(844);
-    } else {
-      expect(cta.x).toBeGreaterThanOrEqual(intro.x + intro.width);
+    expect(cta.y).toBeGreaterThanOrEqual(intro.y + intro.height + 24);
+    expect(Math.abs(cta.x + cta.width / 2 - width / 2)).toBeLessThan(1);
+    expect(Math.abs(intro.x + intro.width / 2 - width / 2)).toBeLessThan(1);
+    await expect(hero.locator("h1")).toHaveCSS("text-align", "center");
+    await expect(conditions).toBeInViewport({ ratio: 1 });
+    await expect(hero.getByRole("link")).toHaveCount(1);
+    await expect(hero.locator("img, figure")).toHaveCount(0);
+    if (width === 390) expect(demoHeading.y + demoHeading.height).toBeLessThan(844);
+    if (width >= 1280) expect(heroBounds.height).toBeGreaterThan(420);
+    if (width === 1440) {
+      expect(frame.y).toBeLessThan(900);
+      const title = hero.locator("h1");
+      const lineHeight = await title.evaluate(el => parseFloat(getComputedStyle(el).lineHeight));
+      expect((await title.boundingBox())!.height).toBeCloseTo(lineHeight * 2, 0);
     }
-    if (width === 1440) expect(frame.y).toBeLessThan(900);
+    measurements.push({ width, height, heroHeight: heroBounds.height, ctaY: cta.y, demoHeadingY: demoHeading.y, frameY: frame.y });
+    await page.screenshot({ path: info.outputPath(`hero-${width}x${height}.png`) });
   }
+  await info.attach("hero-layout", { body: JSON.stringify(measurements, null, 2), contentType: "application/json" });
 });
