@@ -424,6 +424,17 @@ la page de jeu conserve le moteur de grattage et les règles de tirage existants
 Les anciens modèles et les modèles par défaut de chaque activité restent inchangés.
 [Périmètre et recette](releases/2026-10-28-christmas-scratch-676.md).
 
+Issue #724 ajoute quatre styles de ticket festifs à tous les secteurs : Noël sapin
+& cadeaux, Noël champagne, Noël rétro et Noël noir & or. Leurs fonds WebP sont des
+décors seuls ; l'identité, le titre et le sous-titre restent configurés dans le jeu.
+Les styles sapin, champagne et noir & or ont une zone de grattage dorée au bord
+irrégulier de pinceau ; le modèle rétro a un ticket rouge bordé d'or et un
+revêtement argenté.
+La zone est toujours le canvas interactif existant et révèle le résultat du tirage
+exact. Un fond importé ou choisi dans la bibliothèque reste prioritaire sur le fond
+natif. Aucune campagne existante, chance, stock, participation ou règle de jeu n'est
+modifiée. [Assets et contrôles](releases/2026-10-30-christmas-scratch-724.md).
+
 ## Affiliation par compte — #677
 
 L'administration Affiliation affiche les comptes marchands inscrits, récents

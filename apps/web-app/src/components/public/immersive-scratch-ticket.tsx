@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { Sparkles } from "lucide-react";
 
 import { BrandMark } from "@/components/brand-mark";
 import {
@@ -191,6 +192,10 @@ export function ImmersiveScratchTicket({
   const isSunburst = template === "scratch-sunburst";
   const beautyTheme = scratchVisualTheme(template);
   const christmasTheme = christmasScratchTemplate(template);
+  const scratchShape = christmasTheme?.scratchShape;
+  const isDecorativeTicket = scratchShape === "ticket";
+  const canvasWidth = scratchShape === "brush" ? 700 : isDecorativeTicket ? 660 : CANVAS_WIDTH;
+  const canvasHeight = CANVAS_HEIGHT;
   const configuredPrimary = accent.signal;
   const primary = scratchTemplatePrimaryColor(configuredPrimary, template);
   const hasCustomPrimary =
@@ -232,11 +237,19 @@ export function ImmersiveScratchTicket({
   const coverHighlight = beautyTheme?.scratch.highlight ?? (isSunburst ? blendWithWhite(coverColor, 0.2) : blendWithWhite(coverColor, 0.34));
 
   const surfaceClass = beautyTheme
-    ? "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
+    ? scratchShape === "brush"
+      ? "mx-auto aspect-[1.72/1] w-[86%] max-w-[300px]"
+      : isDecorativeTicket
+        ? "mx-auto aspect-[1.5/1] w-[86%] max-w-[300px] p-[12px]"
+        : "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
     : isSunburst
     ? "mx-auto aspect-[1.18/1] w-[70%] max-w-[216px]"
     : "mx-auto aspect-square w-[70%] max-w-[216px]";
-  const surfaceRimClass = beautyTheme?.id === "beauty-scratch-noir-or"
+  const surfaceRimClass = isDecorativeTicket
+    ? "border-[3px] border-[#f4d78e] bg-[#b52a29] ring-2 ring-[#fff0ca] shadow-[0_14px_34px_rgba(90,25,18,.3)]"
+    : scratchShape === "brush"
+      ? "drop-shadow-[0_12px_18px_rgba(73,47,25,.2)]"
+    : beautyTheme?.id === "beauty-scratch-noir-or"
     ? "border-2 border-[#f0d798] ring-1 ring-[#9b7134]/75"
     : beautyTheme?.id === "beauty-scratch-lilas"
       ? "border-2 border-[#fffaff] ring-1 ring-[#8a7893]/60"
@@ -250,7 +263,7 @@ export function ImmersiveScratchTicket({
     if (!canvas || !context) return;
     if (beautyTheme) canvas.dataset.foilLoaded = "false";
 
-    const gradient = context.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    const gradient = context.createLinearGradient(0, 0, canvasWidth, canvasHeight);
     const cover = coverColor;
     const highlight = coverHighlight;
     if (beautyTheme?.id === "beauty-scratch-nude" || beautyTheme?.id === "scratch-nude-classic") {
@@ -286,26 +299,26 @@ export function ImmersiveScratchTicket({
       gradient.addColorStop(1, isSunburst ? blendWithWhite(cover, 0.04) : blendWithWhite(cover, 0.08));
     }
     context.globalCompositeOperation = "source-over";
-    context.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
     context.fillStyle = gradient;
-    context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    context.fillRect(0, 0, canvasWidth, canvasHeight);
 
     if (!beautyTheme) {
       context.save();
       context.globalAlpha = isSunburst ? 0.14 : 0.18;
       context.strokeStyle = isLilac || isSunburst ? "#ffffff" : readableTextColor(primary);
       context.lineWidth = 2;
-      for (let offset = -CANVAS_HEIGHT; offset < CANVAS_WIDTH; offset += isSunburst ? 28 : 34) {
+      for (let offset = -canvasHeight; offset < canvasWidth; offset += isSunburst ? 28 : 34) {
         context.beginPath();
         context.moveTo(offset, 0);
-        context.lineTo(offset + CANVAS_HEIGHT, CANVAS_HEIGHT);
+        context.lineTo(offset + canvasHeight, canvasHeight);
         context.stroke();
       }
       context.restore();
     }
 
     let cancelled = false;
-    if (beautyTheme) {
+    if (beautyTheme?.scratch.texture) {
       const texture = new window.Image();
       texture.onload = () => {
         if (cancelled) return;
@@ -314,7 +327,7 @@ export function ImmersiveScratchTicket({
         currentContext.save();
         currentContext.globalCompositeOperation = "source-over";
         currentContext.globalAlpha = beautyTheme.scratch.textureOpacity;
-        currentContext.drawImage(texture, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        currentContext.drawImage(texture, 0, 0, canvasWidth, canvasHeight);
         currentContext.restore();
         canvas.dataset.foilLoaded = "true";
       };
@@ -322,6 +335,19 @@ export function ImmersiveScratchTicket({
         if (!cancelled) canvas.dataset.foilLoaded = "error";
       };
       texture.src = beautyTheme.scratch.texture;
+    } else if (beautyTheme) {
+      context.save();
+      context.globalAlpha = isDecorativeTicket ? .2 : .16;
+      context.strokeStyle = "#ffffff";
+      context.lineWidth = 2;
+      for (let offset = -canvasHeight; offset < canvasWidth; offset += 26) {
+        context.beginPath();
+        context.moveTo(offset, 0);
+        context.lineTo(offset + canvasHeight, canvasHeight);
+        context.stroke();
+      }
+      context.restore();
+      canvas.dataset.foilLoaded = "true";
     }
 
     checksRef.current = 0;
@@ -332,7 +358,7 @@ export function ImmersiveScratchTicket({
     return () => {
       cancelled = true;
     };
-  }, [beautyTheme, coverColor, coverHighlight, isConfetti, isCoral, isLilac, isSunburst, isVault, primary, resultLabel]);
+  }, [beautyTheme, canvasHeight, canvasWidth, coverColor, coverHighlight, isConfetti, isCoral, isDecorativeTicket, isLilac, isSunburst, isVault, primary, resultLabel]);
 
   function reveal() {
     if (revealedRef.current) return;
@@ -361,7 +387,7 @@ export function ImmersiveScratchTicket({
     const context = canvas?.getContext("2d");
     if (!canvas || !context || revealedRef.current) return;
 
-    const { data } = context.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    const { data } = context.getImageData(0, 0, canvasWidth, canvasHeight);
     let cleared = 0;
     let samples = 0;
     for (let index = 3; index < data.length; index += 20) {
@@ -374,8 +400,8 @@ export function ImmersiveScratchTicket({
   function pointFromEvent(event: React.PointerEvent<HTMLCanvasElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
     return {
-      x: ((event.clientX - rect.left) / rect.width) * CANVAS_WIDTH,
-      y: ((event.clientY - rect.top) / rect.height) * CANVAS_HEIGHT,
+      x: ((event.clientX - rect.left) / rect.width) * canvasWidth,
+      y: ((event.clientY - rect.top) / rect.height) * canvasHeight,
     };
   }
 
@@ -432,12 +458,13 @@ export function ImmersiveScratchTicket({
         </div>
 
         <div
-          className="relative z-10 flex flex-1 items-center justify-center"
+          className={`relative z-10 flex flex-1 items-center ${scratchShape ? "justify-start" : "justify-center"}`}
           style={{ paddingTop: `${Math.max(0, textToScratchSpacingPx)}px`, paddingBottom: fitContainer ? "16cqw" : "clamp(32px, 8svh, 72px)" }}
         >
         <div
           data-testid="scratch-ticket-surface"
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
+          style={scratchShape === "brush" ? { clipPath: "polygon(3% 18%, 8% 15%, 7% 8%, 14% 10%, 18% 4%, 25% 8%, 32% 3%, 39% 8%, 48% 5%, 57% 9%, 66% 4%, 72% 10%, 82% 6%, 88% 13%, 95% 12%, 92% 22%, 98% 30%, 94% 40%, 98% 49%, 93% 57%, 97% 66%, 91% 72%, 94% 80%, 86% 84%, 80% 96%, 72% 91%, 65% 97%, 56% 92%, 47% 97%, 38% 93%, 28% 97%, 23% 91%, 14% 96%, 12% 88%, 4% 86%, 7% 75%, 2% 68%, 7% 59%, 2% 50%, 7% 41%, 3% 32%, 8% 25%)" } : scratchShape === "ticket" ? { clipPath: "polygon(0 10%, 4% 10%, 4% 0, 96% 0, 96% 10%, 100% 10%, 100% 90%, 96% 90%, 96% 100%, 4% 100%, 4% 90%, 0 90%)" } : undefined}
         >
           {!hasTouched && !revealed ? (
             <div
@@ -446,14 +473,15 @@ export function ImmersiveScratchTicket({
               data-testid="scratch-foil-first-paint"
               style={{
                 position: "absolute",
-                inset: 0,
+                inset: isDecorativeTicket ? "12px" : 0,
                 backgroundColor: coverColor,
                 ...(beautyTheme ? {} : {
                   backgroundImage: `repeating-linear-gradient(135deg, transparent 0 32px, ${withAlpha(readableTextColor(primary), isSunburst ? "24" : "2e")} 33px 35px), linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 42%, ${coverColor} 72%, ${blendWithWhite(coverColor, isSunburst ? 0.04 : 0.08)} 100%)`,
                 }),
+                ...(beautyTheme && !beautyTheme.scratch.texture ? { backgroundImage: `repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,255,255,.2) 23px 24px), linear-gradient(135deg, ${coverColor}, ${coverHighlight} 48%, ${coverColor})` } : {}),
               }}
             >
-              {beautyTheme ? (
+              {beautyTheme?.scratch.texture ? (
                 <Image
                   src={beautyTheme.scratch.texture}
                   alt=""
@@ -470,16 +498,17 @@ export function ImmersiveScratchTicket({
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
-              className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center ${isSunburst ? "p-6" : "p-5"}`}
+              className={`pointer-events-none absolute ${isDecorativeTicket ? "inset-[12px]" : "inset-0"} z-30 flex items-center justify-center ${isSunburst ? "p-6" : "p-5"}`}
             >
               {isVault ? <VaultIllustration color={illustrationColor} /> : null}
               {!isVault && isLilac ? <GiftIllustration color={illustrationColor} /> : null}
               {!beautyTheme && !isVault && !isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
               {isSunburst ? <ScratchMark color={illustrationColor} /> : null}
+              {scratchShape ? <span className={`${christmasTheme.fontClass} text-center text-[clamp(1rem,5cqw,1.45rem)] font-semibold leading-[1.05]`} style={{ color: scratchShape === "ticket" ? "#4b261d" : "#49351d" }}>Ticket<br />à gratter</span> : null}
             </div>
           ) : null}
           {hasTouched ? (
-            <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
+            <div className={`pointer-events-none absolute ${isDecorativeTicket ? "inset-[12px]" : "inset-0"} z-10 flex items-center justify-center px-6 text-center`}>
               <p
                 className="max-w-[90%] font-semibold leading-[1.05]"
                 style={{
@@ -495,8 +524,8 @@ export function ImmersiveScratchTicket({
           {!revealed ? (
             <canvas
               ref={canvasRef}
-              width={CANVAS_WIDTH}
-              height={CANVAS_HEIGHT}
+              width={canvasWidth}
+              height={canvasHeight}
               data-foil-texture={beautyTheme?.id}
               data-foil-loaded={beautyTheme ? "false" : undefined}
               aria-label={instruction}
@@ -539,6 +568,14 @@ export function ImmersiveScratchTicket({
               </div>
             </div>
           )}
+          {isDecorativeTicket ? (
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-30 text-[#f8db85]">
+              <Sparkles className="absolute left-[2%] top-[2%] h-[11px] w-[11px]" />
+              <Sparkles className="absolute right-[2%] top-[2%] h-[11px] w-[11px]" />
+              <Sparkles className="absolute bottom-[2%] left-[2%] h-[11px] w-[11px]" />
+              <Sparkles className="absolute bottom-[2%] right-[2%] h-[11px] w-[11px]" />
+            </div>
+          ) : null}
         </div>
         </div>
       </div>
