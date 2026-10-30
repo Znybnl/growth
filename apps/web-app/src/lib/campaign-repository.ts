@@ -586,6 +586,7 @@ function toCampaign(
     presentation: {
       logo: {
         sizePercent: row.logo_size_percent,
+        imageSizingMode: localSettings.logoImageSizingMode ?? "legacy",
         marginBottomPx:
           row.logo_margin_bottom_px ?? (row.game_type === "wheel" ? 50 : 20),
         align: row.logo_align,
@@ -2027,6 +2028,7 @@ export async function updateCampaignSetupInSupabase(input: CampaignSetupInput) {
     logoMode: input.logoMode,
     logoText: input.logoText,
     logoTextColor: input.presentation.logo.textColor ?? input.presentation.heading.textColor,
+    logoImageSizingMode: input.presentation.logo.imageSizingMode ?? "legacy",
     prizeSettings: Object.fromEntries(
       atomicPrizes.map((prize, index) => [
         prize.id,

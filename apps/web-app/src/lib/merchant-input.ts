@@ -590,6 +590,7 @@ export function parseCampaignSetupInput(input: unknown, merchantId: string): Cam
           fallback: 100,
           integer: true,
         }),
+        imageSizingMode: logo.imageSizingMode === "height-150" ? "height-150" : "legacy",
         marginBottomPx: normalizeNumber(logo.marginBottomPx, {
           min: CAMPAIGN_SPACING_MIN_PX,
           max: CAMPAIGN_SPACING_MAX_PX,

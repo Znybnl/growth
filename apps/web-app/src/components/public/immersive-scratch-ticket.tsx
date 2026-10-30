@@ -30,6 +30,7 @@ type ImmersiveScratchTicketProps = {
   logoMode?: "none" | "image" | "text";
   logoText?: string;
   logoUrl?: string;
+  logoImageSizingMode?: "legacy" | "height-150";
   headline?: string;
   secondaryText?: string;
   headingTextColor?: string;
@@ -160,6 +161,7 @@ export function ImmersiveScratchTicket({
   logoMode = "text",
   logoText,
   logoUrl,
+  logoImageSizingMode = "legacy",
   headline,
   secondaryText,
   headingTextColor,
@@ -409,6 +411,7 @@ export function ImmersiveScratchTicket({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
+                imageSizingMode={logoImageSizingMode}
                 textSizePx={logoTextSizePx}
                 textClassName="text-2xl"
                 textColor={logoTextColor || ink}

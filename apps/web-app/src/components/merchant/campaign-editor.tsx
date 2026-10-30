@@ -286,6 +286,7 @@ export type CampaignEditorPreviewModel = {
   logoAlignmentClass: string;
   logoBottomSpacingPx: number;
   logoWidthPx: number;
+  logoImageSizingMode: "legacy" | "height-150";
   logoTextSizePx: number;
   logoUrl: string;
   logoText: string;
@@ -579,6 +580,7 @@ function createDefaultState(merchant: Merchant): EditorState {
     presentation: {
       logo: {
         sizePercent: 100,
+        imageSizingMode: "height-150",
         marginBottomPx: DEFAULT_WHEEL_SPACING_PX,
         align: "center",
       },
@@ -1028,6 +1030,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={scalePreviewValue(preview.logoWidthPx)}
+                imageSizingMode={preview.logoImageSizingMode}
               />
             </div>
           </div>
@@ -1205,6 +1208,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 logoMode={preview.logoMode}
                 logoText={preview.logoText}
                 logoUrl={preview.logoUrl}
+                logoImageSizingMode={preview.logoImageSizingMode}
                 headline={preview.subtitle}
                 secondaryText={preview.scratchSubtitle}
                 headingTextColor={previewHeadingTextColor}
@@ -1708,6 +1712,7 @@ export function buildCampaignLivePreviewModel(
     logoAlignmentClass,
     logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
     logoWidthPx,
+    logoImageSizingMode: form.presentation.logo.imageSizingMode ?? "legacy",
     logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
@@ -2142,6 +2147,7 @@ export function CampaignEditor({
       logoAlignmentClass,
       logoBottomSpacingPx: clampCampaignSpacingPx(form.presentation.logo.marginBottomPx),
       logoWidthPx,
+      logoImageSizingMode: form.presentation.logo.imageSizingMode ?? "legacy",
       logoTextSizePx,
       logoUrl: form.logoUrl ?? "",
       logoText: form.logoText?.trim() || merchant.companyName,
@@ -2203,6 +2209,7 @@ export function CampaignEditor({
     form.logoMode,
     form.logoText,
     form.logoUrl,
+    form.presentation.logo.imageSizingMode,
     form.presentation.background.color,
     form.presentation.background.imageUrl,
     form.presentation.background.mode,
@@ -3339,7 +3346,7 @@ export function CampaignEditor({
                       event,
                       (value) => {
                         setImageUploadErrors((current) => ({ ...current, "campaign-logo": undefined }));
-                        setForm((current) => ({ ...current, logoUrl: value, logoMode: "image" }));
+                        setForm((current) => ({ ...current, logoUrl: value, logoMode: "image", presentation: { ...current.presentation, logo: { ...current.presentation.logo, imageSizingMode: "height-150" } } }));
                       },
                       (error) => {
                         setImageUploadErrors((current) => ({ ...current, "campaign-logo": error }));

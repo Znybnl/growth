@@ -408,6 +408,8 @@ export interface CampaignAccent {
 
 export interface CampaignLogoSettings {
   sizePercent: number;
+  /** Older saved games keep their intrinsic image ratio; new imports use the 150px-at-100% scale. */
+  imageSizingMode?: "legacy" | "height-150";
   marginBottomPx: number;
   align: TextAlign;
   textColor?: string;

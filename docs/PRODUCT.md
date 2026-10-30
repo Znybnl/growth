@@ -1,5 +1,15 @@
 # Produit — Okado
 
+## Taille des logos importés dans les jeux — #716
+
+Le curseur des nouveaux jeux donne une hauteur de référence de 150 px à 100 %
+pour les logos importés, avec ratio conservé et adaptation à la largeur disponible.
+Les jeux enregistrés avant ce réglage gardent le rendu historique de leur image,
+y compris après ouverture et sauvegarde. Le mode est conservé dans les réglages
+JSON déjà associés au jeu ; en son absence, le rendu historique s'applique.
+Importer ou remplacer explicitement un logo active le nouveau mode pour ce jeu.
+Les logos texte et les affiches ne sont pas concernés.
+
 ## Libellés de roue longs — #631
 
 Dans le rendu partagé de la roue, un libellé qui manque de place dans son

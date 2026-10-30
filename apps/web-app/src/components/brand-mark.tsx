@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Star } from "lucide-react";
 
-import { isMerchantOptimizedImageUrl } from "@/lib/merchant-image-upload";
+import { getMerchantOptimizedImageDimensions, isMerchantOptimizedImageUrl } from "@/lib/merchant-image-upload";
 
 type BrandMarkProps = {
   logoText: string;
@@ -10,6 +10,7 @@ type BrandMarkProps = {
   className?: string;
   variant?: "default" | "transparent";
   imageWidthPx?: number;
+  imageSizingMode?: "legacy" | "height-150";
   textSizePx?: number;
   textColor?: string;
   textFontWeight?: number;
@@ -29,6 +30,7 @@ export function BrandMark({
   className = "",
   variant = "default",
   imageWidthPx,
+  imageSizingMode = "legacy",
   textSizePx,
   textColor = "#ffffff",
   textFontWeight,
@@ -40,12 +42,33 @@ export function BrandMark({
   if (logoUrl) {
     const unoptimized = !isMerchantOptimizedImageUrl(logoUrl);
     if (variant === "transparent") {
+      if (imageSizingMode === "legacy") {
+        const imageDimensions = getMerchantOptimizedImageDimensions(logoUrl);
+        const imageProps = imageDimensions ?? { width: imageWidthPx ?? 180, height: imageWidthPx ?? 180 };
+        return (
+          <div className={`relative inline-block shrink-0 ${className}`} style={{ width: `${imageWidthPx ?? 180}px` }}>
+            <Image
+              src={logoUrl}
+              alt="Logo"
+              width={imageProps.width}
+              height={imageProps.height}
+              unoptimized={unoptimized}
+              className="block h-auto w-full object-contain"
+            />
+          </div>
+        );
+      }
+
+      const imageDimensions = getMerchantOptimizedImageDimensions(logoUrl) ?? { width: 2, height: 1 };
+      const imageHeightPx = Math.round((imageWidthPx ?? 180) / 2);
+      const aspectRatio = imageDimensions.width / imageDimensions.height;
+
       return (
         <div
           className={`relative inline-block shrink-0 ${className}`}
           style={{
-            width: `${imageWidthPx ?? 180}px`,
-            height: `${Math.round((imageWidthPx ?? 180) / 2)}px`,
+            width: `${Math.round(imageHeightPx * aspectRatio)}px`,
+            height: `${imageHeightPx}px`,
             maxWidth: "100%",
           }}
         >

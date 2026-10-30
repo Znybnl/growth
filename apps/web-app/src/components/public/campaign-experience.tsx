@@ -1055,6 +1055,7 @@ export function CampaignExperience({
                 size="lg"
                 variant="transparent"
                 imageWidthPx={logoWidthPx}
+                imageSizingMode={campaign.presentation.logo.imageSizingMode ?? "legacy"}
                 textSizePx={isRosePowderTemplate || isRoseInstitutTemplate ? Math.round(logoTextSizePx * 0.9) : logoTextSizePx}
                 textClassName="text-2xl"
                 textColor={logoTextColor}
@@ -1218,6 +1219,7 @@ export function CampaignExperience({
                 logoMode={campaign.logoMode}
                 logoText={campaign.logoText ?? campaign.merchantLogoText}
                 logoUrl={campaign.logoUrl}
+                logoImageSizingMode={campaign.presentation.logo.imageSizingMode ?? "legacy"}
                 headline={safeSubtitle}
                 secondaryText={campaign.presentation.layout.scratchSubtitle}
                 headingTextColor={headingTextColor}

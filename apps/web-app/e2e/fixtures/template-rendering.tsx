@@ -45,8 +45,8 @@ function AnalyticsIdentityProof() {
 }
 
 /** Synthetic rendering only: tests intercept every API request, no session bypass. */
-export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText, prizeCase }: {
-  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string; prizeCase?: string;
+export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText, prizeCase, logoSizing }: {
+  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string; prizeCase?: string; logoSizing?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   if (mode.startsWith("cookie-menu")) {
@@ -76,6 +76,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       { ...halloweenFixture.prizes[0], id: "headspa", label: "un soin headspa INTITION", probability: 5 },
     ] : halloweenFixture.prizes,
     title: "Jeu synthétique", subtitle: font ? "Une surprise élégante\nvous attend" : "Une surprise\nvous attend", logoText: merchant.companyName,
+    ...(logoSizing ? { logoMode: "image" as const, logoUrl: "/email-demo-qr.png" } : {}),
     gameType: scratch ? "scratch" as const : "wheel" as const,
     accent: { ink: color, paper: "#ffffff", signal: "#b85be5" },
     presentation: {
@@ -88,7 +89,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       background: { mode: backgroundImage ? "image" as const : "color" as const,
         color: backgroundImage ? "#ffffff" : background,
         imageUrl: backgroundImage },
-      logo: { ...halloweenFixture.presentation.logo, textColor: color, marginBottomPx: business ? 64 : 20 },
+      logo: { ...halloweenFixture.presentation.logo, ...(logoSizing ? { imageSizingMode: logoSizing === "new" ? "height-150" as const : "legacy" as const } : {}), textColor: color, marginBottomPx: business ? 64 : 20 },
       heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: business === "retail" ? 34 : 40, fontFamily: font ?? "poppins" as const },
       wheel: wheelPaletteForTemplate(templateId, halloweenFixture.presentation.wheel),
       layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: business && !scratch ? 64 : 25,
