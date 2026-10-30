@@ -9,7 +9,8 @@ couleurs dorées du titre et du sous-titre, logo texte blanc et couleur de la
 pastille sont fixes comme sur la roue Halloween. Police initiale Bodoni et
 taille de titre habituelle des tickets. Disponible pour tous les secteurs dans
 le wizard et l’éditeur. Le moteur de grattage et les règles de gain ne changent
-pas. [Implémentation et recette](releases/2026-10-29-halloween-scratch-704.md).
+pas. La sélection du modèle ne remplace jamais la promesse principale, même
+si elle contient encore son texte initial. [Implémentation et recette](releases/2026-10-29-halloween-scratch-704.md).
 
 ## Libellés de roue longs — #631
 

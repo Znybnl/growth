@@ -11,6 +11,8 @@ WebP livrés dans public/images/templates/halloween-gold, déjà inclus par
 taille habituelle des tickets et pastille ronde dorée. Le logo image reste
 intact. Les textes, leur police, tailles et espacements sont personnalisables.
 Un fond manuel mémorisé pour un autre modèle ne remplace pas le décor fixe.
+La sélection du modèle ne remplace pas la promesse principale, y compris sa
+valeur initiale.
 
 Les aperçus et miniatures saisonniers partagés remplacent les composants nommés
 uniquement Noël. Les trois tickets Noël conservent leurs valeurs et leur

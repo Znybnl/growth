@@ -92,7 +92,6 @@ import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
   DEFAULT_SCRATCH_PRIMARY_COLOR,
-  DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_SCRATCH_CORAL_COLOR,
   DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX,
   defaultScratchTemplateFont,
@@ -2454,7 +2453,7 @@ export function CampaignWizard({
 
                         return {
                           ...current,
-                          subtitle: template.id === "scratch-halloween-gold" && current.subtitle === DEFAULT_SCRATCH_SUBTITLE ? "GRATTEZ &\nGAGNEZ" : template.id === "halloween-gold" && current.subtitle === DEFAULT_WHEEL_SUBTITLE ? "TOURNEZ\nLA ROUE" : current.subtitle,
+                          subtitle: template.id === "halloween-gold" && current.subtitle === DEFAULT_WHEEL_SUBTITLE ? "TOURNEZ\nLA ROUE" : current.subtitle,
                           presentation: {
                             ...current.presentation,
                             background: {

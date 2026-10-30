@@ -3125,7 +3125,7 @@ export function CampaignEditor({
 
                           return {
                             ...current,
-                            subtitle: template.value === "scratch-halloween-gold" && current.subtitle === DEFAULT_SCRATCH_SUBTITLE ? "GRATTEZ &\nGAGNEZ" : template.value === "halloween-gold" && current.subtitle === DEFAULT_WHEEL_SUBTITLE ? "TOURNEZ\nLA ROUE" : current.subtitle,
+                            subtitle: template.value === "halloween-gold" && current.subtitle === DEFAULT_WHEEL_SUBTITLE ? "TOURNEZ\nLA ROUE" : current.subtitle,
                             presentation: {
                               ...current.presentation,
                               background: {

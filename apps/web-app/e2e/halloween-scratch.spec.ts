@@ -87,3 +87,19 @@ for (const height of [720, 600]) test(`@visual-1280 sélection Halloween wizard 
     await page.screenshot({ path: info.outputPath(`halloween-${mode}-${height}.png`) });
   }
 });
+
+test("sélectionner Halloween conserve la promesse principale par défaut", async ({ page }) => {
+  const initialPromise = "Grattez le ticket pour jouer !";
+  for (const mode of ["wizard-responsive-edit", "editor-prize-budget"]) {
+    await page.goto(`/dev/template-rendering-proof?mode=${mode}&template=scratch-nude-classic&business=retail&headline=${encodeURIComponent(initialPromise)}`);
+    const promise = mode.startsWith("wizard")
+      ? page.getByLabel(/Promesse affichée au client/)
+      : page.getByLabel("Phrase affichée sur la page de jeu");
+    if (mode.startsWith("wizard")) await selectWizardStep(page, 2);
+    const card = page.getByRole("button", { name: /Halloween doré/ });
+    await card.scrollIntoViewIfNeeded();
+    await card.click();
+    if (mode.startsWith("wizard")) await selectWizardStep(page, 1);
+    await expect(promise).toHaveValue(initialPromise);
+  }
+});
