@@ -1,4 +1,5 @@
 import type { GamePageTemplateId, TextFont } from "@/lib/types";
+import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 
 export const BEAUTY_SCRATCH_TEMPLATES = [
@@ -103,6 +104,7 @@ const CLASSIC_NUDE_SCRATCH_THEME: ScratchVisualTheme = {
 };
 
 export const IMMERSIVE_SCRATCH_TEMPLATE_IDS = [
+  "scratch-halloween-gold",
   ...CHRISTMAS_SCRATCH_TEMPLATES.map(theme => theme.id),
   "scratch-vault",
   "scratch-confetti",
@@ -149,6 +151,8 @@ export function beautyScratchTemplate(templateId?: string | null) {
 }
 
 export function scratchVisualTheme(templateId?: string | null): ScratchVisualTheme | undefined {
+  const halloween = halloweenScratchTemplate(templateId);
+  if (halloween) return halloween;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return CLASSIC_NUDE_SCRATCH_THEME;

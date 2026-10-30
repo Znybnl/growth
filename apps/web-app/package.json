@@ -49,6 +49,7 @@
     "test:wheel-segments": "node --experimental-strip-types --test src/lib/wheel-segments.test.mjs",
     "test:christmas-wheels": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/christmas-wheel-themes.test.mjs",
     "test:christmas-scratch": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/christmas-scratch-templates.test.mjs",
+    "test:halloween-scratch": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/halloween-scratch-template.test.mjs",
     "test:guaranteed-draw": "node --experimental-strip-types --test src/lib/guaranteed-draw.test.mjs src/lib/guaranteed-draw-sql.test.mjs src/lib/guaranteed-draw-api.test.mjs",
     "check:gotomarket": "node scripts/check-gotomarket-config.mjs",
     "check:dependencies": "node scripts/check-dependency-exceptions.mjs",

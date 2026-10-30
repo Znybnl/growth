@@ -41,6 +41,7 @@ export type PosterTemplateId =
   | "ivory-editorial-wheel";
 export type GamePageTemplateId =
   | "scratch-christmas-rose"
+  | "scratch-halloween-gold"
   | "scratch-christmas-natural"
   | "scratch-christmas-traditional"
   | "christmas-rose"
