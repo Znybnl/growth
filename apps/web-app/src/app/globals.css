@@ -341,6 +341,37 @@ select {
   color: var(--color-charcoal);
 }
 
+/* One in-flow toolbar sticks to the main scrollport below MerchantShell's
+   header. Its real height keeps tabs and save actions from covering each other. */
+.okado-account-toolbar {
+  position: sticky;
+  /* main has 1.5rem top padding; cancel it when the toolbar sticks. */
+  top: -1.5rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-block: 0.5rem;
+  border-bottom: 1px solid var(--color-lavender-mist);
+  background: var(--color-soft-white);
+  box-shadow: 0 6px 12px -10px rgb(72 26 84 / 24%);
+}
+
+@media (max-width: 639px) {
+  .okado-account-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .okado-account-toolbar > [role="tablist"] {
+    width: 100%;
+  }
+
+  .okado-account-toolbar > button {
+    margin-left: auto;
+  }
+}
+
 .okado-account-header {
   display: flex;
   align-items: center;
