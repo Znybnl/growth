@@ -57,7 +57,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
         working-directory: apps/web-app
       - name: Exercise the real SDK with synthetic identities and intercepted requests
-        run: npx playwright test e2e/analytics-identity.spec.ts e2e/analytics-consent.spec.ts e2e/onboarding-tracking.spec.ts e2e/cookie-menu-placement.spec.ts e2e/analytics-coverage.spec.ts --project=chromium
+        run: npx playwright test e2e/analytics-identity.spec.ts e2e/analytics-consent.spec.ts e2e/onboarding-tracking.spec.ts e2e/cookie-menu-placement.spec.ts e2e/analytics-coverage.spec.ts e2e/beta-replay.spec.ts --project=chromium
         working-directory: apps/web-app
         env:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
@@ -108,6 +108,8 @@ jobs:
         run: npm run lint:web
       - name: Test analytics consent in both apps and server capture
         run: npm run test:analytics-consent -w @okado/web-app
+      - name: Verify closed-beta replay phase, private server policy and masking
+        run: npm run test:beta-replay -w @okado/web-app
       - name: Verify analytics coverage for every application route
         run: npm run test:analytics-routes -w @okado/web-app
       - name: Test Google signup capture and authenticated onboarding tracking

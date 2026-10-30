@@ -107,3 +107,14 @@ entièrement validée tant que ces pièces restent manquantes.
 - [CNIL — règles cookies](https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies).
 - [PostHog — consentement Next.js](https://posthog.com/tutorials/nextjs-cookie-banner).
 - [Canada — lois fédérales et provinciales](https://www.priv.gc.ca/fr/sujets-lies-a-la-protection-de-la-vie-privee/lois-sur-la-protection-des-renseignements-personnels-au-canada/02_05_d_15/).
+
+## Exception contractuelle de bêta fermée — #712
+
+Le propriétaire confirme le 30 octobre 2026 une autorisation contractuelle validée
+avec le juridique pour les comptes SaaS de bêta fermée actuels et futurs. Replay
+PostHog 212872 EU, rétention configurée vérifiée à 30 jours ; données saisies et
+contenus libres masqués, aucun joueur enregistré. Cette confirmation ne remplace
+pas les pièces contractuelles détenues par le propriétaire. Les choix cookies de
+mesure d’audience restent distincts. Le passage en mode public désactive la capture
+bêta ; aucun accord public n’est déduit d’une inscription ou d’une date.
+[Activation, limites et arrêt](releases/2026-10-30-closed-beta-replay-712.md).

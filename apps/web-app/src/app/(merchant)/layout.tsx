@@ -2,6 +2,7 @@ import { MerchantShell } from "@/components/merchant/merchant-shell";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { isSaasAdminEmail } from "@/lib/admin";
 import { redirect } from "next/navigation";
+import { BetaReplayBoundary } from "@/components/merchant/beta-replay-boundary";
 
 export default async function MerchantLayout({
   children,
@@ -22,6 +23,7 @@ export default async function MerchantLayout({
       activeLocationId={session.activeLocationId}
       isSaasAdmin={isSaasAdminEmail(session.user.email)}
     >
+      <BetaReplayBoundary subject={`${session.user.merchantId}:${session.user.id}`} />
       {children}
     </MerchantShell>
   );
