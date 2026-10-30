@@ -16,6 +16,8 @@ import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 
 type ScratchTemplateId = ImmersiveScratchTemplateId;
 
+const BRUSH_CLIP_PATH = "polygon(2% 22%, 7% 18%, 6% 14%, 12% 15%, 14% 10%, 20% 12%, 25% 8%, 31% 11%, 37% 7%, 43% 10%, 49% 6%, 55% 9%, 61% 7%, 67% 11%, 73% 8%, 79% 12%, 85% 9%, 90% 14%, 96% 12%, 94% 19%, 98% 23%, 95% 29%, 99% 34%, 96% 40%, 99% 46%, 95% 52%, 98% 58%, 94% 64%, 97% 70%, 92% 75%, 95% 81%, 88% 84%, 90% 90%, 83% 88%, 77% 94%, 70% 91%, 64% 96%, 57% 92%, 50% 97%, 44% 93%, 37% 96%, 31% 91%, 24% 95%, 19% 89%, 12% 92%, 10% 86%, 4% 87%, 7% 80%, 2% 75%, 6% 68%, 1% 62%, 5% 56%, 2% 49%, 6% 43%, 3% 36%, 8% 31%, 4% 26%, 9% 23%)";
+
 type ImmersiveScratchTicketProps = {
   accent: {
     ink: string;
@@ -238,9 +240,9 @@ export function ImmersiveScratchTicket({
 
   const surfaceClass = beautyTheme
     ? scratchShape === "brush"
-      ? "mx-auto aspect-[1.72/1] w-[86%] max-w-[300px]"
+      ? "mx-auto aspect-[2/1] w-[86%] max-w-[300px]"
       : isDecorativeTicket
-        ? "mx-auto aspect-[1.5/1] w-[86%] max-w-[300px] p-[12px]"
+        ? "mx-auto aspect-[1.68/1] w-[86%] max-w-[300px] p-[12px]"
         : "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
     : isSunburst
     ? "mx-auto aspect-[1.18/1] w-[70%] max-w-[216px]"
@@ -464,7 +466,7 @@ export function ImmersiveScratchTicket({
         <div
           data-testid="scratch-ticket-surface"
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
-          style={scratchShape === "brush" ? { clipPath: "polygon(3% 18%, 8% 15%, 7% 8%, 14% 10%, 18% 4%, 25% 8%, 32% 3%, 39% 8%, 48% 5%, 57% 9%, 66% 4%, 72% 10%, 82% 6%, 88% 13%, 95% 12%, 92% 22%, 98% 30%, 94% 40%, 98% 49%, 93% 57%, 97% 66%, 91% 72%, 94% 80%, 86% 84%, 80% 96%, 72% 91%, 65% 97%, 56% 92%, 47% 97%, 38% 93%, 28% 97%, 23% 91%, 14% 96%, 12% 88%, 4% 86%, 7% 75%, 2% 68%, 7% 59%, 2% 50%, 7% 41%, 3% 32%, 8% 25%)" } : scratchShape === "ticket" ? { clipPath: "polygon(0 10%, 4% 10%, 4% 0, 96% 0, 96% 10%, 100% 10%, 100% 90%, 96% 90%, 96% 100%, 4% 100%, 4% 90%, 0 90%)" } : undefined}
+          style={scratchShape === "brush" ? { clipPath: BRUSH_CLIP_PATH } : scratchShape === "ticket" ? { clipPath: "polygon(0 10%, 4% 10%, 4% 0, 96% 0, 96% 10%, 100% 10%, 100% 90%, 96% 90%, 96% 100%, 4% 100%, 4% 90%, 0 90%)" } : undefined}
         >
           {!hasTouched && !revealed ? (
             <div
@@ -474,6 +476,7 @@ export function ImmersiveScratchTicket({
               style={{
                 position: "absolute",
                 inset: isDecorativeTicket ? "12px" : 0,
+                clipPath: scratchShape ? BRUSH_CLIP_PATH : undefined,
                 backgroundColor: coverColor,
                 ...(beautyTheme ? {} : {
                   backgroundImage: `repeating-linear-gradient(135deg, transparent 0 32px, ${withAlpha(readableTextColor(primary), isSunburst ? "24" : "2e")} 33px 35px), linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 42%, ${coverColor} 72%, ${blendWithWhite(coverColor, isSunburst ? 0.04 : 0.08)} 100%)`,
@@ -530,6 +533,7 @@ export function ImmersiveScratchTicket({
               data-foil-loaded={beautyTheme ? "false" : undefined}
               aria-label={instruction}
               className="relative z-20 block h-full w-full touch-none cursor-crosshair"
+              style={scratchShape ? { clipPath: BRUSH_CLIP_PATH } : undefined}
               onPointerDown={(event) => {
                 if (!enabled) {
                   onStart?.();
