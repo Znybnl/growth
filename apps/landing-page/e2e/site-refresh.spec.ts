@@ -7,7 +7,8 @@ test.beforeEach(async ({ context, baseURL, page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 });
 
-test("les modèles se parcourent et l’aperçu se referme au clavier sans appel métier", async ({ page }, info) => {
+test("six modèles en grille et aperçu accessible sans appel métier @visual-1280", async ({ page }, info) => {
+  if (info.project.name === "desktop") await page.setViewportSize({ width: 1280, height: 720 });
   const mutations: string[] = [];
   const analytics: string[] = [];
   const errors: string[] = [];
@@ -18,12 +19,27 @@ test("les modèles se parcourent et l’aperçu se referme au clavier sans appel
     await page.goto(path);
     const gallery = page.locator("#modeles");
     await expect(gallery.getByRole("button", { name: /^Voir le modèle / })).toHaveCount(6);
-    const carousel = gallery.getByRole("region", { name: "Galerie des modèles de jeux" });
-    await gallery.getByRole("button", { name: "Modèles suivants" }).click();
-    await expect.poll(() => carousel.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
-    await gallery.getByRole("button", { name: "Modèles précédents" }).click();
-    await expect.poll(() => carousel.evaluate(element => element.scrollLeft)).toBeLessThanOrEqual(5);
-    for (const [name, type] of [["Nude Élégance", "Ticket à gratter"], ["Beauty Pop", "Roue de la fortune"]]) {
+    const grid = gallery.getByRole("region", { name: "Galerie des modèles de jeux" });
+    await expect(gallery.getByRole("button", { name: /Modèles (suivants|précédents)/ })).toHaveCount(0);
+    await expect(grid).toHaveCSS("display", "grid");
+    expect(await grid.evaluate(el => el.scrollWidth)).toBeLessThanOrEqual(await grid.evaluate(el => el.clientWidth));
+    const bounds = (await grid.boundingBox())!;
+    const cards = await grid.locator("article").all();
+    for (const card of cards) {
+      await expect(card).toBeVisible();
+      const box = (await card.boundingBox())!;
+      expect(box.x).toBeGreaterThanOrEqual(bounds.x - 1);
+      expect(box.x + box.width).toBeLessThanOrEqual(bounds.x + bounds.width + 1);
+    }
+    const first = (await cards[0].boundingBox())!;
+    const width = page.viewportSize()!.width;
+    const columns = width < 768 ? 2 : width >= 1200 ? 6 : 3;
+    expect((await cards[columns - 1].boundingBox())!.y).toBe(first.y);
+    if (columns < 6) expect((await cards[columns].boundingBox())!.y).toBeGreaterThan(first.y + first.height);
+    if (path === "/") await expect(grid).not.toContainText("Confetti");
+    const examples = [["Nude Élégance", "Ticket à gratter"], ["Beauty Pop", "Roue de la fortune"],
+      ...(path === "/" ? [["Noël traditionnel", "Roue de la fortune"], ["Halloween", "Roue de la fortune"]] : [])];
+    for (const [name, type] of examples) {
       const opener = gallery.getByRole("button", { name: `Voir le modèle ${name} — ${type}`, exact: true });
       await opener.click();
       const dialog = page.getByRole("dialog", { name, exact: true });
@@ -38,17 +54,40 @@ test("les modèles se parcourent et l’aperçu se referme au clavier sans appel
       expect(await page.evaluate(() => document.activeElement === document.body || Boolean(document.activeElement?.closest("dialog")))).toBe(true);
       await page.keyboard.press("Shift+Tab");
       await expect(close).toBeFocused();
-      if (name === "Beauty Pop" && path === "/") await page.screenshot({ path: info.outputPath("beauty-pop-dialog.png") });
+      if (path === "/") await page.screenshot({ path: info.outputPath(`${name === "Noël traditionnel" ? "christmas" : name.toLowerCase().replaceAll(" ", "-")}-dialog.png`) });
       await page.keyboard.press("Escape");
       await expect(dialog).not.toBeVisible();
       await expect(opener).toBeFocused();
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
-    if (path === "/") await gallery.screenshot({ path: info.outputPath("models.png"), style: "header.sticky { visibility: hidden !important; }" });
+    if (path === "/") {
+      await gallery.evaluate(el => el.scrollIntoView({ behavior: "instant", block: "start" }));
+      if (width >= 1200) for (const card of cards) await expect(card).toBeInViewport({ ratio: 1 });
+      await page.screenshot({ path: info.outputPath("models-viewport.png") });
+      await gallery.screenshot({ path: info.outputPath("models.png"), style: "header.sticky { visibility: hidden !important; }" });
+    }
   }
   expect(mutations).toEqual([]);
   expect(analytics).toEqual([]);
   expect(errors).toEqual([]);
+});
+
+test("galerie : accès aux aperçus saisonniers à 1280 × 600 @visual-1280", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "Contrôle de hauteur sur ordinateur");
+  await page.setViewportSize({ width: 1280, height: 600 });
+  await page.goto("/#modeles");
+  const gallery = page.locator("#modeles");
+  for (const name of ["Noël traditionnel", "Halloween"]) {
+    const opener = gallery.getByRole("button", { name: `Voir le modèle ${name} — Roue de la fortune` });
+    await opener.click();
+    const dialog = page.getByRole("dialog", { name, exact: true });
+    const close = dialog.getByRole("button", { name: "Fermer l’aperçu du modèle" });
+    await expect(close).toBeInViewport({ ratio: 1 });
+    await page.screenshot({ path: info.outputPath(`seasonal-600-${name === "Halloween" ? "halloween" : "christmas"}.png`) });
+    await close.click();
+    await expect(opener).toBeFocused();
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1280);
 });
 
 test("l’accueil expose les bons secteurs et un suivi compact", async ({ page }, info) => {
