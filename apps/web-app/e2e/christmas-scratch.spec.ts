@@ -37,6 +37,17 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await page.goto(`/dev/christmas-scratch?template=${theme.id}`);
     await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
     await expect(page.locator(`canvas[data-foil-texture="${theme.id}"]`)).toHaveAttribute("data-foil-loaded", "true");
+    const previewScreen = page.locator('[data-testid="wizard-phone-preview"] > div.h-full');
+    const previewSurface = page.getByTestId("wizard-phone-preview").locator(`[data-template-id="${theme.id}"]`);
+    const previewArtwork = previewSurface.locator(`img[data-template-art="${theme.id}"]`);
+    await expect(previewSurface).toBeVisible();
+    const [surfaceBottom, screenBottom, artworkBottom] = await Promise.all([
+      previewSurface.evaluate((element) => element.getBoundingClientRect().bottom),
+      previewScreen.evaluate((element) => element.getBoundingClientRect().bottom),
+      previewArtwork.evaluate((element) => element.getBoundingClientRect().bottom),
+    ]);
+    expect(surfaceBottom).toBeGreaterThanOrEqual(screenBottom - 1);
+    expect(artworkBottom).toBeGreaterThanOrEqual(screenBottom - 1);
     await page.getByTestId("wizard-phone-preview").screenshot({ path: info.outputPath(`${theme.id}-embedded-${width}.png`), caret: "initial" });
     expect(errors).toEqual([]);
   });
