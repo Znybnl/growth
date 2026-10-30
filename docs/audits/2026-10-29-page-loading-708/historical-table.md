@@ -1,0 +1,23 @@
+| Route | Vues | LCP moyen (s) | n LCP | FCP moyen (s) | n FCP |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `/` | 88 | 4,82 | 9 | 3,46 | 7 |
+| `/account` | 22 | 2,71 | 6 | 2,60 | 8 |
+| `/admin` | 26 | 4,07 | 5 | 3,69 | 6 |
+| `/admin/campaigns` | 4 | — | 0 | — | 0 |
+| `/admin/campaigns/[id]/edit` | 3 | — | 0 | — | 0 |
+| `/admin/campaigns/[id]/poster` | 1 | — | 0 | — | 0 |
+| `/admin/prize-suggestions` | 2 | — | 0 | — | 0 |
+| `/backgrounds` | 1 | — | 0 | — | 0 |
+| `/caisse` | 2 | — | 0 | — | 0 |
+| `/campaign/[id]` | 111 | 2,85 | 58 | 2,64 | 89 |
+| `/campaigns` | 59 | 3,28 | 7 | 2,23 | 7 |
+| `/campaigns/[id]/edit/guided` | 30 | 3,94 | 3 | 3,34 | 2 |
+| `/campaigns/[id]/poster` | 10 | 3,58 | 6 | 2,55 | 7 |
+| `/campaigns/new/guided` | 20 | 3,07 | 3 | 2,86 | 3 |
+| `/connexion` | 46 | 1,27 | 5 | 1,62 | 25 |
+| `/data` | 15 | — | 0 | 3,74 | 3 |
+| `/inscription` | 22 | 2,63 | 3 | 2,25 | 8 |
+| `/onboarding` | 11 | 1,92 | 3 | 1,92 | 3 |
+| `/redeem/[code]` | 1 | 2,25 | 1 | 2,25 | 1 |
+| `/support` | 10 | 3,78 | 5 | 3,47 | 6 |
+| `other` | 372 | — | 0 | — | 0 |
