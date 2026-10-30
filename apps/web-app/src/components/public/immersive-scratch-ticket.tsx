@@ -379,7 +379,7 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = `flex flex-col pb-8 ${christmasTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[76px]"} ${beautyTheme
+  const rootClass = `flex flex-col pb-8 ${christmasTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[52px]"} ${beautyTheme
     ? "bg-transparent px-6"
     : isVault || isConfetti
     ? "bg-transparent px-5"

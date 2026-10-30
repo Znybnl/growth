@@ -110,7 +110,7 @@ test("@visual-1280 phase 1 : dépasser provisoirement 100 %, ajuster en ligne pu
     await expect(header.getByText(name, { exact: true })).toHaveCSS("text-align", "left");
   }
   expect(Math.abs((await header.getByText("Chance", { exact: true }).boundingBox())!.x - (await table.getByRole("spinbutton").first().boundingBox())!.x)).toBeLessThan(1);
-  await expect(rules).not.toHaveAttribute("open", "");
+  await expect(rules).toHaveAttribute("open", "");
   expect((await rules.boundingBox())!.y).toBeGreaterThan((await table.boundingBox())!.y);
 
   await table.getByRole("button", { name: "Dupliquer -10% PROCHAINE VISITE" }).click();
@@ -147,7 +147,6 @@ test("@visual-1280 phase 1 : dépasser provisoirement 100 %, ajuster en ligne pu
   await table.getByRole("spinbutton").first().fill("20");
   await expect(page.getByTestId("wizard-losing-probability")).toContainText("10 %");
 
-  await rules.locator("summary").click();
   await rules.getByRole("checkbox", { name: /Le gain est utilisable à partir du lendemain/ }).check();
   await rules.getByLabel("Durée de validité du gain (jours)").fill("45");
   await rules.getByLabel("Délai minimum entre deux participations (jours)").fill("3");

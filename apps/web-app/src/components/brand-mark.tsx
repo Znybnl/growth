@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Star } from "lucide-react";
 
-import { getMerchantOptimizedImageDimensions, isMerchantOptimizedImageUrl } from "@/lib/merchant-image-upload";
+import { isMerchantOptimizedImageUrl } from "@/lib/merchant-image-upload";
 
 type BrandMarkProps = {
   logoText: string;
@@ -38,22 +38,23 @@ export function BrandMark({
   const isOkadoFallback = logoText.trim().toUpperCase() === "OK";
 
   if (logoUrl) {
-    const imageDimensions = getMerchantOptimizedImageDimensions(logoUrl);
-    const imageProps = imageDimensions ?? { width: imageWidthPx ?? 180, height: imageWidthPx ?? 180 };
     const unoptimized = !isMerchantOptimizedImageUrl(logoUrl);
     if (variant === "transparent") {
       return (
         <div
           className={`relative inline-block shrink-0 ${className}`}
-          style={{ width: `${imageWidthPx ?? 180}px` }}
+          style={{
+            width: `${imageWidthPx ?? 180}px`,
+            height: `${Math.round((imageWidthPx ?? 180) / 2)}px`,
+            maxWidth: "100%",
+          }}
         >
           <Image
             src={logoUrl}
             alt="Logo"
-            width={imageProps.width}
-            height={imageProps.height}
+            fill
             unoptimized={unoptimized}
-            className="block h-auto w-full object-contain"
+            className="block h-full w-full object-contain"
           />
         </div>
       );
