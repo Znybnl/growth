@@ -1,7 +1,47 @@
-import { BackgroundLibraryAsset } from "@/lib/types";
+import type { BackgroundLibraryAsset } from "@/lib/types";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelArtwork } from "@/lib/christmas-wheel-themes";
 
 export const builtInBackgroundAssets: BackgroundLibraryAsset[] = [
+  {
+    id: "builtin-scratch-gift-wrap",
+    label: "Vert bouteille & rubans",
+    category: "Fête",
+    imageUrl: "/images/scratch-templates/christmas-evergreen-background.webp",
+    thumbnailUrl: "/images/scratch-templates/christmas-evergreen-background.webp",
+    source: "built-in",
+    width: 900,
+    height: 1800,
+  },
+  {
+    id: "builtin-scratch-champagne-ribbons",
+    label: "Ivoire & champagne",
+    category: "Fête",
+    imageUrl: "/images/scratch-templates/christmas-champagne-background.webp",
+    thumbnailUrl: "/images/scratch-templates/christmas-champagne-background.webp",
+    source: "built-in",
+    width: 900,
+    height: 1800,
+  },
+  {
+    id: "builtin-scratch-retro-rays",
+    label: "Rayons rétro",
+    category: "Fête",
+    imageUrl: "/images/scratch-templates/christmas-retro-background.webp",
+    thumbnailUrl: "/images/scratch-templates/christmas-retro-background.webp",
+    source: "built-in",
+    width: 900,
+    height: 1800,
+  },
+  {
+    id: "builtin-scratch-black-gold-ribbons",
+    label: "Satin noir & or",
+    category: "Fête",
+    imageUrl: "/images/scratch-templates/christmas-noir-or-background.webp",
+    thumbnailUrl: "/images/scratch-templates/christmas-noir-or-background.webp",
+    source: "built-in",
+    width: 900,
+    height: 1800,
+  },
   ...CHRISTMAS_WHEEL_THEMES.map(theme => ({
     id: `builtin-wheel-${theme.id}`,
     label: theme.name,

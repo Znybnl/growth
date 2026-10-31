@@ -38,3 +38,19 @@ for (const { id } of CHRISTMAS_SCRATCH_TEMPLATES) {
     assert.equal(scratchTemplateDefaultBackground("scratch-coral", background), undefined);
   });
 }
+
+test("les quatre modèles festifs gardent des noms neutres et des fonds présents dans la bibliothèque", async () => {
+  const expected = [
+    ["scratch-christmas-evergreen", "Vert bouteille & rubans", "builtin-scratch-gift-wrap"],
+    ["scratch-christmas-champagne", "Ivoire & champagne", "builtin-scratch-champagne-ribbons"],
+    ["scratch-christmas-retro", "Rayons rétro", "builtin-scratch-retro-rays"],
+    ["scratch-christmas-noir-or", "Satin noir & or", "builtin-scratch-black-gold-ribbons"],
+  ];
+  const { builtInBackgroundAssets } = await import("./background-library.ts");
+  for (const [id, name, backgroundId] of expected) {
+    const theme = christmasScratchTemplate(id);
+    assert.equal(theme.name, name);
+    assert.equal(/no[eë]l|sapin/i.test(`${theme.name} ${theme.description} ${theme.sampleHeadline} ${theme.sampleSubline}`), false);
+    assert.equal(builtInBackgroundAssets.find((asset) => asset.id === backgroundId)?.category, "Fête");
+  }
+});

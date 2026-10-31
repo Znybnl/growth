@@ -29,14 +29,16 @@ type IllustratedTemplate = {
   scratch: ScratchFinish;
 };
 
+// Keep the historical IDs for campaigns already using the original PR #726.
+// The four illustrated styles below are neutral festive designs, not seasonal templates.
 export const CHRISTMAS_SCRATCH_TEMPLATES = [
   { id: "scratch-christmas-rose", wheelId: "christmas-rose", scratch: { base: "#c6a0aa", highlight: "#f4e3e5", edge: "#fff5ef", texture: "/images/scratch-templates/beauty-foil-lilas.webp", textureOpacity: .28 } },
   { id: "scratch-christmas-natural", wheelId: "christmas-natural", scratch: { base: "#b69a63", highlight: "#eee1c4", edge: "#fff9eb", texture: "/images/scratch-templates/beauty-foil-botanical.webp", textureOpacity: .32 } },
   { id: "scratch-christmas-traditional", wheelId: "christmas-traditional", scratch: { base: "#a98444", highlight: "#f0dca0", edge: "#fff0c4", texture: "/images/scratch-templates/beauty-foil-noir-or.webp", textureOpacity: .28 } },
   {
     id: "scratch-christmas-evergreen",
-    name: "Noël sapin & cadeaux",
-    description: "Sapin profond, rubans rouges et cadeaux lumineux.",
+    name: "Vert bouteille & rubans",
+    description: "Papier vert profond, rubans rouges et paquets cadeaux.",
     background: "/images/scratch-templates/christmas-evergreen-background.webp",
     backgroundColor: "#f5eddd",
     text: "#173c34",
@@ -47,8 +49,8 @@ export const CHRISTMAS_SCRATCH_TEMPLATES = [
   },
   {
     id: "scratch-christmas-champagne",
-    name: "Noël champagne",
-    description: "Ivoire lumineux, rubans et détails champagne.",
+    name: "Ivoire & champagne",
+    description: "Rubans dorés satinés et paquet cadeau sur fond ivoire.",
     background: "/images/scratch-templates/christmas-champagne-background.webp",
     backgroundColor: "#fbf4e8",
     text: "#263d37",
@@ -59,8 +61,8 @@ export const CHRISTMAS_SCRATCH_TEMPLATES = [
   },
   {
     id: "scratch-christmas-retro",
-    name: "Noël rétro",
-    description: "Rayons colorés, rouge festif et esprit affiche vintage.",
+    name: "Rayons rétro",
+    description: "Rayons corail, turquoise et safran façon affiche vintage.",
     background: "/images/scratch-templates/christmas-retro-background.webp",
     backgroundColor: "#f5e9ce",
     text: "#ad2925",
@@ -71,8 +73,8 @@ export const CHRISTMAS_SCRATCH_TEMPLATES = [
   },
   {
     id: "scratch-christmas-noir-or",
-    name: "Noël noir & or",
-    description: "Fond noir profond, rubans de satin et éclats dorés.",
+    name: "Satin noir & or",
+    description: "Rubans métallisés et éclats dorés sur fond noir profond.",
     background: "/images/scratch-templates/christmas-noir-or-background.webp",
     backgroundColor: "#100f0d",
     text: "#f8f0df",
