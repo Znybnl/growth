@@ -956,6 +956,38 @@ export function CampaignWizard({
   const gameTypeState = useRef<Partial<Record<WizardDraft["gameType"], GameTypeState>>>({});
 
   function selectBeautyWheelTemplate(templateId: GamePageTemplateId) {
+    const seasonalTheme = christmasWheelTheme(templateId);
+    if (seasonalTheme) {
+      captureClientProductEvent("campaign_template_selected", { campaignType: "wheel", templateKey: templateId, wizardMode: "guided" });
+      setDraft((current) => {
+        const previousId = current.presentation.layout.templateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
+        if (previousId === templateId) return current;
+        wheelTemplateState.current[previousId] = {
+          wheel: current.presentation.wheel, backgroundColor: current.presentation.background.color,
+          scratchSignal: current.accent.signal, scratchTextColor: current.accent.ink,
+          headingTextColor: current.presentation.heading.textColor,
+          logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
+          headingFontFamily: current.presentation.heading.fontFamily, headingAlign: current.presentation.heading.align,
+          logoAlign: current.presentation.logo.align, logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
+          buttonBackgroundColor: current.presentation.button.backgroundColor,
+          blockSpacingPx: current.presentation.layout.blockSpacingPx, subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
+        };
+        const remembered = wheelTemplateState.current[templateId];
+        return {
+          ...current,
+          presentation: {
+            ...current.presentation,
+            layout: { ...current.presentation.layout, templateId, wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] }, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId) },
+            background: { ...current.presentation.background, color: remembered?.backgroundColor ?? seasonalTheme.background },
+            wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
+            heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? wheelHeadingFontForTemplateSelection(templateId, current.presentation.heading.fontFamily), textColor: remembered?.headingTextColor ?? wheelHeadingColorForTemplateSelection(templateId, current.presentation.heading.textColor), align: remembered?.headingAlign ?? "center" },
+            logo: { ...current.presentation.logo, textColor: remembered?.logoTextColor ?? wheelLogoColorForTemplateSelection(templateId, current.presentation.logo.textColor ?? current.presentation.heading.textColor), marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx), align: remembered?.logoAlign ?? "center" },
+            button: { ...current.presentation.button, backgroundColor: remembered?.buttonBackgroundColor ?? seasonalTheme.button },
+          },
+        };
+      });
+      return;
+    }
     if (templateId === "rose-institut") {
       captureClientProductEvent("campaign_template_selected", {
         campaignType: "wheel",
@@ -2341,7 +2373,7 @@ export function CampaignWizard({
                   onSelect={selectBeautyScratchTemplate}
                 />
               ) : null}
-              {draft.gameType === "wheel" ? <h3 className="text-base font-semibold text-carbon">Autres templates de roue</h3> : null}
+              <h3 className="text-base font-semibold text-carbon">Autres templates</h3>
               <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3" data-testid="classic-template-options">
                 {(
                   draft.gameType === "scratch"
@@ -2399,7 +2431,7 @@ export function CampaignWizard({
                 )
                   .filter((template) => template.id !== "cosmic-orbit" && template.id !== "sunburst-festival")
                   .filter((template) => draft.gameType !== "scratch" || !isHiddenScratchTemplate(template.id))
-                  .filter((template) => !isBeautyIndustry(merchant.industry) || template.id !== "rose-institut")
+                  .filter((template) => !isBeautyIndustry(merchant.industry) || (template.id !== "rose-institut" && template.id !== "christmas-rose"))
                   .slice()
                   .map((template) => (
                   <GameTemplateCard

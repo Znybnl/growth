@@ -72,7 +72,7 @@ test("@visual-1280 : cartes Beauté et autres homogènes, sélection conservée"
     await step(page, 2);
     await expect(page.getByText("Collection Beauté", { exact: true })).toHaveCount(0);
     const beautyTitle = page.getByRole("heading", { name: "Templates Beauté", exact: true });
-    const otherTitle = page.getByRole("heading", { name: "Autres templates de roue", exact: true });
+    const otherTitle = page.getByRole("heading", { name: "Autres templates", exact: true });
     expect(await beautyTitle.evaluate(e => getComputedStyle(e).fontSize)).toBe(await otherTitle.evaluate(e => getComputedStyle(e).fontSize));
     const cards = page.getByTestId("game-template-card");
     expect(await cards.count()).toBe(15);

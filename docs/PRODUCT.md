@@ -408,7 +408,9 @@ personnalisables ; les textes et la roue ne sont jamais intégrés à l'image.
 Le contour doré et le pointeur restent fixes pendant la rotation. Les libellés
 réels des lots utilisent DM Sans sans icône et s'ajustent individuellement.
 Le bouton JOUER en relief est sans icône. Le rendu est partagé entre aperçu et
-page de jeu ; aucun modèle existant ni aucune probabilité n'est modifié.
+page de jeu ; aucun modèle existant ni aucune probabilité n'est modifié. Dans
+la sélection des roues, Noël rose poudré figure sous « Templates Beauté » pour
+les instituts et sous « Autres templates » pour les autres secteurs.
 [Périmètre, contrôles et assets](releases/2026-10-28-christmas-wheels-674.md).
 
 ## Tickets à gratter Noël — #676
