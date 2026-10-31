@@ -693,3 +693,12 @@ Les fixtures financières sont synthétiques ; aucun paiement réel n’est effe
 Mon compte et copie du lien dans le cadre de navigation à 1280×720/600 et sur
 mobile 320/390 px. API et sorties HTTPS sont interceptées. La fixture dédiée
 est inaccessible hors développement (404 en production).
+
+## Replay bêta fermée — #712
+
+`test:beta-replay` couvre phase serveur, comptes futurs, mauvais projet, expiration
+et API authentifiée non cachée. `e2e/beta-replay.spec.ts` vérifie le SDK et recorder
+réels avec requêtes interceptées : absence/refus/accord cookies, DOM décompressé
+masqué, identité, déconnexion, route publique, arrêt global et erreur serveur.
+Les suites de consentement et identité existantes doivent rester vertes. Aucune
+capture réelle n’est autorisée par l’exécution de ces tests synthétiques.

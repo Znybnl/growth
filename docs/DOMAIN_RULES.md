@@ -252,6 +252,18 @@ coordonnées des joueurs ou les propriétés libres des événements. La mention
 de mesure et la politique publique précisent cet usage. Aucun nom, mot de passe,
 PIN, contenu de campagne ou e-mail de joueur n'est ajouté.
 
+### Replay bêta — décision du 30 octobre 2026, #712
+
+Le propriétaire confirme une autorisation contractuelle bêta validée avec le
+juridique pour la relecture des sessions SaaS à des fins d’amélioration. Sa dernière
+instruction couvre tous les comptes de la bêta, y compris ceux créés après le
+30 octobre 2026. Le contrôle est la phase serveur explicite `closed_beta`, pas
+une date de création ni une préférence du navigateur. Passer en phase `public`
+avant l’ouverture publique arrête ce dispositif pour tous les comptes.
+Cette exception ne modifie pas le consentement de la mesure d’audience ci-dessus,
+ne concerne pas les joueurs et ne vaut pas preuve individuelle d’accord.
+[Périmètre, masquage, activation et retour arrière](releases/2026-10-30-closed-beta-replay-712.md).
+
 ## Relance d’expiration du gain — #304
 
 Décisions propriétaire du 12 octobre 2026 : préférence commune au compte marchand et à ses établissements, désactivée par défaut, délai personnalisable (7 jours initialement). Le destinataire est le gagnant, pas le marchand. Une seule relance par gain réel encore disponible/non retiré, à validité initiale d’au moins 20 jours, le jour civil J−N calculé dans le fuseau du site, lors du passage quotidien Vercel ; aucun rattrapage d’un jour passé. Le propriétaire confirme que 9 h est approximatif : la fenêtre de cinq minutes et la planification Supabase spécifique sont abandonnées. L’activation/modification avant le passage effectif du jour est prise en compte ; aucun rappel antérieur n’est rejoué. Le changement de délai ne rejoue pas une relance déjà tentée/transmise. Paramétrage par propriétaire/administrateur du compte, contrôle serveur et isolation des comptes. Envoi Resend existant, pas de nouvelle offre Vercel. Le format reprend l’e-mail initial, sans changer celui-ci, les conditions/dates, stocks, retrait ou consentement. Désactivation revérifiée avant déclenchement ; une requête fournisseur déjà déclenchée ne peut être rappelée. [Limites temporelles, données et recette](releases/reward-expiry-reminders-304.md).
