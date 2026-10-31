@@ -6,6 +6,7 @@ import type {
   Merchant,
   TextFont,
 } from "@/lib/types";
+import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { createPosterSettingsDefaults } from "@/lib/poster-utils";
 import { getPosterTemplate } from "@/lib/poster-templates";
 import { beautyWheelTheme, isBeautyIndustry } from "@/lib/beauty-wheel-themes";
@@ -95,6 +96,8 @@ export function defaultScratchTemplateForIndustry(industry?: string | null): Gam
 }
 
 export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplateId) {
+  const halloween = halloweenScratchTemplate(templateId);
+  if (halloween) return halloween.scratch.base;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas.scratch.base;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#b99a6a";
@@ -281,6 +284,8 @@ export function wheelBackgroundForTemplateSelection(
   currentColor: string,
   primaryColor = DEFAULT_COCORICO_DUO_BLUE,
 ) {
+  const halloween = halloweenScratchTemplate(templateId);
+  if (halloween) return halloween.backgroundColor;
   const christmas = christmasWheelTheme(templateId);
   if (christmas) return christmas.background;
   const christmasScratch = christmasScratchTemplate(templateId);
@@ -378,6 +383,8 @@ export function scratchTemplatePrimaryColor(
   configuredColor: string,
   templateId?: GamePageTemplateId,
 ) {
+  const halloween = halloweenScratchTemplate(templateId);
+  if (halloween) return halloween.scratch.base;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas.scratch.base;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#b99a6a";
@@ -486,6 +493,8 @@ const SCRATCH_DEFAULT_INK_VALUES = new Set([
 const LEGACY_SCRATCH_LILAC_TEXT_COLORS = new Set(["#4c1d95", "#32104f", "#003cb4"]);
 
 export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
+  const halloween = halloweenScratchTemplate(templateId);
+  if (halloween) return halloween.text;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas.text;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#49372c";
@@ -506,10 +515,16 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
   }
 }
 
+export function defaultScratchLogoColor(templateId?: GamePageTemplateId) {
+  return halloweenScratchTemplate(templateId)?.logo ?? christmasScratchTemplate(templateId)?.logo ?? defaultScratchTextColor(templateId);
+}
+
 export function resolveScratchTemplateTextColor(
   color: string,
   templateId?: GamePageTemplateId,
 ) {
+  const halloween = halloweenScratchTemplate(templateId);
+  if (halloween) return halloween.text;
   const normalized = color.trim().toLowerCase();
   if (templateId === "scratch-lilac" &&
       (SCRATCH_DEFAULT_INK_VALUES.has(normalized) || LEGACY_SCRATCH_LILAC_TEXT_COLORS.has(normalized))) {
@@ -520,6 +535,7 @@ export function resolveScratchTemplateTextColor(
 
 /** The initial font used by the legacy scratch-card themes called out in issue #439. */
 export function defaultScratchTemplateFont(templateId?: GamePageTemplateId) {
+  if (halloweenScratchTemplate(templateId)) return "bodoni" as const;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas.font;
   switch (templateId) {
@@ -538,6 +554,8 @@ export function scratchTemplateDefaultBackground(
   templateId: GamePageTemplateId,
   background: { mode: "color" | "image"; imageUrl?: string | null; color?: string },
 ): string | undefined {
+  const halloween = halloweenScratchTemplate(templateId);
+  if (halloween) return halloween.background;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) {
     return christmasScratchDefaultBackground(templateId, background);
@@ -549,6 +567,7 @@ export function scratchTemplateDefaultBackground(
 
 export function scratchTemplateUsesFixedPrimaryColor(templateId?: GamePageTemplateId) {
   return Boolean(
+    halloweenScratchTemplate(templateId) ||
     christmasScratchTemplate(templateId) ||
     templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID ||
       beautyScratchTemplate(templateId) ||
@@ -570,7 +589,7 @@ export function scratchTemplateUsesTicketTextColor(templateId?: GamePageTemplate
     case "scratch-sunburst":
       return false;
     default:
-      return !beautyScratchTemplate(templateId) && !christmasScratchTemplate(templateId);
+      return !beautyScratchTemplate(templateId) && !christmasScratchTemplate(templateId) && !halloweenScratchTemplate(templateId);
   }
 }
 

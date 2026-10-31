@@ -13,6 +13,7 @@ import {
 } from "@/lib/campaign-defaults";
 import { scratchVisualTheme, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
+import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { BRUSH_CLIP_PATH, SCALLOPED_TICKET_CLIP_PATH } from "@/lib/scratch-surface-shapes";
 
 type ScratchTemplateId = ImmersiveScratchTemplateId;
@@ -193,6 +194,8 @@ export function ImmersiveScratchTicket({
   const isSunburst = template === "scratch-sunburst";
   const beautyTheme = scratchVisualTheme(template);
   const christmasTheme = christmasScratchTemplate(template);
+  const halloweenTheme = halloweenScratchTemplate(template);
+  const seasonalTheme = christmasTheme || halloweenTheme;
   const scratchShape = christmasTheme?.scratchShape;
   const isDecorativeTicket = scratchShape === "ticket";
   const canvasWidth = scratchShape === "brush" ? 700 : isDecorativeTicket ? 660 : CANVAS_WIDTH;
@@ -226,7 +229,7 @@ export function ImmersiveScratchTicket({
       : isSunburst
         ? "#3b2500"
         : "#111827");
-  const ink = headingTextColor || defaultInk;
+  const ink = halloweenTheme?.text || headingTextColor || defaultInk;
   const resultInk = highestContrastTextColor(ticketBaseColor);
   const resultTextShadow = resultInk === "#ffffff"
     ? "0 2px 10px rgba(0, 0, 0, 0.58)"
@@ -409,7 +412,7 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = `flex flex-col pb-8 ${christmasTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[52px]"} ${beautyTheme
+  const rootClass = `flex flex-col pb-8 ${seasonalTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[52px]"} ${beautyTheme
     ? "bg-transparent px-6"
     : isVault || isConfetti
     ? "bg-transparent px-5"
@@ -428,7 +431,7 @@ export function ImmersiveScratchTicket({
     >
       <div
         className={`relative isolate flex-1 overflow-hidden ${rootClass}`}
-        style={{ minHeight: christmasTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
+        style={{ minHeight: seasonalTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
       >
         <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
@@ -441,16 +444,18 @@ export function ImmersiveScratchTicket({
                 imageWidthPx={logoWidthPx}
                 textSizePx={logoTextSizePx}
                 textClassName="text-2xl"
-                textColor={logoTextColor || ink}
+                textColor={halloweenTheme?.logo || logoTextColor || ink}
               />
             </div>
           ) : null}
           <h2
-            className={`${(beautyTheme && !christmasTheme) || isConfetti ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
-            style={{ color: ink, fontSize: christmasTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: headingFontWeight, whiteSpace: christmasTheme ? "pre-line" : undefined }}
+            className={`${(beautyTheme && !christmasTheme && !halloweenTheme) || isConfetti ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
+            style={{ color: ink, fontSize: seasonalTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: headingFontWeight, whiteSpace: seasonalTheme ? "pre-line" : undefined,
+              ...(halloweenTheme ? { backgroundImage: "linear-gradient(175deg,#fff0c7 0%,#f4b351 40%,#bc7024 70%,#ffdc94 100%)", backgroundClip: "text", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 0 6px #d982213d)" } : {}) }}
           >
             {displayHeadline}
           </h2>
+          {halloweenTheme ? <Image src="/images/templates/halloween-gold/wordmark-v3.webp" alt="Spécial Halloween" width={900} height={196} className="mx-auto mt-4 h-auto w-[82%]" /> : null}
           {secondaryText?.trim() ? (
             <p
               className={`mx-auto ${christmasTheme ? "max-w-[92%] normal-case leading-[1.2] tracking-normal" : "max-w-[280px] uppercase leading-[1.55] tracking-[0.08em]"} ${headingAlignmentClass}`}

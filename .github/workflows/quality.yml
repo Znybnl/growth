@@ -31,6 +31,9 @@ jobs:
       - name: Verify Christmas templates on mobile, rotation and scratch gestures
         run: npx playwright test e2e/christmas-wheels.spec.ts e2e/christmas-scratch.spec.ts e2e/christmas-background-coverage.spec.ts --grep-invert @visual-1280 --output=test-results/christmas
         working-directory: apps/web-app
+      - name: Verify Halloween scratch gesture, customization and save
+        run: npx playwright test e2e/halloween-scratch.spec.ts --grep-invert @visual-1280 --output=test-results/halloween-scratch
+        working-directory: apps/web-app
       - name: Verify affiliate account card and administration on mobile
         run: npx playwright test e2e/affiliate-accounts.spec.ts --grep-invert @visual-1280 --output=test-results/affiliate-mobile
         working-directory: apps/web-app
@@ -98,6 +101,8 @@ jobs:
         run: npm run test:christmas-wheels -w @okado/web-app
       - name: Test Christmas scratch templates, original foils and manual backgrounds
         run: npm run test:christmas-scratch -w @okado/web-app
+      - name: Test Halloween scratch palette, assets and persistence
+        run: npm run test:halloween-scratch -w @okado/web-app
       - name: Test guaranteed draw weights, stock and private SQL functions
         run: npm run test:guaranteed-draw -w @okado/web-app
       - name: Test Google click acceptance versions, API and private SQL controls

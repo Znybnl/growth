@@ -45,8 +45,8 @@ function AnalyticsIdentityProof() {
 }
 
 /** Synthetic rendering only: tests intercept every API request, no session bypass. */
-export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText, prizeCase }: {
-  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string; prizeCase?: string;
+export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText, prizeCase, headline }: {
+  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string; prizeCase?: string; headline?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   if (mode.startsWith("cookie-menu")) {
@@ -75,7 +75,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       { ...halloweenFixture.prizes[0], id: "luxo", label: "une séance de luxopuncture", probability: 5 },
       { ...halloweenFixture.prizes[0], id: "headspa", label: "un soin headspa INTITION", probability: 5 },
     ] : halloweenFixture.prizes,
-    title: "Jeu synthétique", subtitle: font ? "Une surprise élégante\nvous attend" : "Une surprise\nvous attend", logoText: merchant.companyName,
+    title: "Jeu synthétique", subtitle: headline ?? (font ? "Une surprise élégante\nvous attend" : "Une surprise\nvous attend"), logoText: merchant.companyName,
     gameType: scratch ? "scratch" as const : "wheel" as const,
     accent: { ink: color, paper: "#ffffff", signal: "#b85be5" },
     presentation: {

@@ -1,5 +1,17 @@
 # Produit — Okado
 
+## Ticket Halloween doré — #704
+
+Le ticket `scratch-halloween-gold` réutilise le décor noir/or et la signature
+Halloween de la roue, avec une pastille ronde recouverte de sa texture dorée.
+Logo et textes, tailles et espacements restent personnalisables ; décor,
+couleurs dorées du titre et du sous-titre, logo texte blanc et couleur de la
+pastille sont fixes comme sur la roue Halloween. Police initiale Bodoni et
+taille de titre habituelle des tickets. Disponible pour tous les secteurs dans
+le wizard et l’éditeur. Le moteur de grattage et les règles de gain ne changent
+pas. La sélection du modèle ne remplace jamais la promesse principale, même
+si elle contient encore son texte initial. [Implémentation et recette](releases/2026-10-29-halloween-scratch-704.md).
+
 ## Présentation et découverte du site vitrine — #723
 
 Le menu mobile regroupe les destinations et la connexion derrière un bouton
