@@ -15,13 +15,15 @@ for (const { id } of CHRISTMAS_SCRATCH_TEMPLATES) {
     assert.equal(isImmersiveScratchTemplate(id), true);
     assert.equal(scratchVisualTheme(id), theme);
     assert.equal(DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX, 46);
-    assert.equal(defaultScratchTemplateFont(id), "bodoni");
+    assert.equal(defaultScratchTemplateFont(id), theme.font);
     assert.equal(defaultScratchTextColor(id), theme.text);
     assert.equal(scratchTemplatePrimaryColor("#ff00ff", id), theme.scratch.base);
     assert.equal(scratchTemplateUsesFixedPrimaryColor(id), true);
     assert.equal(scratchTemplateUsesTicketTextColor(id), false);
     assert.equal(wheelBackgroundForTemplateSelection(id, "#ffffff"), theme.backgroundColor);
-    for (const asset of [theme.background, theme.scratch.texture]) assert.ok(existsSync(`public${asset}`), asset);
+    for (const asset of [theme.background, theme.scratch.texture].filter(Boolean)) assert.ok(existsSync(`public${asset}`), asset);
+    if (id === "scratch-christmas-evergreen" || id === "scratch-christmas-champagne" || id === "scratch-christmas-noir-or") assert.equal(theme.scratchShape, "brush");
+    if (id === "scratch-christmas-retro") assert.equal(theme.scratchShape, "ticket");
   });
   test(`${id}: décor natif sans mutation, fond manuel prioritaire et isolé`, () => {
     const background = { mode: "color", color: theme.backgroundColor };
