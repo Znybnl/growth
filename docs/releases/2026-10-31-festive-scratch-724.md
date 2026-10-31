@@ -8,12 +8,12 @@ rubans**, **Ivoire & champagne**, **Rayons rétro** et **Satin noir & or**. Les
 identifiants internes historiques `scratch-christmas-*` sont conservés pour ne
 pas invalider les campagnes existantes.
 
-Les décors ont été recréés à partir des références :
+Les quatre références ont été reprises une par une, puis contrôlées dans l’aperçu du jeu :
 
-- vert bouteille et champ ivoire, rubans rouges/verts et paquets dans les coins ;
-- fond ivoire avec larges rubans dorés et paquet clair en bas à droite ;
-- rayons rétro turquoise, corail, safran et crème ;
-- fond noir mat encadré de rubans dorés satinés et de paillettes fines.
+- **Vert bouteille & rubans** : aplat vert courbe en tête, champ ivoire, ruban rouge et cadeaux regroupés en bas ; surface kraft agrandie et sans stries métalliques.
+- **Ivoire & champagne** : papier ivoire, rubans dorés limités aux coins, paquet réduit en bas à droite et zone kraft ; titre Playfair et sous-titre en casse de phrase.
+- **Rayons rétro** : rayons turquoise, corail, safran et crème ; ticket rouge festonné avec étoiles et surface argentée brossée.
+- **Satin noir & or** : grand espace noir, éclats dorés concentrés sur les côtés, boucles de satin aux coins et surface de grattage dorée.
 
 Les éléments propres à Noël (branches de sapin, boules, feuillage et cadeaux
 de saison) ont été retirés. Les quatre décors sont également accessibles dans
@@ -33,6 +33,7 @@ du fond passent. Playwright passe 25/25 scénarios, dont les quatre styles sur
 passe sans erreur (quatre avertissements préexistants hors périmètre), le build
 Next.js et `verify:source` passent.
 
-Les fichiers WebP gardent les chemins historiques pour éviter les références
-cassées. Les noms visibles dans le produit et dans la bibliothèque ne mentionnent
-plus Noël pour ces quatre modèles.
+Les identifiants des campagnes restent inchangés ; les fonds révisés utilisent
+des fichiers WebP dédiés, et les anciens fichiers ne sont pas supprimés. Les noms
+visibles dans le produit et dans la bibliothèque ne mentionnent plus Noël pour
+ces quatre modèles.
