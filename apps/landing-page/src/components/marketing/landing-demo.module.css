@@ -36,6 +36,13 @@
 .sectorChoices a { display: inline-flex; min-height: 44px; align-items: center; padding: 10px 16px; border: 1px solid #dfd4e2; border-radius: 10px; font-size: 13px; font-weight: 600; background: #fff; color: #513049; }
 .sectorChoices a[aria-current] { background: #513049; border-color: #513049; color: #fff; }
 .sectorChoices a:focus-visible, .selectedSpecialty a:focus-visible { outline: 2px solid #6c00f6; outline-offset: 4px; }
+.sectorShort { display: none; }
+@media (max-width: 767px) {
+  .explorerCompact .sectorChoices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 6px; }
+  .explorerCompact .sectorChoices a { justify-content: center; padding: 10px 6px; }
+  .explorerCompact .sectorFull { display: none; }
+  .explorerCompact .sectorShort { display: inline; }
+}
 .selectedSpecialty { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 20px; align-items: center; margin-bottom: 24px; font-size: 14px; color: #513049; }
 .selectedSpecialty a { display: inline-flex; align-items: center; min-height: 44px; font-size: 12px; text-decoration: underline; text-underline-offset: 4px; }
 .scratchGame { display: grid; justify-items: center; gap: 18px; padding-top: 12px; }

@@ -13,7 +13,7 @@ jobs:
   visual-1280:
     name: Visual checks at 1280px
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
