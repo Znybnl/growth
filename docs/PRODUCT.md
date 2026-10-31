@@ -12,6 +12,22 @@ le wizard et l’éditeur. Le moteur de grattage et les règles de gain ne chang
 pas. La sélection du modèle ne remplace jamais la promesse principale, même
 si elle contient encore son texte initial. [Implémentation et recette](releases/2026-10-29-halloween-scratch-704.md).
 
+## Présentation et découverte du site vitrine — #723
+
+Le menu mobile regroupe les destinations et la connexion derrière un bouton
+explicite ; le hero conserve sa promesse et son essai, et les sélecteurs de démo
+utilisent des intitulés courts avec leurs noms accessibles complets. Les cartes
+sectorielles montrent des extraits de cette démo ; la galerie conserve les six
+rendus du catalogue et leur agrandissement. L’espace marchand est illustré par
+une capture des vrais composants sur données synthétiques identifiées. La mise
+en situation d’affiche est illustrative, sans témoignage ni client représenté.
+
+Le panneau de consentement du site présente un résumé et les détails dépliables,
+avec les mêmes choix de visibilité égale. Les fournisseurs, l’identification
+éventuelle par e-mail, les domaines et la durée restent consultables avant toute
+décision. Aucune finalité, durée, version de consentement ou règle de collecte
+n’est modifiée. Rapport : [livraison #723](releases/2026-10-30-marketing-visual-polish-723.md).
+
 ## Libellés de roue longs — #631
 
 Dans le rendu partagé de la roue, un libellé qui manque de place dans son
@@ -420,7 +436,9 @@ personnalisables ; les textes et la roue ne sont jamais intégrés à l'image.
 Le contour doré et le pointeur restent fixes pendant la rotation. Les libellés
 réels des lots utilisent DM Sans sans icône et s'ajustent individuellement.
 Le bouton JOUER en relief est sans icône. Le rendu est partagé entre aperçu et
-page de jeu ; aucun modèle existant ni aucune probabilité n'est modifié.
+page de jeu ; aucun modèle existant ni aucune probabilité n'est modifié. Dans
+la sélection des roues, Noël rose poudré figure sous « Templates Beauté » pour
+les instituts et sous « Autres templates » pour les autres secteurs.
 [Périmètre, contrôles et assets](releases/2026-10-28-christmas-wheels-674.md).
 
 ## Tickets à gratter Noël — #676
@@ -435,6 +453,18 @@ champagne ou dorée, avec une palette de grattage fixe. L'aperçu est non intera
 la page de jeu conserve le moteur de grattage et les règles de tirage existants.
 Les anciens modèles et les modèles par défaut de chaque activité restent inchangés.
 [Périmètre et recette](releases/2026-10-28-christmas-scratch-676.md).
+
+Issue #724 ajoute quatre styles de ticket festifs non saisonniers à tous les
+secteurs : Vert bouteille & rubans, Ivoire & champagne, Rayons rétro, et Satin
+noir & or. Leurs fonds WebP sont des décors seuls ; l'identité, le titre et le
+sous-titre restent configurés dans le jeu. Trois styles ont une zone de grattage
+dorée au bord irrégulier de pinceau ; le modèle rétro a un ticket rouge bordé
+d'or et un revêtement argenté. Leurs anciens identifiants internes sont conservés
+afin de préserver les campagnes qui les utilisent déjà.
+La zone est toujours le canvas interactif existant et révèle le résultat du tirage
+exact. Un fond importé ou choisi dans la bibliothèque reste prioritaire sur le fond
+natif. Aucune campagne existante, chance, stock, participation ou règle de jeu n'est
+modifiée. [Assets et contrôles](releases/2026-10-31-festive-scratch-724.md).
 
 ## Affiliation par compte — #677
 

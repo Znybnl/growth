@@ -41,15 +41,12 @@ for (const template of ["classic", "scratch-nude-classic"]) {
       } else await page.screenshot({ path: info.outputPath(`cout-revient-${template}-${width}.png`) });
       await budget.scrollIntoViewIfNeeded();
       await expect(budget.getByRole("heading", { name: "Budget estimé des gains" })).toBeInViewport();
-      await expect(rules).not.toHaveAttribute("open");
+      await expect(rules).toHaveAttribute("open", "");
       expect(await budget.innerText()).toBe(before);
       if (width === 1280) await captureVisualAt1280(page, info, `budget-apres-regles-${template}`, height);
       else await page.screenshot({ path: info.outputPath(`budget-apres-regles-${template}-${width}.png`) });
-      await rules.locator("summary").click();
-      await expect(rules).toHaveAttribute("open", "");
       await expect(rules.getByLabel("Durée de validité du gain (jours)", { exact: false })).toHaveValue(validity);
       expect(await budget.innerText()).toBe(before);
-      await rules.locator("summary").click();
       await assertNoPageOverflow(page);
     }
     expect(await page.getByTestId("wizard-prize-row").first().getByRole("spinbutton").inputValue()).toBe(probability);

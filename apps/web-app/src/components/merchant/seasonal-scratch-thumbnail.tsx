@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { christmasScratchTemplate, type ChristmasScratchTemplateId } from "@/lib/christmas-scratch-templates";
 import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
+import { BRUSH_CLIP_PATH, SCALLOPED_TICKET_CLIP_PATH } from "@/lib/scratch-surface-shapes";
 
 export function SeasonalScratchThumbnail({ templateId, card = false }: { templateId: ChristmasScratchTemplateId | "scratch-halloween-gold"; card?: boolean }) {
   const halloween = halloweenScratchTemplate(templateId);
@@ -11,10 +12,16 @@ export function SeasonalScratchThumbnail({ templateId, card = false }: { templat
       <Image src={theme.background} alt="" fill sizes="96px" className="object-cover" />
       <div className="relative z-10 flex flex-col items-center" style={{ color: theme.text }}>
         <span className="font-cormorant text-[6px]" style={{ color: theme.logo }}>Votre établissement</span>
-        <span className="mt-2 font-bodoni text-[13px] leading-none">Grattez &amp;<br />gagnez</span>
-        {halloween ? <Image src="/images/templates/halloween-gold/wordmark-v3.webp" alt="" width={900} height={196} className="mt-1 h-auto w-[74px]" /> : <span className="mt-1 font-cormorant text-[5px] leading-tight">De belles surprises pour Noël</span>}
-        <span className="relative mt-3 block h-[53px] w-[53px] overflow-hidden rounded-full border border-[#fff4d7] shadow-md" style={{ position: "relative", width: 53, height: 53, background: `linear-gradient(135deg, ${theme.scratch.base}, ${theme.scratch.highlight} 45%, ${theme.scratch.base})` }}>
-          <Image src={theme.scratch.texture} alt="" fill sizes="53px" unoptimized className="object-cover" style={{ opacity: theme.scratch.textureOpacity }} />
+        <span className={`${theme.fontClass} mt-2 max-w-full text-[13px] leading-[.96]`}>{theme.sampleHeadline}</span>
+        {halloween ? <Image src="/images/templates/halloween-gold/wordmark-v3.webp" alt="" width={900} height={196} className="mt-1 h-auto w-[74px]" /> : <span className="mt-1 max-w-full font-cormorant text-[5px] leading-tight">{theme.sampleSubline}</span>}
+        <span
+          className={`relative ${theme.scratchShape ? "mt-auto" : "mt-3"} flex shrink-0 items-center justify-center overflow-hidden border text-center shadow-md ${theme.scratchShape === "brush" ? "h-[35px] w-[78px]" : theme.scratchShape === "ticket" ? "h-[41px] w-[78px] rounded-[3px] border-2 border-[#f4d78e] bg-[#b52a29] p-[3px]" : "h-[53px] w-[53px] rounded-full"}`}
+          style={{ position: "relative", background: theme.scratchShape === "ticket" ? "#b52a29" : `linear-gradient(135deg, ${theme.scratch.base}, ${theme.scratch.highlight} 45%, ${theme.scratch.base})`, ...(theme.scratchShape === "brush" ? { clipPath: BRUSH_CLIP_PATH } : theme.scratchShape === "ticket" ? { clipPath: SCALLOPED_TICKET_CLIP_PATH } : {}) }}
+        >
+          <span className={`${theme.scratchShape === "ticket" ? "relative flex h-full w-full items-center justify-center overflow-hidden border border-[#fff0c5]" : "absolute inset-0"}`} style={theme.scratchShape === "ticket" ? { clipPath: BRUSH_CLIP_PATH } : undefined}>
+            {theme.scratch.texture ? <Image src={theme.scratch.texture} alt="" fill sizes="68px" unoptimized className="object-cover" style={{ opacity: theme.scratch.textureOpacity }} /> : <span aria-hidden="true" className="absolute inset-0" style={{ backgroundImage: `repeating-linear-gradient(135deg, transparent 0 5px, rgba(255,255,255,.1) 6px 7px), linear-gradient(135deg, ${theme.scratch.base}, ${theme.scratch.highlight} 48%, ${theme.scratch.base})` }} />}
+            {theme.scratchShape ? <span className="relative z-10 font-semibold text-[5px] leading-none" style={{ color: theme.scratchShape === "ticket" ? "#512c25" : "#4b3925" }}>Ticket<br />à gratter</span> : null}
+          </span>
         </span>
       </div>
     </div>

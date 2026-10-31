@@ -90,7 +90,7 @@ test("@visual-1280 phase 5 : paramètres explicites, limites et sauvegarde sans 
   await page.route("**/api/campaigns/setup", (route) => { writes.push(route.request().postDataJSON()); return route.fulfill({ json: { campaign: { id: "template-proof-campaign" } } }); });
   await open(page);
   const rules = page.getByTestId("wizard-prize-rules");
-  await rules.locator("summary").click();
+  await expect(rules).toHaveAttribute("open", "");
   await rules.getByLabel("Durée de validité du gain (jours)", { exact: false }).fill("366");
   await rules.getByLabel("Délai minimum entre deux participations (jours)", { exact: false }).fill("0");
   await expect(rules.locator('[aria-invalid="true"]')).toHaveCount(2);

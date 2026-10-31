@@ -1,5 +1,18 @@
 # Règles métier — Okado
 
+## Télémétrie opérationnelle serveur — décision du 29 octobre 2026, #710
+
+Le propriétaire autorise les mesures techniques côté serveur nécessaires au
+fonctionnement, à la stabilité et à la sécurité du SaaS indépendamment du choix
+de cookies de mesure : appels de routes, durées, statuts et fréquence technique
+par fonctionnalité. La finalité est l’exploitation ; elle ne permet pas un
+suivi comportemental individuel, un replay ou une mesure marketing sans accord.
+Les mesures nouvelles n’incluent ni utilisateur, compte, adresse IP, cookie,
+corps, URL libre ou identifiant de jeu/joueur. Le contrat ou l’intérêt légitime
+évoqués par le propriétaire sont à rattacher à la nécessité de chaque finalité,
+pas à une exemption générale de toute collecte. Les statistiques de requêtes
+ne sont jamais présentées comme des utilisateurs uniques ou des clics.
+
 ## Représentation des lots sur la roue — #628
 
 Chaque lot éligible (libellé renseigné, probabilité positive) doit être représenté
@@ -238,6 +251,18 @@ changer d'identité. Cette exception porte sur le profil du compte, pas sur les
 coordonnées des joueurs ou les propriétés libres des événements. La mention
 de mesure et la politique publique précisent cet usage. Aucun nom, mot de passe,
 PIN, contenu de campagne ou e-mail de joueur n'est ajouté.
+
+### Replay bêta — décision du 30 octobre 2026, #712
+
+Le propriétaire confirme une autorisation contractuelle bêta validée avec le
+juridique pour la relecture des sessions SaaS à des fins d’amélioration. Sa dernière
+instruction couvre tous les comptes de la bêta, y compris ceux créés après le
+30 octobre 2026. Le contrôle est la phase serveur explicite `closed_beta`, pas
+une date de création ni une préférence du navigateur. Passer en phase `public`
+avant l’ouverture publique arrête ce dispositif pour tous les comptes.
+Cette exception ne modifie pas le consentement de la mesure d’audience ci-dessus,
+ne concerne pas les joueurs et ne vaut pas preuve individuelle d’accord.
+[Périmètre, masquage, activation et retour arrière](releases/2026-10-30-closed-beta-replay-712.md).
 
 ## Relance d’expiration du gain — #304
 

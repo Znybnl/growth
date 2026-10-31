@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "../src/lib/christmas-scratch-templates";
+const NON_SEASONAL_TEMPLATES = new Set([
+  "scratch-christmas-evergreen",
+  "scratch-christmas-champagne",
+  "scratch-christmas-retro",
+  "scratch-christmas-noir-or",
+]);
 import { assertNoPageOverflow, captureVisualAt1280, rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
 import { selectWizardStep } from "./helpers/wizard-step";
 test.use({ hasTouch: true });
@@ -37,6 +43,17 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await page.goto(`/dev/christmas-scratch?template=${theme.id}`);
     await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
     await expect(page.locator(`canvas[data-foil-texture="${theme.id}"]`)).toHaveAttribute("data-foil-loaded", "true");
+    const previewScreen = page.locator('[data-testid="wizard-phone-preview"] > div.h-full');
+    const previewSurface = page.getByTestId("wizard-phone-preview").locator(`[data-template-id="${theme.id}"]`);
+    const previewArtwork = previewSurface.locator(`img[data-template-art="${theme.id}"]`);
+    await expect(previewSurface).toBeVisible();
+    const [surfaceBottom, screenBottom, artworkBottom] = await Promise.all([
+      previewSurface.evaluate((element) => element.getBoundingClientRect().bottom),
+      previewScreen.evaluate((element) => element.getBoundingClientRect().bottom),
+      previewArtwork.evaluate((element) => element.getBoundingClientRect().bottom),
+    ]);
+    expect(surfaceBottom).toBeGreaterThanOrEqual(screenBottom - 1);
+    expect(artworkBottom).toBeGreaterThanOrEqual(screenBottom - 1);
     await page.getByTestId("wizard-phone-preview").screenshot({ path: info.outputPath(`${theme.id}-embedded-${width}.png`), caret: "initial" });
     expect(errors).toEqual([]);
   });
@@ -57,14 +74,14 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await page.mouse.up();
     await expect(page.getByTestId("scratch-starts")).toHaveText("1");
     await expect(page.getByTestId("scratch-reveals")).toHaveText("1");
-    await expect(page.getByText("UN CADEAU DE NOËL").last()).toBeVisible();
+    await expect(page.getByText("UNE SURPRISE").last()).toBeVisible();
   });
 }
 test("fonds manuels, titre et logo image restent personnalisables", async ({ page }) => {
   await page.goto("/dev/christmas-scratch");
   await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
-  await page.getByLabel("Titre de test").fill("Votre surprise\nde Noël");
-  await expect(page.getByRole("heading")).toHaveText("Votre surprise de Noël");
+  await page.getByLabel("Titre de test").fill("Votre surprise\nà découvrir");
+  await expect(page.getByRole("heading")).toHaveText("Votre surprise à découvrir");
   await page.getByLabel("Logo de test").selectOption("image");
   const logo = page.getByRole("img", { name: "Logo", exact: true });
   await expect.poll(() => logo.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
@@ -99,7 +116,7 @@ test("grattage tactile réel et aperçu non interactif", async ({ page }) => {
   await expect(page.getByTestId("scratch-foil-first-paint")).toHaveCount(1);
 });
 
-test("@visual-1280 tickets Noël dans l'éditeur classique, tous secteurs", async ({ page }, info) => {
+test("@visual-1280 tickets festifs dans l'éditeur classique, tous secteurs", async ({ page }, info) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto("/dev/template-rendering-proof?mode=editor-prize-budget&template=scratch-nude-classic&business=retail");
   for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
@@ -107,11 +124,12 @@ test("@visual-1280 tickets Noël dans l'éditeur classique, tous secteurs", asyn
     const card = page.getByRole("button", { name: new RegExp(theme.name) });
     await card.scrollIntoViewIfNeeded(); await card.click();
     await expect(card).toHaveAttribute("aria-pressed", "true");
+    if (NON_SEASONAL_TEMPLATES.has(theme.id)) await expect(card).not.toContainText(/noël/i);
     await expect(page.locator(`canvas[data-foil-texture="${theme.id}"]`)).toHaveAttribute("data-foil-loaded", "true");
   }
-  await captureVisualAt1280(page, info, "noel-tickets-editeur-classique");
+  await captureVisualAt1280(page, info, "tickets-festifs-editeur-classique");
 });
-test("@visual-1280 tickets Noël dans le wizard et aperçu, 1280×720 / 1280×600", async ({ page }, info) => {
+test("@visual-1280 tickets festifs dans le wizard et aperçu, 1280×720 / 1280×600", async ({ page }, info) => {
   const imageWarnings: string[] = [];
   page.on("console", message => {
     if (/beauty-foil-|wheel-templates\/christmas-/.test(message.text()) && /invalid.*position|height value of 0/i.test(message.text())) imageWarnings.push(message.text());
@@ -125,6 +143,7 @@ test("@visual-1280 tickets Noël dans le wizard et aperçu, 1280×720 / 1280×60
       const card = page.getByRole("button", { name: new RegExp(theme.name) });
       await card.scrollIntoViewIfNeeded(); await card.click();
       await expect(card).toHaveAttribute("aria-pressed", "true");
+      if (NON_SEASONAL_TEMPLATES.has(theme.id)) await expect(card).not.toContainText(/noël/i);
       await captureVisualAt1280(page, info, theme.id, height);
       await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
       const frame = page.getByRole("dialog", { name: "Aperçu du jeu" }).frameLocator("iframe");

@@ -1,4 +1,5 @@
 import { GameTemplateCard } from "./game-template-card";
+import { ChristmasTemplateThumbnail } from "./christmas-template-thumbnail";
 import { BEAUTY_WHEEL_THEMES, beautyWheelBackground, beautyWheelDefaultBackground, beautyWheelButtonTextColor, beautyWheelLogoColor } from "@/lib/beauty-wheel-themes";
 import Image from "next/image";
 import { buildBeautyWheelSegmentColors } from "@/lib/beauty-wheel-segments";
@@ -87,7 +88,6 @@ export function BeautyWheelTemplateGallery({
     <section aria-labelledby="beauty-wheel-templates-title" className="space-y-3">
       <div>
         <h3 id="beauty-wheel-templates-title" className="text-base font-semibold text-carbon">Templates Beauté</h3>
-        <p className="mt-1 text-sm text-charcoal">Sept styles de roue, personnalisables aux couleurs de votre établissement.</p>
       </div>
       <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3">
         {BEAUTY_WHEEL_THEMES.map((theme) => {
@@ -104,6 +104,10 @@ export function BeautyWheelTemplateGallery({
             </div>
           </GameTemplateCard>;
         })}
+        <GameTemplateCard label="Noël rose poudré" description="Boules roses et douceur nacrée"
+          selected={selectedTemplateId === "christmas-rose"} onSelect={() => onSelect("christmas-rose")}>
+          <ChristmasTemplateThumbnail templateId="christmas-rose" card />
+        </GameTemplateCard>
         <GameTemplateCard label="Éclat" description="Lumineux & personnalisable" selected={selectedTemplateId === "rose-institut"}
           onSelect={() => onSelect("rose-institut")}>
           <div data-testid="eclat-thumbnail" className="relative h-full overflow-hidden px-4 pt-3" style={{ background: DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR, color: DEFAULT_ROSE_INSTITUT_TEXT_COLOR }}>

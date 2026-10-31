@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { stopBetaReplayForSignOut } from "@/lib/beta-replay-client";
 
 import {
   SESSION_INACTIVITY_MS,
@@ -84,6 +85,7 @@ export function MerchantSessionGuard({ userId }: { userId: string }) {
     async function expireSession() {
       if (signOutStarted.current) return;
       signOutStarted.current = true;
+      stopBetaReplayForSignOut();
       removeStorageTimestamp(startedStorageKey);
       removeStorageTimestamp(activityStorageKey);
 

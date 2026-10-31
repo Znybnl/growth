@@ -18,7 +18,10 @@ test("les trois secteurs, lots et destinations restent cohérents sans collecte"
   await expect(models).toHaveCount(6);
   await expect(models.nth(0)).toHaveAccessibleName("Voir le modèle Nude Élégance — Ticket à gratter");
   await expect(models.nth(1)).toHaveAccessibleName("Voir le modèle Classique — Roue de la fortune");
-  await expect(models.nth(2)).toHaveAccessibleName("Voir le modèle Confetti — Ticket à gratter");
+  await expect(models.nth(2)).toHaveAccessibleName("Voir le modèle Beauty Pop — Roue de la fortune");
+  await expect(page.locator("#modeles")).not.toContainText("Confetti");
+  await expect(models.nth(4)).toHaveAccessibleName("Voir le modèle Noël traditionnel — Roue de la fortune");
+  await expect(models.nth(5)).toHaveAccessibleName("Voir le modèle Halloween — Roue de la fortune");
   const storage = await page.evaluate(() => [Object.entries(localStorage), Object.entries(sessionStorage)]);
   const demo = page.locator("#demo");
   const choices = demo.getByRole("navigation", { name: "Activité de la démo" });

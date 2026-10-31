@@ -70,7 +70,7 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
   sampleHeadline: string;
   sampleSubline: string;
   background: string;
-  scratch: { base: string; highlight: string; edge: string; texture: string; textureOpacity: number };
+  scratch: { base: string; highlight: string; edge: string; texture?: string; textureOpacity: number };
   text: string;
   font: TextFont;
   fontClass: string;
@@ -89,7 +89,7 @@ type ScratchVisualTheme = {
   sampleHeadline: string;
   sampleSubline: string;
   background: string;
-  scratch: { base: string; highlight: string; edge: string; texture: string; textureOpacity: number };
+  scratch: { base: string; highlight: string; edge: string; texture?: string; textureOpacity: number };
   text: string;
   font: TextFont;
   fontClass: string;

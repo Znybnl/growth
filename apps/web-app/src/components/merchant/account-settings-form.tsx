@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
@@ -117,8 +117,6 @@ export function AccountSettingsForm({
   const [error, setError] = useState<string | null>(null);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
-  const actionsAnchorRef = useRef<HTMLDivElement>(null);
-  const [showStickyActions, setShowStickyActions] = useState(false);
   const activeTab = useSyncExternalStore(
     (onStoreChange) => {
       window.addEventListener("hashchange", onStoreChange);
@@ -160,31 +158,6 @@ export function AccountSettingsForm({
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty]);
-
-  useEffect(() => {
-    const anchor = actionsAnchorRef.current;
-
-    if (!anchor || typeof IntersectionObserver === "undefined") {
-      return;
-    }
-
-    const scrollContainer = anchor.closest("main");
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // The top action anchor is below the account header and billing card. When the page opens,
-        // it can be below the viewport without having been scrolled past; that
-        // must not activate the sticky action bar prematurely. Only show it
-        // after the anchor has crossed the top edge of the scroll area.
-        const rootTop = entry.rootBounds?.top ?? 0;
-        const hasScrolledPastAnchor = entry.boundingClientRect.top < rootTop;
-        setShowStickyActions(!entry.isIntersecting && hasScrolledPastAnchor);
-      },
-      { threshold: 0, root: scrollContainer },
-    );
-
-    observer.observe(anchor);
-    return () => observer.disconnect();
-  }, []);
 
   const isRestaurant = isRestaurantIndustry(form.industry);
   const placeLabel = isRestaurant ? "restaurant" : "commerce";
@@ -278,30 +251,8 @@ export function AccountSettingsForm({
 
   return (
     <form id="account-settings-form" onSubmit={handleSubmit}>
-      <div className="pointer-events-none sticky top-0 z-20 h-0 overflow-visible">
-        <div
-          className={`pointer-events-auto -mx-3 border-b border-lavender-mist bg-soft-white/95 px-3 py-2 shadow-[0_8px_18px_rgba(72,26,84,0.12)] backdrop-blur-sm transition-all duration-200 lg:-mx-6 lg:px-6 ${
-            showStickyActions ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-          }`}
-          aria-hidden={!showStickyActions}
-        >
-          <div className="okado-action-row flex w-full items-center justify-end gap-2">
-            <Button
-              type="submit"
-              disabled={isSaving}
-              tabIndex={showStickyActions ? 0 : -1}
-              variant="primary"
-              size="default"
-              className="px-5"
-            >
-              {isSaving ? "Enregistrement..." : "Enregistrer"}
-            </Button>
-          </div>
-        </div>
-      </div>
-      <div ref={actionsAnchorRef} className="h-px" aria-hidden="true" />
-      <div className="space-y-6">
-        <div role="tablist" aria-label="Sections du compte" className="flex gap-1 overflow-x-auto border-b border-lavender-mist bg-soft-white px-1 py-1">
+      <div className="okado-account-toolbar">
+        <div role="tablist" aria-label="Sections du compte" className="flex min-w-0 gap-1 overflow-x-auto px-1 py-1">
           {([
             ["establishment", "Établissement"],
             ["user", "Utilisateur"],
@@ -326,12 +277,17 @@ export function AccountSettingsForm({
                 window.requestAnimationFrame(() => document.getElementById(`account-${nextTab}-tab`)?.focus());
               }}
               onClick={() => selectTab(tab)}
-              className={`shrink-0 rounded-[4px] px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine ${activeTab === tab ? "bg-purple-haze text-aubergine" : "text-ash hover:bg-[#f7f0fa] hover:text-aubergine"}`}
+              className={`shrink-0 rounded-[4px] px-1 py-2.5 text-[13px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine sm:px-4 sm:text-sm ${activeTab === tab ? "bg-purple-haze text-aubergine" : "text-ash hover:bg-[#f7f0fa] hover:text-aubergine"}`}
             >
               {label}
             </button>
           ))}
         </div>
+        <Button type="submit" disabled={isSaving} variant="primary" size="default" className="shrink-0 px-5">
+          {isSaving ? "Enregistrement..." : "Enregistrer"}
+        </Button>
+      </div>
+      <div className="space-y-6 pt-6">
 
         {activeTab === "user" ? <div id="account-tabpanel-user" role="tabpanel" aria-labelledby="account-user-tab" className="space-y-4">
         <AccountSectionCard

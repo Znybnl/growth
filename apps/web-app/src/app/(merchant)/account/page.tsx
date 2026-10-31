@@ -2,7 +2,6 @@ import { measureServerStage } from "@/lib/server-performance";
 import { AccountSettingsForm } from "@/components/merchant/account-settings-form";
 import { Settings2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/workspace";
-import { Button } from "@/components/ui/button";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
 import { syncMerchantBillingFromStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
@@ -72,7 +71,6 @@ async function AccountPageContent({ searchParams }: AccountPageProps) {
         title="Mon compte"
         description="Profil, abonnement et réglages de l’établissement sélectionné."
         icon={<Settings2 className="h-5 w-5" />}
-        actions={<Button type="submit" form="account-settings-form" variant="primary" size="lg" className="w-full xl:w-auto">Enregistrer les modifications</Button>}
       />
       <AccountSettingsForm
         merchant={merchant}

@@ -172,10 +172,12 @@ test("the real onboarding screen identifies the account before flow events, with
 
 test("the onboarding page still requires the authenticated server session before showing the screen", async () => {
   const Screen = () => null;
+  const ReplayBoundary = () => null;
   let authenticated = false;
   const page = load("../app/onboarding/page.tsx", {
     "react/jsx-runtime": require("react/jsx-runtime"),
     "@/components/auth/onboarding-screen": { OnboardingScreen: Screen },
+    "@/components/merchant/beta-replay-boundary": { BetaReplayBoundary: ReplayBoundary },
     "@/lib/auth": { requireAuthenticatedSession: async () => {
       if (!authenticated) throw new Error("redirect to signin");
       return { merchant: { id: "merchant-fixture" }, user: { id: "user-fixture",
@@ -185,8 +187,11 @@ test("the onboarding page still requires the authenticated server session before
   await assert.rejects(page.default(), /redirect to signin/);
   authenticated = true;
   const screen = await page.default();
-  assert.equal(screen.type, Screen);
-  assert.equal(screen.props.user.id, "user-fixture");
-  assert.equal(Object.keys(screen.props.user).length, 3);
-  assert.equal(screen.props.user.password, undefined);
+  const children = Array.isArray(screen.props.children) ? screen.props.children : [screen.props.children];
+  const onboarding = children.find(child => child?.type === Screen);
+  assert.ok(children.some(child => child?.type === ReplayBoundary));
+  assert.ok(onboarding, "onboarding remains inside the authenticated page");
+  assert.equal(onboarding.props.user.id, "user-fixture");
+  assert.equal(Object.keys(onboarding.props.user).length, 3);
+  assert.equal(onboarding.props.user.password, undefined);
 });

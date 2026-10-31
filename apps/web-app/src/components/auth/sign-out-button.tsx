@@ -8,12 +8,14 @@ import {
   SESSION_STARTED_STORAGE_PREFIX,
 } from "@/lib/session-security";
 import { captureClientProductEvent, resetProductAnalytics } from "@/lib/client-product-analytics";
+import { stopBetaReplayForSignOut } from "@/lib/beta-replay-client";
 
 export function SignOutButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSignOut() {
+    stopBetaReplayForSignOut();
     setIsLoading(true);
 
     await fetch("/api/auth/signout", {

@@ -20,6 +20,7 @@ activation de suppression en production restent des opérations distinctes.
 | Relation Okado avec les utilisateurs marchands dans Brevo | Okado ; distinguer service, information professionnelle et prospection | Besoin de relation ; pour les prospects, examiner le repère CNIL de 3 ans et le dernier contact venant de la personne ; conserver séparément les oppositions nécessaires | `brevo.ts` synchronise les utilisateurs marchands lors de signup/Google/onboarding/compte ou reprise administrative, sans préférence commerciale. La présence dans une liste n'autorise pas une campagne. Vérifier les automations et désinscriptions dans Brevo avant toute campagne. |
 | Mesure d'acquisition et d'usage PostHog : événements, identifiants techniques et e-mail de connexion du profil marchand (#592, accord propriétaire du 18 octobre) | Okado ; consentement préalable pour ce dispositif | Choix valable 180 jours sans renouvellement à la visite ; cookie d'identification au plus 180 jours ; durée des événements/personnes à vérifier dans le projet | Projet 212872 EU confirmé. L'e-mail vient du compte authentifié et accompagne uniquement ses mises à jour de profil, jamais les joueurs ou propriétés libres. Information publique actualisée ; le choix de mesure est contrôlé côté navigateur et serveur. La durée du cookie ne prouve pas la durée des événements hébergés. Pas de modification de rétention du fournisseur sans preuve et analyse des données existantes. |
 | Mesure Vercel Analytics | Okado ; même choix préalable que la mesure PostHog dans cette livraison | Collecte après accord ; rétention du service à contrôler dans le contrat et l'offre souscrite | Composant chargé seulement après accord lorsque la mesure est configurée. Paramètres d'URL et identifiants des parcours publics sensibles exclus des URL de mesure. |
+| Mesures opérationnelles serveur #710 : route fermée, méthode, statut, durée, étape et version | Okado ; finalité de fonctionnement, sécurité et stabilité autorisée par le propriétaire le 29 octobre. Nécessité contractuelle ou intérêt légitime selon la finalité, distincts du consentement de mesure d’audience | Journaux PostHog Logs : 14 jours par défaut selon documentation fournisseur ; confirmer la configuration effective avant activation. Aucun allongement payant ni délai d’événements analytics réutilisé | Aucun identifiant utilisateur/compte, IP, cookie, URL libre, corps ou trace brute dans les nouvelles mesures. Pas de profil ou de suivi intersessions ; export opérationnel séparé et arrêté par configuration serveur. Les requêtes de fond/préchargement ne sont pas des utilisateurs uniques. |
 | Sécurité, limites de débit et anti-abus | Okado pour la sécurité du service ; besoins propres du marchand à qualifier | Durée limitée au besoin de protection | Le SQL opérationnel prévoit 8 jours pour les verrous quotidiens, 2 jours après échéance pour les limites de débit et l'expiration des identités joueur. Le cron de maintenance dépend de son activation : ces délais SQL ne prouvent pas une purge effectivement opérée. |
 | E-mails Resend et sauvegardes | Rôle selon données de compte / jeu | Durées propres aux copies, traces, outbox et sauvegardes à confirmer | L'effacement d'une ligne en base n'efface pas à lui seul les messages fournisseur, exports, archives ou sauvegardes. Recenser les copies avant toute promesse d'effacement complet. |
 
@@ -107,3 +108,14 @@ entièrement validée tant que ces pièces restent manquantes.
 - [CNIL — règles cookies](https://www.cnil.fr/fr/cookies-et-autres-traceurs/regles/cookies).
 - [PostHog — consentement Next.js](https://posthog.com/tutorials/nextjs-cookie-banner).
 - [Canada — lois fédérales et provinciales](https://www.priv.gc.ca/fr/sujets-lies-a-la-protection-de-la-vie-privee/lois-sur-la-protection-des-renseignements-personnels-au-canada/02_05_d_15/).
+
+## Exception contractuelle de bêta fermée — #712
+
+Le propriétaire confirme le 30 octobre 2026 une autorisation contractuelle validée
+avec le juridique pour les comptes SaaS de bêta fermée actuels et futurs. Replay
+PostHog 212872 EU, rétention configurée vérifiée à 30 jours ; données saisies et
+contenus libres masqués, aucun joueur enregistré. Cette confirmation ne remplace
+pas les pièces contractuelles détenues par le propriétaire. Les choix cookies de
+mesure d’audience restent distincts. Le passage en mode public désactive la capture
+bêta ; aucun accord public n’est déduit d’une inscription ou d’une date.
+[Activation, limites et arrêt](releases/2026-10-30-closed-beta-replay-712.md).

@@ -958,6 +958,38 @@ export function CampaignWizard({
   const gameTypeState = useRef<Partial<Record<WizardDraft["gameType"], GameTypeState>>>({});
 
   function selectBeautyWheelTemplate(templateId: GamePageTemplateId) {
+    const seasonalTheme = christmasWheelTheme(templateId);
+    if (seasonalTheme) {
+      captureClientProductEvent("campaign_template_selected", { campaignType: "wheel", templateKey: templateId, wizardMode: "guided" });
+      setDraft((current) => {
+        const previousId = current.presentation.layout.templateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
+        if (previousId === templateId) return current;
+        wheelTemplateState.current[previousId] = {
+          wheel: current.presentation.wheel, backgroundColor: current.presentation.background.color,
+          scratchSignal: current.accent.signal, scratchTextColor: current.accent.ink,
+          headingTextColor: current.presentation.heading.textColor,
+          logoTextColor: current.presentation.logo.textColor ?? current.presentation.heading.textColor,
+          headingFontFamily: current.presentation.heading.fontFamily, headingAlign: current.presentation.heading.align,
+          logoAlign: current.presentation.logo.align, logoBottomSpacingPx: current.presentation.logo.marginBottomPx,
+          buttonBackgroundColor: current.presentation.button.backgroundColor,
+          blockSpacingPx: current.presentation.layout.blockSpacingPx, subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
+        };
+        const remembered = wheelTemplateState.current[templateId];
+        return {
+          ...current,
+          presentation: {
+            ...current.presentation,
+            layout: { ...current.presentation.layout, templateId, wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] }, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId) },
+            background: { ...current.presentation.background, color: remembered?.backgroundColor ?? seasonalTheme.background },
+            wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
+            heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? wheelHeadingFontForTemplateSelection(templateId, current.presentation.heading.fontFamily), textColor: remembered?.headingTextColor ?? wheelHeadingColorForTemplateSelection(templateId, current.presentation.heading.textColor), align: remembered?.headingAlign ?? "center" },
+            logo: { ...current.presentation.logo, textColor: remembered?.logoTextColor ?? wheelLogoColorForTemplateSelection(templateId, current.presentation.logo.textColor ?? current.presentation.heading.textColor), marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx), align: remembered?.logoAlign ?? "center" },
+            button: { ...current.presentation.button, backgroundColor: remembered?.buttonBackgroundColor ?? seasonalTheme.button },
+          },
+        };
+      });
+      return;
+    }
     if (templateId === "rose-institut") {
       captureClientProductEvent("campaign_template_selected", {
         campaignType: "wheel",
@@ -1604,7 +1636,7 @@ export function CampaignWizard({
         ))}
       </div>
       {draft.logoMode === "text" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold text-carbon">Texte du logo</span><input value={draft.logoText ?? merchant.companyName} onChange={(event) => patchDraft({ logoText: event.target.value })} className="w-full rounded-[12px] border border-fog bg-white px-3 py-3 text-carbon outline-none focus:border-aubergine focus:ring-4 focus:ring-aubergine/15" /></label> : null}
-      {draft.logoMode === "image" ? <label aria-live="polite" className={`mt-3 flex items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold ${imageUploads.logo ? "cursor-wait opacity-75" : "cursor-pointer"}`}><span className="inline-flex items-center gap-2">{imageUploads.logo ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Importer un logo"}</span><input type="file" accept={MERCHANT_IMAGE_ACCEPT} className="hidden" disabled={imageUploads.logo} onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })), "logo", adminAccountMerchantId ? { accountMerchantId: adminAccountMerchantId, locationId: merchant.id } : undefined, (isUploading) => setImageUploads((current) => ({ ...current, logo: isUploading })))} /></label> : null}
+      {draft.logoMode === "image" ? <label aria-live="polite" className={`mt-3 flex items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold ${imageUploads.logo ? "cursor-wait opacity-75" : "cursor-pointer"}`}><span className="inline-flex items-center gap-2">{imageUploads.logo ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Importer votre logo"}</span><input type="file" accept={MERCHANT_IMAGE_ACCEPT} className="hidden" disabled={imageUploads.logo} onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, logo: undefined })); patchDraft({ logoUrl: value, logoMode: "image" }); }, (message) => setImageUploadErrors((current) => ({ ...current, logo: message })), "logo", adminAccountMerchantId ? { accountMerchantId: adminAccountMerchantId, locationId: merchant.id } : undefined, (isUploading) => setImageUploads((current) => ({ ...current, logo: isUploading })))} /></label> : null}
       {imageUploadErrors.logo ? <p role="alert" className="mt-2 text-xs text-coral-alert">{imageUploadErrors.logo}</p> : null}
       {draft.logoMode !== "none" ? <div className="mt-3"><label className="block text-sm"><span className="mb-2 flex items-center justify-between gap-3 font-semibold"><span>Taille du logo</span><output className="text-aubergine">{draft.presentation.logo.sizePercent}%</output></span><input type="range" min={0} max={200} value={draft.presentation.logo.sizePercent} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, sizePercent: Number(event.target.value) } } })} className="w-full cursor-pointer accent-aubergine" aria-label="Taille du logo" /></label></div> : null}
     </section>
@@ -2262,7 +2294,7 @@ export function CampaignWizard({
                   </ul>
                 </div>
               ) : null}
-              <details data-testid="wizard-prize-rules" className="group rounded-[14px] border border-[#e8e2ea] bg-white">
+              <details data-testid="wizard-prize-rules" open className="group rounded-[14px] border border-[#e8e2ea] bg-white">
                 <summary className="flex cursor-pointer list-none items-start justify-between gap-3 px-4 py-4 text-left [&::-webkit-details-marker]:hidden">
                   <span className="flex items-start gap-3">
                     <Settings2 className="mt-0.5 h-4 w-4 shrink-0 text-[#716b78]" aria-hidden="true" />
@@ -2343,7 +2375,7 @@ export function CampaignWizard({
                   onSelect={selectBeautyScratchTemplate}
                 />
               ) : null}
-              {draft.gameType === "wheel" ? <h3 className="text-base font-semibold text-carbon">Autres templates de roue</h3> : null}
+              <h3 className="text-base font-semibold text-carbon">Autres templates</h3>
               <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3" data-testid="classic-template-options">
                 {(
                   draft.gameType === "scratch"
@@ -2402,7 +2434,7 @@ export function CampaignWizard({
                 )
                   .filter((template) => template.id !== "cosmic-orbit" && template.id !== "sunburst-festival")
                   .filter((template) => draft.gameType !== "scratch" || !isHiddenScratchTemplate(template.id))
-                  .filter((template) => !isBeautyIndustry(merchant.industry) || template.id !== "rose-institut")
+                  .filter((template) => !isBeautyIndustry(merchant.industry) || (template.id !== "rose-institut" && template.id !== "christmas-rose"))
                   .slice()
                   .map((template) => (
                   <GameTemplateCard
@@ -2651,63 +2683,9 @@ export function CampaignWizard({
 
                {logoSettings}
 
-               <details className="group rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe]">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-sm font-semibold text-[#182033] [&::-webkit-details-marker]:hidden">
-                  <span>
-                    Paramètres avancés <span className="font-normal text-[#8993a6]">(mode expert)</span>
-                  </span>
-                  <ChevronDown className="h-4 w-4 shrink-0 text-[#8993a6] transition-transform group-open:rotate-180" />
-                </summary>
+               <section aria-labelledby="wizard-advanced-settings-title" className="rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe]">
+                <div className="px-4 py-4 text-sm font-semibold text-[#182033]"><h3 id="wizard-advanced-settings-title">Paramètres avancés</h3></div>
                  <div className="space-y-5 border-t border-[#e2e8f0] px-4 pb-4 pt-4">
-                   <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
-                     <p className="text-sm font-semibold text-[#182033]">Espacements</p>
-                     <div className="mt-4">
-                       <CampaignSpacingControls
-                         gameType={draft.gameType}
-                         logoMode={draft.logoMode}
-                         hasScratchSubtitle={Boolean(scratchVisualTheme(draft.presentation.layout.templateId))}
-                         logoSpacingPx={draft.presentation.logo.marginBottomPx}
-                         blockSpacingPx={draft.presentation.layout.blockSpacingPx}
-                         subtitleSpacingPx={draft.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}
-                         onLogoSpacingChange={(value) =>
-                           patchDraft({
-                             presentation: {
-                               ...draft.presentation,
-                               logo: {
-                                 ...draft.presentation.logo,
-                                 marginBottomPx: clampCampaignSpacingPx(value),
-                               },
-                             },
-                           })
-                         }
-                         onBlockSpacingChange={(value) =>
-                           patchDraft({
-                             presentation: {
-                               ...draft.presentation,
-                               layout: {
-                                 ...draft.presentation.layout,
-                                 blockSpacingPx: clampCampaignSpacingPx(value),
-                               },
-                             },
-                           })
-                         }
-                         onSubtitleSpacingChange={(value) =>
-                           patchDraft({
-                             presentation: {
-                               ...draft.presentation,
-                               layout: {
-                                 ...draft.presentation.layout,
-                                 subtitleSpacingPx: clampCampaignSpacingPx(
-                                   value,
-                                   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
-                                 ),
-                               },
-                             },
-                           })
-                         }
-                       />
-                     </div>
-                   </section>
                <div className="hidden">
                     {draft.gameType === "wheel" ? (
                   <>
@@ -2883,9 +2861,9 @@ export function CampaignWizard({
                     <p className="text-sm font-semibold text-[#182033]">Fond</p>
                     {isHalloweenFixedPalette(draft.presentation.layout.templateId) ? <p className="mt-3 text-sm text-[#526078]">Décor Halloween et palette fixes. Le logo, les textes, leurs tailles et espacements restent personnalisables.</p> : <>
                <div className="mt-3 grid gap-3 sm:grid-cols-2">{([{ value: "color", label: "Couleur" }, { value: "image", label: "Image" }] as const).map((mode) => <button key={mode.value} type="button" onClick={() => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: mode.value } } })} className={`cursor-pointer rounded-[12px] border px-3 py-2.5 text-sm font-semibold ${draft.presentation.background.mode === mode.value ? "border-aubergine bg-purple-haze text-deep-plum" : "border-[#dbe3ed] bg-white text-[#526078]"}`}>{mode.label}</button>)}</div>
-                    {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : <label aria-live="polite" className={`mt-3 flex items-center justify-between rounded-[12px] border border-dashed border-[#b8c5d8] px-3 py-3 text-sm font-semibold ${imageUploads.background ? "cursor-wait opacity-75" : "cursor-pointer"}`}><span className="inline-flex items-center gap-2">{imageUploads.background ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Importer une image de fond"}</span><input type="file" accept={MERCHANT_IMAGE_ACCEPT} className="hidden" disabled={imageUploads.background} onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })), "background", adminAccountMerchantId ? { accountMerchantId: adminAccountMerchantId, locationId: merchant.id } : undefined, (isUploading) => setImageUploads((current) => ({ ...current, background: isUploading })))} /></label>}
+                    {draft.presentation.background.mode === "color" ? <label className="mt-3 block text-sm"><span className="mb-2 block font-semibold">Couleur de fond</span><input type="color" value={draft.presentation.background.color} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, color: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" /></label> : null}
                     {imageUploadErrors.background ? <p role="alert" className="mt-2 text-xs text-[#b42318]">{imageUploadErrors.background}</p> : null}
-                    {draft.presentation.background.mode === "image" ? <div className="mt-3 flex flex-wrap items-center gap-2"><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="cursor-pointer rounded-[4px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white">Choisir dans la bibliothèque</button>{draft.presentation.background.imageUrl ? <span className="rounded-full bg-[#e9f8ec] px-3 py-1.5 text-xs font-semibold text-[#18864b]">Image sélectionnée</span> : null}</div> : null}
+                    {draft.presentation.background.mode === "image" ? <div className="mt-3 grid gap-2 sm:grid-cols-2" role="group" aria-label="Choisir une image de fond"><label aria-live="polite" className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-aubergine px-3 py-2.5 text-center text-sm font-semibold text-deep-plum ${imageUploads.background ? "cursor-wait opacity-75" : "cursor-pointer hover:bg-purple-haze"}`}><span className="inline-flex items-center gap-2">{imageUploads.background ? <><Loader2 className="size-4 animate-spin" aria-hidden="true" /> Import et optimisation…</> : "Importer une image de fond"}</span><input type="file" accept={MERCHANT_IMAGE_ACCEPT} className="sr-only" disabled={imageUploads.background} onChange={(event) => uploadWizardImage(event, (value) => { setImageUploadErrors((current) => ({ ...current, background: undefined })); patchDraft({ presentation: { ...draft.presentation, background: { ...draft.presentation.background, mode: "image", imageUrl: value } } }); }, (message) => setImageUploadErrors((current) => ({ ...current, background: message })), "background", adminAccountMerchantId ? { accountMerchantId: adminAccountMerchantId, locationId: merchant.id } : undefined, (isUploading) => setImageUploads((current) => ({ ...current, background: isUploading })))} /></label><button type="button" onClick={() => setBackgroundLibraryOpen(true)} className="min-h-11 cursor-pointer rounded-[10px] border border-aubergine bg-aubergine px-3 py-2.5 text-sm font-semibold text-white hover:bg-deep-plum">Choisir dans la bibliothèque</button></div> : null}{draft.presentation.background.imageUrl ? <p className="mt-2 text-xs font-medium text-[#18864b]">Image de fond sélectionnée</p> : null}
                     </>}
                   </section>
                    <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
@@ -2962,8 +2940,58 @@ export function CampaignWizard({
                         ))}
                     </div>
                   </section> : null}
-                </div>                </div>
-              </details>
+                </div>
+<section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+                     <p className="text-sm font-semibold text-[#182033]">Espacements</p>
+                     <div className="mt-4">
+                       <CampaignSpacingControls
+                         gameType={draft.gameType}
+                         logoMode={draft.logoMode}
+                         hasScratchSubtitle={Boolean(scratchVisualTheme(draft.presentation.layout.templateId))}
+                         logoSpacingPx={draft.presentation.logo.marginBottomPx}
+                         blockSpacingPx={draft.presentation.layout.blockSpacingPx}
+                         subtitleSpacingPx={draft.presentation.layout.subtitleSpacingPx ?? DEFAULT_WHEEL_SUBTITLE_SPACING_PX}
+                         onLogoSpacingChange={(value) =>
+                           patchDraft({
+                             presentation: {
+                               ...draft.presentation,
+                               logo: {
+                                 ...draft.presentation.logo,
+                                 marginBottomPx: clampCampaignSpacingPx(value),
+                               },
+                             },
+                           })
+                         }
+                         onBlockSpacingChange={(value) =>
+                           patchDraft({
+                             presentation: {
+                               ...draft.presentation,
+                               layout: {
+                                 ...draft.presentation.layout,
+                                 blockSpacingPx: clampCampaignSpacingPx(value),
+                               },
+                             },
+                           })
+                         }
+                         onSubtitleSpacingChange={(value) =>
+                           patchDraft({
+                             presentation: {
+                               ...draft.presentation,
+                               layout: {
+                                 ...draft.presentation.layout,
+                                 subtitleSpacingPx: clampCampaignSpacingPx(
+                                   value,
+                                   DEFAULT_WHEEL_SUBTITLE_SPACING_PX,
+                                 ),
+                               },
+                             },
+                           })
+                         }
+                       />
+                     </div>
+                   </section>
+</div>
+              </section>
             </div>
           ) : null}
 
