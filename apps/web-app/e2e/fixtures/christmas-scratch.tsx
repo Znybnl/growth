@@ -24,7 +24,7 @@ export function ChristmasScratchFixture({ templateId, mode, initialBackground = 
       background: { mode: background === "image" ? "image" as const : "color" as const, color: background === "color" ? "#e0f2fe" : theme.backgroundColor, imageUrl: background === "image" ? "/backgrounds/aurora-retail.svg" : undefined },
       heading: { ...halloweenFixture.presentation.heading, fontFamily: theme.font, fontSizePx: DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX, textColor: theme.text },
       logo: { ...halloweenFixture.presentation.logo, textColor: theme.logo, sizePercent: 75, marginBottomPx: 36 },
-      layout: { ...halloweenFixture.presentation.layout, templateId: selected, scratchSubtitle: "De belles surprises vous attendent pour Noël", blockSpacingPx: 32 },
+      layout: { ...halloweenFixture.presentation.layout, templateId: selected, scratchSubtitle: "Une surprise vous attend !", blockSpacingPx: 32 },
     } };
   const merchant = { id: "fixture-merchant", companyName: "Maison Douceur", logoText: "Maison Douceur" } as Merchant;
   const preview = buildCampaignLivePreviewModel(form, merchant);
@@ -33,7 +33,7 @@ export function ChristmasScratchFixture({ templateId, mode, initialBackground = 
     return <main data-fixture-ready={ready}><CampaignExperience campaignId={campaign.id} initialCampaign={campaign} isPreview={mode === "preview"} previewToken={mode === "preview" ? "fixture-only" : undefined} /></main>;
   }
   if (mode === "interaction") return <main data-fixture-ready={ready} className="mx-auto max-w-[390px] px-4" style={{ backgroundColor: theme.backgroundColor, backgroundImage: `url("${theme.background}")`, backgroundSize: "cover" }}>
-    <ImmersiveScratchTicket template={theme.id} accent={form.accent} resultLabel="UN CADEAU DE NOËL" enabled
+    <ImmersiveScratchTicket template={theme.id} accent={form.accent} resultLabel="UNE SURPRISE" enabled
       onReveal={() => setReveals(count => count + 1)} onScratchStart={() => setStarts(count => count + 1)}
       headline={title} secondaryText={form.presentation.layout.scratchSubtitle} logoMode={logo} logoText="Maison Douceur"
       headingFontSizePx={46} headingFontClass="font-bodoni" headingTextColor={theme.text} logoTextColor={theme.logo} />

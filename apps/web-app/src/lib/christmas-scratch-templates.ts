@@ -29,57 +29,59 @@ type IllustratedTemplate = {
   scratch: ScratchFinish;
 };
 
+// Keep the historical IDs for campaigns already using the original PR #726.
+// The four illustrated styles below are neutral festive designs, not seasonal templates.
 export const CHRISTMAS_SCRATCH_TEMPLATES = [
   { id: "scratch-christmas-rose", wheelId: "christmas-rose", scratch: { base: "#c6a0aa", highlight: "#f4e3e5", edge: "#fff5ef", texture: "/images/scratch-templates/beauty-foil-lilas.webp", textureOpacity: .28 } },
   { id: "scratch-christmas-natural", wheelId: "christmas-natural", scratch: { base: "#b69a63", highlight: "#eee1c4", edge: "#fff9eb", texture: "/images/scratch-templates/beauty-foil-botanical.webp", textureOpacity: .32 } },
   { id: "scratch-christmas-traditional", wheelId: "christmas-traditional", scratch: { base: "#a98444", highlight: "#f0dca0", edge: "#fff0c4", texture: "/images/scratch-templates/beauty-foil-noir-or.webp", textureOpacity: .28 } },
   {
     id: "scratch-christmas-evergreen",
-    name: "Noël sapin & cadeaux",
-    description: "Sapin profond, rubans rouges et cadeaux lumineux.",
-    background: "/images/scratch-templates/christmas-evergreen-background.webp",
+    name: "Vert bouteille & rubans",
+    description: "Papier vert profond, rubans rouges et paquets cadeaux.",
+    background: "/images/scratch-templates/festive-gift-wrap-green-background-v2.webp",
     backgroundColor: "#f5eddd",
     text: "#173c34",
     logo: "#173c34",
     font: "fredoka",
     scratchShape: "brush",
-    scratch: { base: "#b58a43", highlight: "#f0cf83", edge: "#fff2d0", texture: "/images/scratch-templates/beauty-foil-noir-or.webp", textureOpacity: .43 },
+    scratch: { base: "#bd965d", highlight: "#dfc08b", edge: "#fff1d4", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .12 },
   },
   {
     id: "scratch-christmas-champagne",
-    name: "Noël champagne",
-    description: "Ivoire lumineux, rubans et détails champagne.",
-    background: "/images/scratch-templates/christmas-champagne-background.webp",
+    name: "Ivoire & champagne",
+    description: "Rubans dorés satinés et paquet cadeau sur fond ivoire.",
+    background: "/images/scratch-templates/festive-champagne-ribbons-background-v2.webp",
     backgroundColor: "#fbf4e8",
     text: "#263d37",
     logo: "#8f6931",
-    font: "cormorant",
+    font: "playfair",
     scratchShape: "brush",
-    scratch: { base: "#bb9148", highlight: "#f4d99b", edge: "#fff6e3", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .44 },
+    scratch: { base: "#c6a775", highlight: "#e7d2ab", edge: "#fff6e3", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .14 },
   },
   {
     id: "scratch-christmas-retro",
-    name: "Noël rétro",
-    description: "Rayons colorés, rouge festif et esprit affiche vintage.",
-    background: "/images/scratch-templates/christmas-retro-background.webp",
+    name: "Rayons rétro",
+    description: "Rayons corail, turquoise et safran façon affiche vintage.",
+    background: "/images/scratch-templates/festive-retro-rays-background-v3.webp",
     backgroundColor: "#f5e9ce",
     text: "#ad2925",
     logo: "#3b5547",
-    font: "fredoka",
+    font: "playfair",
     scratchShape: "ticket",
     scratch: { base: "#aeb7bd", highlight: "#f4f0df", edge: "#fff0b8", textureOpacity: .5 },
   },
   {
     id: "scratch-christmas-noir-or",
-    name: "Noël noir & or",
-    description: "Fond noir profond, rubans de satin et éclats dorés.",
-    background: "/images/scratch-templates/christmas-noir-or-background.webp",
+    name: "Satin noir & or",
+    description: "Rubans métallisés et éclats dorés sur fond noir profond.",
+    background: "/images/scratch-templates/festive-black-gold-ribbons-background-v2.webp",
     backgroundColor: "#100f0d",
     text: "#f8f0df",
     logo: "#e5c77c",
     font: "bodoni",
     scratchShape: "brush",
-    scratch: { base: "#ae813b", highlight: "#f4d78e", edge: "#fff0c3", texture: "/images/scratch-templates/beauty-foil-noir-or.webp", textureOpacity: .46 },
+    scratch: { base: "#ae813b", highlight: "#f4d78e", edge: "#fff0c3", texture: "/images/scratch-templates/beauty-foil-noir-or.webp", textureOpacity: .24 },
   },
 ] as const satisfies readonly (WheelBasedTemplate | IllustratedTemplate)[];
 
@@ -124,7 +126,7 @@ const themes: ChristmasScratchTheme[] = CHRISTMAS_SCRATCH_TEMPLATES.map((item) =
     id: item.id,
     sampleHeadline: "Jouez & gagnez",
     sampleSubline: "Une surprise vous attend !",
-    fontClass: item.font === "fredoka" ? "font-fredoka" : item.font === "cormorant" ? "font-cormorant" : "font-bodoni",
+    fontClass: item.font === "fredoka" ? "font-fredoka" : item.font === "playfair" ? "font-playfair" : "font-bodoni",
   };
 });
 

@@ -13,10 +13,9 @@ import {
 } from "@/lib/campaign-defaults";
 import { scratchVisualTheme, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
+import { BRUSH_CLIP_PATH, SCALLOPED_TICKET_CLIP_PATH } from "@/lib/scratch-surface-shapes";
 
 type ScratchTemplateId = ImmersiveScratchTemplateId;
-
-const BRUSH_CLIP_PATH = "polygon(2% 22%, 7% 18%, 6% 14%, 12% 15%, 14% 10%, 20% 12%, 25% 8%, 31% 11%, 37% 7%, 43% 10%, 49% 6%, 55% 9%, 61% 7%, 67% 11%, 73% 8%, 79% 12%, 85% 9%, 90% 14%, 96% 12%, 94% 19%, 98% 23%, 95% 29%, 99% 34%, 96% 40%, 99% 46%, 95% 52%, 98% 58%, 94% 64%, 97% 70%, 92% 75%, 95% 81%, 88% 84%, 90% 90%, 83% 88%, 77% 94%, 70% 91%, 64% 96%, 57% 92%, 50% 97%, 44% 93%, 37% 96%, 31% 91%, 24% 95%, 19% 89%, 12% 92%, 10% 86%, 4% 87%, 7% 80%, 2% 75%, 6% 68%, 1% 62%, 5% 56%, 2% 49%, 6% 43%, 3% 36%, 8% 31%, 4% 26%, 9% 23%)";
 
 type ImmersiveScratchTicketProps = {
   accent: {
@@ -235,14 +234,15 @@ export function ImmersiveScratchTicket({
   const resolvedHeadingFontClass = headingFontClass || beautyTheme?.fontClass || (isLilac ? "font-fredoka" : "font-display");
   const displayHeadline = headline?.trim() || DEFAULT_SCRATCH_SUBTITLE;
   const instruction = "Grattez la carte pour révéler votre cadeau.";
-  const coverColor = beautyTheme?.scratch.base ?? (isVault ? "#171d38" : isConfetti ? "#71364a" : primary);
-  const coverHighlight = beautyTheme?.scratch.highlight ?? (isSunburst ? blendWithWhite(coverColor, 0.2) : blendWithWhite(coverColor, 0.34));
+  const scratchFinish = christmasTheme?.scratch ?? beautyTheme?.scratch;
+  const coverColor = scratchFinish?.base ?? (isVault ? "#171d38" : isConfetti ? "#71364a" : primary);
+  const coverHighlight = scratchFinish?.highlight ?? (isSunburst ? blendWithWhite(coverColor, 0.2) : blendWithWhite(coverColor, 0.34));
 
   const surfaceClass = beautyTheme
     ? scratchShape === "brush"
-      ? "mx-auto aspect-[2/1] w-[86%] max-w-[300px]"
+      ? "mx-auto aspect-[2.2/1] w-full max-w-[340px]"
       : isDecorativeTicket
-        ? "mx-auto aspect-[1.68/1] w-[86%] max-w-[300px] p-[12px]"
+    ? "mx-auto aspect-[1.9/1] w-full max-w-[340px] p-[12px]"
         : "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
     : isSunburst
     ? "mx-auto aspect-[1.18/1] w-[70%] max-w-[216px]"
@@ -305,10 +305,10 @@ export function ImmersiveScratchTicket({
     context.fillStyle = gradient;
     context.fillRect(0, 0, canvasWidth, canvasHeight);
 
-    if (!beautyTheme) {
+    if (!beautyTheme && !christmasTheme) {
       context.save();
       context.globalAlpha = isSunburst ? 0.14 : 0.18;
-      context.strokeStyle = isLilac || isSunburst ? "#ffffff" : readableTextColor(primary);
+      context.strokeStyle = isSunburst ? "#ffffff" : readableTextColor(primary);
       context.lineWidth = 2;
       for (let offset = -canvasHeight; offset < canvasWidth; offset += isSunburst ? 28 : 34) {
         context.beginPath();
@@ -320,7 +320,7 @@ export function ImmersiveScratchTicket({
     }
 
     let cancelled = false;
-    if (beautyTheme?.scratch.texture) {
+    if (scratchFinish?.texture) {
       const texture = new window.Image();
       texture.onload = () => {
         if (cancelled) return;
@@ -328,7 +328,7 @@ export function ImmersiveScratchTicket({
         if (!currentContext) return;
         currentContext.save();
         currentContext.globalCompositeOperation = "source-over";
-        currentContext.globalAlpha = beautyTheme.scratch.textureOpacity;
+        currentContext.globalAlpha = scratchFinish.textureOpacity;
         currentContext.drawImage(texture, 0, 0, canvasWidth, canvasHeight);
         currentContext.restore();
         canvas.dataset.foilLoaded = "true";
@@ -336,19 +336,21 @@ export function ImmersiveScratchTicket({
       texture.onerror = () => {
         if (!cancelled) canvas.dataset.foilLoaded = "error";
       };
-      texture.src = beautyTheme.scratch.texture;
+      texture.src = scratchFinish.texture;
     } else if (beautyTheme) {
-      context.save();
-      context.globalAlpha = isDecorativeTicket ? .2 : .16;
-      context.strokeStyle = "#ffffff";
-      context.lineWidth = 2;
-      for (let offset = -canvasHeight; offset < canvasWidth; offset += 26) {
-        context.beginPath();
-        context.moveTo(offset, 0);
-        context.lineTo(offset + canvasHeight, canvasHeight);
-        context.stroke();
+      if (!christmasTheme) {
+        context.save();
+        context.globalAlpha = isDecorativeTicket ? .2 : .16;
+        context.strokeStyle = "#ffffff";
+        context.lineWidth = 2;
+        for (let offset = -canvasHeight; offset < canvasWidth; offset += 26) {
+          context.beginPath();
+          context.moveTo(offset, 0);
+          context.lineTo(offset + canvasHeight, canvasHeight);
+          context.stroke();
+        }
+        context.restore();
       }
-      context.restore();
       canvas.dataset.foilLoaded = "true";
     }
 
@@ -360,7 +362,7 @@ export function ImmersiveScratchTicket({
     return () => {
       cancelled = true;
     };
-  }, [beautyTheme, canvasHeight, canvasWidth, coverColor, coverHighlight, isConfetti, isCoral, isDecorativeTicket, isLilac, isSunburst, isVault, primary, resultLabel]);
+  }, [beautyTheme, canvasHeight, canvasWidth, christmasTheme, coverColor, coverHighlight, isConfetti, isCoral, isDecorativeTicket, isLilac, isSunburst, isVault, primary, resultLabel, scratchFinish?.texture, scratchFinish?.textureOpacity]);
 
   function reveal() {
     if (revealedRef.current) return;
@@ -444,15 +446,15 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           <h2
-            className={`${beautyTheme || isConfetti ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
+            className={`${(beautyTheme && !christmasTheme) || isConfetti ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
             style={{ color: ink, fontSize: christmasTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: headingFontWeight, whiteSpace: christmasTheme ? "pre-line" : undefined }}
           >
             {displayHeadline}
           </h2>
           {secondaryText?.trim() ? (
             <p
-              className={`mx-auto max-w-[280px] uppercase leading-[1.55] tracking-[0.08em] ${headingAlignmentClass}`}
-              style={{ color: withAlpha(isLilac ? logoTextColor || ink : ink, "d9"), fontSize: "clamp(10px, 4cqw, 14px)", marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
+              className={`mx-auto ${christmasTheme ? "max-w-[92%] normal-case leading-[1.2] tracking-normal" : "max-w-[280px] uppercase leading-[1.55] tracking-[0.08em]"} ${headingAlignmentClass}`}
+              style={{ color: withAlpha(isLilac ? logoTextColor || ink : ink, "d9"), fontSize: christmasTheme ? "clamp(12px, 6cqw, 18px)" : "clamp(10px, 4cqw, 14px)", marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
             >
               {secondaryText.trim()}
             </p>
@@ -466,8 +468,14 @@ export function ImmersiveScratchTicket({
         <div
           data-testid="scratch-ticket-surface"
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
-          style={scratchShape === "brush" ? { clipPath: BRUSH_CLIP_PATH } : scratchShape === "ticket" ? { clipPath: "polygon(0 10%, 4% 10%, 4% 0, 96% 0, 96% 10%, 100% 10%, 100% 90%, 96% 90%, 96% 100%, 4% 100%, 4% 90%, 0 90%)" } : undefined}
+          style={scratchShape === "brush" ? { clipPath: BRUSH_CLIP_PATH } : scratchShape === "ticket" ? { clipPath: SCALLOPED_TICKET_CLIP_PATH } : undefined}
         >
+          {isDecorativeTicket ? <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 text-[#ffe18a]">
+            <span className="absolute left-[8%] top-[12%] text-[clamp(12px,4cqw,19px)]">★</span>
+            <span className="absolute right-[8%] top-[12%] text-[clamp(12px,4cqw,19px)]">★</span>
+            <span className="absolute bottom-[12%] left-[8%] text-[clamp(12px,4cqw,19px)]">★</span>
+            <span className="absolute bottom-[12%] right-[8%] text-[clamp(12px,4cqw,19px)]">★</span>
+          </div> : null}
           {!hasTouched && !revealed ? (
             <div
               aria-hidden="true"
@@ -478,22 +486,24 @@ export function ImmersiveScratchTicket({
                 inset: isDecorativeTicket ? "12px" : 0,
                 clipPath: scratchShape ? BRUSH_CLIP_PATH : undefined,
                 backgroundColor: coverColor,
-                ...(beautyTheme ? {} : {
+                ...(christmasTheme ? {
+                  backgroundImage: `linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 46%, ${coverColor} 100%)`,
+                } : beautyTheme ? {} : {
                   backgroundImage: `repeating-linear-gradient(135deg, transparent 0 32px, ${withAlpha(readableTextColor(primary), isSunburst ? "24" : "2e")} 33px 35px), linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 42%, ${coverColor} 72%, ${blendWithWhite(coverColor, isSunburst ? 0.04 : 0.08)} 100%)`,
                 }),
-                ...(beautyTheme && !beautyTheme.scratch.texture ? { backgroundImage: `repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,255,255,.2) 23px 24px), linear-gradient(135deg, ${coverColor}, ${coverHighlight} 48%, ${coverColor})` } : {}),
+                ...(beautyTheme && !christmasTheme && !beautyTheme.scratch.texture ? { backgroundImage: `repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,255,255,.2) 23px 24px), linear-gradient(135deg, ${coverColor}, ${coverHighlight} 48%, ${coverColor})` } : {}),
               }}
             >
-              {beautyTheme?.scratch.texture ? (
+              {scratchFinish?.texture ? (
                 <Image
-                  src={beautyTheme.scratch.texture}
+                  src={scratchFinish.texture}
                   alt=""
                   fill
                   sizes="216px"
                   unoptimized
                   loading="eager"
                   className="object-cover"
-                  style={{ opacity: beautyTheme.scratch.textureOpacity }}
+                  style={{ opacity: scratchFinish.textureOpacity }}
                 />
               ) : null}
             </div>
