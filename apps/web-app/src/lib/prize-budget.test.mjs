@@ -13,6 +13,7 @@ registerHooks({ resolve(name, context, next) {
     "@/lib/campaign-local-settings": `export const getCampaignLocalSettings=async()=>globalThis.__budget.settings;
       export const setCampaignLocalSettings=async(id,value)=>{globalThis.__budget.settings=value;return value}`,
     "@/lib/support-log": "export const logSupportEvent=()=>{}",
+    "@/lib/server-performance": "export const measureServerStage=(_stage,work)=>work()",
   };
   if (mocks[name]) return { url: "data:text/javascript," + encodeURIComponent(mocks[name]), shortCircuit: true };
   if (name.startsWith("@/")) return next(new URL("../" + name.slice(2) + ".ts", import.meta.url).href, context);

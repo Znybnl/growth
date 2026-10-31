@@ -1,5 +1,18 @@
 # Architecture — Okado
 
+## Mesures opérationnelles — #710
+
+Le fournisseur OpenTelemetry installé au démarrage observe les spans HTTP
+racines de Next.js. Aucun span brut ni événement de trace n’est exporté : un
+processeur produit un enregistrement fermé et nettoyé, via le pipeline de logs
+existant. Les étapes Auth/données utilisent la même sortie avec un nom fixe.
+Le contexte HTTP interne évite de compter les pré-rendus de build et tâches
+hors requête comme des visites. Les API métier, permissions, réponses et corps
+de webhook ne sont pas modifiés. L’export est géré après réponse ou attaché au
+cycle de la fonction, avec file et délais bornés. Les comptages restent des
+requêtes observées côté serveur, pas des utilisateurs ; le CDN et les actions
+locales au navigateur ne sont pas couverts. Voir [configuration et limites](OBSERVABILITY.md).
+
 Ce document décrit l'architecture utile à la maintenance du produit. Il privilégie une compréhension simple plutôt qu'une description exhaustive du code.
 
 ## Vue d'ensemble

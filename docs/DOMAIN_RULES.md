@@ -1,5 +1,18 @@
 # Règles métier — Okado
 
+## Télémétrie opérationnelle serveur — décision du 29 octobre 2026, #710
+
+Le propriétaire autorise les mesures techniques côté serveur nécessaires au
+fonctionnement, à la stabilité et à la sécurité du SaaS indépendamment du choix
+de cookies de mesure : appels de routes, durées, statuts et fréquence technique
+par fonctionnalité. La finalité est l’exploitation ; elle ne permet pas un
+suivi comportemental individuel, un replay ou une mesure marketing sans accord.
+Les mesures nouvelles n’incluent ni utilisateur, compte, adresse IP, cookie,
+corps, URL libre ou identifiant de jeu/joueur. Le contrat ou l’intérêt légitime
+évoqués par le propriétaire sont à rattacher à la nécessité de chaque finalité,
+pas à une exemption générale de toute collecte. Les statistiques de requêtes
+ne sont jamais présentées comme des utilisateurs uniques ou des clics.
+
 ## Représentation des lots sur la roue — #628
 
 Chaque lot éligible (libellé renseigné, probabilité positive) doit être représenté
