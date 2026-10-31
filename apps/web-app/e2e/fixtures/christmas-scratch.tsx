@@ -34,7 +34,7 @@ export function ChristmasScratchFixture({ templateId, mode, initialBackground = 
     return <main data-fixture-ready={ready}><CampaignExperience campaignId={campaign.id} initialCampaign={campaign} isPreview={mode === "preview"} previewToken={mode === "preview" ? "fixture-only" : undefined} /></main>;
   }
   if (mode === "interaction") return <main data-fixture-ready={ready} className="mx-auto max-w-[390px] px-4" style={{ backgroundColor: theme.backgroundColor, backgroundImage: `url("${theme.background}")`, backgroundSize: "cover" }}>
-    <ImmersiveScratchTicket template={theme.id} accent={form.accent} resultLabel={halloweenScratchTemplate(selected) ? "UNE SURPRISE HALLOWEEN" : "UN CADEAU DE NOËL"} enabled
+    <ImmersiveScratchTicket template={theme.id} accent={form.accent} resultLabel={halloweenScratchTemplate(selected) ? "UNE SURPRISE HALLOWEEN" : "UNE SURPRISE"} enabled
       onReveal={() => setReveals(count => count + 1)} onScratchStart={() => setStarts(count => count + 1)}
       headline={title} secondaryText={form.presentation.layout.scratchSubtitle} logoMode={logo} logoText="Maison Douceur"
       headingFontSizePx={46} headingFontClass="font-bodoni" headingTextColor={theme.text} logoTextColor={theme.logo} />
