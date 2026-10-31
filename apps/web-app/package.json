@@ -19,6 +19,7 @@
     "test:prize-budget": "node --test src/lib/prize-budget.test.mjs",
     "test:gain-notifications": "node --experimental-strip-types --test src/lib/merchant-gain-notifications.test.mjs src/lib/merchant-gain-notification-api.test.mjs",
     "test:analytics-consent": "node --experimental-strip-types --test src/lib/analytics-consent.test.mjs",
+    "test:beta-replay": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/beta-replay.test.mjs",
     "test:analytics-routes": "node --experimental-strip-types --test src/lib/analytics-routes.test.mjs",
     "test:google-click": "node --experimental-strip-types --test src/lib/google-click-participation.test.mjs src/lib/google-click-api.test.mjs",
     "test:data-lifecycle": "node --experimental-strip-types --test src/lib/personal-data-lifecycle.test.mjs",

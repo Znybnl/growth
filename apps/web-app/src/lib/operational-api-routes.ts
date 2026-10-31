@@ -1,6 +1,7 @@
 /** Closed server route families, verified against every API route in tests. */
 export const OPERATIONAL_API_ROUTES = [
   "/api/account",
+  "/api/analytics/beta-replay-policy",
   "/api/admin/campaigns/[id]/assets",
   "/api/admin/campaigns/[id]/duplicate-merchant",
   "/api/admin/campaigns/[id]/poster-logo",
