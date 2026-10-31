@@ -13,9 +13,14 @@ export function maskBetaReplayText(text: string) {
 function compiledStylesheet(raw: string) {
   try {
     const url = new URL(raw, "https://app.okado.app");
+    let pathname: string;
+    try { pathname = decodeURIComponent(url.pathname); } catch { return null; }
+    const fileSegments = pathname.slice("/_next/static/".length).split("/");
+    const isStaticCss = pathname.startsWith("/_next/static/") && pathname.endsWith(".css") &&
+      fileSegments.every(segment => segment !== "." && segment !== ".." && /^[\w.\[\]-]+$/.test(segment));
     if (!["http:", "https:"].includes(url.protocol) ||
       !(url.hostname === "app.okado.app" || url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname.endsWith(".vercel.app")) ||
-      !/^\/_next\/static\/[\w/.-]+\.css$/.test(url.pathname)) return null;
+      !isStaticCss) return null;
     return `${url.origin}${url.pathname}`;
   } catch { return null; }
 }

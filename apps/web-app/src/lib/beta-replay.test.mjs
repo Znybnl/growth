@@ -45,8 +45,10 @@ test("free text, attributes and uploads are masked, while fixed UI labels remain
   assert.equal(maskBetaReplayAttribute("style", "background: url(secret)"), "");
   assert.equal(maskBetaReplayAttribute("style", "padding: 12px"), "padding: 12px");
   assert.equal(maskBetaReplayAttribute("style", "--private-name: private-css-secret;content:'private-css-secret';width:10px"), "width:10px");
-  const css = { tagName: "LINK", getAttribute: name => name === "rel" ? "stylesheet" : "/_next/static/css/app/layout.css?cache=1" };
+  const css = { tagName: "LINK", getAttribute: name => name === "rel" ? "stylesheet" : "/_next/static/chunks/%5Broot-of-the-server%5D__0ry6g9mr6y4s7._.css?cache=1" };
   assert.equal(maskBetaReplayAttribute("_cssText", ".p-8 {padding: 2rem}", css), ".p-8 {padding: 2rem}");
+  const externalCss = { tagName: "LINK", getAttribute: name => name === "rel" ? "stylesheet" : "https://private.example/_next/static/css/private.css" };
+  assert.equal(maskBetaReplayAttribute("_cssText", "private-css-secret", externalCss), "");
   assert.equal(maskBetaReplayAttribute("_cssText", "private-css-secret"), "");
   assert.equal(maskBetaReplayAttribute("href", "https://private.example/_next/static/private.css"), "");
 });
