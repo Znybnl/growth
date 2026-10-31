@@ -5,6 +5,9 @@
   "workspaces": [
     "apps/*"
   ],
+  "overrides": {
+    "minimatch": "11.0.1"
+  },
   "scripts": {
     "dev": "npm run dev -w @okado/web-app",
     "dev:web": "npm run dev -w @okado/web-app",
