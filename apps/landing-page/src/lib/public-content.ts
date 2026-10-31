@@ -640,7 +640,7 @@ export const publicContent: PublicContent[] = [
   },
   {
     path: "/confidentialite",
-    reviewedAt: "2026-10-15",
+    reviewedAt: "2026-10-29",
     title: "Confidentialité et données personnelles dans Okado",
     eyebrow: "Informations sur les données",
     description:
@@ -654,6 +654,7 @@ export const publicContent: PublicContent[] = [
           "BRUNELLE PEROLS INVESTISSEMENT, éditeur d’Okado, est responsable des traitements liés aux comptes professionnels, à la facturation, à la sécurité du service et à la mesure d’usage. Pour toute question ou demande : contact@okado.app. L’identité et les coordonnées de l’éditeur figurent aussi sur la page À propos.",
           "Les coordonnées professionnelles, identifiants de compte et informations d’établissement servent à créer l’accès, gérer l’abonnement et fournir l’assistance. La base est l’exécution du contrat lorsque vous êtes personnellement partie au contrat ; pour les utilisateurs d’une société cliente, l’intérêt légitime à administrer la relation professionnelle. Les traitements de facturation répondent aux obligations légales applicables. Les données nécessaires à la sécurité servent à prévenir les abus et protéger les accès, au titre de l’intérêt légitime du service.",
           "Les champs indispensables sont signalés lors de la collecte : sans les informations requises pour le compte ou le paiement, la fonction correspondante ne peut pas être fournie. Le refus de la prospection ou de la mesure d’audience ne bloque pas l’accès au service.",
+          "Pour diagnostiquer les pannes et assurer la fiabilité du service, des mesures techniques sont consignées côté serveur : famille de route normalisée, méthode, statut de réponse, durée et version du service. Ces mesures de performance ne contiennent ni identifiant utilisateur, adresse IP, cookie, contenu de formulaire ou URL complète. Elles peuvent être centralisées dans PostHog Logs, séparément des événements de mesure d’audience. Cette journalisation d’exploitation ne dépend pas du choix de cookies de mesure et ne sert pas à établir un profil individuel de navigation.",
         ],
       },
       {

@@ -1,5 +1,21 @@
 # Produit — Okado
 
+## Présentation et découverte du site vitrine — #723
+
+Le menu mobile regroupe les destinations et la connexion derrière un bouton
+explicite ; le hero conserve sa promesse et son essai, et les sélecteurs de démo
+utilisent des intitulés courts avec leurs noms accessibles complets. Les cartes
+sectorielles montrent des extraits de cette démo ; la galerie conserve les six
+rendus du catalogue et leur agrandissement. L’espace marchand est illustré par
+une capture des vrais composants sur données synthétiques identifiées. La mise
+en situation d’affiche est illustrative, sans témoignage ni client représenté.
+
+Le panneau de consentement du site présente un résumé et les détails dépliables,
+avec les mêmes choix de visibilité égale. Les fournisseurs, l’identification
+éventuelle par e-mail, les domaines et la durée restent consultables avant toute
+décision. Aucune finalité, durée, version de consentement ou règle de collecte
+n’est modifiée. Rapport : [livraison #723](releases/2026-10-30-marketing-visual-polish-723.md).
+
 ## Libellés de roue longs — #631
 
 Dans le rendu partagé de la roue, un libellé qui manque de place dans son

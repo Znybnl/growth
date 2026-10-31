@@ -20,8 +20,8 @@ export function DemoExplorer({ sector, compact = false }: { sector?: DemoSector;
   const variant = specialty ? "beauty" : demoSectors.find(item => item.id === requested && (!sector || item.id === sector))?.id ?? sector ?? "restaurant";
   const selection = specialty ?? variant;
   const sectorChoices = !sector ? <nav className={styles.sectorChoices} aria-label="Activité de la démo">
-    {demoSectors.map(item => <a key={item.id} href={`#demo-${item.id}`} aria-current={variant === item.id ? "true" : undefined}
-      onClick={() => captureMarketingEvent("marketing_cta_clicked", { cta: "select_demo_sector", location: "demo_selector", variant: item.id, destination: "/" })}>{item.label}</a>)}
+    {demoSectors.map(item => <a key={item.id} href={`#demo-${item.id}`} aria-label={item.label} aria-current={variant === item.id ? "true" : undefined}
+      onClick={() => captureMarketingEvent("marketing_cta_clicked", { cta: "select_demo_sector", location: "demo_selector", variant: item.id, destination: "/" })}><span className={styles.sectorFull}>{item.label}</span><span className={styles.sectorShort}>{item.id === "beauty" ? "Beauté" : item.id === "restaurant" ? "Restaurant" : "Boutique"}</span></a>)}
   </nav> : specialty ? <p className={styles.selectedSpecialty}>Exemple · {beautyDemoRewards[specialty].label} <a href="#demo-beauty">Revenir à la démo beauté générale</a></p> : null;
 
   return <div className={`${styles.explorer}${compact ? ` ${styles.explorerCompact}` : ""}`}>

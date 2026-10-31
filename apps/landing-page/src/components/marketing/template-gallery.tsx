@@ -32,7 +32,7 @@ export function TemplateGallery({ multisector = false }: { multisector?: boolean
             captureMarketingEvent("marketing_cta_clicked", { cta: "model_preview", location: "models", variant: model.id, destination: "#modeles" });
           }}>
             <div className={styles.modelArt}><GamePreview model={model} sizes="(min-width: 1200px) 116px, (min-width: 768px) 164px, (min-width: 360px) 116px, 96px" /></div>
-            <div className={styles.modelCopy}><strong>{model.name}</strong><span>{model.type}</span><Expand size={17} aria-hidden="true" /></div>
+            <div className={styles.modelCopy}><strong>{model.name}</strong><span>{model.type}</span><small>Agrandir</small><Expand size={17} aria-hidden="true" /></div>
           </button>
         </article>)}
       </div>

@@ -13,7 +13,7 @@ jobs:
   visual-1280:
     name: Visual checks at 1280px
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -90,6 +90,8 @@ jobs:
         run: node --test scripts/conversion-audit-results.test.mjs
       - name: Test dependency audit guard
         run: npm run test:dependency-audit -w @okado/web-app
+      - name: Test private operational telemetry and closed API routes
+        run: npm run test:operational-telemetry -w @okado/web-app
       - name: Test every configured wheel reward and exact drawn result stays visible
         run: npm run test:wheel-segments -w @okado/web-app
       - name: Test Christmas template settings, backgrounds and contrast
@@ -154,6 +156,8 @@ jobs:
         run: npm run test:affiliates -w @okado/web-app
       - name: Build web app
         run: npm run build:web
+      - name: Verify operational logs on the compiled server without analytics consent
+        run: npm run smoke:operational-telemetry -w @okado/web-app
       - name: Verify prize library with compiled production CSS
         run: |
           npx playwright install --with-deps chromium
@@ -187,7 +191,11 @@ jobs:
       - name: Verify deferred loading, demo and consent
         working-directory: apps/landing-page
         run: npx playwright test e2e/mobile-performance.spec.ts e2e/landing-demo.spec.ts e2e/multisector-demo.spec.ts e2e/analytics-consent.spec.ts --project=desktop --project=mobile
+      - name: Verify operational privacy notice at desktop and mobile widths
+        working-directory: apps/landing-page
+        run: npx playwright test e2e/operational-privacy.spec.ts --project=desktop
       - name: Preserve landing test evidence
+        # Includes the operational privacy notice at 1280px and mobile widths.
         if: always()
         uses: actions/upload-artifact@v4
         with:

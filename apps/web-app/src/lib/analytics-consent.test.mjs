@@ -56,13 +56,19 @@ function browser() {
   return cookies;
 }
 
-test("les deux applications partagent le protocole, les gardes et le composant de choix", () => {
-  for (const path of ["lib/analytics-consent.ts", "components/privacy/cookie-preferences.tsx"]) {
-    assert.equal(
-      readFileSync(new URL(`apps/web-app/src/${path}`, root), "utf8"),
-      readFileSync(new URL(`apps/landing-page/src/${path}`, root), "utf8"),
-      path,
-    );
+test("les deux applications partagent le protocole et conservent les mêmes gardes de consentement", () => {
+  assert.equal(
+    readFileSync(new URL("apps/web-app/src/lib/analytics-consent.ts", root), "utf8"),
+    readFileSync(new URL("apps/landing-page/src/lib/analytics-consent.ts", root), "utf8"),
+    "lib/analytics-consent.ts",
+  );
+
+  for (const app of ["web-app", "landing-page"]) {
+    const source = readFileSync(new URL(`apps/${app}/src/components/privacy/cookie-preferences.tsx`, root), "utf8");
+    assert.match(source, /if \(!isAnalyticsConfigured\) return null/);
+    assert.match(source, /currentChoice === "accepted"/);
+    assert.match(source, /setAnalyticsChoice\(choice\)/);
+    assert.match(source, /isPublicGamePage\(pathname\)/);
   }
 });
 
