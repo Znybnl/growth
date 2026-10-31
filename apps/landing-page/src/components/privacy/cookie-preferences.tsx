@@ -11,7 +11,7 @@ import type { AnalyticsChoice } from "@/lib/analytics-consent";
 // The analytics component is only downloaded when the accepted branch renders.
 const Analytics = dynamic(() => import("@vercel/analytics/next").then(module => module.Analytics), { ssr: false });
 
-export function CookiePreferences({ alignment = "left" }: { alignment?: "left" | "right" }) {
+export function CookiePreferences({ alignment = "right" }: { alignment?: "left" | "right" }) {
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [currentChoice, setCurrentChoice] = useState<AnalyticsChoice | null>(null);
@@ -68,15 +68,18 @@ export function CookiePreferences({ alignment = "left" }: { alignment?: "left" |
           launcherRef.current = event.currentTarget;
           setVisible(true);
         }}
-          className={`okado-cookie-floating-trigger fixed rounded-lg border border-[#dbe3ef] bg-white px-3 py-2 text-xs text-[#0f172b] shadow-sm focus-visible:outline-2 focus-visible:outline-[#6c00f6] ${alignment === "right" ? "right-[calc(0.5rem+env(safe-area-inset-right))] bottom-[calc(0.5rem+env(safe-area-inset-bottom))] z-20" : "bottom-2 left-2 z-[90]"}`}
+          className={`okado-cookie-floating-trigger relative mb-3 ml-auto mr-3 block min-h-11 rounded-lg border border-[#dbe3ef] bg-white px-3 py-2 text-xs text-[#0f172b] shadow-sm focus-visible:outline-2 focus-visible:outline-[#6c00f6] sm:fixed sm:m-0 ${alignment === "right" ? "sm:right-[calc(0.5rem+env(safe-area-inset-right))] sm:bottom-[calc(0.5rem+env(safe-area-inset-bottom))] z-20" : "sm:bottom-2 sm:left-2 z-[90]"}`}
           aria-expanded={visible} aria-controls="okado-cookie-preferences">
           Gérer les cookies
         </button>
       )}
       {visible && (
         <section id="okado-cookie-preferences" aria-labelledby="okado-cookie-title"
-          className={`fixed inset-x-3 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-[100] mx-auto max-h-[75dvh] max-w-xl overflow-y-auto rounded-2xl border border-[#dbe3ef] bg-white p-5 text-[#0f172b] shadow-xl sm:inset-x-auto sm:left-4 sm:right-4 ${alignment === "right" ? "sm:ml-auto sm:mr-0" : "sm:mx-0"}`}>
+          className={`fixed inset-x-3 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-[100] mx-auto max-h-[75dvh] max-w-md overflow-y-auto rounded-2xl border border-[#dbe3ef] bg-white p-4 text-[#0f172b] shadow-xl sm:inset-x-auto sm:left-4 sm:right-4 ${alignment === "right" ? "sm:ml-auto sm:mr-0" : "sm:mx-0"}`}>
           <h2 id="okado-cookie-title" tabIndex={-1} className="text-lg font-bold">Votre choix de mesure d’audience</h2>
+          <p className="mt-2 text-sm leading-6">Avec votre accord, nous mesurons la fréquentation et le parcours d’utilisation d’Okado. Vous pouvez refuser et utiliser le service. Votre choix est mémorisé pendant 6 mois et modifiable ici à tout moment.</p>
+          <details className="mt-2 text-sm leading-6">
+          <summary className="min-h-11 cursor-pointer py-2 font-semibold underline underline-offset-4">Détails de la mesure et confidentialité</summary>
           <p className="mt-3 text-sm leading-6">
             Avec votre accord, PostHog mesure vos visites et le parcours jusqu’à la publication d’un jeu ; Vercel Analytics mesure la fréquentation.
             Si vous êtes connecté, votre e-mail de connexion identifie votre profil PostHog et relie ces mesures à votre compte marchand.
@@ -87,6 +90,7 @@ export function CookiePreferences({ alignment = "left" }: { alignment?: "left" |
             Votre choix est mémorisé pendant 6 mois.
             {" "}<a href="https://www.okado.app/confidentialite" className="underline">Confidentialité</a>
           </p>
+          </details>
           {currentChoice && <p className="mt-2 text-sm">Choix actuel : {currentChoice === "accepted" ? "accepté" : "refusé"}.</p>}
           {error && <p role="alert" className="mt-2 text-sm">Votre navigateur ne permet pas d’enregistrer ce choix. La mesure reste désactivée sans accord enregistré.</p>}
           <div className="mt-4 flex gap-3">
