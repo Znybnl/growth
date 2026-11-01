@@ -447,6 +447,9 @@ Les trois ambiances Noël rose poudré, naturel et traditionnel existent aussi e
 ticket à gratter, dans les deux éditeurs et pour tous les secteurs. Elles utilisent
 les décors Noël de la bibliothèque, sans les enregistrer comme image sélectionnée
 par le marchand. Une image ou une couleur de fond choisie manuellement les remplace.
+Pour les établissements Beauté (#729), le ticket « Noël rose poudré » apparaît dans
+« Templates Beauté » et n'est pas répété dans « Autres templates » ; les autres
+secteurs le conservent dans la galerie générale.
 Le titre est initialisé à 46 px ; logo, textes, polices et espacements restent
 personnalisables. La zone ronde emploie les textures métalliques existantes, nacrée,
 champagne ou dorée, avec une palette de grattage fixe. L'aperçu est non interactif ;

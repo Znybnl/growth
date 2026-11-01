@@ -3,7 +3,7 @@ import test from "node:test";
 import { existsSync } from "node:fs";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate, christmasScratchBackgroundImage } from "./christmas-scratch-templates.ts";
 import { parseCampaignSetupInput } from "./merchant-input.ts";
-import { scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate } from "./beauty-scratch-templates.ts";
+import { BEAUTY_SCRATCH_TEMPLATES, beautyScratchTemplate, scratchVisualTheme, isBeautyScratchTemplate, isHiddenScratchTemplate, isImmersiveScratchTemplate } from "./beauty-scratch-templates.ts";
 import { defaultScratchTextColor, defaultScratchTemplateFont, scratchTemplateDefaultBackground, scratchTemplatePrimaryColor, scratchTemplateUsesFixedPrimaryColor, scratchTemplateUsesTicketTextColor, wheelBackgroundForTemplateSelection, DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX } from "./campaign-defaults.ts";
 
 for (const { id } of CHRISTMAS_SCRATCH_TEMPLATES) {
@@ -63,4 +63,17 @@ test("Rayons rétro est retiré des choix sans casser les campagnes déjà confi
   assert.equal(legacyTemplate?.name, "Rayons rétro");
   assert.equal(isImmersiveScratchTemplate("scratch-christmas-retro"), true);
   assert.equal(scratchVisualTheme("scratch-christmas-retro"), legacyTemplate);
+});
+
+test("Noël rose poudré est aussi classé Beauté en ticket à gratter sans dupliquer son thème", () => {
+  const seasonalTheme = christmasScratchTemplate("scratch-christmas-rose");
+  const beautyTheme = beautyScratchTemplate("scratch-christmas-rose");
+  assert.equal(isBeautyScratchTemplate("scratch-christmas-rose"), true);
+  assert.equal(BEAUTY_SCRATCH_TEMPLATES.some(({ id }) => id === "scratch-christmas-rose"), true);
+  assert.equal(beautyTheme?.background, seasonalTheme?.background);
+  assert.equal(beautyTheme?.scratch.texture, seasonalTheme?.scratch.texture);
+  assert.equal(beautyTheme?.text, seasonalTheme?.text);
+  assert.equal(beautyTheme?.font, seasonalTheme?.font);
+  assert.equal(isBeautyScratchTemplate("scratch-christmas-natural"), false);
+  assert.equal(isBeautyScratchTemplate("scratch-christmas-traditional"), false);
 });

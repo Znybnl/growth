@@ -193,7 +193,7 @@ test("les espacements avancés contrôlent bien le rendu d’un ticket à gratte
   await page.screenshot({ path: testInfo.outputPath("scratch-spacing-zero-and-one.png") });
 });
 
-test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusieurs écrans", async ({ page }, testInfo) => {
+test("les six tickets Beauté restent lisibles et chargent leur fond sur plusieurs écrans", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   await signIn(page);
   await page.goto("/campaigns/new/guided");
@@ -207,7 +207,7 @@ test("les cinq tickets Beauté restent lisibles et chargent leur fond sur plusie
     test.skip(true, "Le compte de test courant n'appartient pas au secteur Beauté.");
   }
   await expect(gallery).toBeVisible();
-  await expect(gallery.getByRole("button")).toHaveCount(5);
+  await expect(gallery.getByRole("button")).toHaveCount(6);
 
   const subtitleInput = page.getByLabel(/Sous-titre du ticket/);
   await subtitleInput.fill("Des soins délicats pour votre bien-être");
