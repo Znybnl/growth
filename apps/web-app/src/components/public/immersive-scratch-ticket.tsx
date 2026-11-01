@@ -55,15 +55,12 @@ type ImmersiveScratchTicketProps = {
 const CANVAS_WIDTH = 520;
 const CANVAS_HEIGHT = 430;
 
-type ScratchInstructionStyle = { color: string; font: string };
-
 const ISSUE_724_SCRATCH_STYLES: Record<string, {
   badge: string;
   badgeBorder: string;
   logoColor: string;
   revealBackground: string;
   revealText: string;
-  instruction: ScratchInstructionStyle;
 }> = {
   "scratch-christmas-evergreen": {
     badge: "rgba(255, 247, 230, .92)",
@@ -71,7 +68,6 @@ const ISSUE_724_SCRATCH_STYLES: Record<string, {
     logoColor: "#173c34",
     revealBackground: "#fff8e8",
     revealText: "#25473d",
-    instruction: { color: "#50341f", font: "700 39px Arial, sans-serif" },
   },
   "scratch-christmas-champagne": {
     badge: "rgba(255, 250, 240, .94)",
@@ -79,7 +75,6 @@ const ISSUE_724_SCRATCH_STYLES: Record<string, {
     logoColor: "#8f6931",
     revealBackground: "#fff8e9",
     revealText: "#563a22",
-    instruction: { color: "#50341f", font: "600 39px Georgia, 'Times New Roman', serif" },
   },
   "scratch-christmas-retro": {
     badge: "rgba(255, 247, 230, .85)",
@@ -87,7 +82,6 @@ const ISSUE_724_SCRATCH_STYLES: Record<string, {
     logoColor: "#3b5547",
     revealBackground: "#fff7e6",
     revealText: "#56331f",
-    instruction: { color: "#56331f", font: "600 42px Georgia, 'Times New Roman', serif" },
   },
   "scratch-christmas-noir-or": {
     badge: "rgba(20, 17, 13, .88)",
@@ -95,27 +89,8 @@ const ISSUE_724_SCRATCH_STYLES: Record<string, {
     logoColor: "#e5c77c",
     revealBackground: "#f5e3bd",
     revealText: "#3e2b17",
-    instruction: { color: "#493015", font: "600 39px Georgia, 'Times New Roman', serif" },
   },
 };
-
-function drawScratchInstruction(
-  context: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  style: ScratchInstructionStyle,
-) {
-  context.save();
-  context.fillStyle = style.color;
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.font = style.font;
-  context.shadowColor = "rgba(255, 248, 230, .45)";
-  context.shadowBlur = 1;
-  context.fillText("Ticket", width / 2, height / 2 - 22, width * 0.7);
-  context.fillText("à gratter", width / 2, height / 2 + 24, width * 0.7);
-  context.restore();
-}
 
 function withAlpha(color: string, alpha: string) {
   const normalized = color.replace("#", "");
@@ -426,12 +401,10 @@ export function ImmersiveScratchTicket({
         currentContext.globalAlpha = scratchFinish.textureOpacity;
         currentContext.drawImage(texture, 0, 0, canvasWidth, canvasHeight);
         currentContext.restore();
-        if (issue724ScratchStyle) drawScratchInstruction(currentContext, canvasWidth, canvasHeight, issue724ScratchStyle.instruction);
         canvas.dataset.foilLoaded = "true";
       };
       texture.onerror = () => {
         if (cancelled) return;
-        if (issue724ScratchStyle) drawScratchInstruction(context, canvasWidth, canvasHeight, issue724ScratchStyle.instruction);
         canvas.dataset.foilLoaded = "error";
       };
       texture.src = scratchFinish.texture;
@@ -451,10 +424,7 @@ export function ImmersiveScratchTicket({
       }
       canvas.dataset.foilLoaded = "true";
     }
-    if (issue724ScratchStyle && !scratchFinish?.texture) {
-      drawScratchInstruction(context, canvasWidth, canvasHeight, issue724ScratchStyle.instruction);
-      canvas.dataset.foilLoaded = "true";
-    }
+    if (issue724ScratchStyle && !scratchFinish?.texture) canvas.dataset.foilLoaded = "true";
 
     checksRef.current = 0;
     revealedRef.current = false;
@@ -675,7 +645,6 @@ export function ImmersiveScratchTicket({
               data-foil-texture={beautyTheme?.id}
               data-foil-loaded={beautyTheme ? "false" : undefined}
               data-scratch-shape={scratchShape ?? "default"}
-              data-foil-instruction={issue724ScratchStyle ? "ticket à gratter" : undefined}
               aria-label={instruction}
               className="relative z-20 block h-full w-full touch-none cursor-crosshair"
               style={scratchClipPath ? { clipPath: scratchClipPath } : undefined}

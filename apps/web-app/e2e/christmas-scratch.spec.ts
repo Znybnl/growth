@@ -49,7 +49,7 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     expect(pixels[0][3]).toBe(255);
     expect(pixels[1][3]).toBe(255);
     if (ISSUE_724_ILLUSTRATED_TEMPLATES.has(theme.id)) {
-      await expect(foil).toHaveAttribute("data-foil-instruction", "ticket à gratter");
+      await expect(foil).not.toHaveAttribute("data-foil-instruction");
       const backdrop = page.getByTestId("scratch-result-backdrop");
       await expect(backdrop).toBeVisible();
       const badge = page.getByTestId(theme.id === "scratch-christmas-retro" ? "retro-scratch-logo-badge" : "issue724-scratch-logo-badge");
@@ -57,16 +57,6 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
       const badgeBounds = (await badge.boundingBox())!;
       expect(badgeBounds.width).toBeGreaterThanOrEqual(64);
       expect(badgeBounds.width).toBeLessThanOrEqual(88);
-      const printedInstructionPixels = await foil.evaluate((canvas: HTMLCanvasElement) => {
-        const context = canvas.getContext("2d")!;
-        const image = context.getImageData(150, 155, 360, 120).data;
-        let darkPixels = 0;
-        for (let index = 0; index < image.length; index += 4) {
-          if (image[index] < 110 && image[index + 1] < 90 && image[index + 2] < 75) darkPixels += 1;
-        }
-        return darkPixels;
-      });
-      expect(printedInstructionPixels).toBeGreaterThan(250);
     }
     await expect(surface).toBeInViewport();
     if (theme.id === "scratch-christmas-retro") {

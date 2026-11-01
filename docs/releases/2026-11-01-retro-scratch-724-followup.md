@@ -12,9 +12,9 @@ dorés ont une texture plus proche du pinceau des références, sans motif feuil
 marqué sur le modèle noir & or. Le fond rétro est reconstruit avec
 des rayons réguliers qui convergent au bord supérieur du ticket, un grain papier
 plus perceptible et les teintes de la référence ; ce fond reste dans la bibliothèque.
-La mention décorative « Ticket à gratter » est imprimée sur le revêtement des quatre
-tickets et s'efface avec lui. Un fond clair dédié révèle le vrai libellé du gain,
-avec une couleur lisible pour chaque design. L'espacement du ticket suit le réglage
+Le revêtement des quatre tickets ne porte aucun texte : les formes pinceau et ticket
+vintage reprennent les maquettes sans libellé générique. Un fond clair dédié révèle
+le vrai libellé du gain, avec une couleur lisible pour chaque design. L'espacement du ticket suit le réglage
 entre le texte et la zone à gratter au lieu de centrer la zone dans l'espace restant.
 
 Aucune règle de tirage ou donnée de campagne n'est modifiée. Le fond rayé natif et

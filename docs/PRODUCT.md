@@ -470,8 +470,8 @@ Complément de recette : chaque couche opaque et son canvas utilisent le même m
 de forme (pinceau ou ticket à encoches), également dans la miniature. Le ticket rétro
 présente son logo texte dans un macaron, son titre rétro renforcé, un ticket à
 encoches latérales et un revêtement ivoire texturé, sans voile gris. Aucun texte
-générique « Ticket à gratter » ne masque ou remplace le
-gain : seul le résultat de participation apparaît pendant le grattage. Le fond natif
+« Ticket à gratter » n'est imprimé sur le revêtement des quatre modèles : le lot
+reste caché et n'apparaît qu'au grattage. Le fond natif
 est reconstruit en rayons régulièrement espacés avec un grain papier subtil, reste
 dans la bibliothèque et peut être remplacé manuellement. [Correctif](releases/2026-11-01-retro-scratch-724-followup.md).
 

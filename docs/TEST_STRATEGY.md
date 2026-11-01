@@ -600,9 +600,9 @@ Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu e
 
 `e2e/christmas-scratch.spec.ts` vérifie sur les quatre modèles que le masque CSS de
 la surface, le film visible au premier rendu et le canvas interactif coïncident.
-Avant interaction, le résultat et le texte générique « Ticket à gratter » sont
-absents ; après un vrai geste de grattage, le gain de la fixture apparaît. Les
-contrôles visuels mobile et 1280×720/600 couvrent aussi les aperçus éditeur et public.
+Le film ne contient aucun libellé générique ; avant interaction, le résultat reste
+caché, puis apparaît après un vrai geste de grattage. Les contrôles visuels mobile
+et 1280×720/600 couvrent aussi les aperçus éditeur et public.
 
 ## Catalogue Beauté — #466
 
