@@ -85,8 +85,13 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     const experience = page.locator(".okado-public-experience");
     const artwork = experience.locator(`img[data-template-art="${theme.id}"]`);
     await expect(artwork).toHaveJSProperty("complete", true);
-    if (theme.id === "scratch-christmas-evergreen") {
-      await expect.poll(() => artwork.evaluate((image: HTMLImageElement) => image.currentSrc)).toContain("festive-gift-wrap-green-background-v3.webp");
+    const expectedBackgroundName = theme.id === "scratch-christmas-evergreen"
+      ? "festive-gift-wrap-green-background-v3.webp"
+      : theme.id === "scratch-christmas-champagne"
+        ? "festive-champagne-ribbons-background-v3.webp"
+        : null;
+    if (expectedBackgroundName) {
+      await expect.poll(() => artwork.evaluate((image: HTMLImageElement) => image.currentSrc)).toContain(expectedBackgroundName);
       await expect.poll(() => artwork.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
     }
     const experienceBounds = (await experience.boundingBox())!;

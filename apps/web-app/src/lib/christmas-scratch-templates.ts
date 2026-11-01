@@ -50,8 +50,8 @@ export const CHRISTMAS_SCRATCH_TEMPLATES = [
   {
     id: "scratch-christmas-champagne",
     name: "Ivoire & champagne",
-    description: "Rubans dorés satinés et paquet cadeau sur fond ivoire.",
-    background: "/images/scratch-templates/festive-champagne-ribbons-background-v2.webp",
+    description: "Fond ivoire lumineux, feuillages vert profond et rubans dorés.",
+    background: "/images/scratch-templates/festive-champagne-ribbons-background-v3.webp",
     backgroundColor: "#fbf4e8",
     text: "#263d37",
     logo: "#8f6931",

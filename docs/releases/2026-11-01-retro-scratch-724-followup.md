@@ -6,8 +6,9 @@ pour les campagnes qui l'utilisent déjà.
 
 Les zones de grattage de Vert bouteille, Ivoire & champagne et Satin noir & or sont encore
 plus hautes, un peu moins larges, aux bords moins irréguliers et inclinées d'environ un degré.
-Le médaillon du logo texte est agrandi. Vert bouteille utilise désormais le fond cadeau étoilé fourni,
-également référencé dans la bibliothèque d'images.
+Le médaillon du logo texte est agrandi. Vert bouteille utilise désormais le fond cadeau étoilé fourni ;
+Ivoire & champagne utilise le fond ivoire lumineux aux rubans dorés. Les deux fonds sont aussi référencés
+dans la bibliothèque d'images.
 Le masque visible et le canvas interactif partagent la même forme. Aucun libellé générique
 n'est affiché sur le revêtement ; après grattage, le gain est révélé sur un fond clair avec
 une couleur lisible. L'espacement du ticket suit le réglage entre le texte et la zone à gratter.
