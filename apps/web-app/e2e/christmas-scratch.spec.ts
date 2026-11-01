@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "../src/lib/christmas-scratch-templates";
+const SELECTABLE_FESTIVE_TEMPLATES = CHRISTMAS_SCRATCH_TEMPLATES.filter(({ id }) => id !== "scratch-christmas-retro");
 const NON_SEASONAL_TEMPLATES = new Set([
   "scratch-christmas-evergreen",
   "scratch-christmas-champagne",
@@ -34,6 +35,22 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await expect(foil).toHaveAttribute("data-scratch-shape", expectedScratchShape);
     const surface = page.getByTestId("scratch-ticket-surface");
     await expect(surface).toHaveAttribute("data-scratch-shape", expectedScratchShape);
+    if (["scratch-christmas-evergreen", "scratch-christmas-champagne", "scratch-christmas-noir-or"].includes(theme.id)) {
+      const geometry = await surface.evaluate((element) => {
+        const surfaceElement = element as HTMLElement;
+        const style = getComputedStyle(surfaceElement);
+        const transform = new DOMMatrixReadOnly(style.transform);
+        return {
+          ratio: surfaceElement.offsetWidth / surfaceElement.offsetHeight,
+          rotationDeg: Math.atan2(transform.b, transform.a) * (180 / Math.PI),
+          clipPath: style.clipPath,
+        };
+      });
+      expect(geometry.ratio).toBeCloseTo(1.8, 1);
+      expect(Math.abs(geometry.rotationDeg)).toBeGreaterThanOrEqual(0.8);
+      expect(Math.abs(geometry.rotationDeg)).toBeLessThanOrEqual(1.3);
+      expect(geometry.clipPath).toContain("polygon(");
+    }
     const [surfaceClip, foilClip] = await Promise.all([
       surface.evaluate(element => getComputedStyle(element).clipPath),
       foil.evaluate(element => getComputedStyle(element).clipPath),
@@ -159,7 +176,8 @@ test("grattage tactile réel et aperçu non interactif", async ({ page }) => {
 test("@visual-1280 tickets festifs dans l'éditeur classique, tous secteurs", async ({ page }, info) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto("/dev/template-rendering-proof?mode=editor-prize-budget&template=scratch-nude-classic&business=retail");
-  for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
+  await expect(page.getByRole("button", { name: /Rayons rétro/ })).toHaveCount(0);
+  for (const item of SELECTABLE_FESTIVE_TEMPLATES) {
     const theme = christmasScratchTemplate(item.id)!;
     const card = page.getByRole("button", { name: new RegExp(theme.name) });
     await card.scrollIntoViewIfNeeded(); await card.click();
@@ -178,7 +196,8 @@ test("@visual-1280 tickets festifs dans le wizard et aperçu, 1280×720 / 1280×
     await page.setViewportSize({ width: 1280, height });
     await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-edit&template=scratch-nude-classic&business=retail");
     await selectWizardStep(page, 2);
-    for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
+    await expect(page.getByRole("button", { name: /Rayons rétro/ })).toHaveCount(0);
+    for (const item of SELECTABLE_FESTIVE_TEMPLATES) {
       const theme = christmasScratchTemplate(item.id)!;
       const card = page.getByRole("button", { name: new RegExp(theme.name) });
       await card.scrollIntoViewIfNeeded(); await card.click();

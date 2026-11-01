@@ -14,7 +14,7 @@ import {
 import { scratchVisualTheme, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
-import { BRUSH_CLIP_PATH, SCALLOPED_TICKET_CLIP_PATH } from "@/lib/scratch-surface-shapes";
+import { BRUSH_CLIP_PATH, SCALLOPED_TICKET_CLIP_PATH, SMOOTH_FESTIVE_BRUSH_CLIP_PATH } from "@/lib/scratch-surface-shapes";
 
 type ScratchTemplateId = ImmersiveScratchTemplateId;
 
@@ -61,6 +61,7 @@ const ISSUE_724_SCRATCH_STYLES: Record<string, {
   logoColor: string;
   revealBackground: string;
   revealText: string;
+  scratchRotationDeg?: number;
 }> = {
   "scratch-christmas-evergreen": {
     badge: "rgba(255, 247, 230, .92)",
@@ -68,6 +69,7 @@ const ISSUE_724_SCRATCH_STYLES: Record<string, {
     logoColor: "#173c34",
     revealBackground: "#fff8e8",
     revealText: "#25473d",
+    scratchRotationDeg: -1.1,
   },
   "scratch-christmas-champagne": {
     badge: "rgba(255, 250, 240, .94)",
@@ -75,6 +77,7 @@ const ISSUE_724_SCRATCH_STYLES: Record<string, {
     logoColor: "#8f6931",
     revealBackground: "#fff8e9",
     revealText: "#563a22",
+    scratchRotationDeg: 0.9,
   },
   "scratch-christmas-retro": {
     badge: "rgba(255, 247, 230, .85)",
@@ -89,6 +92,7 @@ const ISSUE_724_SCRATCH_STYLES: Record<string, {
     logoColor: "#e5c77c",
     revealBackground: "#f5e3bd",
     revealText: "#3e2b17",
+    scratchRotationDeg: -1.2,
   },
 };
 
@@ -235,7 +239,12 @@ export function ImmersiveScratchTicket({
   const seasonalTheme = christmasTheme || halloweenTheme;
   const scratchShape = christmasTheme?.scratchShape;
   const isDecorativeTicket = scratchShape === "ticket";
-  const scratchClipPath = scratchShape === "ticket"
+  const isFestiveBrushScratch = christmasTheme?.id === "scratch-christmas-evergreen"
+    || christmasTheme?.id === "scratch-christmas-champagne"
+    || christmasTheme?.id === "scratch-christmas-noir-or";
+  const scratchClipPath = isFestiveBrushScratch
+    ? SMOOTH_FESTIVE_BRUSH_CLIP_PATH
+    : scratchShape === "ticket"
     ? SCALLOPED_TICKET_CLIP_PATH
     : scratchShape === "brush"
       ? BRUSH_CLIP_PATH
@@ -243,7 +252,7 @@ export function ImmersiveScratchTicket({
   const isRetroScratch = christmasTheme?.id === "scratch-christmas-retro";
   const issue724ScratchStyle = christmasTheme ? ISSUE_724_SCRATCH_STYLES[christmasTheme.id] : undefined;
   const isIssue724IllustratedScratch = Boolean(issue724ScratchStyle);
-  const canvasWidth = scratchShape === "brush" ? 700 : isDecorativeTicket ? 660 : CANVAS_WIDTH;
+  const canvasWidth = isFestiveBrushScratch ? 774 : scratchShape === "brush" ? 700 : isDecorativeTicket ? 660 : CANVAS_WIDTH;
   const canvasHeight = CANVAS_HEIGHT;
   const configuredPrimary = accent.signal;
   const primary = scratchTemplatePrimaryColor(configuredPrimary, template);
@@ -287,7 +296,9 @@ export function ImmersiveScratchTicket({
   const coverHighlight = scratchFinish?.highlight ?? (isSunburst ? blendWithWhite(coverColor, 0.2) : blendWithWhite(coverColor, 0.34));
 
   const surfaceClass = beautyTheme
-    ? scratchShape === "brush"
+    ? isFestiveBrushScratch
+      ? "mx-auto aspect-[1.8/1] w-[92%] max-w-[320px]"
+      : scratchShape === "brush"
       ? "mx-auto aspect-[2.2/1] w-full max-w-[340px]"
       : isDecorativeTicket
     ? "mx-auto aspect-[1.9/1] w-full max-w-[340px] p-[16px]"
@@ -474,6 +485,21 @@ export function ImmersiveScratchTicket({
   }
 
   function pointFromEvent(event: React.PointerEvent<HTMLCanvasElement>) {
+    const surface = event.currentTarget.closest<HTMLElement>('[data-testid="scratch-ticket-surface"]');
+    if (surface) {
+      const transform = window.getComputedStyle(surface).transform;
+      if (transform !== "none") {
+        const bounds = surface.getBoundingClientRect();
+        const localPoint = new DOMPoint(
+          event.clientX - bounds.left - bounds.width / 2,
+          event.clientY - bounds.top - bounds.height / 2,
+        ).matrixTransform(new DOMMatrixReadOnly(transform).inverse());
+        return {
+          x: ((localPoint.x + surface.offsetWidth / 2) / surface.offsetWidth) * canvasWidth,
+          y: ((localPoint.y + surface.offsetHeight / 2) / surface.offsetHeight) * canvasHeight,
+        };
+      }
+    }
     const rect = event.currentTarget.getBoundingClientRect();
     return {
       x: ((event.clientX - rect.left) / rect.width) * canvasWidth,
@@ -557,6 +583,7 @@ export function ImmersiveScratchTicket({
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
           style={{
             ...(scratchClipPath ? { clipPath: scratchClipPath } : {}),
+            ...(issue724ScratchStyle?.scratchRotationDeg ? { transform: `rotate(${issue724ScratchStyle.scratchRotationDeg}deg)`, transformOrigin: "center" } : {}),
             ...(issue724ScratchStyle && !isRetroScratch ? { backgroundColor: issue724ScratchStyle.revealBackground } : {}),
           }}
         >
@@ -597,7 +624,7 @@ export function ImmersiveScratchTicket({
                 ...(beautyTheme && !christmasTheme && !beautyTheme.scratch.texture ? { backgroundImage: `repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,255,255,.2) 23px 24px), linear-gradient(135deg, ${coverColor}, ${coverHighlight} 48%, ${coverColor})` } : {}),
               }}
             >
-              {scratchFinish?.texture ? (
+              {scratchFinish?.texture && !christmasTheme ? (
                 <Image
                   src={scratchFinish.texture}
                   alt=""

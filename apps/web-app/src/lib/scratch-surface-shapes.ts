@@ -34,6 +34,35 @@ function createBrushClipPath() {
   return polygon(points);
 }
 
+function smoothFestiveBrushNoise(progress: number) {
+  return 1.05 * Math.sin(progress * Math.PI * 8 + 0.4)
+    + 0.32 * Math.sin(progress * Math.PI * 14 + 1.05);
+}
+
+function createSmoothFestiveBrushClipPath() {
+  const points: Array<[number, number]> = [];
+  const count = 64;
+  for (let index = 0; index <= count; index += 1) {
+    const progress = index / count;
+    points.push([7 + progress * 86, 10 + smoothFestiveBrushNoise(progress)]);
+  }
+  for (let index = 0; index <= count; index += 1) {
+    const progress = index / count;
+    const y = 16 + progress * 68;
+    points.push([95 + smoothFestiveBrushNoise(progress + 0.19) * 0.48, y]);
+  }
+  for (let index = 0; index <= count; index += 1) {
+    const progress = index / count;
+    points.push([93 - progress * 86, 90 - smoothFestiveBrushNoise(progress + 0.41)]);
+  }
+  for (let index = 0; index <= count; index += 1) {
+    const progress = index / count;
+    const y = 84 - progress * 68;
+    points.push([5 - smoothFestiveBrushNoise(progress + 0.67) * 0.48, y]);
+  }
+  return polygon(points);
+}
+
 function createScallopedTicketClipPath() {
   const points: Array<[number, number]> = [];
   const addPerforatedEdge = (top: boolean) => {
@@ -78,4 +107,5 @@ function createScallopedTicketClipPath() {
 }
 
 export const BRUSH_CLIP_PATH = createBrushClipPath();
+export const SMOOTH_FESTIVE_BRUSH_CLIP_PATH = createSmoothFestiveBrushClipPath();
 export const SCALLOPED_TICKET_CLIP_PATH = createScallopedTicketClipPath();
