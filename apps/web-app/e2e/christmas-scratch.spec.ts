@@ -6,6 +6,12 @@ const NON_SEASONAL_TEMPLATES = new Set([
   "scratch-christmas-retro",
   "scratch-christmas-noir-or",
 ]);
+const ISSUE_724_ILLUSTRATED_TEMPLATES = new Set([
+  "scratch-christmas-evergreen",
+  "scratch-christmas-champagne",
+  "scratch-christmas-retro",
+  "scratch-christmas-noir-or",
+]);
 import { assertNoPageOverflow, captureVisualAt1280, rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
 import { selectWizardStep } from "./helpers/wizard-step";
 test.use({ hasTouch: true });
@@ -42,9 +48,15 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     });
     expect(pixels[0][3]).toBe(255);
     expect(pixels[1][3]).toBe(255);
-    if (theme.id === "scratch-christmas-retro") {
-      expect(pixels[0][0] - pixels[0][2]).toBeGreaterThan(20);
+    if (ISSUE_724_ILLUSTRATED_TEMPLATES.has(theme.id)) {
       await expect(foil).toHaveAttribute("data-foil-instruction", "ticket à gratter");
+      const backdrop = page.getByTestId("scratch-result-backdrop");
+      await expect(backdrop).toBeVisible();
+      const badge = page.getByTestId(theme.id === "scratch-christmas-retro" ? "retro-scratch-logo-badge" : "issue724-scratch-logo-badge");
+      await expect(badge).toBeVisible();
+      const badgeBounds = (await badge.boundingBox())!;
+      expect(badgeBounds.width).toBeGreaterThanOrEqual(64);
+      expect(badgeBounds.width).toBeLessThanOrEqual(88);
       const printedInstructionPixels = await foil.evaluate((canvas: HTMLCanvasElement) => {
         const context = canvas.getContext("2d")!;
         const image = context.getImageData(150, 155, 360, 120).data;
@@ -58,11 +70,7 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     }
     await expect(surface).toBeInViewport();
     if (theme.id === "scratch-christmas-retro") {
-      const badge = page.getByTestId("retro-scratch-logo-badge");
-      await expect(badge).toBeVisible();
-      const badgeBounds = (await badge.boundingBox())!;
-      expect(badgeBounds.width).toBeGreaterThanOrEqual(64);
-      expect(badgeBounds.width).toBeLessThanOrEqual(88);
+      expect(pixels[0][0] - pixels[0][2]).toBeGreaterThan(20);
       const headingWeight = await page.getByRole("heading").evaluate(element => Number(getComputedStyle(element).fontWeight));
       expect(headingWeight).toBeGreaterThanOrEqual(700);
     }
@@ -104,6 +112,10 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await page.evaluate(() => document.fonts.ready);
     const box = (await foil.boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
+    if (ISSUE_724_ILLUSTRATED_TEMPLATES.has(theme.id)) {
+      await expect(page.getByTestId("scratch-result-backdrop")).toBeVisible();
+      await expect(page.getByTestId("scratch-result-label")).toHaveText("UNE SURPRISE");
+    }
     for (let row = 1; row < 12 && await foil.count(); row++) {
       const y = box.y + box.height * row / 12;
       await page.mouse.move(box.x + box.width * (row % 2 ? .05 : .95), y, { steps: 10 });

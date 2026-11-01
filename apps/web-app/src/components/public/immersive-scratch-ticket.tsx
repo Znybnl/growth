@@ -55,12 +55,61 @@ type ImmersiveScratchTicketProps = {
 const CANVAS_WIDTH = 520;
 const CANVAS_HEIGHT = 430;
 
-function drawRetroScratchInstruction(context: CanvasRenderingContext2D, width: number, height: number) {
+type ScratchInstructionStyle = { color: string; font: string };
+
+const ISSUE_724_SCRATCH_STYLES: Record<string, {
+  badge: string;
+  badgeBorder: string;
+  logoColor: string;
+  revealBackground: string;
+  revealText: string;
+  instruction: ScratchInstructionStyle;
+}> = {
+  "scratch-christmas-evergreen": {
+    badge: "rgba(255, 247, 230, .92)",
+    badgeBorder: "rgba(178, 118, 67, .72)",
+    logoColor: "#173c34",
+    revealBackground: "#fff8e8",
+    revealText: "#25473d",
+    instruction: { color: "#50341f", font: "700 39px Arial, sans-serif" },
+  },
+  "scratch-christmas-champagne": {
+    badge: "rgba(255, 250, 240, .94)",
+    badgeBorder: "rgba(175, 128, 67, .72)",
+    logoColor: "#8f6931",
+    revealBackground: "#fff8e9",
+    revealText: "#563a22",
+    instruction: { color: "#50341f", font: "600 39px Georgia, 'Times New Roman', serif" },
+  },
+  "scratch-christmas-retro": {
+    badge: "rgba(255, 247, 230, .85)",
+    badgeBorder: "rgba(178, 118, 67, .70)",
+    logoColor: "#3b5547",
+    revealBackground: "#fff7e6",
+    revealText: "#56331f",
+    instruction: { color: "#56331f", font: "600 42px Georgia, 'Times New Roman', serif" },
+  },
+  "scratch-christmas-noir-or": {
+    badge: "rgba(20, 17, 13, .88)",
+    badgeBorder: "rgba(229, 199, 124, .92)",
+    logoColor: "#e5c77c",
+    revealBackground: "#f5e3bd",
+    revealText: "#3e2b17",
+    instruction: { color: "#493015", font: "600 39px Georgia, 'Times New Roman', serif" },
+  },
+};
+
+function drawScratchInstruction(
+  context: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  style: ScratchInstructionStyle,
+) {
   context.save();
-  context.fillStyle = "#56331f";
+  context.fillStyle = style.color;
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.font = "600 42px Georgia, 'Times New Roman', serif";
+  context.font = style.font;
   context.shadowColor = "rgba(255, 248, 230, .45)";
   context.shadowBlur = 1;
   context.fillText("Ticket", width / 2, height / 2 - 22, width * 0.7);
@@ -217,6 +266,8 @@ export function ImmersiveScratchTicket({
       ? BRUSH_CLIP_PATH
       : undefined;
   const isRetroScratch = christmasTheme?.id === "scratch-christmas-retro";
+  const issue724ScratchStyle = christmasTheme ? ISSUE_724_SCRATCH_STYLES[christmasTheme.id] : undefined;
+  const isIssue724IllustratedScratch = Boolean(issue724ScratchStyle);
   const canvasWidth = scratchShape === "brush" ? 700 : isDecorativeTicket ? 660 : CANVAS_WIDTH;
   const canvasHeight = CANVAS_HEIGHT;
   const configuredPrimary = accent.signal;
@@ -375,11 +426,13 @@ export function ImmersiveScratchTicket({
         currentContext.globalAlpha = scratchFinish.textureOpacity;
         currentContext.drawImage(texture, 0, 0, canvasWidth, canvasHeight);
         currentContext.restore();
-        if (isRetroScratch) drawRetroScratchInstruction(currentContext, canvasWidth, canvasHeight);
+        if (issue724ScratchStyle) drawScratchInstruction(currentContext, canvasWidth, canvasHeight, issue724ScratchStyle.instruction);
         canvas.dataset.foilLoaded = "true";
       };
       texture.onerror = () => {
-        if (!cancelled) canvas.dataset.foilLoaded = "error";
+        if (cancelled) return;
+        if (issue724ScratchStyle) drawScratchInstruction(context, canvasWidth, canvasHeight, issue724ScratchStyle.instruction);
+        canvas.dataset.foilLoaded = "error";
       };
       texture.src = scratchFinish.texture;
     } else if (beautyTheme) {
@@ -398,8 +451,8 @@ export function ImmersiveScratchTicket({
       }
       canvas.dataset.foilLoaded = "true";
     }
-    if (isRetroScratch && !scratchFinish?.texture) {
-      drawRetroScratchInstruction(context, canvasWidth, canvasHeight);
+    if (issue724ScratchStyle && !scratchFinish?.texture) {
+      drawScratchInstruction(context, canvasWidth, canvasHeight, issue724ScratchStyle.instruction);
       canvas.dataset.foilLoaded = "true";
     }
 
@@ -411,7 +464,7 @@ export function ImmersiveScratchTicket({
     return () => {
       cancelled = true;
     };
-  }, [beautyTheme, canvasHeight, canvasWidth, christmasTheme, coverColor, coverHighlight, isConfetti, isCoral, isDecorativeTicket, isLilac, isRetroScratch, isSunburst, isVault, primary, resultLabel, scratchFinish?.texture, scratchFinish?.textureOpacity]);
+  }, [beautyTheme, canvasHeight, canvasWidth, christmasTheme, coverColor, coverHighlight, isConfetti, isCoral, isDecorativeTicket, isLilac, isRetroScratch, isSunburst, isVault, issue724ScratchStyle, primary, resultLabel, scratchFinish?.texture, scratchFinish?.textureOpacity]);
 
   function reveal() {
     if (revealedRef.current) return;
@@ -482,12 +535,13 @@ export function ImmersiveScratchTicket({
         <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
             <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
-              {isRetroScratch && logoMode === "text" ? (
+              {issue724ScratchStyle && logoMode === "text" ? (
                 <div
-                  data-testid="retro-scratch-logo-badge"
-                  className="flex h-[clamp(64px,19cqw,88px)] w-[clamp(64px,19cqw,88px)] shrink-0 items-center justify-center rounded-full border border-[#b27643]/70 bg-[#fff7e6]/85 px-2 text-center shadow-[0_3px_10px_rgba(89,53,29,.15)]"
+                  data-testid={isRetroScratch ? "retro-scratch-logo-badge" : "issue724-scratch-logo-badge"}
+                  className="flex h-[clamp(64px,19cqw,88px)] w-[clamp(64px,19cqw,88px)] shrink-0 items-center justify-center rounded-full border px-2 text-center shadow-[0_3px_10px_rgba(89,53,29,.15)]"
+                  style={{ backgroundColor: issue724ScratchStyle.badge, borderColor: issue724ScratchStyle.badgeBorder }}
                 >
-                  <span className="font-display text-[clamp(9px,3.2cqw,14px)] font-semibold leading-tight" style={{ color: christmasTheme.logo }}>
+                  <span className="font-display text-[clamp(9px,3.2cqw,14px)] font-semibold leading-tight" style={{ color: issue724ScratchStyle.logoColor }}>
                     {logoText || "Votre commerce"}
                   </span>
                 </div>
@@ -524,15 +578,29 @@ export function ImmersiveScratchTicket({
         </div>
 
         <div
-          className={`relative z-10 flex flex-1 items-center ${scratchShape ? "justify-start" : "justify-center"}`}
+          className={`relative z-10 flex flex-1 ${isIssue724IllustratedScratch ? "items-start" : "items-center"} ${scratchShape ? "justify-start" : "justify-center"}`}
           style={{ paddingTop: `${Math.max(0, textToScratchSpacingPx)}px`, paddingBottom: fitContainer ? "16cqw" : "clamp(32px, 8svh, 72px)" }}
         >
         <div
           data-testid="scratch-ticket-surface"
           data-scratch-shape={scratchShape ?? "default"}
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
-          style={scratchClipPath ? { clipPath: scratchClipPath } : undefined}
+          style={{
+            ...(scratchClipPath ? { clipPath: scratchClipPath } : {}),
+            ...(issue724ScratchStyle && !isRetroScratch ? { backgroundColor: issue724ScratchStyle.revealBackground } : {}),
+          }}
         >
+          {issue724ScratchStyle ? (
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute ${isDecorativeTicket ? "inset-[16px]" : "inset-0"} z-0`}
+              data-testid="scratch-result-backdrop"
+              style={{
+                backgroundColor: issue724ScratchStyle.revealBackground,
+                clipPath: scratchClipPath,
+              }}
+            />
+          ) : null}
           {isDecorativeTicket ? <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 text-[#ffe18a]">
             <span className="absolute left-[8%] top-[12%] text-[clamp(12px,4cqw,19px)]">★</span>
             <span className="absolute right-[8%] top-[12%] text-[clamp(12px,4cqw,19px)]">★</span>
@@ -590,7 +658,7 @@ export function ImmersiveScratchTicket({
                 data-testid="scratch-result-label"
                 className="max-w-[90%] font-semibold leading-[1.05]"
                 style={{
-                  color: resultInk,
+                  color: issue724ScratchStyle?.revealText ?? resultInk,
                   fontSize: "clamp(2rem, 8vw, 3rem)",
                   textShadow: resultTextShadow,
                 }}
@@ -607,7 +675,7 @@ export function ImmersiveScratchTicket({
               data-foil-texture={beautyTheme?.id}
               data-foil-loaded={beautyTheme ? "false" : undefined}
               data-scratch-shape={scratchShape ?? "default"}
-              data-foil-instruction={isRetroScratch ? "ticket à gratter" : undefined}
+              data-foil-instruction={issue724ScratchStyle ? "ticket à gratter" : undefined}
               aria-label={instruction}
               className="relative z-20 block h-full w-full touch-none cursor-crosshair"
               style={scratchClipPath ? { clipPath: scratchClipPath } : undefined}

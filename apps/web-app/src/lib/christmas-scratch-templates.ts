@@ -45,7 +45,7 @@ export const CHRISTMAS_SCRATCH_TEMPLATES = [
     logo: "#173c34",
     font: "fredoka",
     scratchShape: "brush",
-    scratch: { base: "#bd965d", highlight: "#dfc08b", edge: "#fff1d4", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .12 },
+    scratch: { base: "#bd965d", highlight: "#dfc08b", edge: "#fff1d4", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .22 },
   },
   {
     id: "scratch-christmas-champagne",
@@ -57,7 +57,7 @@ export const CHRISTMAS_SCRATCH_TEMPLATES = [
     logo: "#8f6931",
     font: "playfair",
     scratchShape: "brush",
-    scratch: { base: "#c6a775", highlight: "#e7d2ab", edge: "#fff6e3", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .14 },
+    scratch: { base: "#c6a775", highlight: "#e7d2ab", edge: "#fff6e3", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .24 },
   },
   {
     id: "scratch-christmas-retro",
@@ -81,7 +81,7 @@ export const CHRISTMAS_SCRATCH_TEMPLATES = [
     logo: "#e5c77c",
     font: "bodoni",
     scratchShape: "brush",
-    scratch: { base: "#ae813b", highlight: "#f4d78e", edge: "#fff0c3", texture: "/images/scratch-templates/beauty-foil-noir-or.webp", textureOpacity: .24 },
+    scratch: { base: "#ae813b", highlight: "#f4d78e", edge: "#fff0c3", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .2 },
   },
 ] as const satisfies readonly (WheelBasedTemplate | IllustratedTemplate)[];
 
