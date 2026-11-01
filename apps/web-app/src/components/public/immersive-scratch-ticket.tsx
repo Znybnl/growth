@@ -624,16 +624,18 @@ export function ImmersiveScratchTicket({
                 ...(beautyTheme && !christmasTheme && !beautyTheme.scratch.texture ? { backgroundImage: `repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,255,255,.2) 23px 24px), linear-gradient(135deg, ${coverColor}, ${coverHighlight} 48%, ${coverColor})` } : {}),
               }}
             >
-              {scratchFinish?.texture && !christmasTheme ? (
-                <Image
-                  src={scratchFinish.texture}
-                  alt=""
-                  fill
-                  sizes="216px"
-                  unoptimized
-                  loading="eager"
-                  className="object-cover"
-                  style={{ opacity: scratchFinish.textureOpacity }}
+              {scratchFinish?.texture ? (
+                <div
+                  aria-hidden="true"
+                  data-testid="scratch-foil-texture-first-paint"
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    backgroundImage: `url("${scratchFinish.texture}")`,
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "cover",
+                    opacity: scratchFinish.textureOpacity,
+                  }}
                 />
               ) : null}
             </div>

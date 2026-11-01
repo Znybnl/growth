@@ -79,9 +79,9 @@ test("@visual-1280 ticket Noir & Or : le motif d’origine est visible dès le p
       await expect(firstPaint).toBeVisible();
       const texturedTheme = scratchVisualTheme(template);
       if (texturedTheme?.scratch.texture) {
-        const source = firstPaint.locator("img");
-        await expect(source).toHaveAttribute("src", texturedTheme.scratch.texture);
-        await expect.poll(() => source.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+        const texture = firstPaint.getByTestId("scratch-foil-texture-first-paint");
+        await expect(texture).toBeVisible();
+        await expect(texture).toHaveCSS("background-image", new RegExp(texturedTheme.scratch.texture.split("/").at(-1)!.replaceAll(".", "\\.")));
       } else {
         await expect(firstPaint).toHaveCSS("background-image", /linear-gradient/);
       }
