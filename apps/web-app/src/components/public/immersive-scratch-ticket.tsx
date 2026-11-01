@@ -55,6 +55,19 @@ type ImmersiveScratchTicketProps = {
 const CANVAS_WIDTH = 520;
 const CANVAS_HEIGHT = 430;
 
+function drawRetroScratchInstruction(context: CanvasRenderingContext2D, width: number, height: number) {
+  context.save();
+  context.fillStyle = "#56331f";
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.font = "600 42px Georgia, 'Times New Roman', serif";
+  context.shadowColor = "rgba(255, 248, 230, .45)";
+  context.shadowBlur = 1;
+  context.fillText("Ticket", width / 2, height / 2 - 22, width * 0.7);
+  context.fillText("à gratter", width / 2, height / 2 + 24, width * 0.7);
+  context.restore();
+}
+
 function withAlpha(color: string, alpha: string) {
   const normalized = color.replace("#", "");
   return /^[0-9a-f]{6}$/i.test(normalized) ? `#${normalized}${alpha}` : color;
@@ -251,13 +264,13 @@ export function ImmersiveScratchTicket({
     ? scratchShape === "brush"
       ? "mx-auto aspect-[2.2/1] w-full max-w-[340px]"
       : isDecorativeTicket
-    ? "mx-auto aspect-[1.9/1] w-full max-w-[340px] p-[12px]"
+    ? "mx-auto aspect-[1.9/1] w-full max-w-[340px] p-[16px]"
         : "mx-auto aspect-square w-[70%] max-w-[216px] rounded-full"
     : isSunburst
     ? "mx-auto aspect-[1.18/1] w-[70%] max-w-[216px]"
     : "mx-auto aspect-square w-[70%] max-w-[216px]";
   const surfaceRimClass = isDecorativeTicket
-    ? "border-[3px] border-[#f4d78e] bg-[#b52a29] ring-2 ring-[#fff0ca] shadow-[0_14px_34px_rgba(90,25,18,.3)]"
+    ? "border-2 border-[#b52a29] bg-[#b52a29] shadow-[0_12px_28px_rgba(90,25,18,.25)]"
     : scratchShape === "brush"
       ? "drop-shadow-[0_12px_18px_rgba(73,47,25,.2)]"
     : beautyTheme?.id === "beauty-scratch-noir-or"
@@ -362,6 +375,7 @@ export function ImmersiveScratchTicket({
         currentContext.globalAlpha = scratchFinish.textureOpacity;
         currentContext.drawImage(texture, 0, 0, canvasWidth, canvasHeight);
         currentContext.restore();
+        if (isRetroScratch) drawRetroScratchInstruction(currentContext, canvasWidth, canvasHeight);
         canvas.dataset.foilLoaded = "true";
       };
       texture.onerror = () => {
@@ -382,6 +396,10 @@ export function ImmersiveScratchTicket({
         }
         context.restore();
       }
+      canvas.dataset.foilLoaded = "true";
+    }
+    if (isRetroScratch && !scratchFinish?.texture) {
+      drawRetroScratchInstruction(context, canvasWidth, canvasHeight);
       canvas.dataset.foilLoaded = "true";
     }
 
@@ -528,7 +546,7 @@ export function ImmersiveScratchTicket({
               data-testid="scratch-foil-first-paint"
               style={{
                 position: "absolute",
-                inset: isDecorativeTicket ? "12px" : 0,
+                inset: isDecorativeTicket ? "16px" : 0,
                 clipPath: scratchClipPath,
                 backgroundColor: coverColor,
                 ...(christmasTheme ? {
@@ -558,7 +576,7 @@ export function ImmersiveScratchTicket({
           {!revealed && !hasTouched ? (
             <div
               aria-hidden="true"
-              className={`pointer-events-none absolute ${isDecorativeTicket ? "inset-[12px]" : "inset-0"} z-30 flex items-center justify-center ${isSunburst ? "p-6" : "p-5"}`}
+              className={`pointer-events-none absolute ${isDecorativeTicket ? "inset-[16px]" : "inset-0"} z-30 flex items-center justify-center ${isSunburst ? "p-6" : "p-5"}`}
             >
               {isVault ? <VaultIllustration color={illustrationColor} /> : null}
               {!isVault && isLilac ? <GiftIllustration color={illustrationColor} /> : null}
@@ -567,7 +585,7 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           {hasTouched ? (
-            <div className={`pointer-events-none absolute ${isDecorativeTicket ? "inset-[12px]" : "inset-0"} z-10 flex items-center justify-center px-6 text-center`}>
+            <div className={`pointer-events-none absolute ${isDecorativeTicket ? "inset-[16px]" : "inset-0"} z-10 flex items-center justify-center px-6 text-center`}>
               <p
                 data-testid="scratch-result-label"
                 className="max-w-[90%] font-semibold leading-[1.05]"
@@ -589,6 +607,7 @@ export function ImmersiveScratchTicket({
               data-foil-texture={beautyTheme?.id}
               data-foil-loaded={beautyTheme ? "false" : undefined}
               data-scratch-shape={scratchShape ?? "default"}
+              data-foil-instruction={isRetroScratch ? "ticket à gratter" : undefined}
               aria-label={instruction}
               className="relative z-20 block h-full w-full touch-none cursor-crosshair"
               style={scratchClipPath ? { clipPath: scratchClipPath } : undefined}

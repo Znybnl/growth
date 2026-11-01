@@ -36,33 +36,44 @@ function createBrushClipPath() {
 
 function createScallopedTicketClipPath() {
   const points: Array<[number, number]> = [];
+  const addPerforatedEdge = (top: boolean) => {
+    const teeth = 18;
+    for (let index = 0; index <= teeth; index += 1) {
+      const x = top ? 4 + (92 * index) / teeth : 96 - (92 * index) / teeth;
+      const outer = index % 2 === 0;
+      points.push([x, top ? (outer ? 2 : 6) : (outer ? 98 : 94)]);
+    }
+  };
   const addSideNotch = (centerY: number, side: "left" | "right") => {
     const steps = 12;
     for (let index = 0; index <= steps; index += 1) {
       const angle = -Math.PI / 2 + (Math.PI * index) / steps;
-      const inset = 5.5 * Math.cos(angle);
-      const y = centerY + 6 * Math.sin(angle);
+      const inset = 4.5 * Math.cos(angle);
+      const y = centerY + 5 * Math.sin(angle);
       points.push([side === "right" ? 100 - inset : inset, y]);
     }
   };
 
-  points.push([7, 2], [93, 2], [98, 6], [98, 17]);
+  points.push([4, 5]);
+  addPerforatedEdge(true);
+  points.push([98, 8], [100, 15]);
   for (const center of [25, 50, 75]) {
-    points.push([100, center - 6]);
+    points.push([100, center - 5]);
     addSideNotch(center, "right");
-    points.push([100, center + 6]);
+    points.push([100, center + 5]);
   }
-  points.push([98, 83], [98, 94], [93, 98], [7, 98], [2, 94], [2, 83]);
+  points.push([100, 85], [98, 92]);
+  addPerforatedEdge(false);
+  points.push([2, 92], [0, 85]);
   for (const center of [75, 50, 25]) {
-    points.push([0, center + 6]);
+    points.push([0, center + 5]);
     const steps = 12;
     for (let index = 0; index <= steps; index += 1) {
       const angle = Math.PI / 2 - (Math.PI * index) / steps;
-      points.push([5.5 * Math.cos(angle), center + 6 * Math.sin(angle)]);
+      points.push([4.5 * Math.cos(angle), center + 5 * Math.sin(angle)]);
     }
-    points.push([0, center - 6]);
   }
-  points.push([2, 17], [2, 6]);
+  points.push([0, 15], [2, 8]);
   return polygon(points);
 }
 
