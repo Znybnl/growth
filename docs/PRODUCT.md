@@ -454,17 +454,29 @@ la page de jeu conserve le moteur de grattage et les règles de tirage existants
 Les anciens modèles et les modèles par défaut de chaque activité restent inchangés.
 [Périmètre et recette](releases/2026-10-28-christmas-scratch-676.md).
 
-Issue #724 ajoute quatre styles de ticket festifs non saisonniers à tous les
-secteurs : Vert bouteille & rubans, Ivoire & champagne, Rayons rétro, et Satin
-noir & or. Leurs fonds WebP sont des décors seuls ; l'identité, le titre et le
-sous-titre restent configurés dans le jeu. Trois styles ont une zone de grattage
-dorée au bord irrégulier de pinceau ; le modèle rétro a un ticket rouge bordé
-d'or et un revêtement argenté. Leurs anciens identifiants internes sont conservés
-afin de préserver les campagnes qui les utilisent déjà.
+Issue #724 propose trois styles de ticket festifs non saisonniers à tous les
+secteurs : Vert bouteille & rubans, Ivoire & champagne et Satin noir & or. Leurs
+fonds WebP sont des décors seuls ; Vert bouteille utilise son fond cadeau étoilé dédié,
+et Ivoire & champagne son nouveau fond ivoire lumineux aux rubans dorés.
+L'identité, le titre et le sous-titre restent
+configurés dans le jeu. Leur zone dorée de grattage est haute, légèrement inclinée
+et présente des bords de pinceau adoucis. Les trois zones ont été agrandies en hauteur.
+Le médaillon du logo texte est plus grand. Le modèle Rayons rétro est retiré des
+nouveaux choix. Son identifiant et son rendu restent pris en charge pour préserver
+les campagnes déjà configurées.
 La zone est toujours le canvas interactif existant et révèle le résultat du tirage
 exact. Un fond importé ou choisi dans la bibliothèque reste prioritaire sur le fond
 natif. Aucune campagne existante, chance, stock, participation ou règle de jeu n'est
 modifiée. [Assets et contrôles](releases/2026-10-31-festive-scratch-724.md).
+
+Complément de recette : chaque couche opaque et son canvas utilisent le même masque
+de forme (pinceau ou ticket à encoches), également dans la miniature. Le ticket rétro
+présente son logo texte dans un macaron, son titre rétro renforcé, un ticket à
+encoches latérales et un revêtement ivoire texturé, sans voile gris. Aucun texte
+« Ticket à gratter » n'est imprimé sur le revêtement des quatre modèles : le lot
+reste caché et n'apparaît qu'au grattage. Le fond natif
+est reconstruit en rayons régulièrement espacés avec un grain papier subtil, reste
+dans la bibliothèque et peut être remplacé manuellement. [Correctif](releases/2026-11-01-retro-scratch-724-followup.md).
 
 ## Affiliation par compte — #677
 

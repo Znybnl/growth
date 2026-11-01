@@ -1,6 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "../src/lib/christmas-scratch-templates";
+const SELECTABLE_FESTIVE_TEMPLATES = CHRISTMAS_SCRATCH_TEMPLATES.filter(({ id }) => id !== "scratch-christmas-retro");
 const NON_SEASONAL_TEMPLATES = new Set([
+  "scratch-christmas-evergreen",
+  "scratch-christmas-champagne",
+  "scratch-christmas-retro",
+  "scratch-christmas-noir-or",
+]);
+const ISSUE_724_ILLUSTRATED_TEMPLATES = new Set([
   "scratch-christmas-evergreen",
   "scratch-christmas-champagne",
   "scratch-christmas-retro",
@@ -24,16 +31,69 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
     const foil = page.locator(`canvas[data-foil-texture="${theme.id}"]`);
     await expect(foil).toHaveAttribute("data-foil-loaded", "true");
-    const pixel = await foil.evaluate((canvas: HTMLCanvasElement) => {
+    const expectedScratchShape = theme.scratchShape ?? "default";
+    await expect(foil).toHaveAttribute("data-scratch-shape", expectedScratchShape);
+    const surface = page.getByTestId("scratch-ticket-surface");
+    await expect(surface).toHaveAttribute("data-scratch-shape", expectedScratchShape);
+    if (["scratch-christmas-evergreen", "scratch-christmas-champagne", "scratch-christmas-noir-or"].includes(theme.id)) {
+      const geometry = await surface.evaluate((element) => {
+        const surfaceElement = element as HTMLElement;
+        const style = getComputedStyle(surfaceElement);
+        const transform = new DOMMatrixReadOnly(style.transform);
+        return {
+          ratio: surfaceElement.offsetWidth / surfaceElement.offsetHeight,
+          rotationDeg: Math.atan2(transform.b, transform.a) * (180 / Math.PI),
+          clipPath: style.clipPath,
+        };
+      });
+      expect(geometry.ratio).toBeCloseTo(1.55, 1);
+      expect(Math.abs(geometry.rotationDeg)).toBeGreaterThanOrEqual(0.8);
+      expect(Math.abs(geometry.rotationDeg)).toBeLessThanOrEqual(1.3);
+      expect(geometry.clipPath).toContain("polygon(");
+    }
+    const [surfaceClip, foilClip] = await Promise.all([
+      surface.evaluate(element => getComputedStyle(element).clipPath),
+      foil.evaluate(element => getComputedStyle(element).clipPath),
+    ]);
+    expect(foilClip).toBe(surfaceClip);
+    const pixels = await foil.evaluate((canvas: HTMLCanvasElement) => {
       const ctx = canvas.getContext("2d")!;
-      return [ctx.getImageData(260, 215, 1, 1).data[3], ctx.getImageData(20, 20, 1, 1).data[3]];
+      return [
+        Array.from(ctx.getImageData(260, 215, 1, 1).data),
+        Array.from(ctx.getImageData(20, 20, 1, 1).data),
+      ];
     });
-    expect(pixel).toEqual([255, 255]);
-    await expect(page.getByTestId("scratch-ticket-surface")).toBeInViewport();
+    expect(pixels[0][3]).toBe(255);
+    expect(pixels[1][3]).toBe(255);
+    if (ISSUE_724_ILLUSTRATED_TEMPLATES.has(theme.id)) {
+      await expect(foil).not.toHaveAttribute("data-foil-instruction");
+      const backdrop = page.getByTestId("scratch-result-backdrop");
+      await expect(backdrop).toBeVisible();
+      const badge = page.getByTestId(theme.id === "scratch-christmas-retro" ? "retro-scratch-logo-badge" : "issue724-scratch-logo-badge");
+      await expect(badge).toBeVisible();
+      const badgeBounds = (await badge.boundingBox())!;
+      expect(badgeBounds.width).toBeGreaterThanOrEqual(theme.id === "scratch-christmas-retro" ? 64 : 74);
+      expect(badgeBounds.width).toBeLessThanOrEqual(theme.id === "scratch-christmas-retro" ? 88 : 96);
+    }
+    await expect(surface).toBeInViewport();
+    if (theme.id === "scratch-christmas-retro") {
+      expect(pixels[0][0] - pixels[0][2]).toBeGreaterThan(20);
+      const headingWeight = await page.getByRole("heading").evaluate(element => Number(getComputedStyle(element).fontWeight));
+      expect(headingWeight).toBeGreaterThanOrEqual(700);
+    }
     await expect(page.getByText("Le résultat s'affiche automatiquement.", { exact: true })).toHaveCount(0);
     const experience = page.locator(".okado-public-experience");
     const artwork = experience.locator(`img[data-template-art="${theme.id}"]`);
     await expect(artwork).toHaveJSProperty("complete", true);
+    const expectedBackgroundName = theme.id === "scratch-christmas-evergreen"
+      ? "festive-gift-wrap-green-background-v3.webp"
+      : theme.id === "scratch-christmas-champagne"
+        ? "festive-champagne-ribbons-background-v3.webp"
+        : null;
+    if (expectedBackgroundName) {
+      await expect.poll(() => artwork.evaluate((image: HTMLImageElement) => image.currentSrc)).toContain(expectedBackgroundName);
+      await expect.poll(() => artwork.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+    }
     const experienceBounds = (await experience.boundingBox())!;
     const artworkBounds = (await artwork.boundingBox())!;
     expect(artworkBounds.y + artworkBounds.height).toBeGreaterThanOrEqual(experienceBounds.y + experienceBounds.height - 1);
@@ -62,10 +122,16 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await page.goto(`/dev/christmas-scratch?template=${theme.id}&mode=interaction`);
     await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
     const foil = page.locator("canvas");
+    await expect(page.getByTestId("scratch-result-label")).toHaveCount(0);
+    await expect(page.getByText("Ticket à gratter", { exact: false })).toHaveCount(0);
     await expect(foil).toHaveAttribute("data-foil-loaded", "true");
     await page.evaluate(() => document.fonts.ready);
     const box = (await foil.boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
+    if (ISSUE_724_ILLUSTRATED_TEMPLATES.has(theme.id)) {
+      await expect(page.getByTestId("scratch-result-backdrop")).toBeVisible();
+      await expect(page.getByTestId("scratch-result-label")).toHaveText("UNE SURPRISE");
+    }
     for (let row = 1; row < 12 && await foil.count(); row++) {
       const y = box.y + box.height * row / 12;
       await page.mouse.move(box.x + box.width * (row % 2 ? .05 : .95), y, { steps: 10 });
@@ -119,7 +185,8 @@ test("grattage tactile réel et aperçu non interactif", async ({ page }) => {
 test("@visual-1280 tickets festifs dans l'éditeur classique, tous secteurs", async ({ page }, info) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto("/dev/template-rendering-proof?mode=editor-prize-budget&template=scratch-nude-classic&business=retail");
-  for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
+  await expect(page.getByRole("button", { name: /Rayons rétro/ })).toHaveCount(0);
+  for (const item of SELECTABLE_FESTIVE_TEMPLATES) {
     const theme = christmasScratchTemplate(item.id)!;
     const card = page.getByRole("button", { name: new RegExp(theme.name) });
     await card.scrollIntoViewIfNeeded(); await card.click();
@@ -138,7 +205,8 @@ test("@visual-1280 tickets festifs dans le wizard et aperçu, 1280×720 / 1280×
     await page.setViewportSize({ width: 1280, height });
     await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-edit&template=scratch-nude-classic&business=retail");
     await selectWizardStep(page, 2);
-    for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
+    await expect(page.getByRole("button", { name: /Rayons rétro/ })).toHaveCount(0);
+    for (const item of SELECTABLE_FESTIVE_TEMPLATES) {
       const theme = christmasScratchTemplate(item.id)!;
       const card = page.getByRole("button", { name: new RegExp(theme.name) });
       await card.scrollIntoViewIfNeeded(); await card.click();

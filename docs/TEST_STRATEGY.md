@@ -596,6 +596,18 @@ Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu e
 
 `e2e/template-rendering-511.spec.ts` vérifie sur les onze templates que le canvas de jeu contient bien un revêtement opaque avec le motif effectivement peint, et pas seulement une image source chargée. `e2e/game-screen-layout.spec.ts` vérifie aussi visuellement à 963×555 que la texture WebP originale Noir & Or est visible dans l’aperçu avant hydratation, quand le canvas est encore vierge. La recette couvre la prévisualisation, le jeu public et la prévisualisation de jeu ; elle ne modifie ni le grattage ni les probabilités.
 
+## Forme et occultation des tickets festifs — #724
+
+`e2e/christmas-scratch.spec.ts` vérifie pour les trois modèles encore proposés que le masque CSS de
+la surface, le film visible au premier rendu et le canvas interactif coïncident, et que leurs
+zones de grattage sont plus hautes, un peu plus étroites, adoucies sur les côtés et légèrement inclinées.
+Le badge logo texte est également plus grand ; Vert bouteille et Ivoire & champagne chargent chacun leur fond dédié de la bibliothèque.
+Rayons rétro n'apparaît plus dans les sélecteurs ; un test de compatibilité garantit que les
+campagnes historiques utilisant ce modèle continuent de s'afficher et de se gratter.
+Le film ne contient aucun libellé générique ; avant interaction, le résultat reste
+caché, puis apparaît après un vrai geste de grattage. Les contrôles visuels mobile
+et 1280×720/600 couvrent aussi les aperçus éditeur et public.
+
 ## Catalogue Beauté — #466
 
 Évolution #477 : `test:beauty-catalog` vérifie l’union des six bibliothèques pour

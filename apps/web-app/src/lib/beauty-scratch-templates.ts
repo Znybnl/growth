@@ -123,6 +123,7 @@ export const IMMERSIVE_SCRATCH_TEMPLATE_IDS = [
 export const HIDDEN_SCRATCH_TEMPLATE_IDS = [
   "scratch-confetti",
   "scratch-sunburst",
+  "scratch-christmas-retro",
 ] as const satisfies readonly GamePageTemplateId[];
 
 export function isHiddenScratchTemplate(templateId?: string | null) {

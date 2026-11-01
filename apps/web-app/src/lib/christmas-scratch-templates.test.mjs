@@ -3,7 +3,7 @@ import test from "node:test";
 import { existsSync } from "node:fs";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate, christmasScratchBackgroundImage } from "./christmas-scratch-templates.ts";
 import { parseCampaignSetupInput } from "./merchant-input.ts";
-import { scratchVisualTheme, isImmersiveScratchTemplate } from "./beauty-scratch-templates.ts";
+import { scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate } from "./beauty-scratch-templates.ts";
 import { defaultScratchTextColor, defaultScratchTemplateFont, scratchTemplateDefaultBackground, scratchTemplatePrimaryColor, scratchTemplateUsesFixedPrimaryColor, scratchTemplateUsesTicketTextColor, wheelBackgroundForTemplateSelection, DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX } from "./campaign-defaults.ts";
 
 for (const { id } of CHRISTMAS_SCRATCH_TEMPLATES) {
@@ -51,6 +51,16 @@ test("les quatre modèles festifs gardent des noms neutres et des fonds présent
     const theme = christmasScratchTemplate(id);
     assert.equal(theme.name, name);
     assert.equal(/no[eë]l|sapin/i.test(`${theme.name} ${theme.description} ${theme.sampleHeadline} ${theme.sampleSubline}`), false);
-    assert.equal(builtInBackgroundAssets.find((asset) => asset.id === backgroundId)?.category, "Fête");
+    const asset = builtInBackgroundAssets.find((asset) => asset.id === backgroundId);
+    assert.equal(asset?.category, "Fête");
+    assert.equal(asset?.imageUrl, theme.background);
   }
+});
+
+test("Rayons rétro est retiré des choix sans casser les campagnes déjà configurées", () => {
+  const legacyTemplate = christmasScratchTemplate("scratch-christmas-retro");
+  assert.equal(isHiddenScratchTemplate("scratch-christmas-retro"), true);
+  assert.equal(legacyTemplate?.name, "Rayons rétro");
+  assert.equal(isImmersiveScratchTemplate("scratch-christmas-retro"), true);
+  assert.equal(scratchVisualTheme("scratch-christmas-retro"), legacyTemplate);
 });
