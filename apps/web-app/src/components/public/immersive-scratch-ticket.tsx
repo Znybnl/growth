@@ -198,6 +198,12 @@ export function ImmersiveScratchTicket({
   const seasonalTheme = christmasTheme || halloweenTheme;
   const scratchShape = christmasTheme?.scratchShape;
   const isDecorativeTicket = scratchShape === "ticket";
+  const scratchClipPath = scratchShape === "ticket"
+    ? SCALLOPED_TICKET_CLIP_PATH
+    : scratchShape === "brush"
+      ? BRUSH_CLIP_PATH
+      : undefined;
+  const isRetroScratch = christmasTheme?.id === "scratch-christmas-retro";
   const canvasWidth = scratchShape === "brush" ? 700 : isDecorativeTicket ? 660 : CANVAS_WIDTH;
   const canvasHeight = CANVAS_HEIGHT;
   const configuredPrimary = accent.signal;
@@ -322,6 +328,28 @@ export function ImmersiveScratchTicket({
       context.restore();
     }
 
+    if (isRetroScratch) {
+      context.save();
+      context.globalAlpha = 0.1;
+      context.strokeStyle = "#ffffff";
+      context.lineWidth = 1;
+      for (let y = 5; y < canvasHeight; y += 7) {
+        context.beginPath();
+        context.moveTo(0, y);
+        context.lineTo(canvasWidth, y);
+        context.stroke();
+      }
+      context.globalAlpha = 0.08;
+      context.strokeStyle = "#66717a";
+      for (let offset = -canvasHeight; offset < canvasWidth; offset += 13) {
+        context.beginPath();
+        context.moveTo(offset, 0);
+        context.lineTo(offset + canvasHeight, canvasHeight);
+        context.stroke();
+      }
+      context.restore();
+    }
+
     let cancelled = false;
     if (scratchFinish?.texture) {
       const texture = new window.Image();
@@ -365,7 +393,7 @@ export function ImmersiveScratchTicket({
     return () => {
       cancelled = true;
     };
-  }, [beautyTheme, canvasHeight, canvasWidth, christmasTheme, coverColor, coverHighlight, isConfetti, isCoral, isDecorativeTicket, isLilac, isSunburst, isVault, primary, resultLabel, scratchFinish?.texture, scratchFinish?.textureOpacity]);
+  }, [beautyTheme, canvasHeight, canvasWidth, christmasTheme, coverColor, coverHighlight, isConfetti, isCoral, isDecorativeTicket, isLilac, isRetroScratch, isSunburst, isVault, primary, resultLabel, scratchFinish?.texture, scratchFinish?.textureOpacity]);
 
   function reveal() {
     if (revealedRef.current) return;
@@ -436,16 +464,27 @@ export function ImmersiveScratchTicket({
         <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`}>
           {logoMode !== "none" ? (
             <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
-              <BrandMark
-                logoText={logoText || "Votre commerce"}
-                logoUrl={logoMode === "image" ? logoUrl : undefined}
-                size="lg"
-                variant="transparent"
-                imageWidthPx={logoWidthPx}
-                textSizePx={logoTextSizePx}
-                textClassName="text-2xl"
-                textColor={halloweenTheme?.logo || logoTextColor || ink}
-              />
+              {isRetroScratch && logoMode === "text" ? (
+                <div
+                  data-testid="retro-scratch-logo-badge"
+                  className="flex h-[clamp(64px,19cqw,88px)] w-[clamp(64px,19cqw,88px)] shrink-0 items-center justify-center rounded-full border border-[#b27643]/70 bg-[#fff7e6]/85 px-2 text-center shadow-[0_3px_10px_rgba(89,53,29,.15)]"
+                >
+                  <span className="font-display text-[clamp(9px,3.2cqw,14px)] font-semibold leading-tight" style={{ color: christmasTheme.logo }}>
+                    {logoText || "Votre commerce"}
+                  </span>
+                </div>
+              ) : (
+                <BrandMark
+                  logoText={logoText || "Votre commerce"}
+                  logoUrl={logoMode === "image" ? logoUrl : undefined}
+                  size="lg"
+                  variant="transparent"
+                  imageWidthPx={logoWidthPx}
+                  textSizePx={logoTextSizePx}
+                  textClassName="text-2xl"
+                  textColor={halloweenTheme?.logo || logoTextColor || ink}
+                />
+              )}
             </div>
           ) : null}
           <h2
@@ -472,8 +511,9 @@ export function ImmersiveScratchTicket({
         >
         <div
           data-testid="scratch-ticket-surface"
+          data-scratch-shape={scratchShape ?? "default"}
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
-          style={scratchShape === "brush" ? { clipPath: BRUSH_CLIP_PATH } : scratchShape === "ticket" ? { clipPath: SCALLOPED_TICKET_CLIP_PATH } : undefined}
+          style={scratchClipPath ? { clipPath: scratchClipPath } : undefined}
         >
           {isDecorativeTicket ? <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 text-[#ffe18a]">
             <span className="absolute left-[8%] top-[12%] text-[clamp(12px,4cqw,19px)]">★</span>
@@ -489,10 +529,12 @@ export function ImmersiveScratchTicket({
               style={{
                 position: "absolute",
                 inset: isDecorativeTicket ? "12px" : 0,
-                clipPath: scratchShape ? BRUSH_CLIP_PATH : undefined,
+                clipPath: scratchClipPath,
                 backgroundColor: coverColor,
                 ...(christmasTheme ? {
-                  backgroundImage: `linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 46%, ${coverColor} 100%)`,
+                  backgroundImage: isRetroScratch
+                    ? `repeating-linear-gradient(0deg, transparent 0 5px, rgba(255,255,255,.1) 6px, transparent 7px), repeating-linear-gradient(135deg, transparent 0 11px, rgba(87,99,106,.09) 12px, transparent 13px), linear-gradient(115deg, ${coverColor} 0%, #d5d9d8 22%, ${coverHighlight} 48%, #a3adb1 67%, #eef0e9 80%, ${coverColor} 100%)`
+                    : `linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 46%, ${coverColor} 100%)`,
                 } : beautyTheme ? {} : {
                   backgroundImage: `repeating-linear-gradient(135deg, transparent 0 32px, ${withAlpha(readableTextColor(primary), isSunburst ? "24" : "2e")} 33px 35px), linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 42%, ${coverColor} 72%, ${blendWithWhite(coverColor, isSunburst ? 0.04 : 0.08)} 100%)`,
                 }),
@@ -522,12 +564,12 @@ export function ImmersiveScratchTicket({
               {!isVault && isLilac ? <GiftIllustration color={illustrationColor} /> : null}
               {!beautyTheme && !isVault && !isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
               {isSunburst ? <ScratchMark color={illustrationColor} /> : null}
-              {scratchShape ? <span className={`${christmasTheme.fontClass} text-center text-[clamp(1rem,5cqw,1.45rem)] font-semibold leading-[1.05]`} style={{ color: scratchShape === "ticket" ? "#4b261d" : "#49351d" }}>Ticket<br />à gratter</span> : null}
             </div>
           ) : null}
           {hasTouched ? (
             <div className={`pointer-events-none absolute ${isDecorativeTicket ? "inset-[12px]" : "inset-0"} z-10 flex items-center justify-center px-6 text-center`}>
               <p
+                data-testid="scratch-result-label"
                 className="max-w-[90%] font-semibold leading-[1.05]"
                 style={{
                   color: resultInk,
@@ -546,9 +588,10 @@ export function ImmersiveScratchTicket({
               height={canvasHeight}
               data-foil-texture={beautyTheme?.id}
               data-foil-loaded={beautyTheme ? "false" : undefined}
+              data-scratch-shape={scratchShape ?? "default"}
               aria-label={instruction}
               className="relative z-20 block h-full w-full touch-none cursor-crosshair"
-              style={scratchShape ? { clipPath: BRUSH_CLIP_PATH } : undefined}
+              style={scratchClipPath ? { clipPath: scratchClipPath } : undefined}
               onPointerDown={(event) => {
                 if (!enabled) {
                   onStart?.();

@@ -466,6 +466,13 @@ exact. Un fond importé ou choisi dans la bibliothèque reste prioritaire sur le
 natif. Aucune campagne existante, chance, stock, participation ou règle de jeu n'est
 modifiée. [Assets et contrôles](releases/2026-10-31-festive-scratch-724.md).
 
+Complément de recette : chaque couche opaque et son canvas utilisent le même masque
+de forme (pinceau ou ticket festonné), également dans la miniature. Le ticket rétro
+présente son logo texte dans un macaron, son titre contrasté et un film argenté
+finement brossé. Aucun texte générique « Ticket à gratter » ne masque ou remplace le
+gain : seul le résultat de participation apparaît pendant le grattage. Le fond natif
+reste le fond rayé texturé, remplaçable manuellement. [Correctif](releases/2026-11-01-retro-scratch-724-followup.md).
+
 ## Affiliation par compte — #677
 
 L'administration Affiliation affiche les comptes marchands inscrits, récents

@@ -24,12 +24,21 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
     const foil = page.locator(`canvas[data-foil-texture="${theme.id}"]`);
     await expect(foil).toHaveAttribute("data-foil-loaded", "true");
+    const expectedScratchShape = theme.scratchShape ?? "default";
+    await expect(foil).toHaveAttribute("data-scratch-shape", expectedScratchShape);
+    const surface = page.getByTestId("scratch-ticket-surface");
+    await expect(surface).toHaveAttribute("data-scratch-shape", expectedScratchShape);
+    const [surfaceClip, foilClip] = await Promise.all([
+      surface.evaluate(element => getComputedStyle(element).clipPath),
+      foil.evaluate(element => getComputedStyle(element).clipPath),
+    ]);
+    expect(foilClip).toBe(surfaceClip);
     const pixel = await foil.evaluate((canvas: HTMLCanvasElement) => {
       const ctx = canvas.getContext("2d")!;
       return [ctx.getImageData(260, 215, 1, 1).data[3], ctx.getImageData(20, 20, 1, 1).data[3]];
     });
     expect(pixel).toEqual([255, 255]);
-    await expect(page.getByTestId("scratch-ticket-surface")).toBeInViewport();
+    await expect(surface).toBeInViewport();
     await expect(page.getByText("Le résultat s'affiche automatiquement.", { exact: true })).toHaveCount(0);
     const experience = page.locator(".okado-public-experience");
     const artwork = experience.locator(`img[data-template-art="${theme.id}"]`);
@@ -62,6 +71,8 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     await page.goto(`/dev/christmas-scratch?template=${theme.id}&mode=interaction`);
     await expect(page.locator('[data-fixture-ready="true"]')).toHaveCount(1);
     const foil = page.locator("canvas");
+    await expect(page.getByTestId("scratch-result-label")).toHaveCount(0);
+    await expect(page.getByText("Ticket à gratter", { exact: false })).toHaveCount(0);
     await expect(foil).toHaveAttribute("data-foil-loaded", "true");
     await page.evaluate(() => document.fonts.ready);
     const box = (await foil.boundingBox())!;
