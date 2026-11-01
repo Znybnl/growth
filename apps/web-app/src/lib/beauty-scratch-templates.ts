@@ -2,6 +2,8 @@ import type { GamePageTemplateId, TextFont } from "@/lib/types";
 import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 
+const christmasRoseScratch = christmasScratchTemplate("scratch-christmas-rose")!;
+
 export const BEAUTY_SCRATCH_TEMPLATES = [
   {
     id: "beauty-scratch-nude",
@@ -63,6 +65,18 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
     font: "playfair",
     fontClass: "font-playfair",
   },
+  {
+    id: "scratch-christmas-rose",
+    name: christmasRoseScratch.name,
+    description: christmasRoseScratch.description,
+    sampleHeadline: christmasRoseScratch.sampleHeadline,
+    sampleSubline: christmasRoseScratch.sampleSubline,
+    background: christmasRoseScratch.background,
+    scratch: { ...christmasRoseScratch.scratch, texture: christmasRoseScratch.scratch.texture! },
+    text: christmasRoseScratch.text,
+    font: christmasRoseScratch.font,
+    fontClass: christmasRoseScratch.fontClass,
+  },
 ] as const satisfies ReadonlyArray<{
   id: GamePageTemplateId;
   name: string;
@@ -70,7 +84,7 @@ export const BEAUTY_SCRATCH_TEMPLATES = [
   sampleHeadline: string;
   sampleSubline: string;
   background: string;
-  scratch: { base: string; highlight: string; edge: string; texture?: string; textureOpacity: number };
+  scratch: { base: string; highlight: string; edge: string; texture: string; textureOpacity: number };
   text: string;
   font: TextFont;
   fontClass: string;

@@ -3102,7 +3102,7 @@ export function CampaignEditor({
               <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="classic-template-options">
                 {(form.gameType === "wheel"
                   ? wheelPageTemplateOptions.filter((template) => !isBeautyIndustry(merchant.industry) || (template.value !== "rose-institut" && template.value !== "christmas-rose"))
-                  : scratchPageTemplateOptions.filter((template) => !isHiddenScratchTemplate(template.value))
+                  : scratchPageTemplateOptions.filter((template) => !isHiddenScratchTemplate(template.value) && (!isBeautyIndustry(merchant.industry) || template.value !== "scratch-christmas-rose"))
                 ).map((template) => {
                   const active =
                     (form.presentation.layout.templateId ?? "classic") === template.value;

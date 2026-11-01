@@ -2434,6 +2434,7 @@ export function CampaignWizard({
                 )
                   .filter((template) => template.id !== "cosmic-orbit" && template.id !== "sunburst-festival")
                   .filter((template) => draft.gameType !== "scratch" || !isHiddenScratchTemplate(template.id))
+                  .filter((template) => !isBeautyIndustry(merchant.industry) || template.id !== "scratch-christmas-rose")
                   .filter((template) => !isBeautyIndustry(merchant.industry) || (template.id !== "rose-institut" && template.id !== "christmas-rose"))
                   .slice()
                   .map((template) => (

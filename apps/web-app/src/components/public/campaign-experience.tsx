@@ -907,8 +907,11 @@ export function CampaignExperience({
     : null;
   const templateDefaultBackground = scratchTemplateDefaultBackground(pageTemplate, campaign.presentation.background);
   const nativeChristmasScratchBackground = campaign.gameType === "scratch" && (christmasScratchTemplate(pageTemplate) || halloweenScratchTemplate(pageTemplate)) ? templateDefaultBackground : undefined;
+  const nativeBeautyScratchBackground = beautyScratchTheme && !christmasScratchTemplate(pageTemplate) && !halloweenScratchTemplate(pageTemplate) && !hasCustomSelectedBackground
+    ? beautyScratchTheme.background
+    : undefined;
   const backgroundStyle =
-    (beautyScratchTheme && !hasCustomSelectedBackground) || nativeWheelBackgroundUrl || nativeChristmasScratchBackground
+    nativeBeautyScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground
       ? "none"
       : managedBackgroundUrl
         ? "none"
@@ -989,9 +992,9 @@ export function CampaignExperience({
           className="pointer-events-none absolute inset-0 z-0 object-cover"
         />
       ) : null}
-      {(beautyScratchTheme && !hasCustomSelectedBackground) || nativeWheelBackgroundUrl || nativeChristmasScratchBackground ? (
+      {nativeBeautyScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground ? (
         <Image
-          src={nativeWheelBackgroundUrl ?? nativeChristmasScratchBackground ?? beautyScratchTheme!.background}
+          src={nativeWheelBackgroundUrl ?? nativeChristmasScratchBackground ?? nativeBeautyScratchBackground!}
           alt=""
           fill
           priority
