@@ -457,7 +457,12 @@ Les anciens modèles et les modèles par défaut de chaque activité restent inc
 Issue #724 propose trois styles de ticket festifs non saisonniers à tous les
 secteurs : Vert bouteille & rubans, Ivoire & champagne et Satin noir & or. Leurs
 fonds WebP sont des décors seuls ; Vert bouteille utilise son fond cadeau étoilé dédié,
-et Ivoire & champagne son nouveau fond ivoire lumineux aux rubans dorés.
+et Ivoire & champagne son fond ivoire lumineux aux rubans dorés. Le complément
+#731 remplace le fond par le décor ivoire, feuillages et cadeau vert et or fourni ;
+le modèle et sa carte dans la bibliothèque Fête utilisent le WebP v4. L'ancienne
+image v3 reste disponible pour les campagnes qui enregistraient explicitement
+son URL ; les fonds importés ou sélectionnés par le marchand restent prioritaires.
+Voir [la livraison et les contrôles](releases/2026-11-01-ivory-champagne-background-731.md).
 L'identité, le titre et le sous-titre restent
 configurés dans le jeu. Leur zone dorée de grattage est haute, légèrement inclinée
 et présente des bords de pinceau adoucis. Les trois zones ont été agrandies en hauteur.

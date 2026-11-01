@@ -57,6 +57,12 @@ test("les quatre modèles festifs gardent des noms neutres et des fonds présent
   }
 });
 
+test("Ivoire & champagne utilise le nouveau fond sans supprimer l’ancienne URL enregistrée", () => {
+  const theme = christmasScratchTemplate("scratch-christmas-champagne");
+  assert.equal(theme?.background, "/images/scratch-templates/festive-champagne-ribbons-background-v4.webp");
+  assert.ok(existsSync("public/images/scratch-templates/festive-champagne-ribbons-background-v3.webp"));
+});
+
 test("Rayons rétro est retiré des choix sans casser les campagnes déjà configurées", () => {
   const legacyTemplate = christmasScratchTemplate("scratch-christmas-retro");
   assert.equal(isHiddenScratchTemplate("scratch-christmas-retro"), true);

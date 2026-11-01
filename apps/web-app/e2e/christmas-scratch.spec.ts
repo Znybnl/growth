@@ -88,7 +88,7 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     const expectedBackgroundName = theme.id === "scratch-christmas-evergreen"
       ? "festive-gift-wrap-green-background-v3.webp"
       : theme.id === "scratch-christmas-champagne"
-        ? "festive-champagne-ribbons-background-v3.webp"
+        ? "festive-champagne-ribbons-background-v4.webp"
         : null;
     if (expectedBackgroundName) {
       await expect.poll(() => artwork.evaluate((image: HTMLImageElement) => image.currentSrc)).toContain(expectedBackgroundName);
