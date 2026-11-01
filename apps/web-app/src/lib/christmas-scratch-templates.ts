@@ -39,7 +39,7 @@ export const CHRISTMAS_SCRATCH_TEMPLATES = [
     id: "scratch-christmas-evergreen",
     name: "Vert bouteille & rubans",
     description: "Papier vert profond, rubans rouges et paquets cadeaux.",
-    background: "/images/scratch-templates/festive-gift-wrap-green-background-v2.webp",
+    background: "/images/scratch-templates/festive-gift-wrap-green-background-v3.webp",
     backgroundColor: "#f5eddd",
     text: "#173c34",
     logo: "#173c34",

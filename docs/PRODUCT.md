@@ -456,9 +456,11 @@ Les anciens modèles et les modèles par défaut de chaque activité restent inc
 
 Issue #724 propose trois styles de ticket festifs non saisonniers à tous les
 secteurs : Vert bouteille & rubans, Ivoire & champagne et Satin noir & or. Leurs
-fonds WebP sont des décors seuls ; l'identité, le titre et le sous-titre restent
+fonds WebP sont des décors seuls ; Vert bouteille utilise son fond cadeau étoilé dédié.
+L'identité, le titre et le sous-titre restent
 configurés dans le jeu. Leur zone dorée de grattage est haute, légèrement inclinée
-et présente des bords de pinceau adoucis. Le modèle Rayons rétro est retiré des
+et présente des bords de pinceau adoucis. Les trois zones ont été agrandies en hauteur.
+Le médaillon du logo texte est plus grand. Le modèle Rayons rétro est retiré des
 nouveaux choix. Son identifiant et son rendu restent pris en charge pour préserver
 les campagnes déjà configurées.
 La zone est toujours le canvas interactif existant et révèle le résultat du tirage

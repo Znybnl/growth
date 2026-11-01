@@ -598,9 +598,10 @@ Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu e
 
 ## Forme et occultation des tickets festifs — #724
 
-`e2e/christmas-scratch.spec.ts` vérifie les trois modèles encore proposés que le masque CSS de
+`e2e/christmas-scratch.spec.ts` vérifie pour les trois modèles encore proposés que le masque CSS de
 la surface, le film visible au premier rendu et le canvas interactif coïncident, et que leurs
 zones de grattage sont plus hautes, un peu plus étroites, adoucies sur les côtés et légèrement inclinées.
+Le badge logo texte est également plus grand et le fond Vert bouteille utilise l'image dédiée de la bibliothèque.
 Rayons rétro n'apparaît plus dans les sélecteurs ; un test de compatibilité garantit que les
 campagnes historiques utilisant ce modèle continuent de s'afficher et de se gratter.
 Le film ne contient aucun libellé générique ; avant interaction, le résultat reste

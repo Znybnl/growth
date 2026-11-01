@@ -46,7 +46,7 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
           clipPath: style.clipPath,
         };
       });
-      expect(geometry.ratio).toBeCloseTo(1.8, 1);
+      expect(geometry.ratio).toBeCloseTo(1.55, 1);
       expect(Math.abs(geometry.rotationDeg)).toBeGreaterThanOrEqual(0.8);
       expect(Math.abs(geometry.rotationDeg)).toBeLessThanOrEqual(1.3);
       expect(geometry.clipPath).toContain("polygon(");
@@ -72,8 +72,8 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
       const badge = page.getByTestId(theme.id === "scratch-christmas-retro" ? "retro-scratch-logo-badge" : "issue724-scratch-logo-badge");
       await expect(badge).toBeVisible();
       const badgeBounds = (await badge.boundingBox())!;
-      expect(badgeBounds.width).toBeGreaterThanOrEqual(64);
-      expect(badgeBounds.width).toBeLessThanOrEqual(88);
+      expect(badgeBounds.width).toBeGreaterThanOrEqual(theme.id === "scratch-christmas-retro" ? 64 : 74);
+      expect(badgeBounds.width).toBeLessThanOrEqual(theme.id === "scratch-christmas-retro" ? 88 : 96);
     }
     await expect(surface).toBeInViewport();
     if (theme.id === "scratch-christmas-retro") {
@@ -85,6 +85,10 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
     const experience = page.locator(".okado-public-experience");
     const artwork = experience.locator(`img[data-template-art="${theme.id}"]`);
     await expect(artwork).toHaveJSProperty("complete", true);
+    if (theme.id === "scratch-christmas-evergreen") {
+      await expect.poll(() => artwork.evaluate((image: HTMLImageElement) => image.currentSrc)).toContain("festive-gift-wrap-green-background-v3.webp");
+      await expect.poll(() => artwork.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+    }
     const experienceBounds = (await experience.boundingBox())!;
     const artworkBounds = (await artwork.boundingBox())!;
     expect(artworkBounds.y + artworkBounds.height).toBeGreaterThanOrEqual(experienceBounds.y + experienceBounds.height - 1);

@@ -252,7 +252,7 @@ export function ImmersiveScratchTicket({
   const isRetroScratch = christmasTheme?.id === "scratch-christmas-retro";
   const issue724ScratchStyle = christmasTheme ? ISSUE_724_SCRATCH_STYLES[christmasTheme.id] : undefined;
   const isIssue724IllustratedScratch = Boolean(issue724ScratchStyle);
-  const canvasWidth = isFestiveBrushScratch ? 774 : scratchShape === "brush" ? 700 : isDecorativeTicket ? 660 : CANVAS_WIDTH;
+  const canvasWidth = isFestiveBrushScratch ? 666 : scratchShape === "brush" ? 700 : isDecorativeTicket ? 660 : CANVAS_WIDTH;
   const canvasHeight = CANVAS_HEIGHT;
   const configuredPrimary = accent.signal;
   const primary = scratchTemplatePrimaryColor(configuredPrimary, template);
@@ -297,7 +297,7 @@ export function ImmersiveScratchTicket({
 
   const surfaceClass = beautyTheme
     ? isFestiveBrushScratch
-      ? "mx-auto aspect-[1.8/1] w-[92%] max-w-[320px]"
+      ? "mx-auto aspect-[1.55/1] w-[92%] max-w-[320px]"
       : scratchShape === "brush"
       ? "mx-auto aspect-[2.2/1] w-full max-w-[340px]"
       : isDecorativeTicket
@@ -534,7 +534,7 @@ export function ImmersiveScratchTicket({
               {issue724ScratchStyle && logoMode === "text" ? (
                 <div
                   data-testid={isRetroScratch ? "retro-scratch-logo-badge" : "issue724-scratch-logo-badge"}
-                  className="flex h-[clamp(64px,19cqw,88px)] w-[clamp(64px,19cqw,88px)] shrink-0 items-center justify-center rounded-full border px-2 text-center shadow-[0_3px_10px_rgba(89,53,29,.15)]"
+                className={`flex ${isRetroScratch ? "h-[clamp(64px,19cqw,88px)] w-[clamp(64px,19cqw,88px)]" : "h-[clamp(74px,21cqw,96px)] w-[clamp(74px,21cqw,96px)]"} shrink-0 items-center justify-center rounded-full border px-2 text-center shadow-[0_3px_10px_rgba(89,53,29,.15)]`}
                   style={{ backgroundColor: issue724ScratchStyle.badge, borderColor: issue724ScratchStyle.badgeBorder }}
                 >
                   <span className="font-display text-[clamp(9px,3.2cqw,14px)] font-semibold leading-tight" style={{ color: issue724ScratchStyle.logoColor }}>
