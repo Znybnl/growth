@@ -6,7 +6,8 @@ adopte des encoches vintage latérales avec un revêtement ivoire texturé, sans
 La couche opaque, le canvas et la surface emploient désormais le même contour à
 encoches pour le rétro et le même contour pinceau pour les trois autres modèles.
 Les miniatures partagent également ce masque. Le fond rétro est reconstruit avec
-des rayons réguliers et un grain subtil, et ce même fond reste dans la bibliothèque.
+des rayons réguliers qui convergent au bord supérieur du ticket, un grain papier
+plus perceptible et les teintes de la référence ; ce fond reste dans la bibliothèque.
 Le libellé générique « Ticket à gratter » n'est plus dessiné au-dessus de la zone :
 le gain de la participation reste sous le revêtement et se révèle pendant le grattage.
 
