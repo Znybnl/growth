@@ -467,11 +467,13 @@ natif. Aucune campagne existante, chance, stock, participation ou règle de jeu 
 modifiée. [Assets et contrôles](releases/2026-10-31-festive-scratch-724.md).
 
 Complément de recette : chaque couche opaque et son canvas utilisent le même masque
-de forme (pinceau ou ticket festonné), également dans la miniature. Le ticket rétro
-présente son logo texte dans un macaron, son titre contrasté et un film argenté
-finement brossé. Aucun texte générique « Ticket à gratter » ne masque ou remplace le
+de forme (pinceau ou ticket à encoches), également dans la miniature. Le ticket rétro
+présente son logo texte dans un macaron, son titre rétro renforcé, un ticket à
+encoches latérales et un revêtement ivoire texturé, sans voile gris. Aucun texte
+générique « Ticket à gratter » ne masque ou remplace le
 gain : seul le résultat de participation apparaît pendant le grattage. Le fond natif
-reste le fond rayé texturé, remplaçable manuellement. [Correctif](releases/2026-11-01-retro-scratch-724-followup.md).
+est reconstruit en rayons régulièrement espacés avec un grain papier subtil, reste
+dans la bibliothèque et peut être remplacé manuellement. [Correctif](releases/2026-11-01-retro-scratch-724-followup.md).
 
 ## Affiliation par compte — #677
 

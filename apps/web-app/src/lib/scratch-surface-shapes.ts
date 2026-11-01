@@ -36,22 +36,33 @@ function createBrushClipPath() {
 
 function createScallopedTicketClipPath() {
   const points: Array<[number, number]> = [];
-  const count = 168;
-  const sample = (from: number, to: number, edge: "top" | "right" | "bottom" | "left") => {
-    for (let index = 0; index <= count; index += 1) {
-      const progress = index / count;
-      const along = from + (to - from) * progress;
-      const wave = 3.2 * Math.cos(progress * Math.PI * 12);
-      points.push(edge === "top" ? [along, 3.5 - wave]
-        : edge === "right" ? [96 + wave, along]
-          : edge === "bottom" ? [100 - along, 96 + wave]
-            : [3.5 - wave, 100 - along]);
+  const addSideNotch = (centerY: number, side: "left" | "right") => {
+    const steps = 12;
+    for (let index = 0; index <= steps; index += 1) {
+      const angle = -Math.PI / 2 + (Math.PI * index) / steps;
+      const inset = 5.5 * Math.cos(angle);
+      const y = centerY + 6 * Math.sin(angle);
+      points.push([side === "right" ? 100 - inset : inset, y]);
     }
   };
-  sample(8, 92, "top");
-  sample(8, 92, "right");
-  sample(8, 92, "bottom");
-  sample(8, 92, "left");
+
+  points.push([7, 2], [93, 2], [98, 6], [98, 17]);
+  for (const center of [25, 50, 75]) {
+    points.push([100, center - 6]);
+    addSideNotch(center, "right");
+    points.push([100, center + 6]);
+  }
+  points.push([98, 83], [98, 94], [93, 98], [7, 98], [2, 94], [2, 83]);
+  for (const center of [75, 50, 25]) {
+    points.push([0, center + 6]);
+    const steps = 12;
+    for (let index = 0; index <= steps; index += 1) {
+      const angle = Math.PI / 2 - (Math.PI * index) / steps;
+      points.push([5.5 * Math.cos(angle), center + 6 * Math.sin(angle)]);
+    }
+    points.push([0, center - 6]);
+  }
+  points.push([2, 17], [2, 6]);
   return polygon(points);
 }
 

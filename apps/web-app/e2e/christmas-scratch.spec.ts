@@ -33,12 +33,28 @@ for (const item of CHRISTMAS_SCRATCH_TEMPLATES) {
       foil.evaluate(element => getComputedStyle(element).clipPath),
     ]);
     expect(foilClip).toBe(surfaceClip);
-    const pixel = await foil.evaluate((canvas: HTMLCanvasElement) => {
+    const pixels = await foil.evaluate((canvas: HTMLCanvasElement) => {
       const ctx = canvas.getContext("2d")!;
-      return [ctx.getImageData(260, 215, 1, 1).data[3], ctx.getImageData(20, 20, 1, 1).data[3]];
+      return [
+        Array.from(ctx.getImageData(260, 215, 1, 1).data),
+        Array.from(ctx.getImageData(20, 20, 1, 1).data),
+      ];
     });
-    expect(pixel).toEqual([255, 255]);
+    expect(pixels[0][3]).toBe(255);
+    expect(pixels[1][3]).toBe(255);
+    if (theme.id === "scratch-christmas-retro") {
+      expect(pixels[0][0] - pixels[0][2]).toBeGreaterThan(20);
+    }
     await expect(surface).toBeInViewport();
+    if (theme.id === "scratch-christmas-retro") {
+      const badge = page.getByTestId("retro-scratch-logo-badge");
+      await expect(badge).toBeVisible();
+      const badgeBounds = (await badge.boundingBox())!;
+      expect(badgeBounds.width).toBeGreaterThanOrEqual(64);
+      expect(badgeBounds.width).toBeLessThanOrEqual(88);
+      const headingWeight = await page.getByRole("heading").evaluate(element => Number(getComputedStyle(element).fontWeight));
+      expect(headingWeight).toBeGreaterThanOrEqual(700);
+    }
     await expect(page.getByText("Le résultat s'affiche automatiquement.", { exact: true })).toHaveCount(0);
     const experience = page.locator(".okado-public-experience");
     const artwork = experience.locator(`img[data-template-art="${theme.id}"]`);

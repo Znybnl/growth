@@ -51,6 +51,8 @@ test("les quatre modèles festifs gardent des noms neutres et des fonds présent
     const theme = christmasScratchTemplate(id);
     assert.equal(theme.name, name);
     assert.equal(/no[eë]l|sapin/i.test(`${theme.name} ${theme.description} ${theme.sampleHeadline} ${theme.sampleSubline}`), false);
-    assert.equal(builtInBackgroundAssets.find((asset) => asset.id === backgroundId)?.category, "Fête");
+    const asset = builtInBackgroundAssets.find((asset) => asset.id === backgroundId);
+    assert.equal(asset?.category, "Fête");
+    assert.equal(asset?.imageUrl, theme.background);
   }
 });

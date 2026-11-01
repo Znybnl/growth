@@ -1,12 +1,14 @@
 # Correctif du ticket rétro festif — #724
 
 Le modèle rétro conserve les identifiants de campagne. Le logo texte est placé
-dans un badge circulaire centré ; le revêtement argenté reçoit un brossage subtil.
-La couche opaque, le canvas et la surface emploient désormais le même contour
-festonné pour le rétro et le même contour pinceau pour les trois autres modèles.
-Les miniatures partagent également ce masque. Le libellé générique « Ticket à
-gratter » n'est plus dessiné au-dessus de la zone : le gain de la participation
-reste sous le revêtement et se révèle pendant le grattage.
+dans un badge circulaire centré ; le titre Playfair est renforcé et le ticket
+adopte des encoches vintage latérales avec un revêtement ivoire texturé, sans gris.
+La couche opaque, le canvas et la surface emploient désormais le même contour à
+encoches pour le rétro et le même contour pinceau pour les trois autres modèles.
+Les miniatures partagent également ce masque. Le fond rétro est reconstruit avec
+des rayons réguliers et un grain subtil, et ce même fond reste dans la bibliothèque.
+Le libellé générique « Ticket à gratter » n'est plus dessiné au-dessus de la zone :
+le gain de la participation reste sous le revêtement et se révèle pendant le grattage.
 
 Aucune règle de tirage ou donnée de campagne n'est modifiée. Le fond rayé natif et
 la priorité d'un fond choisi manuellement sont conservés.

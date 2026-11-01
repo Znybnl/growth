@@ -340,7 +340,7 @@ export function ImmersiveScratchTicket({
         context.stroke();
       }
       context.globalAlpha = 0.08;
-      context.strokeStyle = "#66717a";
+      context.strokeStyle = "#9e7049";
       for (let offset = -canvasHeight; offset < canvasWidth; offset += 13) {
         context.beginPath();
         context.moveTo(offset, 0);
@@ -488,8 +488,8 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           <h2
-            className={`${(beautyTheme && !christmasTheme && !halloweenTheme) || isConfetti ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
-            style={{ color: ink, fontSize: seasonalTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: headingFontWeight, whiteSpace: seasonalTheme ? "pre-line" : undefined,
+            className={`${(beautyTheme && !christmasTheme && !halloweenTheme) || isConfetti || isRetroScratch ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
+            style={{ color: ink, fontSize: seasonalTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: isRetroScratch ? Math.max(700, headingFontWeight) : headingFontWeight, letterSpacing: isRetroScratch ? "-0.025em" : undefined, whiteSpace: seasonalTheme ? "pre-line" : undefined,
               ...(halloweenTheme ? { backgroundImage: "linear-gradient(175deg,#fff0c7 0%,#f4b351 40%,#bc7024 70%,#ffdc94 100%)", backgroundClip: "text", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 0 6px #d982213d)" } : {}) }}
           >
             {displayHeadline}
@@ -497,7 +497,7 @@ export function ImmersiveScratchTicket({
           {halloweenTheme ? <Image src="/images/templates/halloween-gold/wordmark-v3.webp" alt="Spécial Halloween" width={900} height={196} className="mx-auto mt-4 h-auto w-[82%]" /> : null}
           {secondaryText?.trim() ? (
             <p
-              className={`mx-auto ${christmasTheme ? "max-w-[92%] normal-case leading-[1.2] tracking-normal" : "max-w-[280px] uppercase leading-[1.55] tracking-[0.08em]"} ${headingAlignmentClass}`}
+              className={`mx-auto ${isRetroScratch ? "max-w-[280px] normal-case leading-[1.2] tracking-normal" : christmasTheme ? "max-w-[92%] normal-case leading-[1.2] tracking-normal" : "max-w-[280px] uppercase leading-[1.55] tracking-[0.08em]"} ${headingAlignmentClass}`}
               style={{ color: withAlpha(isLilac ? logoTextColor || ink : ink, "d9"), fontSize: christmasTheme ? "clamp(12px, 6cqw, 18px)" : "clamp(10px, 4cqw, 14px)", marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
             >
               {secondaryText.trim()}
@@ -533,7 +533,7 @@ export function ImmersiveScratchTicket({
                 backgroundColor: coverColor,
                 ...(christmasTheme ? {
                   backgroundImage: isRetroScratch
-                    ? `repeating-linear-gradient(0deg, transparent 0 5px, rgba(255,255,255,.1) 6px, transparent 7px), repeating-linear-gradient(135deg, transparent 0 11px, rgba(87,99,106,.09) 12px, transparent 13px), linear-gradient(115deg, ${coverColor} 0%, #d5d9d8 22%, ${coverHighlight} 48%, #a3adb1 67%, #eef0e9 80%, ${coverColor} 100%)`
+                    ? `repeating-linear-gradient(0deg, transparent 0 5px, rgba(255,255,255,.52) 6px, transparent 7px), repeating-linear-gradient(135deg, transparent 0 11px, rgba(158,112,73,.09) 12px, transparent 13px), linear-gradient(115deg, #f1e3c6 0%, #fff8e8 22%, #faf0d9 48%, #edddbd 67%, #fffaf0 80%, #f1e3c6 100%)`
                     : `linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 46%, ${coverColor} 100%)`,
                 } : beautyTheme ? {} : {
                   backgroundImage: `repeating-linear-gradient(135deg, transparent 0 32px, ${withAlpha(readableTextColor(primary), isSunburst ? "24" : "2e")} 33px 35px), linear-gradient(135deg, ${coverColor} 0%, ${coverHighlight} 42%, ${coverColor} 72%, ${blendWithWhite(coverColor, isSunburst ? 0.04 : 0.08)} 100%)`,
