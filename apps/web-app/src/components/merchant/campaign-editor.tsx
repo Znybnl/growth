@@ -2016,6 +2016,10 @@ export function CampaignEditor({
               [previousId]: wheelTemplateState.current[previousId],
             },
           },
+          background: {
+            ...current.presentation.background,
+            color: remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(templateId, current.presentation.background.color, current.presentation.wheel.loseColor),
+          },
           heading: {
             ...current.presentation.heading,
             fontFamily: remembered?.headingFontFamily ?? theme.font,
