@@ -58,6 +58,13 @@ test("@visual-1280 le ticket Noël rose poudré est dans Templates Beauté sans 
       await christmasRose.click();
       await expect(christmasRose).toHaveAttribute("aria-pressed", "true");
       await expect(page.getByRole("textbox", { name: /Couleur principale du ticket/ })).toHaveValue("#c6a0aa");
+      const previewToggle = page.getByRole("button", { name: /Voir l.?aperçu/ });
+      if (await previewToggle.count() && await previewToggle.isVisible()) await previewToggle.click();
+      const nativeArtwork = mode.startsWith("wizard")
+        ? page.frameLocator('iframe[title^="Aperçu du brouillon"]').locator('img[data-template-art="scratch-christmas-rose"]')
+        : page.locator('img[data-template-art="scratch-christmas-rose"]');
+      await expect(nativeArtwork).toBeVisible();
+      await expect.poll(() => nativeArtwork.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
       if (width === 1280) {
         await page.setViewportSize({ width: 1280, height: 720 });
         await christmasRose.scrollIntoViewIfNeeded();
