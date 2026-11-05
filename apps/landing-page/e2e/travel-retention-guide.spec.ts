@@ -17,6 +17,7 @@ test("guide agence de voyage : SEO et lecture des tableaux @visual-1280", async 
     expect(graph.join(" ")).toContain("BlogPosting");
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: info.outputPath(`article-${width}x${height}.png`) });
+    await page.locator("#fiche-client").screenshot({ path: info.outputPath(`demarrage-${width}.png`), style: "header.sticky { visibility: hidden !important; }" });
     for (const id of ["segmentation", "calendrier", "conseil", "budget", "indicateurs"]) {
       const section = page.locator(`#${id}`);
       await section.scrollIntoViewIfNeeded();

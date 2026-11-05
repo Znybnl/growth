@@ -45,20 +45,20 @@ restent inconnus : aucune valeur sectorielle n’est fabriquée.
 | Donnée ou règle | Période / source originale | Périmètre et limites | Usage |
 | --- | --- | --- | --- |
 | 106 jours réservation-départ | Réservations du 1er au 31 janvier 2026 ; [EDV/Orchestra, février 2026, p. 7](https://edv.travel/wp-content/uploads/2026/02/260203_Observatoire-des-EDV_Fevrier-2026.pdf) | Panel de l’observatoire ; ce n’est pas la durée entre deux achats ni une moyenne de toute la population. Tableau original consulté. | Calendrier de préparation, action 3 |
-| 64 % de réservations totalement autonomes | [Atout France, Focus Hiver, 27 janvier 2026](https://www.atout-france.fr/sites/default/files/2026-01/CP_BarometreMontagneHiver.pdf), enquête du 17 au 29 septembre 2025 | Volet français : personnes ayant séjourné au moins une nuit en montagne en France dans les trois dernières années. L’échantillon national de recrutement comprend 2365 personnes ; ce n’est pas le dénominateur à appliquer arbitrairement aux 64 %. Pas une mesure de tous les voyages. | Valeur du conseil, action 4 |
+| 64 % de réservations totalement autonomes | [Atout France, Focus Hiver, 27 janvier 2026](https://www.atout-france.fr/sites/default/files/2026-01/CP_BarometreMontagneHiver.pdf), enquête du 17 au 29 septembre 2025 | Volet français : personnes ayant séjourné au moins une nuit en montagne en France dans les trois dernières années. L’échantillon national de recrutement comprend 2365 personnes ; ce n’est pas le dénominateur à appliquer arbitrairement aux 64 %. Pas une mesure de tous les voyages. | Écarté à la seconde relecture : contexte trop spécialisé pour aider à décider du suivi en agence |
 | 78 % de taux de départ personnel | [INSEE, SDT 2025, publié le 23 juillet 2026](https://www.insee.fr/fr/statistiques/6436616) | Résidents métropolitains de 15 ans ou plus, tous canaux et hébergements | Recherché mais exclu de l’article : ne renseigne pas le réachat en agence |
 | Service et prospection : régimes distincts | [CNIL, 10 juin 2026](https://www.cnil.fr/fr/communication-electronique-quelles-regles) | Le contenu et la finalité du message comptent ; l’exception client n’est pas une autorisation générale | Encadrer les contacts commerciaux, action 4 |
 | L’accord du parrain ne suffit pas pour les messages ultérieurs au proche | [CNIL, question sur le parrainage](https://www.cnil.fr/fr/cnil-direct/question/quelles-sont-les-regles-suivre-en-matiere-de-parrainage), consultée le 5 novembre 2026 | Recommandation éditoriale : lien transmis par le client, puis démarche du proche | Action 6 |
 | Loteries publicitaires : conditions de loyauté | [DGCCRF, 11 mars 2026](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees) | La fiche ne valide pas les modalités d’une opération particulière | Conditions des jeux, action 7 |
 | Okado Pro France : 20 € HT / mois | [Tarifs publics](https://www.okado.app/tarifs), HTTP 200 et description de page vérifiés le 5 novembre 2026 | Le modèle budgète trois mois payants, sans économie d’essai | Hypothèse logiciel du budget |
 
-Deux données sectorielles sont utilisées. Le brief préfère idéalement 3–6,
+Une donnée sectorielle est utilisée. Le brief préfère idéalement 3–6,
 mais demande de ne pas compléter artificiellement ; les taux de fidélisation
 ou d’effet commercial non vérifiés sont absents. Les repères de calendrier,
 heures et montants fictifs sont identifiés comme propositions/hypothèses.
 
 Contrôle des calculs : contribution 300 − 120 = 180 ; réduction 2000 × 5 % = 100 ;
-reste 80 ; 100 / 180 = 55,555… %. Avantage 20 : reste 160. Budget 400 + 150 +
+reste 80 ; 100 / 180 = 55,555… %. Crédit 30 : reste 150. Budget 400 + 150 +
 200 + 60 = 810. Les 400 € correspondent à dix kits à 10 € et dix crédits à 30 €.
 Avec maintien supposé du logiciel pendant trois mois de lancement puis douze
 mois après clôture : 300 € au lieu de 60 €, soit 240 € supplémentaires et une
@@ -73,7 +73,7 @@ Pas de revenu incrémental déduit des réservations observées.
 Voir le [texte intégral prêt à relire](fideliser-clients-agence-voyage.md).
 Source applicative : registre `apps/landing-page/src/lib/blog.ts`.
 Neuf actions, six tableaux, conclusion et CTA. Longueur d’environ
-3500 mots avec tableaux et sources, supérieure à la cible indicative pour couvrir
+3600 mots avec tableaux et sources, supérieure à la cible indicative pour couvrir
 les livrables et deux parcours fictifs complets ; pas de FAQ répétant le corps. Auteur affiché :
 L’équipe Okado. Aucune expertise touristique ou expérience client attribuée au fondateur.
 
@@ -111,6 +111,18 @@ de classement, de citation ou de « filtre octobre 2026 » affirmé.
 
 ## E — Contrôle qualité et validation humaine
 
+- Seconde évaluation éditoriale : 8/10 avant corrections, estimation 8,5/10 après
+  corrections. Jugement qualitatif interne, pas une mesure de classement Google.
+  Introduction raccourcie ; statistique montagne remplacée par un exemple de
+  comparaison argumentée ; plan de démarrage sur quatre semaines ; projet connu
+  prioritaire sur les seuils de segmentation ; cohorte expliquée et horizon
+  de 36/48 mois proposé pour les achats espacés. Temps de remise des kits exclu
+  du poste de préparation/suivi afin de ne pas le compter deux fois.
+- Limites résiduelles : absence d’entretien avec un agent de voyage et de
+  résultats de mise en œuvre ; budget illustratif, pas un barème métier validé.
+  Une relecture par une agence apporterait plus de preuve qu’un nouvel ajout
+  de chiffres généraux. Pas d’enrichissement supplémentaire pour atteindre
+  artificiellement un nombre de mots, de sources ou de données.
 - Sources factuelles : URL originale et périmètre à proximité ; références exactes.
 - Hypothèses : calendrier, efforts, budget et exemples d’indicateurs fictifs.
 - Analyse originale : deux délais distincts, coût d’une remise sur recette
@@ -146,7 +158,7 @@ de classement, de citation ou de « filtre octobre 2026 » affirmé.
   de la nouvelle URL dans les deux applications. Seule cette URL publique a été
   ajoutée aux listes explicites ; pas de changement de collecte/consentement.
 - Contrôle initial article/sitemap réussi ; après enrichissement, test navigateur
-  ciblé final réussi en 4,9 s : canonical et BlogPosting, neuf sections et six tables.
+  ciblé final réussi en 5,6 s : canonical et BlogPosting, neuf sections et six tables.
   Matrice 1280×720,
   1280×600, 390×844. Tableaux en cartes sur mobile, sans débordement horizontal.
 - Captures inspectées dans `apps/landing-page/test-results/travel-retention-guide-gui-baca9-re-des-tableaux-visual-1280-desktop/` ; vues initiales avec
@@ -154,6 +166,8 @@ de classement, de citation ou de « filtre octobre 2026 » affirmé.
   de superposer la navigation dans l’image d’un élément plus haut que l’écran.
   Nouvelle inspection des parcours (ordinateur/mobile), de la segmentation
   mobile et du budget : textes lisibles, cartes distinctes, aucun chevauchement.
+  Introduction raccourcie et plan de démarrage inspectés sur ordinateur/mobile ;
+  captures `demarrage-1280.png` et `demarrage-390.png`.
 - Cinq liens internes de l’article testés en production : HTTP 200. Prix public
   vérifié via la page tarifaire. Pas d’URL métier spécialisée voyage inventée.
 - Couverture SVG native + WebP 1600×800, 29 390 octets, inspectée visuellement.
