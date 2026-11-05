@@ -18,7 +18,9 @@ test("@visual-1280 règles 100 % : case sans répartition automatique, aide lisi
     const rules=page.getByTestId("wizard-prize-rules");
     await expect(rules).toHaveJSProperty("open", true);
     const checkbox=rules.getByRole("checkbox",{name:/Jeu 100 % gagnant/});
+    await expect(rules.getByRole("tooltip")).toBeHidden();
     await checkbox.check();
+    await rules.getByRole("button", { name: "À propos du jeu 100 % gagnant", exact: true }).click();
     await expect(rules.getByText(/réparties proportionnellement/)).toBeVisible();
     await expect(rules.getByText(/Un lot à 0 % ne peut pas être gagné/)).toBeVisible();
     const after=await chances.evaluateAll(inputs => inputs.map(input => (input as HTMLInputElement).value));
