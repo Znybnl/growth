@@ -3,7 +3,7 @@ import { assertNoPageOverflow, captureVisualAt1280, rejectAnalyticsForVisualTest
 import { selectWizardStep } from "./helpers/wizard-step";
 
 for (const template of ["classic", "scratch-nude-classic"]) {
-  test(`@visual-1280 ${template} : règles puis budget, coût de revient lisible`, async ({ page, context, baseURL }, info) => {
+  test(`@visual-1280 ${template} : règles et coût de revient lisibles sans budget`, async ({ page, context, baseURL }, info) => {
     await rejectAnalyticsForVisualTests(context, baseURL!);
     await page.route(/https:\/\//, route => route.abort());
     const writes: string[] = [];
@@ -17,10 +17,8 @@ for (const template of ["classic", "scratch-nude-classic"]) {
     const table = page.getByTestId("wizard-prize-table");
     const rules = page.getByTestId("wizard-prize-rules");
     const budget = page.getByTestId("wizard-prize-budget");
-    await expect(budget).toHaveCount(1);
-    expect(await rules.evaluate(el => el.nextElementSibling?.getAttribute("data-testid"))).toBe("wizard-prize-budget");
+    await expect(budget).toHaveCount(0);
     expect(await table.evaluate(el => Boolean(el.compareDocumentPosition(document.querySelector('[data-testid="wizard-prize-rules"]')!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
-    const before = await budget.innerText();
     const validity = await rules.getByLabel("Durée de validité du gain (jours)", { exact: false }).inputValue();
     const probability = await page.getByTestId("wizard-prize-row").first().getByRole("spinbutton").inputValue();
 
@@ -39,14 +37,12 @@ for (const template of ["classic", "scratch-nude-classic"]) {
         expect(box!.x + box!.width).toBeLessThanOrEqual(next!.x);
         await captureVisualAt1280(page, info, `cout-revient-${template}`, height);
       } else await page.screenshot({ path: info.outputPath(`cout-revient-${template}-${width}.png`) });
-      await budget.scrollIntoViewIfNeeded();
-      await expect(budget.getByRole("heading", { name: "Budget estimé des gains" })).toBeInViewport();
+      await rules.scrollIntoViewIfNeeded();
+      await expect(budget).toHaveCount(0);
       await expect(rules).toHaveAttribute("open", "");
-      expect(await budget.innerText()).toBe(before);
-      if (width === 1280) await captureVisualAt1280(page, info, `budget-apres-regles-${template}`, height);
-      else await page.screenshot({ path: info.outputPath(`budget-apres-regles-${template}-${width}.png`) });
+      if (width === 1280) await captureVisualAt1280(page, info, `regles-sans-budget-${template}`, height);
+      else await page.screenshot({ path: info.outputPath(`regles-sans-budget-${template}-${width}.png`) });
       await expect(rules.getByLabel("Durée de validité du gain (jours)", { exact: false })).toHaveValue(validity);
-      expect(await budget.innerText()).toBe(before);
       await assertNoPageOverflow(page);
     }
     expect(await page.getByTestId("wizard-prize-row").first().getByRole("spinbutton").inputValue()).toBe(probability);

@@ -143,7 +143,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={admin}>
       <CampaignWizard merchant={merchant} initialCampaign={mode.includes("create") ? undefined : {
         ...performance,
-        campaign: { ...performance.campaign, ...(mode.includes("published") ? { isActive: true,
+        campaign: { ...performance.campaign, ...(mode.includes("legacy-rules") ? { rewardRules: { ...performance.campaign.rewardRules, availabilityDurationDays: 30, participationIntervalDays: 1 } } : {}), ...(mode.includes("custom-rules") ? { rewardRules: { ...performance.campaign.rewardRules, availabilityDurationDays: 91, participationIntervalDays: 13 } } : {}), ...(mode.includes("published") ? { isActive: true,
           actions: [{ id: "fixture-marketing", kind: "custom" as const, label: "Découvrir", url: "https://fixture.example.test" }] } : {}) },
       }}
         {...(admin ? { adminAccountMerchantId: "fixture-account", adminSaveEndpoint: "/api/admin/merchants/fixture-account/locations/template-proof-merchant/campaigns/setup" } : {})} />

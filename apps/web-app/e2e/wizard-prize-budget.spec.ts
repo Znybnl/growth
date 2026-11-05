@@ -25,51 +25,24 @@ async function add(page: Page, label: string, probability: string, cost?: string
   await editor.getByRole("button", { name: "Ajouter le lot", exact: true }).click();
 }
 
-test("@visual-1280 phase 5 : exemple SFD, budget réactif, coût inconnu et saisie explicite zéro", async ({ page }, info) => {
+test("@visual-1280 coûts conservés et budget masqué dans le wizard", async ({ page }, info) => {
   const writes: Array<{ prizes: Array<{ label: string; estimatedUnitCost: number; estimatedUnitCostKnown?: boolean }> }> = [];
-  await page.route("**/api/campaigns/setup", (route) => { writes.push(route.request().postDataJSON()); return route.fulfill({ json: { campaign: { id: "template-proof-campaign" } } }); });
-  await open(page);
-  await removeFirst(page);
+  await page.route("**/api/campaigns/setup", route => { writes.push(route.request().postDataJSON()); return route.fulfill({ json: { campaign: { id: "template-proof-campaign" } } }); });
+  await open(page); await removeFirst(page);
   await add(page, "RITUEL", "3", "20");
-  await add(page, "MASQUE", "17", "4");
-  await add(page, "RÉDUCTION", "30", "6");
-  const budget = page.getByTestId("wizard-prize-budget");
-  await expect(budget.getByTestId("wizard-budget-average")).toContainText("3,08");
-  await expect(budget.getByTestId("wizard-budget-projection")).toContainText("308,00");
-  await budget.evaluate((element) => element.scrollIntoView({ block: "start" }));
-  await captureVisualAt1280(page, info, "budget-complet", 720);
+  await add(page, "MASQUE", "17");
+  await expect(page.getByTestId("wizard-prize-budget")).toHaveCount(0);
   await page.getByRole("button", { name: "Modifier MASQUE", exact: true }).click();
-  let editor = page.getByRole("dialog", { name: "Modifier le lot", exact: true });
-  await editor.getByLabel(/^Coût unitaire estimé/).fill("");
-  await editor.getByRole("button", { name: "Enregistrer le lot", exact: true }).click();
-  await expect(budget).toContainText("Estimation incomplète");
-  await expect(budget.getByTestId("wizard-budget-average")).toHaveText("—");
-  await budget.evaluate((element) => element.scrollIntoView({ block: "start" }));
-  await captureVisualAt1280(page, info, "budget-incomplet", 600);
-  await budget.getByRole("button", { name: "Renseigner le coût de MASQUE", exact: true }).click();
-  editor = page.getByRole("dialog", { name: "Modifier le lot", exact: true });
+  const editor = page.getByRole("dialog", { name: "Modifier le lot", exact: true });
   await expect(editor.getByLabel(/^Coût unitaire estimé/)).toHaveValue("");
-  await editor.getByLabel(/^Coût unitaire estimé/).fill("9");
-  await editor.getByRole("button", { name: "Annuler", exact: true }).click();
-  await editor.getByRole("button", { name: "Continuer l’édition", exact: true }).click();
-  await expect(editor.getByRole("alert").filter({ hasText: "Abandonner les modifications" })).toHaveCount(0);
-  await editor.getByRole("button", { name: "Annuler", exact: true }).click();
-  await editor.getByRole("button", { name: "Abandonner", exact: true }).click();
-  await expect(budget).toContainText("Estimation incomplète");
-  await page.getByTestId("wizard-footer").getByRole("button", { name: "Enregistrer le brouillon", exact: true }).click();
-  await expect.poll(() => writes.length).toBe(1);
-  expect(writes[0].prizes.find((item) => item.label === "MASQUE")).toMatchObject({ estimatedUnitCost: 0, estimatedUnitCostKnown: false });
-  const savedDialog = page.getByRole("dialog", { name: "Votre jeu est enregistré.", exact: true });
-  await expect(savedDialog).toBeVisible();
-  await expect(savedDialog.getByRole("button", { name: "Fermer la confirmation d’enregistrement", exact: true })).toBeFocused();
-  await page.keyboard.press("Escape");
-  await expect(savedDialog).toBeHidden();
-  await budget.getByRole("button", { name: "Renseigner le coût de MASQUE", exact: true }).click();
-  editor = page.getByRole("dialog", { name: "Modifier le lot", exact: true });
   await editor.getByLabel(/^Coût unitaire estimé/).fill("0");
   await editor.getByRole("button", { name: "Enregistrer le lot", exact: true }).click();
-  await expect(budget).not.toContainText("Estimation incomplète");
-  await expect(budget.getByTestId("wizard-budget-average")).toContainText("2,40");
+  await page.getByTestId("wizard-prize-rules").scrollIntoViewIfNeeded();
+  await captureVisualAt1280(page, info, "regles-sans-budget", 720);
+  await page.getByTestId("wizard-footer").getByRole("button", { name: "Enregistrer le brouillon", exact: true }).click();
+  await expect.poll(() => writes.length).toBe(1);
+  expect(writes[0].prizes.find(item => item.label === "RITUEL")).toMatchObject({ estimatedUnitCost: 20, estimatedUnitCostKnown: true });
+  expect(writes[0].prizes.find(item => item.label === "MASQUE")).toMatchObject({ estimatedUnitCost: 0, estimatedUnitCostKnown: true });
 });
 
 test("phase 5 : état vide et trois entrées vers les bons onglets", async ({ page }) => {
@@ -109,21 +82,17 @@ test("@visual-1280 phase 5 : paramètres explicites, limites et sauvegarde sans 
   expect(writes[0].rewardRules).toMatchObject({ availabilityDurationDays: 30, participationIntervalDays: 2 });
 });
 
-for (const width of [320, 390]) test(`phase 5 : budget, coût manquant et panneau mobile ${width}`, async ({ page }, info) => {
+for (const width of [320, 390]) test(`coûts modifiables sans budget sur mobile ${width}`, async ({ page }, info) => {
   await open(page, width);
-  const budget = page.getByTestId("wizard-prize-budget");
-  await budget.evaluate((element) => element.scrollIntoView({ block: "start" }));
-  await expect(budget).toContainText("Estimation incomplète");
-  await page.screenshot({ path: info.outputPath(`budget-mobile-${width}.png`), animations: "disabled" });
-  await assertNoPageOverflow(page);
-  const bounds = await budget.evaluate((element) => ({ width: element.clientWidth, scroll: element.scrollWidth }));
-  expect(bounds.scroll).toBeLessThanOrEqual(bounds.width + 1);
-  await budget.getByRole("button", { name: /^Renseigner le coût/ }).click();
+  await expect(page.getByTestId("wizard-prize-budget")).toHaveCount(0);
+  await page.getByTestId("wizard-prize-row").first().getByRole("button", { name: /^Modifier/ }).click();
   const editor = page.getByRole("dialog", { name: "Modifier le lot", exact: true });
   await editor.getByLabel(/^Coût unitaire estimé/).fill("1");
   await expect(editor.getByRole("button", { name: "Enregistrer le lot", exact: true })).toBeInViewport();
   await editor.getByRole("button", { name: "Enregistrer le lot", exact: true }).click();
-  await expect(budget.getByTestId("wizard-budget-average")).toContainText("0,50");
+  await page.getByTestId("wizard-prize-rules").scrollIntoViewIfNeeded();
+  await page.screenshot({ path: info.outputPath(`regles-mobile-${width}.png`), animations: "disabled" });
+  await assertNoPageOverflow(page);
 });
 
 for (const template of ["classic", "scratch-nude-classic"]) test(`phase 5 : jeu publié ${template}, règles et valeurs conservées`, async ({ page }) => {
