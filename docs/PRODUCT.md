@@ -1,5 +1,14 @@
 # Produit — Okado
 
+## Couleurs propres aux templates — #737
+
+Chaque template conserve ses couleurs par défaut ou choisies par le marchand.
+Les changements de template et les allers-retours roue/ticket restaurent ces
+réglages, y compris la couleur du logo et les fonds personnalisés. Le choix
+d’Halloween conserve également le texte principal initial ou personnalisé.
+Les logos texte des tickets Vert bouteille, Ivoire & champagne et Satin sont
+plus lisibles grâce à une police agrandie dans leur médaillon.
+
 ## Ticket Halloween doré — #704
 
 Le ticket `scratch-halloween-gold` réutilise le décor noir/or et la signature

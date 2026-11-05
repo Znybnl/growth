@@ -45,8 +45,8 @@ function AnalyticsIdentityProof() {
 }
 
 /** Synthetic rendering only: tests intercept every API request, no session bypass. */
-export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText, prizeCase, headline }: {
-  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string; prizeCase?: string; headline?: string;
+export function TemplateRenderingProof({ mode = "preview", templateId = "classic", background = "#ffffff", ink, font, secondary, business, button, buttonText, prizeCase, headline, savedStyles }: {
+  mode?: string; templateId?: GamePageTemplateId; background?: string; ink?: string; font?: TextFont; secondary?: string; business?: string; button?: string; buttonText?: string; prizeCase?: string; headline?: string; savedStyles?: string;
 }) {
   if (mode === "analytics-identity") return <AnalyticsIdentityProof />;
   if (mode.startsWith("cookie-menu")) {
@@ -92,6 +92,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: business === "retail" ? 34 : 40, fontFamily: font ?? "poppins" as const },
       wheel: wheelPaletteForTemplate(templateId, halloweenFixture.presentation.wheel),
       layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: business && !scratch ? 64 : 25,
+        wheelTemplateStyles: savedStyles ? JSON.parse(savedStyles) : undefined,
         scratchSubtitle: "Découvrez votre cadeau", wheelSubtitle: secondary ?? "" },
     },
   };
