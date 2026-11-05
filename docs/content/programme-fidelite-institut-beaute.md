@@ -6,9 +6,11 @@ Une carte à tampons convient à des visites fréquentes et assez semblables. Le
 
 ## Quel programme choisir selon le problème à résoudre ?
 
-Commencez par regarder vos rendez-vous honorés. Si les clientes reviennent déjà régulièrement pour la même prestation, un tampon rend leur progression visible en une seconde. Si elles alternent soins, produits et prestations de prix très différents, des points calculés sur les achats donnent davantage de souplesse. Dans les deux cas, choisissez une récompense atteignable au rythme réel de vos clientes.
+Regardez d’abord le délai entre deux rendez-vous honorés pour la prestation qui vous intéresse. Avec un soin par mois, une carte qui offre un complément au sixième rendez-vous demande environ cinq mois à partir de la première visite. C’est un repère pour l’entretien régulier. Pour travailler le retour après un premier soin, préférez une offre que la cliente peut utiliser dès la prochaine visite.
 
-Pour une cliente qui découvre l’institut, une remise sur le prochain rendez-vous ou un lot à utiliser au retour est plus facile à comprendre qu’un solde à accumuler. Le parrainage répond à une autre question. Il donne à une cliente satisfaite un moyen de faire connaître l’institut à une proche, puis vous permet de suivre l’arrivée de cette nouvelle cliente.
+Pour une clientèle qui alterne soins et achats de produits, les points permettent de tenir compte des montants dépensés. Par exemple, un point par euro et un bon de 6 € à 200 points représentent 3 € de récompense pour 100 € dépensés sur les achats éligibles, quand le bon est utilisé. Choisissez le seuil d’après le rythme d’achat que vous voyez en caisse.
+
+Si les clientes recommandent déjà l’institut et que vous avez des créneaux pour recevoir leurs proches, le parrainage aide à suivre ces premiers rendez-vous. Si vous voulez animer une semaine précise, le jeu permet de choisir le nombre de cadeaux à l’avance. Dans un agenda déjà plein, réservez les avantages qui mobilisent du temps aux prestations ou aux créneaux que vous pouvez réellement accueillir.
 
 **Cinq dispositifs de fidélité comparés pour un institut**
 
@@ -30,23 +32,23 @@ Si vous préférez une carte que la cliente peut garder dans son téléphone, Fi
 
 Fresha documente un autre parcours, où la cliente consulte ses points et ses récompenses dans son compte et peut partager un lien de parrainage. Si vous utilisez déjà ce logiciel, vérifiez l’option disponible dans votre offre et essayez un parrainage du premier rendez-vous jusqu’au bon utilisé. [Aide Fresha sur la fidélité](https://www.fresha.com/help-center/knowledge-base/clients/101624-understand-how-clients-engage-with-your-loyalty-program)
 
-- Faites un essai à deux sur une vente, une annulation et une récompense utilisée.
+- Faites un essai à deux sur une vente, une annulation et une récompense utilisée. Chronométrez le geste qui se répète. À 20 secondes de plus par encaissement, 100 passages représentent environ 33 minutes de travail.
 - Vérifiez qui peut corriger un solde, retrouver une cliente ou exporter les droits déjà acquis.
 - Demandez le prix complet pour votre situation, avec les modules, l’équipement et le temps passé à former l’équipe.
 
 ## Combien prévoir pour 100 clientes ?
 
-Prenons un institut fictif qui propose un dispositif à 100 clientes existantes pendant trois mois. Le coût du temps est fixé à 30 € par heure. Un soin vendu 50 € HT laisse 32 € après 18 € de coûts variables. L’institut se fixe une enveloppe de 180 €. Les chiffres du tableau décrivent cinq scénarios séparés et les hypothèses d’usage sont à remplacer par vos données. Pour les tampons et les points, une partie des clientes a déjà commencé à cumuler avant la période.
+Imaginons un institut qui invite 100 clientes et dispose de 180 € pour un test de trois mois. Il valorise le temps de l’équipe à 30 € par heure. Les cinq lignes sont des options séparées. Pour les tampons et les points, certaines clientes ont déjà commencé à cumuler. Le nombre de récompenses acquises et utilisées dépend des hypothèses de chaque ligne.
 
-Dans le scénario points, les 30 € de module sont une hypothèse pour la période. Pour le jeu, le modèle retient trois mois payés à 20 € HT chez Okado, plus 10 € d’impression et une heure et demie de gestion. Tous les montants sont comparés hors effets de TVA. [Tarifs Okado](https://www.okado.app/tarifs)
+Pour refaire le calcul, multipliez les récompenses utilisées par leur coût unitaire, puis ajoutez l’impression, le logiciel et le temps d’équipe. Refaites ensuite le calcul avec tous les avantages prévus. Le tableau suppose 30 € de module pour les points et trois mois d’Okado à 20 € HT pour le jeu, hors effets de TVA. [Tarifs Okado](https://www.okado.app/tarifs)
 
-Regardez le coût si toutes les récompenses déjà gagnées ou distribuées sont utilisées, même après la période de lancement. Avec 180 €, la carte et le parrainage rentrent dans l’enveloppe de cet exemple. Si l’institut choisit la roue, 16 lots à 4 € plus 115 € de frais donnent un plafond de 179 €. Il faut dimensionner ce stock avant d’afficher l’offre. Pour les points, vérifiez aussi les droits en cours d’acquisition et les frais si le suivi doit se poursuivre.
+Avec 180 €, la carte et le parrainage couvrent l’ensemble des avantages prévus dans l’exemple. Les points et la remise entrent dans le budget au taux d’usage supposé, mais dépassent l’enveloppe si tous les bons sont utilisés. Pour une carte ou des points, comptez aussi les avantages déjà acquis avant le test et les clientes proches d’un palier, même si elles utilisent leur cadeau plus tard.
 
-Un complément de soin évalué à 5 € suppose que le produit et le temps sont comptés. S’il déborde sur un créneau vendable, refaites le calcul. Une remise de 5 € sur le soin de l’exemple laisse 27 € par rendez-vous utilisé. Cette marge ne dit pas à elle seule combien de visites la remise a réellement déclenchées.
+Pour le jeu, 180 € moins 115 € de frais laissent 65 € pour les lots. Vous pouvez donc prévoir jusqu’à 16 lots à 4 €, pour un total de 179 €. Si vous budgétez un quatrième mois d’abonnement pour suivre les derniers gains, les frais montent à 135 €. Il reste 45 €, soit 11 lots à 4 € pour le même total. Vérifiez la durée nécessaire avant d’annoncer les quantités.
 
 **Budget fictif sur trois mois pour 100 clientes invitées**
 
-| Dispositif | Récompenses prévues | Frais et temps | Coût selon l’usage | Si tous les avantages prévus sont utilisés |
+| Dispositif | Récompenses prévues | Frais et temps | Coût selon l’usage | Réserve pour les avantages prévus |
 | --- | --- | --- | --- | --- |
 | Tampons | 20 compléments acquis à 5 €. 12 utilisés. | 15 € d’impression et 1 h de gestion. | 105 € | 145 € |
 | Points digitaux | 25 bons acquis à 6 €. 15 utilisés. | 30 € de module et 1 h 30 de gestion. | 165 € | 225 € |
@@ -56,19 +58,21 @@ Un complément de soin évalué à 5 € suppose que le produit et le temps sont
 
 ## Quels dispositifs peuvent se compléter ?
 
-Une carte à tampons peut rester en place toute l’année pendant qu’un jeu anime une semaine anniversaire. Gardez une règle commune au comptoir. Si une cliente a un bon de parrainage et un lot de roue, dites-lui avant sa réservation si les deux peuvent être utilisés sur le même soin. Faites le même contrôle pour les points et les remises.
+Une carte à tampons peut récompenser l’entretien régulier pendant qu’une roue anime une semaine anniversaire. Le jeu a alors ses propres dates et son budget. Convenez avant le lancement de la façon de traiter un soin qui donne un tampon et sur lequel une cliente utilise un lot.
 
-Nous commencerions par un seul dispositif lorsque l’équipe manque de temps. Une carte que toutes les collègues savent expliquer vaut mieux qu’un programme où chacune applique un barème différent. Si la carte fonctionne déjà et que vous cherchez surtout à faire découvrir un nouveau soin, une animation courte peut avoir son propre budget et son propre calendrier.
+Chiffrez aussi le cumul. Dans cet exemple fictif, un soin à 50 € HT coûte 18 € à réaliser. Il laisse 32 € avant fidélisation, 27 € avec une remise de 5 € et 22 € si vous ajoutez un complément qui vous coûte aussi 5 €. Si 22 € est trop bas pour ce créneau, annoncez un seul avantage par rendez-vous et laissez la cliente choisir lequel utiliser. Expliquez cette règle à l’équipe et aux clientes avant la réservation.
 
 Pour le parrainage, laissez la cliente transmettre elle-même son lien à sa proche. Si vous envisagez des e-mails ou SMS promotionnels, vérifiez les permissions et prévoyez une opposition facile à chaque envoi. Une adresse recueillie pour confirmer un rendez-vous ne suffit pas à autoriser toutes les offres. [Règles de parrainage de la CNIL](https://www.cnil.fr/fr/cnil-direct/question/quelles-sont-les-regles-suivre-en-matiere-de-parrainage) · [Communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles)
 
-## Comment juger le résultat au bout d’un cycle de soins ?
+## Comment tester un dispositif avant de le généraliser ?
 
-Choisissez la mesure avant de distribuer le premier avantage. Pour la carte, comptez les clientes qui atteignent puis utilisent leur récompense. Pour le parrainage, comptez les nouvelles clientes qui honorent leur premier rendez-vous. Pour une remise ou un jeu, notez le nombre d’avantages utilisés et les visites réellement honorées après leur attribution.
+Prenons un essai fictif de remise sur un soin pour lequel les clientes reviennent généralement dans les six semaines. Choisissez deux groupes comparables de 20 clientes qui viennent de faire ce soin. Si possible, répartissez-les au hasard. Un groupe reçoit un bon de 5 € valable six semaines. L’autre conserve le suivi habituel. Proposez les mêmes créneaux aux deux groupes. Les 20 bons et 30 minutes de gestion à 30 € l’heure donnent une enveloppe de 115 €.
 
-Comparez les retours sur une durée adaptée au soin et, si possible, avec des clientes comparables qui n’ont pas reçu l’offre. Laissez à chacune le même temps pour revenir. Si un jeu attire du monde mais que les bons sont peu utilisés, relisez les conditions avec l’équipe avant d’augmenter les lots.
+Au bout de six semaines par cliente, comparez les soins effectivement honorés. Par exemple, 11 clientes sur 20 reviennent avec l’offre et 8 sur 20 avec le suivi habituel. Si 8 bons sont utilisés, ils coûtent 40 €, auxquels s’ajoutent 15 € de gestion. L’écart de trois visites est un premier signal à vérifier sur une autre série avant d’étendre l’offre.
 
-Si la roue vous intéresse, le [cas complet de roue en institut](https://www.okado.app/blog/roue-fortune-institut-beaute) détaille six récompenses, les chances de gain et le plafond de dépenses. La démo Beauté permet d’essayer le parcours sur téléphone, du tour de roue à l’e-mail de gain simulé. [Essayer la démo Beauté](https://www.okado.app/instituts-beaute#demo-care)
+Adaptez le bilan au mécanisme. Pour les tampons ou les points, suivez les paliers atteints puis les cadeaux utilisés. Pour le parrainage, le scénario à 110 € et dix premiers rendez-vous honorés représente 11 € par nouvelle cliente parrainée. Pour le jeu, séparez les parties, les lots utilisés et les rendez-vous qui ont suivi.
+
+Pour préparer un jeu, retrouvez les six lots, les probabilités et le budget de l’exemple de campagne. La démo Beauté montre le tour de roue et l’e-mail de gain simulé sur téléphone. [Voir l’exemple de campagne](https://www.okado.app/blog/roue-fortune-institut-beaute) · [Essayer la démo Beauté](https://www.okado.app/instituts-beaute#demo-care)
 
 ## Choisissez selon le geste que vous voulez encourager
 

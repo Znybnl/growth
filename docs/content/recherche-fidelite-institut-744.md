@@ -48,6 +48,10 @@ Une prestation à 50 € HT moins 18 € de coûts variables laisse 32 €, puis
 - Remise : 25 × 5 + 22,50 = 147,50 €. Si 40 usages : 222,50 €.
 - Jeu : 20 × 4 + 60 + 10 + 45 = 195 €. Si 25 usages : 215 €. Avec 16 lots à 4 € : 179 € au maximum pour ce scénario.
 
+Le quatrième mois de logiciel ajoute 20 €. Pour une enveloppe de 180 €, le budget lots passe de 65 € à 45 €. Avec 11 lots à 4 € et 135 € de frais, le total est de 179 €. Les coûts du tableau portent sur les récompenses prévues et les frais sur trois mois. Les droits acquis et le temps au-delà de la période sont à prendre en compte pour dimensionner le test.
+
+Repères du comparatif : 6 € sur 200 € d’achats éligibles correspondent à 3 % lorsque le bon est utilisé. À 20 secondes de plus par passage, 100 encaissements représentent 33 minutes et 20 secondes. Le cumul de deux avantages à 5 € réduit de 32 € à 22 € le montant restant après coûts variables. Le test fictif sur deux groupes de 20 clientes prévoit 115 € au maximum et donne 55 € de coût avec huit bons utilisés. Un écart de trois visites sur ce petit échantillon sert à décider si l’essai mérite d’être répété.
+
 ### Calcul de la roue
 
 Les chances initiales des six lots totalisent 40 %. Le scénario sans stock donne 40 gains et 148 € pour 100 parties si tous les gains sont utilisés. Avec stock, pour un lot de chance initiale p et de stock s, le nombre moyen attribué correspond à E[min(Binomiale(100, p), s)]. Une méthode de reproduction consiste à additionner, de k = 1 à s, la probabilité d’obtenir au moins k occurrences sur 100 essais. La chance p d’un lot encore disponible reste constante dans le mode non garanti vérifié. La projection suppose 100 parties abouties, paramètres stables et aucun réapprovisionnement ou retour de stock.
