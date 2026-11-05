@@ -469,6 +469,8 @@ Voir [la livraison et les contrôles](releases/2026-11-01-ivory-champagne-backgr
 L'identité, le titre et le sous-titre restent
 configurés dans le jeu. Leur zone dorée de grattage est haute, légèrement inclinée
 et présente des bords de pinceau adoucis. Les trois zones ont été agrandies en hauteur.
+Pour Ivoire & champagne, le revêtement adopte un cuivre ambré plus foncé et orangé
+avec des reflets dorés, afin de mieux contraster avec le fond ivoire (#735).
 Le médaillon du logo texte est plus grand. Le modèle Rayons rétro est retiré des
 nouveaux choix. Son identifiant et son rendu restent pris en charge pour préserver
 les campagnes déjà configurées.
