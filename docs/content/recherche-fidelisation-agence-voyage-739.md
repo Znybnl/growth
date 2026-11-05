@@ -111,6 +111,12 @@ de classement, de citation ou de « filtre octobre 2026 » affirmé.
 
 ## E — Contrôle qualité et validation humaine
 
+- Passe rédactionnelle : phrases centrées sur le travail quotidien du conseiller,
+  titres plus directs, vocabulaire administratif allégé dans le corps et termes
+  de calcul conservés dans les tableaux. Les limites légales, la provenance des
+  chiffres et le caractère fictif des cas restent identifiables sans les répéter
+  dans chaque transition. Exemples, sources, ancres et montants inchangés.
+  Aucun témoignage personnel, résultat client ou retour terrain ajouté.
 - Seconde évaluation éditoriale : 8/10 avant corrections, estimation 8,5/10 après
   corrections. Jugement qualitatif interne, pas une mesure de classement Google.
   Introduction raccourcie ; statistique montagne remplacée par un exemple de
@@ -158,7 +164,7 @@ de classement, de citation ou de « filtre octobre 2026 » affirmé.
   de la nouvelle URL dans les deux applications. Seule cette URL publique a été
   ajoutée aux listes explicites ; pas de changement de collecte/consentement.
 - Contrôle initial article/sitemap réussi ; après enrichissement, test navigateur
-  ciblé final réussi en 5,6 s : canonical et BlogPosting, neuf sections et six tables.
+  ciblé après réécriture réussi en 11,4 s : canonical et BlogPosting, neuf sections et six tables.
   Matrice 1280×720,
   1280×600, 390×844. Tableaux en cartes sur mobile, sans débordement horizontal.
 - Captures inspectées dans `apps/landing-page/test-results/travel-retention-guide-gui-baca9-re-des-tableaux-visual-1280-desktop/` ; vues initiales avec
