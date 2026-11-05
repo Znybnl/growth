@@ -57,7 +57,7 @@ export const CHRISTMAS_SCRATCH_TEMPLATES = [
     logo: "#8f6931",
     font: "playfair",
     scratchShape: "brush",
-    scratch: { base: "#c6a775", highlight: "#e7d2ab", edge: "#fff6e3", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .24 },
+    scratch: { base: "#b86b26", highlight: "#dca35d", edge: "#f5d49a", texture: "/images/scratch-templates/beauty-foil-nude.webp", textureOpacity: .24 },
   },
   {
     id: "scratch-christmas-retro",
