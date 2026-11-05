@@ -1,5 +1,16 @@
 # Produit — Okado
 
+## Règles initiales et lisibilité des lots du wizard — #740
+
+Les nouvelles campagnes Beauté créées via le wizard commencent avec 60 jours
+de validité du gain et 7 jours entre deux participations. Les autres secteurs
+conservent 30 jours et 1 jour. Les campagnes existantes ou dupliquées conservent
+leurs règles enregistrées, y compris les anciennes valeurs par défaut.
+Le wizard masque le budget estimé ; les coûts des lots et les calculs existants
+restent disponibles. L’explication détaillée du mode 100 % gagnant est accessible
+dans une infobulle au clic, au survol et au clavier près du libellé.
+
+
 ## Ticket Halloween doré — #704
 
 Le ticket `scratch-halloween-gold` réutilise le décor noir/or et la signature

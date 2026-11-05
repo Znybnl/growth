@@ -127,9 +127,12 @@ les lots de chance nulle et chances invalides, les stocks limités, les bornes
 des règles, le refus serveur d’un brouillon>100%, puis la vraie DAL de
 sauvegarde/relecture avec base simulée : marqueur JSON conservé et vrai zéro
 à nouveau reconnu. Copies inconnues distinctes des vrais zéros.
-`wizard-prize-budget.spec.ts` exerce recalcul, édition/abandon/continuer,
-zéro explicite, liens des coûts manquants, raccourcis état vide, règles
-invalides sans écriture et sauvegarde de jeux roue/ticket déjà publiés.
+Depuis #740, `wizard-prize-budget.spec.ts` vérifie les coûts inconnus/zéro,
+les raccourcis de l’état vide, les règles invalides sans écriture et la sauvegarde
+des jeux déjà publiés ; le bloc de budget est masqué dans le wizard.
+`wizard-prize-rules-740.spec.ts` couvre les défauts 60/7 des créations Beauté,
+30/1 des autres secteurs, la conservation des règles existantes (0/1, 30/1,
+91/13), leur sauvegarde et l’infobulle au clic/clavier sur mobile et 1280 px.
 Captures1280×720/600 et320/390px, vrai cadre et API interceptées ; les anciens
 parcours phases1–4 restent rejoués. Le succès ne prouve pas une écriture réelle
 ni un déploiement. Contrôles serveur admin, catalogue et permissions conservés.

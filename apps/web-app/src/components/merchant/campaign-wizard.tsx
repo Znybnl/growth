@@ -8,7 +8,7 @@ import { copyReusablePrize, isReusablePrizeAdded, type ReusablePrize } from "@/l
 import { buildPrizeCompositions, copyPrizeComposition, type PrizeComposition } from "@/lib/prize-compositions";
 import { WizardPrizeCompositions } from "@/components/merchant/wizard-prize-compositions";
 import { isPrizeCostKnown, prizeRuleErrors } from "@/lib/prize-budget";
-import { WizardPrizeBudget } from "@/components/merchant/wizard-prize-budget";
+import { WinningGameInfo } from "@/components/merchant/winning-game-info";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -358,8 +358,8 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
       rewardExpiryMinutes: 20,
       purchaseRequired: false,
       availableAfterHours: 24,
-      availabilityDurationDays: 30,
-      participationIntervalDays: 1,
+      availabilityDurationDays: isBeautyIndustry(merchant.industry) ? 60 : 30,
+      participationIntervalDays: isBeautyIndustry(merchant.industry) ? 7 : 1,
       isWinningEveryTime: false,
     },
     prizes: [],
@@ -2313,12 +2313,19 @@ export function CampaignWizard({
                   <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-[#716b78] transition-transform group-open:rotate-180" aria-hidden="true" />
                 </summary>
                 <div className="space-y-5 border-t border-[#eee8f0] p-4">
-                  <label className="flex cursor-pointer items-start gap-3 text-sm text-[#242126]">
-                    <input type="checkbox" checked={draft.rewardRules.isWinningEveryTime}
-                      onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, isWinningEveryTime: event.target.checked } })}
-                      className="mt-0.5 h-4 w-4 accent-aubergine" />
-                    <span><span className="block font-semibold">Jeu 100 % gagnant</span><span className="mt-1 block text-xs leading-5 text-[#716b78]">À la publication, les chances doivent totaliser 100 % et au moins un lot doit avoir un stock illimité. Cocher cette case ne modifie pas les chances saisies. Pendant le jeu, si un stock est épuisé, ses chances sont réparties proportionnellement entre les lots disponibles à chance positive. Un lot à 0 % ne peut pas être gagné. Sans lot éligible, aucune nouvelle partie ne peut démarrer.</span></span>
-                  </label>
+                  <div className="relative">
+                    <div className="flex items-center gap-2">
+                      <label className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-[#242126]">
+                        <input type="checkbox" checked={draft.rewardRules.isWinningEveryTime}
+                          aria-describedby="wizard-winning-game-rule"
+                          onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, isWinningEveryTime: event.target.checked } })}
+                          className="h-4 w-4 accent-aubergine" />
+                        Jeu 100 % gagnant
+                      </label>
+                      <WinningGameInfo />
+                    </div>
+                    <p id="wizard-winning-game-rule" className="ml-7 mt-1 text-xs leading-5 text-[#716b78]">À la publication, les chances doivent totaliser 100 % et au moins un lot doit avoir un stock illimité.</p>
+                  </div>
                   <label className="flex cursor-pointer items-start gap-3 text-sm text-[#242126]">
                     <input type="checkbox" checked={draft.rewardRules.availableAfterHours > 0}
                       onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, availableAfterHours: event.target.checked ? 24 : 0 } })}
@@ -2348,7 +2355,7 @@ export function CampaignWizard({
                   </div>
                 </div>
               </details>
-              <WizardPrizeBudget prizes={draft.prizes} onEdit={(index) => openPrizeEditor("edit", draft.prizes[index])} />
+
             </div>
           ) : null}
 
