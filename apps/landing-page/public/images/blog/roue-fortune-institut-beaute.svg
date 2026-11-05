@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="800" viewBox="0 0 1600 800" role="img">
+  <title>Roue de la fortune et budget d’un institut</title>
+  <rect width="1600" height="800" fill="#faf2eb"/>
+  <circle cx="1400" cy="36" r="275" fill="#f0e3f2"/>
+  <circle cx="72" cy="770" r="214" fill="#f3dcd6"/>
+  <g fill="#45263f" font-family="Arial, sans-serif">
+    <text x="110" y="191" font-size="30" font-weight="700" letter-spacing="5">OKADO · EXEMPLE DE CAMPAGNE</text>
+    <text x="110" y="331" font-size="88" font-weight="700">La roue</text>
+    <text x="110" y="432" font-size="88" font-weight="700">en institut</text>
+    <text x="114" y="530" font-size="38">Six lots et un budget</text>
+    <g stroke="#fff7ee" stroke-width="4">
+      <path d="M1155 400 L1155.00 171.00 A229 229 0 0 1 1334.04 257.22 Z" fill="#924363"/>
+      <path d="M1155 400 L1334.04 257.22 A229 229 0 0 1 1378.26 450.96 Z" fill="#f5c8c5"/>
+      <path d="M1155 400 L1378.26 450.96 A229 229 0 0 1 1254.36 606.32 Z" fill="#be7186"/>
+      <path d="M1155 400 L1254.36 606.32 A229 229 0 0 1 1055.64 606.32 Z" fill="#edd4dc"/>
+      <path d="M1155 400 L1055.64 606.32 A229 229 0 0 1 931.74 450.96 Z" fill="#a85876"/>
+      <path d="M1155 400 L931.74 450.96 A229 229 0 0 1 975.96 257.22 Z" fill="#f3dfb5"/>
+      <path d="M1155 400 L975.96 257.22 A229 229 0 0 1 1155.00 171.00 Z" fill="#dcc6da"/>
+    </g>
+    <circle cx="1155" cy="400" r="57" fill="#45263f" stroke="#fff7ee" stroke-width="5"/>
+    <path d="M1124 139H1186L1155 202Z" fill="#45263f" stroke="#fff7ee" stroke-width="5"/>
+  </g>
+</svg>
