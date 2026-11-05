@@ -1,5 +1,7 @@
 import type {
   CampaignAccent,
+  CampaignPresentation,
+  WheelTemplateStyle,
   CampaignPosterSettings,
   CampaignWheelSettings,
   GamePageTemplateId,
@@ -284,17 +286,20 @@ export function wheelBackgroundForTemplateSelection(
   currentColor: string,
   primaryColor = DEFAULT_COCORICO_DUO_BLUE,
 ) {
+  void currentColor;
   const halloween = halloweenScratchTemplate(templateId);
   if (halloween) return halloween.backgroundColor;
   const christmas = christmasWheelTheme(templateId);
   if (christmas) return christmas.background;
   const christmasScratch = christmasScratchTemplate(templateId);
   if (christmasScratch) return christmasScratch.backgroundColor;
+  if (templateId === "cocorico-wheel") return DEFAULT_COCORICO_BACKGROUND_COLOR;
+  if (templateId.startsWith("scratch-")) return "#ffffff";
   if (templateId === "cocorico-duo-wheel") return primaryColor;
   if (templateId === "classic") return "#ffffff";
   if (templateId === "restaurant-pop") return "#fffdfa";
   if (templateId === "rose-institut") return DEFAULT_ROSE_INSTITUT_BACKGROUND_COLOR;
-  return wheelBackgroundForTemplate(templateId, currentColor, primaryColor);
+  return wheelBackgroundForTemplate(templateId, "#ffffff", primaryColor);
 }
 
 /** Keep a default Bicolore background linked to its wheel, not a custom background. */
@@ -311,18 +316,20 @@ export function wheelBackgroundAfterPrimaryColorChange(
 
 /** First selection only; remembered per-template text colors always take precedence. */
 export function wheelHeadingColorForTemplateSelection(templateId: GamePageTemplateId, currentColor: string) {
+  void currentColor;
   const christmas = christmasWheelTheme(templateId);
   if (christmas) return christmas.text;
   if (templateId === "classic") return "#ffffff";
   if (templateId === "restaurant-pop") return "#1b2842";
-  return currentColor;
+  return templateId === "cosmic-orbit" ? "#ffffff" : "#1b2842";
 }
 
 /** Moderne uses a white brand mark by default on its blue game background. */
 export function wheelLogoColorForTemplateSelection(templateId: GamePageTemplateId, currentColor: string) {
+  void currentColor;
   const christmas = christmasWheelTheme(templateId);
   if (christmas) return christmas.logo;
-  return templateId === "cocorico-wheel" || templateId === "halloween-gold" ? "#ffffff" : currentColor;
+  return templateId === "cocorico-wheel" || templateId === "halloween-gold" ? "#ffffff" : wheelHeadingColorForTemplateSelection(templateId, "#1b2842");
 }
 
 /** Dynamique starts with Poppins unless the merchant already chose a font for it. */
@@ -711,5 +718,18 @@ export function createDefaultPosterSettings(
       footerBackgroundColor: beauty ? "transparent" : deriveLighterHex(primaryColor),
     }),
     logoSource: "wizard",
+  };
+}
+
+/** Capture the active template before changing game type, using the persisted style map. */
+export function snapshotCampaignTemplateStyle(campaign: { presentation: CampaignPresentation; accent: CampaignAccent }): WheelTemplateStyle {
+  const { presentation: p, accent } = campaign;
+  return {
+    wheel: { ...p.wheel }, backgroundColor: p.background.color,
+    scratchSignal: accent.signal, scratchTextColor: accent.ink,
+    headingTextColor: p.heading.textColor, logoTextColor: p.logo.textColor ?? p.heading.textColor,
+    headingFontFamily: p.heading.fontFamily, headingAlign: p.heading.align, logoAlign: p.logo.align,
+    logoBottomSpacingPx: p.logo.marginBottomPx, buttonBackgroundColor: p.button.backgroundColor,
+    blockSpacingPx: p.layout.blockSpacingPx, subtitleSpacingPx: p.layout.subtitleSpacingPx,
   };
 }

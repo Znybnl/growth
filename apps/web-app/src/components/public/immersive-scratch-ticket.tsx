@@ -537,7 +537,7 @@ export function ImmersiveScratchTicket({
                 className={`flex ${isRetroScratch ? "h-[clamp(64px,19cqw,88px)] w-[clamp(64px,19cqw,88px)]" : "h-[clamp(74px,21cqw,96px)] w-[clamp(74px,21cqw,96px)]"} shrink-0 items-center justify-center rounded-full border px-2 text-center shadow-[0_3px_10px_rgba(89,53,29,.15)]`}
                   style={{ backgroundColor: issue724ScratchStyle.badge, borderColor: issue724ScratchStyle.badgeBorder }}
                 >
-                  <span className="font-display text-[clamp(9px,3.2cqw,14px)] font-semibold leading-tight" style={{ color: issue724ScratchStyle.logoColor }}>
+                  <span className="font-display text-[clamp(12px,4cqw,18px)] font-semibold leading-tight" style={{ color: issue724ScratchStyle.logoColor }}>
                     {logoText || "Votre commerce"}
                   </span>
                 </div>

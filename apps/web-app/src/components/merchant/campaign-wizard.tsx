@@ -100,7 +100,6 @@ import {
   defaultScratchLogoColor,
   scratchTemplateDefaultPrimaryColor,
   scratchTemplateUsesFixedPrimaryColor,
-  shouldApplyScratchTemplateDefaultPrimaryColor,
   DEFAULT_WHEEL_SUBTITLE,
   campaignSubtitleForGameTypeChange,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
@@ -127,6 +126,7 @@ import {
   wheelBackgroundAfterPrimaryColorChange,
   resolveScratchTemplateTextColor,
   wheelBackgroundForTemplateSelection,
+  snapshotCampaignTemplateStyle,
   wheelHeadingColorForTemplateSelection,
   wheelHeadingFontForTemplateSelection,
   wheelLogoGapForTemplateSelection,
@@ -175,7 +175,7 @@ type GameTypeState = {
   accent: WizardDraft["accent"];
   presentation: Pick<
     WizardDraft["presentation"],
-    "background" | "heading" | "button" | "layout" | "wheel"
+    "background" | "heading" | "logo" | "button" | "layout" | "wheel"
   >;
 };
 
@@ -186,6 +186,7 @@ function snapshotGameTypeState(draft: WizardDraft): GameTypeState {
     presentation: {
       background: { ...draft.presentation.background },
       heading: { ...draft.presentation.heading },
+      logo: { ...draft.presentation.logo },
       button: { ...draft.presentation.button },
       layout: { ...draft.presentation.layout },
       wheel: { ...draft.presentation.wheel },
@@ -981,7 +982,7 @@ export function CampaignWizard({
             ...current.presentation,
             layout: { ...current.presentation.layout, templateId, wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] }, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId) },
             background: { ...current.presentation.background, color: remembered?.backgroundColor ?? seasonalTheme.background },
-            wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
+            wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, createDefaultWheelSettings()),
             heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? wheelHeadingFontForTemplateSelection(templateId, current.presentation.heading.fontFamily), textColor: remembered?.headingTextColor ?? wheelHeadingColorForTemplateSelection(templateId, current.presentation.heading.textColor), align: remembered?.headingAlign ?? "center" },
             logo: { ...current.presentation.logo, textColor: remembered?.logoTextColor ?? wheelLogoColorForTemplateSelection(templateId, current.presentation.logo.textColor ?? current.presentation.heading.textColor), marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx), align: remembered?.logoAlign ?? "center" },
             button: { ...current.presentation.button, backgroundColor: remembered?.buttonBackgroundColor ?? seasonalTheme.button },
@@ -1014,7 +1015,7 @@ export function CampaignWizard({
           subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
         };
         const remembered = wheelTemplateState.current[templateId];
-        const wheel = remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel);
+        const wheel = remembered?.wheel ?? wheelPaletteForTemplate(templateId, createDefaultWheelSettings());
         return {
           ...current,
           presentation: {
@@ -1085,7 +1086,7 @@ export function CampaignWizard({
           ...current.presentation,
           layout: { ...current.presentation.layout, templateId, blockSpacingPx: remembered?.blockSpacingPx ?? defaultWheelBlockSpacingForTemplate(templateId), subtitleSpacingPx: remembered?.subtitleSpacingPx ?? defaultWheelSubtitleSpacingForTemplate(templateId), wheelTemplateStyles: { ...current.presentation.layout.wheelTemplateStyles, [previousId]: wheelTemplateState.current[previousId] } },
           background: { ...current.presentation.background, color: remembered?.backgroundColor ?? theme.background },
-          wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, current.presentation.wheel),
+          wheel: remembered?.wheel ?? wheelPaletteForTemplate(templateId, createDefaultWheelSettings()),
           heading: { ...current.presentation.heading, fontFamily: remembered?.headingFontFamily ?? theme.font, textColor: remembered?.headingTextColor ?? theme.text, align: remembered?.headingAlign ?? "center" },
           logo: { ...current.presentation.logo, marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx), textColor: remembered?.logoTextColor ?? beautyWheelLogoColor(theme.id), align: remembered?.logoAlign ?? "center" },
           button: { ...current.presentation.button, backgroundColor: remembered?.buttonBackgroundColor ?? theme.primary },
@@ -1941,6 +1942,7 @@ export function CampaignWizard({
                           return current;
                         }
 
+                        wheelTemplateState.current[current.presentation.layout.templateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID] = snapshotCampaignTemplateStyle(current);
                         gameTypeState.current[current.gameType] = snapshotGameTypeState(current);
                         const remembered = gameTypeState.current[option.value];
 
@@ -1953,13 +1955,16 @@ export function CampaignWizard({
                             presentation: {
                               ...current.presentation,
                               ...remembered.presentation,
+                              layout: { ...remembered.presentation.layout, wheelTemplateStyles: { ...wheelTemplateState.current } },
                             },
                           };
                         }
 
                         const scratchTemplateId = defaultScratchTemplateForIndustry(merchant.industry);
+                        const targetTemplateId = option.value === "scratch" ? scratchTemplateId : "cocorico-wheel";
+                        const targetStyle = wheelTemplateState.current[targetTemplateId];
                         const beautyScratch = beautyScratchTemplate(scratchTemplateId);
-                        const scratchTextColor = beautyScratch?.text ?? defaultScratchTextColor(scratchTemplateId);
+                        const scratchTextColor = targetStyle?.headingTextColor ?? beautyScratch?.text ?? defaultScratchTextColor(scratchTemplateId);
                         const scratchFontFamily = beautyScratch?.font ?? defaultScratchTemplateFont(scratchTemplateId) ?? current.presentation.heading.fontFamily;
 
                         const nextPrimaryColor =
@@ -1967,19 +1972,20 @@ export function CampaignWizard({
                             ? resolveWheelPrimaryColorAfterGameTypeSwitch(
                                 current.presentation.wheel.loseColor,
                               )
-                            : scratchTemplateDefaultPrimaryColor(scratchTemplateId) ?? DEFAULT_SCRATCH_CORAL_COLOR;
+                            : targetStyle?.scratchSignal ?? scratchTemplateDefaultPrimaryColor(scratchTemplateId) ?? DEFAULT_SCRATCH_CORAL_COLOR;
 
                         return {
                           ...current,
                           gameType: option.value,
                           presentation: {
                             ...current.presentation,
+                            background: { ...current.presentation.background, color: targetStyle?.backgroundColor ?? wheelBackgroundForTemplateSelection(targetTemplateId, current.presentation.background.color, nextPrimaryColor) },
                             heading: {
                               ...current.presentation.heading,
                               textColor:
                                 option.value === "scratch"
                                   ? scratchTextColor
-                                  : current.presentation.heading.textColor,
+                                  : targetStyle?.headingTextColor ?? wheelHeadingColorForTemplateSelection(targetTemplateId, "#1b2842"),
                               fontFamily:
                                 option.value === "scratch"
                                   ? scratchFontFamily
@@ -1995,30 +2001,31 @@ export function CampaignWizard({
                               ...current.presentation.logo,
                               textColor:
                                 option.value === "scratch"
-                                  ? scratchTextColor
-                                  : current.presentation.logo.textColor,
+                                  ? targetStyle?.logoTextColor ?? scratchTextColor
+                                  : targetStyle?.logoTextColor ?? wheelLogoColorForTemplateSelection(targetTemplateId, "#1b2842"),
                             },
                             layout: {
                               ...current.presentation.layout,
+                              wheelTemplateStyles: { ...wheelTemplateState.current },
                               templateId:
                                 option.value === "scratch"
                                   ? scratchTemplateId
                                   : "cocorico-wheel",
                             },
                             wheel:
-                              option.value === "wheel"
+                              targetStyle?.wheel ?? (option.value === "wheel"
                                 ? {
                                     ...current.presentation.wheel,
                                     loseColor: nextPrimaryColor,
                                     alternateLoseColor: deriveLighterHex(nextPrimaryColor),
                                     rimColor: deriveLighterHex(nextPrimaryColor),
                                   }
-                                : current.presentation.wheel,
+                                : current.presentation.wheel),
                             button:
                               option.value === "wheel"
                                 ? {
                                     ...current.presentation.button,
-                                    backgroundColor: nextPrimaryColor,
+                                    backgroundColor: targetStyle?.buttonBackgroundColor ?? nextPrimaryColor,
                                   }
                                 : current.presentation.button,
                           },
@@ -2475,7 +2482,7 @@ export function CampaignWizard({
                           subtitleSpacingPx: current.presentation.layout.subtitleSpacingPx,
                         };
                         const remembered = wheelTemplateState.current[template.id];
-                        const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, current.presentation.wheel);
+                        const wheel = remembered?.wheel ?? wheelPaletteForTemplate(template.id, createDefaultWheelSettings());
                         const backgroundColor = remembered?.backgroundColor ?? wheelBackgroundForTemplateSelection(template.id, current.presentation.background.color, wheel.loseColor);
                         const headingTextColor = remembered?.headingTextColor ?? (current.gameType === "scratch" ? defaultScratchTextColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.heading.textColor));
                         const logoTextColor = remembered?.logoTextColor ?? (current.gameType === "scratch" ? defaultScratchLogoColor(template.id) : template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheelLogoColorForTemplateSelection(template.id, wheelHeadingColorForTemplateSelection(template.id, isBeautyWheelTemplate(currentTemplateId) ? "#1b2842" : current.presentation.logo.textColor ?? current.presentation.heading.textColor)));
@@ -2483,14 +2490,10 @@ export function CampaignWizard({
                         const buttonBackgroundColor = remembered?.buttonBackgroundColor ?? christmasWheelTheme(template.id)?.button ?? (template.id === "rose-institut" ? DEFAULT_ROSE_INSTITUT_TEXT_COLOR : wheel.loseColor);
                         const scratchSignal =
                           remembered?.scratchSignal ??
-                          (scratchTemplateDefaultPrimaryColor(template.id) &&
-                          shouldApplyScratchTemplateDefaultPrimaryColor(current.accent.signal)
-                            ? scratchTemplateDefaultPrimaryColor(template.id)!
-                            : current.accent.signal);
+                          scratchTemplateDefaultPrimaryColor(template.id) ?? current.accent.signal;
 
                         return {
                           ...current,
-                          subtitle: template.id === "halloween-gold" && current.subtitle === DEFAULT_WHEEL_SUBTITLE ? "TOURNEZ\nLA ROUE" : current.subtitle,
                           presentation: {
                             ...current.presentation,
                             background: {
