@@ -350,12 +350,11 @@ const getMerchantPageRows = cache(async (merchantId: string): Promise<MerchantPa
   }));
 
 const getMerchantPagePrizes = cache(async (merchantId: string): Promise<PrizeRow[]> => {
-  const rows = await getMerchantPageRows(merchantId);
-  if (!rows.length) return [];
   return measureServerStage("data.prizes", async () => {
+    // Ownership is filtered in the join, without waiting for the overview RPC.
     const result = await readAllRows((offset, end) => getSupabaseAdmin().from("prizes")
-      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at", { count: "exact" })
-      .in("campaign_id", rows.map(row => row.campaign_id)).order("id").range(offset, end));
+      .select("id,campaign_id,label,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at,campaign:campaigns!inner(merchant_id)", { count: "exact" })
+      .eq("campaign.merchant_id", merchantId).order("id").range(offset, end));
     return (unwrapSupabaseResult(result, "Lecture des lots impossible") ?? []) as PrizeRow[];
   });
 });
@@ -1059,9 +1058,10 @@ export async function getSupabaseMerchantDashboard(merchant: Merchant): Promise<
 }
 
 export async function getSupabaseMerchantCampaignOverview(merchant: Merchant): Promise<MerchantDashboardData> {
-  const rows = await getMerchantPageRows(merchant.id);
+  const [rows, prizes] = await Promise.all([
+    getMerchantPageRows(merchant.id), getMerchantPagePrizes(merchant.id),
+  ]);
   const overviewMerchant = { ...merchant, logoUrl: undefined };
-  const prizes = await getMerchantPagePrizes(merchant.id);
   const prizesById = new Map<string, Prize[]>();
   for (const row of prizes) {
     const group = prizesById.get(row.campaign_id) ?? [];

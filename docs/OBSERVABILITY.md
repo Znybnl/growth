@@ -167,3 +167,12 @@ Pour désactiver immédiatement l'export, positionner `POSTHOG_OTEL_LOGS_ENABLED
 ## Limites connues
 
 Cette instrumentation ne remplace pas les logs runtime Vercel ni les logs métier consultables dans l'application. Elle ne capture pas les erreurs d'autres routes tant qu'elles ne sont pas ajoutées explicitement. L'accès aux logs et leur rétention restent soumis au plan et aux réglages du workspace PostHog.
+
+## Suivi de la navigation marchande — #743
+
+Les mesures serveur de production sont disponibles depuis le 31 octobre 2026 dans
+Logs 212872. Le [rapport du 5 novembre](releases/2026-11-05-merchant-page-loading-743.md)
+contient les moyennes, effectifs, médianes et p95 avant correction des lectures.
+Les étapes imbriquées ne s’additionnent pas et leur durée ne mesure pas le rendu
+visible. La comparaison après déploiement doit garder route, succès, type de
+requête et version distincts ; aucun benchmark local ne vaut preuve en production.

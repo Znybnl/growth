@@ -495,6 +495,14 @@ export async function getSupabaseMerchantUserByEmail(email: string) {
   return toMerchantUser(data);
 }
 
+// Read only the authenticated user's linked account; no shared session cache.
+async function readSessionUser(field: "id" | "email", value: string) {
+  const { data, error } = await getSupabaseAdmin().from("merchant_users")
+    .select("*, merchant:merchants!merchant_users_merchant_id_fkey(*)")
+    .eq(field, value).maybeSingle<MerchantUserRow & { merchant: MerchantRow | null }>();
+  return error || !data ? null : data;
+}
+
 export async function resolveMerchantSessionFromAuthUser(
   authUser: Pick<SupabaseAuthUser, "id" | "email" | "app_metadata" | "user_metadata">,
   activeLocationId?: string,
@@ -503,11 +511,14 @@ export async function resolveMerchantSessionFromAuthUser(
     typeof authUser.app_metadata?.merchant_user_id === "string"
       ? authUser.app_metadata.merchant_user_id
       : null;
-  let merchantUser = merchantUserId ? await getSupabaseMerchantUser(merchantUserId) : null;
-
-  if (!merchantUser && authUser.email) {
-    merchantUser = await getSupabaseMerchantUserByEmail(authUser.email);
-  }
+  // These reads share only a verified Auth metadata ID and are independent.
+  const [initialUser, initialMembership] = await Promise.all([
+    merchantUserId ? readSessionUser("id", merchantUserId) : null,
+    merchantUserId ? readWorkspaceMembership(merchantUserId) : null,
+  ]);
+  const userRow = initialUser ?? (authUser.email
+    ? await readSessionUser("email", authUser.email.trim().toLowerCase()) : null);
+  const merchantUser = userRow ? toMerchantUser(userRow) : null;
 
   if (!merchantUser) {
     throw new Error("Compte marchand introuvable.");
@@ -524,10 +535,10 @@ export async function resolveMerchantSessionFromAuthUser(
     });
   }
 
-  const [merchant, membershipQuery] = await Promise.all([
-    getSupabaseMerchantProfile(merchantUser.merchantId),
-    readWorkspaceMembership(merchantUser.id),
-  ]);
+  const merchant = userRow?.merchant ? toMerchant(userRow.merchant) : null;
+  // An email fallback may resolve a different ID; never reuse its predecessor's rights.
+  const membershipQuery = initialUser && initialMembership
+    ? initialMembership : await readWorkspaceMembership(merchantUser.id);
 
   if (!merchant) {
     throw new Error("Marchand introuvable.");
@@ -1226,25 +1237,14 @@ async function resolveMerchantWorkspaceContext(
         .select("id, name, slug, default_time_zone, created_at")
         .eq("id", membership.workspace_id)
         .maybeSingle<MerchantWorkspaceRow>(),
-      supabase
-        .from("merchant_membership_locations")
-        .select("merchant_id")
-        .eq("membership_id", membership.id),
+      readAllRows((start, end) => supabase.from("merchant_membership_locations")
+        .select("merchant_id, merchant:merchants!merchant_membership_locations_merchant_id_fkey(*)", { count: "exact" })
+        .eq("membership_id", membership.id).order("merchant_id").range(start, end)),
     ]);
 
-    const locationIds = (locationRows ?? []).map((row) => row.merchant_id);
-    const otherIds = [...new Set(locationIds.filter(id => id !== fallbackMerchant.id))];
-    const profilesById = new Map<string, Merchant>([[fallbackMerchant.id, fallbackMerchant]]);
-    // Bound URL size for large workspaces; the common multi-site case is one read.
-    for (let offset = 0; offset < otherIds.length; offset += 200) {
-      const { data, error } = await readAllRows((start, end) => supabase.from("merchants")
-        .select("*", { count: "exact" }).in("id", otherIds.slice(offset, offset + 200))
-        .order("id").range(start, end));
-      if (!error) for (const row of (data ?? []) as MerchantRow[]) {
-        profilesById.set(row.id, toMerchant(row));
-      }
-    }
-    const profiles = locationIds.map(id => profilesById.get(id));
+    // PostgREST joins only profiles explicitly associated with this membership.
+    const profiles = (locationRows ?? []).map(row => row.merchant_id === fallbackMerchant.id
+      ? fallbackMerchant : row.merchant ? toMerchant(row.merchant as unknown as MerchantRow) : undefined);
     const locations = profiles
       .filter((merchant): merchant is Merchant => Boolean(merchant))
       .filter((merchant) => merchant.locationStatus !== "archived")

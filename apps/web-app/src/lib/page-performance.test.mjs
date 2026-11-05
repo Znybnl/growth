@@ -16,32 +16,38 @@ function load(path, dependencies = {}, globals = {}) {
     require: name => dependencies[name] ?? (name.startsWith("@/") ? {} : require(name)), ...globals });
   return testModule.exports;
 }
-function workspace({ count = 8, cap = 500, archived = false, fail = false } = {}) {
+function workspace({ count = 8, cap = 500, archived = false, fail = false, hold = async () => {}, legacy = false, profileName = () => "Commerce" } = {}) {
   const ids = Array.from({length:count},(_,i)=>"site-"+i);
   const reads = [];
+  const repairs = [];
   const fallback = {id:ids[0],companyName:"Commerce",locationStatus:"active"};
-  const db = { from(table) {
+  const db = { auth:{admin:{updateUserById:async(id,payload)=>{repairs.push({id,payload});return {error:null}}}}, from(table) {
     const filters = {}; let start=0,end=Infinity;
     const q = {
       select(){return q},eq(k,v){filters[k]=v;return q},order(){return q},limit(){return q},
       in(k,v){filters[k]=v;return q},range(a,b){start=a;end=b;return q},
       maybeSingle(){return q},single(){return q},
-      then(resolve,reject) {
+      async then(resolve,reject) {
         reads.push({table,filters,start});
+        await hold(table);
+        const profile = id => ({id,company_name:profileName(),logo_text:"Logo",created_at:"2026-01-01",
+          location_status:archived&&id===ids.at(-1)?"archived":"active"});
         let data;
         if(table==="merchant_users") {
-          assert.equal(filters.id,"user");
-          data={id:"user",merchant_id:fallback.id,first_name:"Camille",email:"test@example.test"};
+          assert.ok(filters.id === "user" || filters.email === "test@example.test" || filters.id === "stale");
+          data=legacy&&filters.id?null:{id:"user",merchant_id:fallback.id,first_name:"Camille",email:"test@example.test",
+            merchant:profile(fallback.id)};
         } else if(table==="merchant_workspace_memberships") {
-          assert.equal(filters.merchant_user_id,"user");
+          assert.ok(["user","stale"].includes(filters.merchant_user_id));
           assert.equal(filters.status,"active");
-          data={id:"member",workspace_id:"workspace",role:"viewer",status:"active"};
+          data={id:filters.merchant_user_id==="stale"?"foreign-member":"member",workspace_id:"workspace",role:"viewer",status:"active"};
         } else if(table==="merchant_workspaces") {
           assert.equal(filters.id,"workspace");
           data={id:"workspace",name:"Groupe",created_at:"2026-01-01"};
         } else if(table==="merchant_membership_locations") {
           assert.equal(filters.membership_id,"member");
-          data=ids.map(merchant_id=>({merchant_id}));
+          data=fail?null:ids.slice(start,Math.min(end+1,start+cap))
+            .map(merchant_id=>({merchant_id,merchant:profile(merchant_id)}));
         } else {
           assert.equal(table,"merchants");
           const requested=Array.isArray(filters.id)?filters.id:[filters.id];
@@ -53,8 +59,8 @@ function workspace({ count = 8, cap = 500, archived = false, fail = false } = {}
           if(!Array.isArray(filters.id))data=data[0];
         }
         return Promise.resolve({data:fail&&table==="merchants"?null:data,
-          error:fail&&table==="merchants"?{message:"private DB error"}:null,
-          count:table==="merchants"?filters.id.length:undefined}).then(resolve,reject);
+          error:fail&&["merchants","merchant_membership_locations"].includes(table)?{message:"private DB error"}:null,
+          count:table==="merchant_membership_locations"?ids.length:table==="merchants"?filters.id.length:undefined}).then(resolve,reject);
       },
     }; return q;
   }};
@@ -64,17 +70,17 @@ function workspace({ count = 8, cap = 500, archived = false, fail = false } = {}
     "@/lib/server-performance":{measureServerStage},
     "@/lib/paginated-read":{readAllRows},
   });
-  return {repo,fallback,reads};
+  return {repo,fallback,reads,repairs};
 }
-test("#500 workspace : huit sites, une lecture groupée, rôles et archivage conservés",async()=>{
+test("#743 workspace : profils joints aux sites autorisés, rôles et archivage conservés",async()=>{
   const {repo,fallback,reads}=workspace({archived:true});
   const result=await repo.getSupabaseMerchantWorkspaceContext("user",fallback);
   assert.equal(result.locations.length,7);
   assert.ok(result.locations.every(l=>l.role==="viewer"));
-  assert.equal(reads.filter(r=>r.table==="merchants").length,1);
+  assert.equal(reads.filter(r=>r.table==="merchants").length,0);
   assert.equal(result.locations[0].merchant.id,fallback.id);
 });
-test("#500 session complète : six lectures, site actif autorisé, substitution étrangère ignorée",async()=>{
+test("#500 session complète : quatre lectures, site actif autorisé, substitution étrangère ignorée",async()=>{
   for(const requested of ["site-4","foreign"]) {
     const {repo,reads}=workspace();
     const session=await repo.resolveMerchantSessionFromAuthUser({
@@ -82,16 +88,16 @@ test("#500 session complète : six lectures, site actif autorisé, substitution 
     },requested);
     assert.equal(session.merchant.id,requested==="foreign"?"site-0":"site-4");
     assert.equal(session.user.role,"viewer");
-    assert.equal(reads.length,6);
+    assert.equal(reads.length,4);
     assert.equal(reads.filter(r=>r.table==="merchant_workspace_memberships").length,1);
   }
 });
-test("#500 workspace : pagination sous plafond et lots bornés à 200",async()=>{
+test("#500 workspace : pagination des profils joints sous plafond",async()=>{
   const {repo,fallback,reads}=workspace({count:405,cap:73});
   const result=await repo.getSupabaseMerchantWorkspaceContext("user",fallback);
   assert.equal(result.locations.length,405);
   assert.equal(new Set(result.locations.map(l=>l.merchant.id)).size,405);
-  assert.ok(reads.filter(r=>r.table==="merchants").every(r=>r.filters.id.length<=200));
+  assert.equal(reads.filter(r=>r.table==="merchant_membership_locations").length,6);
 });
 test("#500 workspace : lecture défaillante ne donne pas accès à un site supplémentaire",async()=>{
   const {repo,fallback}=workspace({fail:true});
@@ -188,4 +194,64 @@ test("#500 Résultats : projection JSON des conditions, pagination et opt-ins co
   assert.equal(result.leadOffset,50);
   assert.equal(result.performance.prizes[0].usageConditions,"Avec un soin");
   assert.equal(selections.find(r=>r.table==="campaigns").columns,"prizeSettings:campaign_local_settings->prizeSettings");
+});
+
+
+test("#743 session : les lectures utilisateur et adhésion démarrent ensemble", async () => {
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  const {repo,reads}=workspace({hold:table=>["merchant_users","merchant_workspace_memberships"].includes(table)?gate:undefined});
+  const pending=repo.resolveMerchantSessionFromAuthUser({id:"auth",app_metadata:{merchant_user_id:"user"},user_metadata:{}});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.deepEqual(reads.map(r=>r.table).sort(),["merchant_users","merchant_workspace_memberships"]);
+  release();
+  assert.equal((await pending).merchant.id,"site-0");
+});
+
+test("#743 session : rapprochement par e-mail, droits relus pour le bon utilisateur", async () => {
+  const {repo,reads,repairs}=workspace({legacy:true});
+  const session=await repo.resolveMerchantSessionFromAuthUser({id:"auth",email:"TEST@example.test",app_metadata:{merchant_user_id:"stale"},user_metadata:{}});
+  assert.equal(session.user.id,"user");
+  assert.equal(session.user.role,"viewer");
+  assert.equal(session.locations.length,8);
+  assert.deepEqual(reads.filter(r=>r.table==="merchant_workspace_memberships").map(r=>r.filters.merchant_user_id),["stale","user"]);
+  assert.equal(reads.find(r=>r.table==="merchant_membership_locations").filters.membership_id,"member");
+  assert.equal(repairs[0].id,"auth");
+  assert.equal(repairs[0].payload.app_metadata.merchant_user_id,"user");
+});
+
+test("#743 session : une navigation suivante relit les profils sans cache partagé", async () => {
+  let name="Avant";
+  const {repo}=workspace({profileName:()=>name});
+  const auth={id:"auth",app_metadata:{merchant_user_id:"user"},user_metadata:{}};
+  assert.equal((await repo.resolveMerchantSessionFromAuthUser(auth)).merchant.companyName,"Avant");
+  name="Après";
+  assert.equal((await repo.resolveMerchantSessionFromAuthUser(auth)).merchant.companyName,"Après");
+});
+
+test("#743 campagnes : lots et agrégats démarrent ensemble avec le même périmètre marchand", async () => {
+  let release;
+  const gate=new Promise(resolve=>{release=resolve});
+  const calls=[];
+  function result(source) {
+    const q={select(columns){assert.match(columns,/campaign:campaigns!inner\(merchant_id\)/);return q},
+      eq(key,value){assert.equal(key,"campaign.merchant_id");assert.equal(value,"own");return q},
+      order(){return q},range(){return q},
+      async then(resolve,reject){calls.push(source);await gate;return Promise.resolve({data:[],count:0,error:null}).then(resolve,reject)}};
+    return q;
+  }
+  const db={from(table){assert.equal(table,"prizes");return result("prizes")},
+    rpc(name,args){assert.equal(name,"get_merchant_page_overview");assert.equal(args.p_merchant_id,"own");return result("overview")}};
+  const repo=load("./campaign-repository.ts",{
+    "react":{cache:fn=>fn},
+    "@/lib/server-performance":{measureServerStage},
+    "@/lib/paginated-read":{readAllRows},
+    "@/lib/supabase":{getSupabaseAdmin:()=>db,unwrapSupabaseResult:r=>{assert.equal(r.error,null);return r.data}},
+    "@/lib/metric-rules":{globalConversion:()=>0},
+  });
+  const pending=repo.getSupabaseMerchantCampaignOverview({id:"own"});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.deepEqual(calls.sort(),["overview","prizes"]);
+  release();
+  assert.equal((await pending).campaigns.length,0);
 });
