@@ -54,6 +54,10 @@ Les chances initiales des six lots totalisent 40 %. Le scénario sans stock donn
 
 Résultat avant arrondi : 37,8893 gains et 138,8666 € si tous ces gains sont utilisés. À 60 % d’utilisation supposée par type : 22,7336 usages et 83,3200 €. Les chiffres par ligne sont arrondis indépendamment. Dotation maximale : 14 × 1,50 + 12 × 3 + 10 × 4 + 8 × 5 + 4 × 8 + 2 × 14 = 197 €. Frais : 50 + 10 + 80 = 140 €. Total projeté 223,32 €. Réserve maximale 337 € pour les postes listés. L’achat de stock, une cabine occupée et les heures supplémentaires peuvent changer la trésorerie ou le coût réel.
 
+La relecture du second article a ajouté une campagne datée du 1er au 28 février 2027. Sept jours après un gain du 28 février donnent le 7 mars, puis 60 jours de validité conduisent au 6 mai. Les prestations longues représentent jusqu’à 4 × 10 + 2 × 15 = 70 minutes. Le coût illustratif du masque est de 1,50 € + 3 ÷ 60 × 30 € = 3 €.
+
+Les scénarios à 30, 60 et 100 % d’utilisation supposée des gains projetés donnent respectivement 181,66 €, 223,32 € et 278,87 € avec les frais, arrondis à l’euro. Sous une enveloppe de 250 €, les stocks de 8, 7, 6, 4, 2 et 1 donnent 107 € de dotation et 247 € au total. Cette variante nécessite sa propre projection. Dans le bilan fictif, 22 retraits sur 36 gains arrivés à échéance donnent 61,1 %, dont 15 retraits associés à un soin payé et honoré.
+
 ## C — Articles prêts à relire
 
 - [Programme de fidélité pour institut de beauté](programme-fidelite-institut-beaute.md)

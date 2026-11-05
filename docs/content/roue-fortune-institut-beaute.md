@@ -1,27 +1,27 @@
 # Roue de la fortune pour institut de beauté : exemple complet et budget
 
-Votre institut souhaite proposer un tour de roue à la fin d’un soin. Reste à décider ce que la cliente peut gagner, combien de lots prévoir et ce qui se passe quand elle revient avec son cadeau. Cet exemple fictif prend le cas d’un institut qui veut faire découvrir ses prestations sans saturer ses cabines. Vous pouvez reprendre la structure de la campagne et remplacer les coûts, les stocks et les dates par les vôtres.
+Vous aimeriez proposer un tour de roue à l’accueil. Combien de cadeaux faut-il prévoir ? Et si plusieurs clientes gagnent un soin qui prend un quart d’heure ? Cet exemple fictif montre comment choisir six lots, préparer leur remise et chiffrer la campagne avant d’imprimer le QR code.
 
-Pour une roue d’institut, fixez d’abord ce que chaque lot vous coûte et le nombre que vous pouvez honorer. L’exemple ci-dessous combine six récompenses et une issue sans gain. Pour 100 parties, le modèle donne environ 38 gains avec les stocks proposés. La dotation maximale est de 197 €, auxquels s’ajoutent 140 € de préparation, d’impression et de logiciel dans notre scénario.
+Pour 100 parties, cette roue d’institut donne environ 38 gains en moyenne avec les stocks proposés. Si 60 % des gains sont utilisés, le coût économique estimé est de 223 €. Prévoyez jusqu’à 337 € pour couvrir l’utilisation de tout le stock et les frais du scénario. Les dates, les prestations et les créneaux ci-dessous vous permettent d’adapter le calcul à votre institut.
 
 ## Une roue de quatre semaines avec des gains à utiliser au retour
 
-L’institut fictif propose la roue sur une affiche à l’accueil, pendant quatre semaines. La cliente scanne le QR code et joue dans le navigateur de son téléphone. Le jeu de cet exemple est gratuit et sans achat obligatoire. Certains lots ajoutent un complément à un soin payé lors d’une prochaine visite. Ces conditions figurent dans la présentation du lot avant que la cliente ne décide de jouer.
+Dans cet exemple, l’institut fait jouer les personnes majeures qui se présentent à l’accueil du 1er au 28 février 2027. Elles scannent le QR code et jouent sur leur téléphone, sans achat obligatoire. Certains lots s’utilisent ensuite avec un soin payé. Indiquez la condition dans la description du lot avant le jeu.
 
-Prévoyez un délai qui correspond à vos rendez-vous. Ici, l’avantage devient disponible sept jours après son attribution et reste utilisable pendant 60 jours à partir de cette disponibilité. Une gagnante peut donc prendre rendez-vous avant l’ouverture du lot, pour une prestation à réaliser pendant sa validité. Distinguez cette date du dernier jour où le QR permet de participer.
+Chaque gain devient disponible sept jours après son attribution et reste utilisable pendant 60 jours à partir de cette date. Un gain attribué le 28 février à midi devient donc utilisable le 7 mars et arrive à échéance le 6 mai. La cliente peut réserver plus tôt un soin qui aura lieu pendant cette période. À la fermeture du jeu, retirez l’affiche et vérifiez que l’équipe peut encore consulter et valider les gains attribués.
 
-L’équipe ne promet que ce qu’elle peut livrer. Avant l’ouverture, elle vérifie par exemple que le calendrier laisse bien deux créneaux de 15 minutes pour les soins des mains offerts. Une fois la participation close, elle garde les conditions et le mode de validation accessibles pour les gagnantes restantes.
+À l’accueil, une phrase suffit pour présenter l’opération. « Jusqu’au 28 février, scannez pour tenter de gagner un cadeau pour votre prochaine visite. Le jeu est gratuit et les conditions de chaque lot sont accessibles avant de jouer. » L’affiche renvoie au règlement complet.
 
-- Une participation tous les sept jours selon les règles du jeu. La projection porte sur 100 parties et une même personne peut revenir jouer.
-- Six récompenses avec stock et un résultat sans gain. Désactiver le réglage 100 % gagnant pour cet exemple.
-- Un avantage par rendez-vous, avec conditions écrites pour chaque lot. Afficher les dates, l’organisateur et le contact en cas de question.
+- Une participation tous les sept jours selon les règles du jeu. Pour atteindre 100 parties, comptez environ 25 par semaine. Une même personne peut jouer plusieurs fois pendant la campagne.
+- Saisir les six lots avec leurs stocks et laisser le mode 100 % gagnant désactivé. Les chances des lots totalisent 40 % au départ, ce qui laisse 60 % sans gain.
+- Prévoir un seul avantage par rendez-vous. Afficher les dates, l’organisateur, les conditions de chaque lot et le contact en cas de question.
 - Utiliser un e-mail de test pour vérifier la réception du gain et le passage au comptoir avant d’imprimer le QR public.
 
 ## Quels lots mettre sur une roue d’institut ?
 
-Choisissez un mélange de petits cadeaux faciles à remettre et de compléments liés à vos prestations. Le mini-produit peut se retirer à l’accueil. Le masque ou le nail art se fait pendant un rendez-vous compatible. Le soin express exige un créneau à lui seul, ce qui explique son stock plus bas.
+Choisissez des cadeaux que l’équipe peut remettre et des compléments qu’elle a le temps de réaliser. Ici, quatre massages de 10 minutes et deux soins express de 15 minutes demandent jusqu’à 1 h 10 de travail au total. Prévoyez aussi le temps du masque et du nail art dans les rendez-vous concernés. Si le planning est serré, réduisez le stock des lots longs avant le lancement.
 
-Les coûts ci-dessous sont des hypothèses internes, hors effets de TVA. Le masque comprend produit et temps supplémentaire. Le massage et le soin express incluent le temps de travail prévu. Pour la remise, comptez le montant retranché au prix. Si un soin offert occupe un créneau qui se vendrait normalement, estimez aussi ce que ce choix ferait perdre à l’institut.
+Pour estimer un lot, comptez le produit, les consommables et le temps ajouté. Un masque qui coûte 1,50 € et prend trois minutes à 30 € de l’heure revient à 3 € dans cet exemple. Pour une remise, comptez la recette que vous abandonnez. Les montants sont simplifiés, hors effets de TVA. Si un soin offert remplace une prestation que vous auriez pu vendre, chiffrez aussi la marge perdue sur ce créneau.
 
 Les chances sont celles du départ, avec tous les lots disponibles. La taille dessinée d’une case sert à présenter le jeu. La probabilité est un réglage distinct. Dans cette campagne, les lots épuisés sortent du tirage et leur part augmente la chance de ne rien gagner.
 
@@ -29,7 +29,7 @@ Les chances sont celles du départ, avec tous les lots disponibles. La taille de
 
 | Lot et condition | Chance au départ | Stock total | Coût par utilisation | Sur 100 parties en moyenne |
 | --- | --- | --- | --- | --- |
-| Mini crème mains, à retirer à l’accueil sans achat | 12 % | 14 | 1,50 € | 11,45 |
+| Mini crème pour les mains, à retirer à l’accueil sans achat | 12 % | 14 | 1,50 € | 11,45 |
 | Masque complémentaire avec un soin du visage payé | 10 % | 12 | 3 € | 9,53 |
 | Nail art sur deux ongles avec une pose payée | 8 % | 10 | 4 € | 7,61 |
 | 5 € de remise sur un soin du visage d’au moins 45 € | 6 % | 8 | 5 € | 5,71 |
@@ -43,17 +43,20 @@ Sans limite de stock, 100 parties à 12 % donnent en moyenne 12 mini-crèmes. En
 
 La dernière colonne du tableau tient compte du stock. Pour chaque lot, nous calculons la moyenne du nombre de gains sur 100 tirages, en arrêtant le compte au plafond prévu. Par exemple, si une série donne 16 mini-crèmes, l’institut en attribue au plus 14. En supposant que les parties aboutissent sans remise en stock, on obtient environ 38 gains pour 139 € si tous sont utilisés.
 
-Si l’on suppose que 60 % des gains de chaque type sont utilisés, cela donne environ 23 usages et 83 € de coût de récompenses. Ce taux sert à construire le budget. À défaut d’historique, gardez en réserve le coût de tous les lots. Le plafond se calcule en multipliant chaque stock par son coût unitaire, puis en additionnant les six lignes. Pour cette roue, il atteint 197 €.
+Avec 60 % d’utilisation supposée pour chaque type de lot, prévoyez environ 23 retraits et 83 € de récompenses utilisées. Le tableau compare plusieurs taux, car le résultat dépend des conditions et des disponibilités de l’institut. Les mini-crèmes achetées d’avance peuvent demander 21 € de trésorerie dès le lancement, même si peu sont retirées.
 
-Les frais du scénario totalisent 140 €. Ils incluent deux heures à 25 € pour préparer et suivre le jeu, 10 € d’impression et quatre mois payés à 20 € HT pour Okado. Quatre mois permettent ici de budgéter le lancement et le suivi des derniers gains si l’institut garde l’abonnement. Le coût des produits achetés d’avance peut sortir de la caisse avant leur remise. [Tarifs Okado](https://www.okado.app/tarifs)
+Ajoutez 140 € de frais dans cet exemple. Il faut compter deux heures à 25 € pour préparer et suivre le jeu, 10 € d’impression et quatre mois payés à 20 € HT si l’institut garde Okado jusqu’à l’expiration des derniers gains. [Tarifs Okado](https://www.okado.app/tarifs)
 
-**Prévision et réserve pour la roue fictive**
+Pour fixer votre enveloppe, multipliez le stock de chaque lot par son coût. Les six lignes totalisent 197 €, soit 337 € avec les frais. Si vous avez 250 € en tout, il reste 110 € pour les lots. Par exemple, des stocks de 8, 7, 6, 4, 2 et 1 dans l’ordre du tableau ramènent la dotation à 107 €. Recalculez la projection avec ces stocks avant de lancer.
 
-| Poste | Avec 60 % des gains utilisés | Budget si tout le stock est utilisé |
+**Budget économique de la roue fictive selon l’utilisation des gains**
+
+| Hypothèse | Coût des récompenses | Total avec 140 € de frais |
 | --- | --- | --- |
-| Récompenses | Environ 83 € | 197 € |
-| Préparation, impression et logiciel | 140 € | 140 € |
-| Total | Environ 223 € | 337 € |
+| 30 % des gains projetés utilisés | Environ 42 € | Environ 182 € |
+| 60 % des gains projetés utilisés | Environ 83 € | Environ 223 € |
+| 100 % des gains projetés utilisés | Environ 139 € | Environ 279 € |
+| Réserve pour tout le stock | 197 € | 337 € |
 
 ## Que doit faire l’équipe quand la cliente présente son gain ?
 
@@ -65,11 +68,15 @@ Présentez les conditions du jeu et des lots avant la participation. Dans cet ex
 
 ## Essayer la roue Beauté sur un téléphone
 
-Ouvrez la démo Beauté « Soins visage & corps », lancez la roue et allez jusqu’à l’e-mail de gain simulé. Elle montre les étapes qu’une cliente voit sur mobile, avec un lot de démonstration. Les six lots, stocks et chances de cet article constituent un exemple de réglage distinct. [Jouer à la démo Beauté](https://www.okado.app/instituts-beaute#demo-care)
+Ouvrez la démo Beauté « Soins visage & corps » et choisissez « Jouer maintenant ». Vous pouvez suivre le parcours jusqu’au masque offert et à l’e-mail simulé. La démo illustre l’expérience sur téléphone. Pour régler votre campagne, reprenez les six lots et les chiffres du tableau. [Jouer à la démo Beauté](https://www.okado.app/instituts-beaute#demo-care)
 
-Après le test en institut, séparez les parties jouées, les gains attribués, les retraits validés et les rendez-vous honorés après un gain. Un mini-produit retiré à l’accueil peut faire revenir une cliente sans rendez-vous. Une remise utilisée sur un soin déjà prévu peut faire baisser sa marge sans créer de visite supplémentaire. C’est cette différence qui aide à décider quels lots garder.
+## Comment savoir si la roue a donné lieu à des rendez-vous ?
 
-Si votre objectif est surtout de récompenser les visites régulières, comparez d’abord la roue à une carte et aux autres mécanismes. [Comparatif des programmes de fidélité en institut](https://www.okado.app/blog/programme-fidelite-institut-beaute)
+Au comptoir, notez le lot et, s’il accompagne un soin, le rendez-vous auquel il correspond. Gardez quatre compteurs dans votre bilan pour les parties jouées, les gains attribués, les retraits validés et les soins payés honorés avec un gain. Une crème retirée à l’accueil renseigne uniquement le compteur des retraits.
+
+Exemple fictif après expiration des gains : 100 parties donnent 36 gains, dont 22 sont utilisés. Le taux de retrait est de 22 ÷ 36, soit 61 %. Sur ces retraits, 15 accompagnent un soin payé et honoré. Pour savoir combien de rendez-vous la roue a réellement déclenchés, comparez les retours de clientes similaires sur la même durée, avec et sans invitation au jeu. Certaines auraient pris rendez-vous de toute façon.
+
+Si les gains sont souvent attribués mais rarement utilisés, demandez à l’équipe quelles conditions posent problème. Un lot peut être difficile à réserver ou valable sur un soin peu demandé. Ajustez d’abord ce point pour la prochaine campagne. Si vous cherchez surtout à récompenser des visites régulières, une carte mérite aussi d’être envisagée. [Comparatif des programmes de fidélité en institut](https://www.okado.app/blog/programme-fidelite-institut-beaute)
 
 ## Fixez le stock avant de choisir les probabilités
 
