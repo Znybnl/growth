@@ -12,19 +12,22 @@ Commencez par une revue hebdomadaire des départs et retours avec un responsable
 
 ## 2. Croiser le type de voyage et la fréquence réelle de réservation
 
-Une segmentation utile associe type de séjour, contraintes déclarées, nombre de réservations finalisées et prochain projet connu. Le prix du dernier voyage ne suffit pas à déterminer la valeur future d’un client.
+Croisez le type de séjour — famille, court séjour, circuit sur mesure ou groupe — avec le rythme d’achat et le prochain projet déclaré. Deux circuits ne prouvent pas une intention de voyager chaque année. Le prix du dernier dossier ne suffit pas non plus à prévoir le suivant.
 
-La grille ci-dessous est une proposition, à ajuster sur votre historique. Un premier acheteur reste « fréquence inconnue » ; un voyage exceptionnel n’implique pas une réservation annuelle. À l’inverse, un habitué peut espacer ses départs sans être perdu. Confirmez ses intentions avant de le classer inactif.
+Créez les champs ci-dessous dans votre outil actuel, puis qualifiez vingt dossiers pour vérifier que l’équipe sait les renseigner. Les seuils du tableau sont des hypothèses de départ, à adapter à votre historique. Conservez uniquement les préférences utiles ; les documents d’identité et données de santé n’ont pas leur place dans ce fichier commercial.
 
-Testez la grille sur un petit lot de dossiers et mesurez le temps de qualification. Conservez des préférences confirmées, sans données de santé ou documents d’identité dans le fichier commercial. Comparez les réponses et projets qualifiés par segment.
+- Historique : date de dernière réservation finalisée non annulée et nombre de réservations sur les 36 derniers mois.
+- Projet : type de voyage, période envisagée et contraintes confirmées ; inscrire « inconnu » plutôt que deviner.
+- Anticipation : délai habituel entre réservation et départ, distinct du délai entre deux achats.
+- Prochaine action : motif du contact, date convenue, conseiller responsable et canal autorisé ; conserver la preuve des permissions dans l’outil prévu.
 
-| Projet | Rythme à vérifier | Contact pertinent |
+**Trois règles de décision proposées, à croiser avec le type de séjour**
+
+| Profil | Règle de départ | Prochaine action |
 | --- | --- | --- |
-| Vacances familiales | Départ récurrent ou premier achat | Demander la période envisagée ; rappeler avant la fenêtre de réservation habituelle. |
-| Courts séjours | Plusieurs achats ou occasionnel | Proposer une sélection courte liée à une disponibilité déclarée. |
-| Circuit ou voyage sur mesure | Annuel, espacé ou exceptionnel | Conserver les envies de destinations et demander quand reparler du projet. |
-| Groupe ou association | Calendrier du décideur et du groupe | Fixer un bilan puis une échéance de préparation, sans multiplier les messages aux participants. |
-| Fréquence inconnue | Historique insuffisant | Poser une question sur le prochain projet plutôt qu’automatiser une remise. |
+| Récurrent | Au moins deux réservations en 36 mois ET intention de repartir chaque année confirmée. | Recontacter avant sa fenêtre habituelle de réservation ; pour un groupe, convenir de la date avec le décideur. |
+| Espacé ou exceptionnel | Prochain projet annoncé dans 24 à 36 mois, même après plusieurs achats passés. | Convenir d’un point à distance ; ne pas classer le client perdu parce qu’il n’achète pas cette année. |
+| Projet inconnu | Premier achat ou absence d’intention récente confirmée. | Poser une question sur le prochain projet lors d’un contact approprié ; sans réponse, suspendre cette séquence de relance. |
 
 ## 3. Construire un calendrier avant, pendant et après le séjour
 
@@ -33,6 +36,8 @@ Le calendrier de fidélisation d’une agence doit suivre les dates du voyage et
 Les jalons ci-dessous sont des repères d’organisation, à adapter aux formalités, au contrat et à la durée du voyage. En dernière minute, fusionnez les contacts ; pendant le séjour, privilégiez les besoins réels. Un message superflu ne devient pas utile parce qu’un outil peut l’automatiser.
 
 Chargez ces rappels dans votre outil actuel, assignez un conseiller et désactivez les relances commerciales lorsqu’un incident est ouvert. Suivez les échéances traitées à temps et le temps passé, puis ajustez la cadence. Une adresse utilisée pour un document de voyage n’autorise pas automatiquement une newsletter promotionnelle.
+
+**Calendrier indicatif : D = départ, R = retour**
 
 | Moment | Contact et utilité | Responsable / précaution |
 | --- | --- | --- |
@@ -50,9 +55,20 @@ Pour garder le lien entre deux voyages, choisissez une question précise à laqu
 
 Le [Baromètre Montagne Hiver 2026 d’Atout France](https://www.atout-france.fr/sites/default/files/2026-01/CP_BarometreMontagneHiver.pdf), publié le 27 janvier, indique que 64 % des séjours d’hiver des Français sont réservés de manière totalement autonome. L’enquête a été menée en septembre 2025 ; le volet français porte sur des séjournants à la montagne en France au cours des trois dernières années. Cette donnée n’est pas généralisable à tous les voyages. Notre lecture : pour ce public, le conseil doit rendre visible ce que l’agence apporte à l’organisation du séjour.
 
-Exemple de message commercial, à envoyer seulement si sa réception est permise : « Vous envisagiez un séjour en famille au printemps. Souhaitez-vous comparer un circuit accompagné et un séjour libre sur cette destination ? » Si aucune période n’est connue : « À quel moment souhaitez-vous reparler d’un prochain voyage ? » Acceptez une réponse négative ou l’absence de projet.
+Voici deux parcours fictifs, après traitement du bilan et des éventuels incidents au retour. Leur objectif n’est pas de remplir les mois de messages : chaque contact doit faire avancer une décision ou rendre un service. Le conseiller enregistre la réponse, la prochaine échéance et les refus ; il mesure les projets qualifiés, pas seulement les ouvertures d’e-mails.
 
-Préparez un modèle par segment ; mesurez le temps de personnalisation et les réponses qualifiées. La [CNIL, le 10 juin 2026](https://www.cnil.fr/fr/communication-electronique-quelles-regles), distingue service et prospection : celle-ci exige en principe un consentement préalable. L’exception client vise les services similaires de la même entreprise, avec information et opposition simple dès la collecte et à chaque envoi. Un conseil contenant une offre peut devenir commercial.
+Ces exemples ne dispensent pas de vérifier le droit de contacter le client. La [CNIL, le 10 juin 2026](https://www.cnil.fr/fr/communication-electronique-quelles-regles), distingue service et prospection : celle-ci exige en principe un consentement préalable. L’exception client vise les services similaires de la même entreprise, avec information et opposition simple dès la collecte et à chaque envoi. Un conseil contenant une offre peut devenir commercial.
+
+**Deux parcours fictifs pour garder le lien sans relancer tous les mois**
+
+| Profil et moment | Message ou service | Réponse recherchée | Suite ou arrêt |
+| --- | --- | --- | --- |
+| Famille — septembre 2026, après un retour en août | « Envisagez-vous de repartir l’été prochain ? Quand souhaitez-vous préparer ce séjour ? » | Période et rendez-vous de préparation ; cette famille réserve habituellement en janvier. | Avec son accord, prévoir un point en novembre ; sans projet, demander si un autre contact est souhaité. |
+| Famille — novembre 2026 | Comparer deux séjours pour l’été 2027 selon ses contraintes : trajet, chambres, activités et budget. | Choix à approfondir ou rendez-vous pour construire un devis. | Une reprise en janvier seulement si convenue ou si un projet reste actif. |
+| Famille — janvier 2027 | Actualiser la proposition demandée et vérifier les disponibilités réelles. | Décision, ajustement ou abandon explicite du projet. | Clore la séquence si le projet est abandonné ; ne pas envoyer la même offre chaque mois. |
+| Couple — octobre 2026, après un retour en septembre | Noter son envie d’un grand voyage en 2029 ; proposer un point dans un an. | Horizon et accord sur le prochain contact, sans demande de réservation immédiate. | Pas de campagne mensuelle entre-temps ; respecter un refus de suivi. |
+| Couple — octobre 2027 | Comparer deux destinations évoquées : rythme, saison et contraintes de trajet. | Confirmer 2029, changer d’idée ou reporter ; aucune vente attendue à cette étape. | Sans réponse, suspendre la relance ; si le projet tient, convenir du prochain échange. |
+| Couple — septembre 2028, si convenu | Préciser dates, enveloppe et itinéraire du voyage 2029 avant de préparer un devis. | Projet suffisamment défini pour travailler une proposition. | Adapter l’échéance à l’anticipation nécessaire ; reporter si le client n’est pas prêt. |
 
 ## 5. Choisir un avantage en fonction du coût et du prochain projet
 
@@ -62,10 +78,12 @@ Une attention peut accompagner la remise du carnet de voyage ; un crédit sur un
 
 Notre préférence irait d’abord à une attention simple, puis à un avantage ciblé sur un projet identifié. Une carte à points n’a d’intérêt que si les clients comprennent ce qu’ils peuvent obtenir à leur rythme réel. Testez une formule sur un segment et comparez coût, utilisation et réachat avec une période ou un groupe comparables.
 
+**Réduction, attention, parrainage ou jeu : quel usage ?**
+
 | Méthode | Intérêt | Coût et limite |
 | --- | --- | --- |
-| Réduction ciblée | Faciliter un projet déjà identifié, avec conditions précises. | Diminue la recette conservée ; peut rémunérer une réservation qui aurait eu lieu. |
-| Petite attention | Rendre un contact existant plus mémorable : accessoire utile ou service additionnel défini. | Coût unitaire et temps de remise à compter ; intérêt variable selon le voyage. |
+| Réduction ciblée | Exemple fictif hors jeu : crédit de 30 € géré par l’agence pour un prochain circuit éligible, valable 30 mois et non cumulable. | 30 € à financer par utilisation ; annoncer les prestations concernées. Ce crédit manuel n’est pas un gain Okado ; il peut subventionner un achat déjà prévu. |
+| Petite attention | Exemple fictif : kit d’étiquettes et pochette de voyage remis en agence, à un client qui en a l’usage. | Hypothèse : 10 € achat et remise compris. Prévoir une date de retrait et éviter un accessoire inutile ou déjà fourni. |
 | Parrainage | Permettre à un client satisfait de présenter l’agence à un proche. | Bonus à financer selon un événement défini ; nouvel acheteur et fidélisation du parrain sont distincts. |
 | Jeu de fidélisation | Animer une rencontre ou un contact après le séjour avec des lots choisis. | Dotations, logiciel et temps de suivi ; participation et gain ne garantissent pas un nouvel achat. |
 
@@ -81,11 +99,13 @@ La [CNIL rappelle les règles du parrainage](https://www.cnil.fr/fr/cnil-direct/
 
 Un jeu de fidélisation peut compléter un rendez-vous de retour, une soirée destination ou une rencontre en agence. Il doit donner une raison de participer sans interrompre un échange de service. Si vos clients ne reviennent pas physiquement et que vous ne disposez d’aucun contact approprié, mieux vaut travailler le suivi avant de financer une animation.
 
-Avec [Okado](https://www.okado.app/comment-ca-marche), l’agence configure une roue de la fortune ou un ticket à gratter accessible par QR code, ses lots, probabilités, stocks et conditions. Le gagnant reçoit son gain par e-mail ; l’équipe valide le retrait. Pour un premier essai, proposez par exemple un accessoire de voyage à coût plafonné ou un crédit sur des dossiers éligibles, dont l’agence finance la valeur.
+Avec [Okado](https://www.okado.app/comment-ca-marche), l’agence configure une roue de la fortune ou un ticket à gratter accessible par QR code, ses lots, probabilités, stocks et conditions. Le gagnant reçoit son gain par e-mail ; l’équipe valide le retrait. Voici une opération fictive à adapter, sur douze semaines, lors de rendez-vous ou rencontres déjà organisés : aucun coût de création d’événement n’est supposé.
 
-Définissez une validité cohérente avec le segment, un budget maximal de dotation et un mode de remise réalisable. Chiffrez le cas où tous les lots disponibles seraient attribués et utilisés ; la non-utilisation n’est pas un modèle économique prudent. Vérifiez vos conditions à partir de la [fiche DGCCRF sur les loteries publicitaires](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees). Ni l’avis Google ni sa note ne doivent conditionner l’accès au jeu ou le gain.
+L’agence réserve dix kits de voyage à 10 € de coût complet et dix crédits de 30 € sur une gamme de circuits clairement désignée : vingt lots au maximum, pour une dotation de 400 € si tous sont attribués et utilisés. Les stocks plafonnent les quantités ; ils ne garantissent pas que tous les lots seront gagnés. L’agence définit aussi les probabilités et les règles de participation avant l’ouverture.
 
-Mesurez le temps de préparation et de retrait. Okado suit participations, gains et retraits ; réachat et origine d’une réservation se vérifient dans votre outil de dossiers. Un retrait ne prouve pas une vente supplémentaire. Le produit ne remplace ni CRM ni registre de parrainage. Vous pouvez [essayer la démonstration Okado](https://www.okado.app/#demo).
+Dans cet exemple, les gains sont utilisables pendant 365 jours, plafond actuel du réglage Okado. Les crédits non cumulables conviennent donc aux clients envisageant une réservation dans l’année ; pour un projet à trois ans, préférez le suivi personnalisé ou un avantage géré séparément. Les kits sont retirés en agence. Pour un crédit, le conseiller vérifie le gain et son éligibilité, applique manuellement l’avantage dans le logiciel de réservation, puis valide son retrait. Ce suivi continue après la fermeture des participations.
+
+Vérifiez les modalités à partir de la [fiche DGCCRF sur les loteries publicitaires](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees). Ni l’avis Google ni sa note ne doivent conditionner l’accès au jeu ou le gain. Okado suit participations, gains et retraits ; réachat et parrainage restent à rapprocher des dossiers de l’agence. Vous pouvez [essayer la démonstration Okado](https://www.okado.app/#demo).
 
 ## 8. Fixer un budget sur la contribution du dossier, pas sur le prix du voyage
 
@@ -93,13 +113,17 @@ Exemple fictif de gestion, à adapter à votre modèle de distribution et hors e
 
 Une réduction de 5 % du prix du voyage, financée entièrement par l’agence, coûte 100 €. Elle laisse 80 € de contribution, soit une consommation de 55,6 % des 180 € initiaux. Un avantage coûtant 20 € laisse 160 €, si les autres conditions du dossier restent identiques. Le client peut préférer la remise ; ce calcul sert à décider ce que l’agence peut financer, pas à affirmer qu’une attention la remplace toujours.
 
-Supposons maintenant un test trimestriel auprès de 200 anciens clients pouvant être contactés. L’enveloppe ci-dessous couvre intégralement 20 avantages disponibles et cinq bonus de parrainage non cumulés avec ces avantages. Le temps est additionnel au traitement habituel des dossiers. L’hypothèse logiciel retient trois mois payés à 20 € HT, tarif Okado France [vérifié le 5 novembre 2026](https://www.okado.app/tarifs), sans compter l’essai gratuit.
+Pour un test de douze semaines auprès de 200 anciens clients pouvant être contactés, reprenons les dix kits et dix crédits du jeu, auxquels s’ajoutent cinq bonus de parrainage non cumulés. Le tableau constitue une enveloppe de lancement : les récompenses y sont réservées en totalité, même si elles seront utilisées plus tard. Le temps est additionnel au traitement habituel des dossiers. Le logiciel est compté pour trois mois payés à 20 € HT, tarif Okado France [vérifié le 5 novembre 2026](https://www.okado.app/tarifs), sans compter l’essai gratuit.
 
-Si l’agence observe 40 nouvelles réservations à 180 € de contribution chacune, elle obtient 7 200 € avant ce budget, puis 6 390 € après 810 € de coût. Ces 40 réservations peuvent comprendre des achats spontanés : ce résultat ne démontre pas que l’opération s’est autofinancée. Comparez avec un segment similaire non sollicité, si possible, et attendez un recul adapté. Réservez l’enveloppe avant le lancement ; un faible usage des avantages n’est pas nécessairement un succès.
+Attention à la durée : participation pendant douze semaines ne signifie pas extinction de tous les engagements après trois mois. Si l’agence maintient l’abonnement pendant les douze mois suivant la clôture, aux mêmes conditions supposées, il faut compter quinze mois au total : 300 € de logiciel, soit 240 € de plus que dans le tableau. L’enveloppe atteint alors 1 050 €, avant tout temps supplémentaire de suivi. Cette hypothèse couvre les gains attribués en fin d’opération ; vérifiez les conditions de gestion et la durée réellement nécessaire avant le lancement.
+
+Résultat observé fictif : 40 réservations finalisées à 180 € de contribution produisent 7 200 € avant fidélisation. En déduisant toute l’enveloppe de lancement de 810 €, il reste 6 390 € ; avec l’hypothèse de suivi à 1 050 €, il reste 6 150 €. Ce sont des soldes de gestion simplifiés, pas un retour sur investissement de la campagne : une partie des clients aurait réservé sans elle. Pour estimer l’effet supplémentaire, comparez un groupe similaire non sollicité sur une même période, avec un recul adapté, et examinez les différences de profil.
+
+**Enveloppe de lancement fictive : dotations réservées, coûts de gestion simplifiés**
 
 | Poste | Hypothèse | Enveloppe |
 | --- | --- | --- |
-| Avantages | 20 utilisations × 20 € de coût réel | 400 € |
+| Lots du jeu | 10 kits × 10 € + 10 crédits × 30 € | 400 € |
 | Parrainage | 5 bonus × 30 €, non cumulés | 150 € |
 | Temps additionnel | 8 heures × 25 € de coût horaire supposé | 200 € |
 | Logiciel de jeu | 3 mois × 20 € HT, hors essai | 60 € |
@@ -115,12 +139,14 @@ Pour les avantages, distinguez deux lignes dans votre registre : un avantage rem
 
 Sur les 30 premiers jours, vérifiez les données, les rappels traités, les réponses et le coût engagé. Consacrez ensuite un point mensuel aux quatre indicateurs ; la conclusion sur le réachat attendra le cycle du segment. Cette discipline est plus utile qu’un objectif universel de fidélisation importé d’un autre secteur. Le guide [mesurer une animation commerciale](https://www.okado.app/blog/mesurer-animation-commerciale) aide à séparer activité observée et résultat attribuable.
 
+**Les quatre indicateurs de fidélisation à conserver**
+
 | Indicateur | Calcul et exemple fictif | Point de vigilance |
 | --- | --- | --- |
 | Réachat à 24 mois | Clients d’une cohorte ayant finalisé une autre réservation sous 24 mois ÷ clients de cette cohorte. Exemple : 30 / 100 = 30 %. | Attendre 24 mois de suivi pour tous ; annulations exclues, une personne comptée une fois. |
 | Délai entre réservations | Médiane des jours entre deux réservations finalisées successives, parmi les clients ayant racheté. | Ce n’est pas le délai réservation-départ. Afficher aussi le nombre de clients concernés et le taux de réachat. |
 | Recommandation observée | Nouveaux clients déclarant un parrain identifié ÷ ensemble des nouveaux clients. Exemple : 5 / 25 = 20 %. | Enregistrer la source à l’ouverture du dossier ; séparer origine inconnue et absence de parrain. Ce n’est pas un NPS. |
-| Utilisation des avantages | Avantages utilisés ÷ avantages attribués dont la validité est arrivée à échéance. Exemple : 12 / 20 = 60 %. | Même cohorte et même mécanisme ; ne pas pénaliser les avantages encore valables ni assimiler retrait et vente incrémentale. |
+| Utilisation des avantages | Dans une même cohorte entièrement arrivée à échéance : avantages utilisés pendant leur validité ÷ avantages attribués. Exemple : 12 crédits utilisés sur 20 attribués = 60 %. | Exclure de ce calcul les cohortes encore actives, y compris leurs utilisations. Séparer crédits et objets ; un retrait n’est pas une vente incrémentale. |
 
 ## Commencez avec les prochains retours de voyage
 
@@ -131,11 +157,7 @@ Choisissez un segment, attribuez un responsable à chaque retour et testez un me
 ## Sources
 
 - [EDV / Orchestra — Observatoire février 2026, réservations de janvier, p. 7](https://edv.travel/wp-content/uploads/2026/02/260203_Observatoire-des-EDV_Fevrier-2026.pdf)
-
 - [Atout France — Baromètre montagne hiver 2026, enquête septembre 2025](https://www.atout-france.fr/sites/default/files/2026-01/CP_BarometreMontagneHiver.pdf)
-
 - [CNIL — Communications électroniques, 10 juin 2026](https://www.cnil.fr/fr/communication-electronique-quelles-regles)
-
 - [CNIL — Règles en matière de parrainage](https://www.cnil.fr/fr/cnil-direct/question/quelles-sont-les-regles-suivre-en-matiere-de-parrainage)
-
 - [DGCCRF — Loteries publicitaires, 11 mars 2026](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees)

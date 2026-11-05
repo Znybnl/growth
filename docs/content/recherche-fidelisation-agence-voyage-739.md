@@ -59,7 +59,11 @@ heures et montants fictifs sont identifiés comme propositions/hypothèses.
 
 Contrôle des calculs : contribution 300 − 120 = 180 ; réduction 2000 × 5 % = 100 ;
 reste 80 ; 100 / 180 = 55,555… %. Avantage 20 : reste 160. Budget 400 + 150 +
-200 + 60 = 810. Contribution observée 40 × 180 = 7200 ; 7200 − 810 = 6390.
+200 + 60 = 810. Les 400 € correspondent à dix kits à 10 € et dix crédits à 30 €.
+Avec maintien supposé du logiciel pendant trois mois de lancement puis douze
+mois après clôture : 300 € au lieu de 60 €, soit 240 € supplémentaires et une
+enveloppe de 1 050 €, hors temps futur additionnel. Contribution observée
+40 × 180 = 7200 ; 7200 − 810 = 6390 ; 7200 − 1050 = 6150.
 Le prix total n’est pas assimilé à la rémunération de l’agence. Modèle de gestion
 simplifié hors effets de TVA, pas un bénéfice comptable ni une marge sectorielle.
 Pas de revenu incrémental déduit des réservations observées.
@@ -68,9 +72,9 @@ Pas de revenu incrémental déduit des réservations observées.
 
 Voir le [texte intégral prêt à relire](fideliser-clients-agence-voyage.md).
 Source applicative : registre `apps/landing-page/src/lib/blog.ts`.
-Neuf actions, cinq tableaux, conclusion et CTA. Longueur d’environ
-2700 mots avec tableaux, supérieure à la cible indicative pour couvrir les cinq
-livrables métier demandés ; pas de FAQ répétant le corps. Auteur affiché :
+Neuf actions, six tableaux, conclusion et CTA. Longueur d’environ
+3500 mots avec tableaux et sources, supérieure à la cible indicative pour couvrir
+les livrables et deux parcours fictifs complets ; pas de FAQ répétant le corps. Auteur affiché :
 L’équipe Okado. Aucune expertise touristique ou expérience client attribuée au fondateur.
 
 ## D — Pack SEO/GEO
@@ -110,10 +114,20 @@ de classement, de citation ou de « filtre octobre 2026 » affirmé.
 - Sources factuelles : URL originale et périmètre à proximité ; références exactes.
 - Hypothèses : calendrier, efforts, budget et exemples d’indicateurs fictifs.
 - Analyse originale : deux délais distincts, coût d’une remise sur recette
-  conservée, cohorte à recul complet, avantages arrivés à échéance.
+  conservée, cohorte à recul complet, avantages arrivés à échéance. La formule
+  d’utilisation restreint numérateur et dénominateur à la même cohorte échue.
+- Mise en pratique : champs de segmentation et trois règles de décision,
+  parcours famille annuelle et couple à horizon trois ans, dotation plafonnée
+  de vingt lots, remise et rapprochement manuel des crédits. Les dates, seuils
+  et coûts sont des hypothèses fictives, jamais des résultats clients.
 - Neuf sections autonomes ; limites du service, des récompenses et de l’attribution.
 - Okado : fonctionnalités vérifiées dans le produit ; aucun CRM, rapprochement
   de réservation ou parrainage automatique annoncé ; pas de gain lié à un avis.
+- Validité des gains : `availabilityDurationDays` plafonné à 365 jours dans
+  `apps/web-app/src/lib/merchant-input.ts` et le formulaire de campagne. Le jeu
+  fictif vise un projet dans l’année ; le crédit à 30 mois du comparatif est
+  explicitement manuel et extérieur à Okado. Le suivi budgété couvre aussi les
+  gains attribués en fin de campagne, pas uniquement les premiers gagnants.
 - Réachat, recommandation observée et retrait distincts d’une vente additionnelle.
 - Données client/expérience réelle : non disponibles, explicitement absentes.
 - À valider par le propriétaire : relecture éditoriale, attribution éventuelle
@@ -131,12 +145,15 @@ de classement, de citation ou de « filtre octobre 2026 » affirmé.
 - `npm run test:analytics-consent -w @okado/web-app` : 11 tests réussis, couverture
   de la nouvelle URL dans les deux applications. Seule cette URL publique a été
   ajoutée aux listes explicites ; pas de changement de collecte/consentement.
-- Deux tests navigateur réussis en 11,2 s : article et sitemap/robots/fichiers,
-  canonical et BlogPosting, neuf sections et cinq tables. Matrice 1280×720,
+- Contrôle initial article/sitemap réussi ; après enrichissement, test navigateur
+  ciblé final réussi en 4,9 s : canonical et BlogPosting, neuf sections et six tables.
+  Matrice 1280×720,
   1280×600, 390×844. Tableaux en cartes sur mobile, sans débordement horizontal.
 - Captures inspectées dans `apps/landing-page/test-results/travel-retention-guide-gui-baca9-re-des-tableaux-visual-1280-desktop/` ; vues initiales avec
   navigation réelle, captures de tables isolées avec en-tête masqué pour éviter
   de superposer la navigation dans l’image d’un élément plus haut que l’écran.
+  Nouvelle inspection des parcours (ordinateur/mobile), de la segmentation
+  mobile et du budget : textes lisibles, cartes distinctes, aucun chevauchement.
 - Cinq liens internes de l’article testés en production : HTTP 200. Prix public
   vérifié via la page tarifaire. Pas d’URL métier spécialisée voyage inventée.
 - Couverture SVG native + WebP 1600×800, 29 390 octets, inspectée visuellement.

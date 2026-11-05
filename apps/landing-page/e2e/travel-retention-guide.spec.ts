@@ -12,12 +12,12 @@ test("guide agence de voyage : SEO et lecture des tableaux @visual-1280", async 
     await expect(page.locator("h1")).toHaveCount(1);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://www.okado.app${path}`);
     await expect(page.locator("article > section > h2")).toHaveCount(9);
-    await expect(page.getByRole("table")).toHaveCount(5);
+    await expect(page.getByRole("table")).toHaveCount(6);
     const graph = await page.locator('script[type="application/ld+json"]').allTextContents();
     expect(graph.join(" ")).toContain("BlogPosting");
     await page.evaluate(() => document.fonts.ready);
     await page.screenshot({ path: info.outputPath(`article-${width}x${height}.png`) });
-    for (const id of ["calendrier", "budget", "indicateurs"]) {
+    for (const id of ["segmentation", "calendrier", "conseil", "budget", "indicateurs"]) {
       const section = page.locator(`#${id}`);
       await section.scrollIntoViewIfNeeded();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
