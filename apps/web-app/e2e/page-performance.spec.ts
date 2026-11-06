@@ -52,3 +52,35 @@ test("mobile : panne d'alertes ne bloque pas le contenu ni les actions",async({p
   const sizes=await page.evaluate(()=>({body:document.documentElement.scrollWidth,viewport:innerWidth}));
   expect(sizes.body).toBeLessThanOrEqual(sizes.viewport);
 });
+
+
+test("Accueil @visual-1280 : les indicateurs précèdent les contacts et le filtre reste appliqué", async ({ page }, info) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.route("**/api/merchant/email-alerts", (route) => route.fulfill({ json: alerts(0) }));
+  await page.goto("/dev/page-performance/contacts?state=ready", { waitUntil: "commit" });
+  await expect(page.getByText("Campagnes actives", { exact: true })).toBeVisible();
+  const region = page.getByRole("region", { name: "Contacts récents" });
+  await expect(region.getByRole("status")).toContainText("Chargement des contacts récents");
+  await expect(region.getByText("Soin offert").filter({ visible: true })).toBeVisible();
+  await expect(region.getByText("Hors périmètre")).toHaveCount(0);
+  await expect(region.getByRole("link", { name: "Ouvrir les données" })).toBeVisible();
+  await page.screenshot({ path: info.outputPath("accueil-contacts-1280.png") });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(region.getByText("Soin offert").filter({ visible: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
+
+test("Accueil @visual-1280 : contacts vides ou en erreur, les indicateurs restent visibles", async ({ page }, info) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.route("**/api/merchant/email-alerts", (route) => route.fulfill({ json: alerts(0) }));
+  for (const [state, message] of [
+    ["empty", "Aucun contact récent"],
+    ["error", "Les contacts récents sont temporairement indisponibles."],
+  ]) {
+    await page.goto(`/dev/page-performance/contacts?state=${state}`);
+    await expect(page.getByText("Campagnes actives", { exact: true })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Contacts récents" }).getByText(message, { exact: true })).toBeVisible();
+    await page.screenshot({ path: info.outputPath(`accueil-contacts-${state}-1280.png`) });
+  }
+});

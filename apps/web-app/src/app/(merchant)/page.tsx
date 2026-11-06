@@ -2,19 +2,15 @@ import { measureServerStage } from "@/lib/server-performance";
 import Link from "next/link";
 import { ArrowRight, Gift, PackageCheck, PackageX, TriangleAlert } from "lucide-react";
 
+import { DashboardRecentContacts } from "@/components/merchant/dashboard-recent-contacts";
 import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
 import { DashboardRecentCampaigns } from "@/components/merchant/dashboard-recent-campaigns";
 import { ConsumptionRateInfo } from "@/components/merchant/consumption-rate-info";
 import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-operational-alerts";
 import { OnboardingWelcomeDialog } from "@/components/merchant/onboarding-welcome-dialog";
 import { EmptyState, MetricCard, PageHeader } from "@/components/ui/workspace";
-import { StatusBadge } from "@/components/ui/status-badge";
 import { requireAuthenticatedSession } from "@/lib/auth";
-import {
-  formatDateTime,
-  formatPercent,
-  leadStatusLabel,
-} from "@/lib/format";
+import { formatPercent } from "@/lib/format";
 import { getMerchantDashboard, getMerchantRecentLeads, getMerchantWorkspaceDashboard } from "@/lib/store";
 import { calculateCampaignConsumptionMetrics } from "@/lib/dashboard-metrics";
 import { stockState as getStockState } from "@/lib/metric-rules";
@@ -34,12 +30,13 @@ async function DashboardPageContent({
   const params = await searchParams;
   const query = params.q?.trim().toLowerCase() ?? "";
   const isWorkspaceView = params.scope === "all" && session.locations.length > 1;
-  const [dashboard, merchantLeads] = await Promise.all([
-    isWorkspaceView
-      ? getMerchantWorkspaceDashboard(session.user.id, session.merchant)
-      : getMerchantDashboard(session.merchant.id, session.merchant),
-    isWorkspaceView ? Promise.resolve([]) : getMerchantRecentLeads(session.merchant.id, 5, query),
-  ]);
+  // Start contacts independently. Handle errors immediately while dashboard data is pending.
+  const contacts = isWorkspaceView
+    ? Promise.resolve([])
+    : getMerchantRecentLeads(session.merchant.id, 5, query).catch(() => null);
+  const dashboard = isWorkspaceView
+    ? await getMerchantWorkspaceDashboard(session.locations, session.merchant)
+    : await getMerchantDashboard(session.merchant.id, session.merchant);
 
   const filteredCampaigns = query
     ? dashboard.campaigns.filter((item) =>
@@ -48,7 +45,6 @@ async function DashboardPageContent({
     : dashboard.campaigns;
 
   const merchantCampaignIds = new Set(filteredCampaigns.map((item) => item.campaign.id));
-  const recentLeads = merchantLeads.filter((lead) => merchantCampaignIds.has(lead.campaignId));
 
   const activeCampaigns = filteredCampaigns.filter((item) => item.campaign.isActive);
   const activeCampaignIds = new Set(activeCampaigns.map((item) => item.campaign.id));
@@ -79,21 +75,6 @@ async function DashboardPageContent({
     return { label: "Disponible", tone: "success", icon: PackageCheck } as const;
   };
   const activityPoints = dashboard.activityPoints;
-  const leadStatusTone = (status: (typeof recentLeads)[number]["status"]) => {
-    switch (status) {
-      case "redeemed":
-        return "active" as const;
-      case "claimed":
-        return "info" as const;
-      case "lost":
-        return "muted" as const;
-      case "expired":
-        return "warning" as const;
-      default:
-        return "muted" as const;
-    }
-  };
-
   return (
     <div className="min-w-0 space-y-5 overflow-x-hidden">
       <OnboardingWelcomeDialog open={params.welcome === "1"} />
@@ -142,13 +123,7 @@ async function DashboardPageContent({
         <DashboardRecentCampaigns campaigns={campaignsForTable} />
       </section>
 
-      <section className="okado-card min-w-0 p-5 md:p-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div className="min-w-0"><p className="okado-label">Dernières saisies</p><h2 className="okado-section-title mt-2">Contacts récents</h2></div><Link href="/data" prefetch={false} className="okado-link text-sm">Ouvrir les données</Link></div>
-        {recentLeads.length ? <div className="mt-6">
-          <div className="hidden overflow-x-auto md:block"><div className="min-w-[760px]"><div className="okado-table-header grid grid-cols-[minmax(140px,1fr)_minmax(160px,1.15fr)_minmax(150px,1fr)_120px_150px] items-center gap-4 px-4 py-3"><span>Participant</span><span>Campagne</span><span>Lot remporté</span><span>Statut</span><span>Date</span></div>{recentLeads.map((lead) => <div key={lead.id} className="okado-table-row grid grid-cols-[minmax(140px,1fr)_minmax(160px,1.15fr)_minmax(150px,1fr)_120px_150px] items-center gap-4 px-4 py-4 text-sm"><div className="min-w-0"><p className="truncate font-semibold text-carbon">{lead.firstName}</p><p className="truncate text-ash">{lead.email}</p></div><span className="truncate text-ash">{lead.campaignTitle}</span><span className="truncate text-graphite">{lead.prizeLabel}</span><StatusBadge tone={leadStatusTone(lead.status)}>{leadStatusLabel(lead.status)}</StatusBadge><span className="text-ash">{formatDateTime(lead.createdAt)}</span></div>)}</div></div>
-          <div className="space-y-0 md:hidden">{recentLeads.map((lead) => <article key={lead.id} className="okado-mobile-table-row"><div className="flex items-center justify-between gap-3"><div className="min-w-0"><p className="truncate font-semibold text-carbon">{lead.firstName}</p><p className="truncate text-sm text-ash">{lead.email}</p></div><StatusBadge tone={leadStatusTone(lead.status)}>{leadStatusLabel(lead.status)}</StatusBadge></div><dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm"><div><dt className="okado-mobile-table-stat-label">Campagne</dt><dd className="mt-1 truncate text-graphite">{lead.campaignTitle}</dd></div><div><dt className="okado-mobile-table-stat-label">Lot remporté</dt><dd className="mt-1 truncate text-graphite">{lead.prizeLabel}</dd></div><div><dt className="okado-mobile-table-stat-label">Date</dt><dd className="mt-1 text-graphite">{formatDateTime(lead.createdAt)}</dd></div></dl></article>)}</div>
-        </div> : <div className="mt-6"><EmptyState title="Aucun contact récent" description="Les derniers contacts de vos campagnes apparaîtront ici." /></div>}
-      </section>
+      <DashboardRecentContacts contacts={contacts} campaignIds={merchantCampaignIds} />
 
       <section className="okado-card min-w-0 p-5 md:p-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

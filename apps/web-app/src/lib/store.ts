@@ -2479,12 +2479,11 @@ export const getMerchantDashboard = cache(async function getMerchantDashboard(
 });
 
 export const getMerchantWorkspaceDashboard = cache(async function getMerchantWorkspaceDashboard(
-  userId: string,
+  locations: readonly MerchantLocationAccess[],
   activeMerchant: Merchant,
 ) {
-  const context = await getMerchantWorkspaceContext(userId, activeMerchant);
   const dashboards = await Promise.all(
-    context.locations.map(({ merchant }) => getMerchantDashboard(merchant.id, merchant)),
+    locations.map(({ merchant }) => getMerchantDashboard(merchant.id, merchant)),
   );
   const campaigns = dashboards.flatMap((dashboard) => dashboard.campaigns);
   const prizeInventory = dashboards.flatMap((dashboard) => dashboard.prizeInventory);
@@ -2584,7 +2583,11 @@ export const getMerchantRecentLeads = cache(async function getMerchantRecentLead
 
   const normalizedQuery = query.trim().toLowerCase();
 
+  const campaignIds = new Set(store.campaigns
+    .filter((campaign) => campaign.merchantId === merchantId)
+    .map((campaign) => campaign.id));
   return getMerchantLeadsFromMemory()
+    .filter((lead) => campaignIds.has(lead.campaignId))
     .filter((lead) =>
       normalizedQuery
         ? `${lead.firstName} ${lead.email} ${lead.campaignTitle}`.toLowerCase().includes(normalizedQuery)

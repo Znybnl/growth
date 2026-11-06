@@ -27,6 +27,7 @@ import {
   MerchantDashboardData,
   MerchantFailedEmailItem,
   MerchantLeadRow,
+  MerchantRecentContact,
   MerchantPendingClaimItem,
   MerchantSupportOverview,
   MerchantWebhookItem,
@@ -1307,75 +1308,59 @@ export async function getSupabaseMerchantRecentLeads(
   merchantId: string,
   limit = 5,
   query = "",
-): Promise<MerchantLeadRow[]> {
-  const supabase = getSupabaseAdmin();
+): Promise<MerchantRecentContact[]> {
   const normalizedQuery = query.trim().toLowerCase();
-  const campaigns = (await getMerchantPageRows(merchantId)).map(row => row.campaign);
-  const campaignIds = campaigns.map(item => item.id);
+  const columns = [
+    "id", "campaign_id", "first_name", "email", "status", "created_at",
+    "prize_id", "prize_label_snapshot",
+    "campaign:campaigns!leads_campaign_id_fkey!inner(title)",
+    "prize:prizes!leads_prize_id_fkey(label,campaign_id)",
+  ];
+  if (normalizedQuery) columns.push("redemption_code");
 
-  if (!campaignIds.length) {
-    return [];
-  }
-
-  let leadsQuery = supabase
-    .from("leads")
-    .select("id,campaign_id,first_name,email,phone,marketing_consent,consent_timestamp,consent_policy_version,consent_source,campaign_configuration_version,redeemed_at,redeemed_by_user_id,purchase_verified,prize_id,status,created_at,action_confirmed,redemption_code,reward_available_at,reward_expires_at,prize_label_snapshot,prize_usage_conditions_snapshot")
-    .in("campaign_id", campaignIds)
+  // The inner join restricts the contacts before ordering and limiting them.
+  let request = getSupabaseAdmin().from("leads")
+    .select(columns.join(","))
+    .eq("campaign.merchant_id", merchantId)
     .order("created_at", { ascending: false })
+    .order("id")
     .limit(normalizedQuery ? Math.max(limit * 4, 20) : limit);
 
   if (normalizedQuery) {
     const escapedQuery = normalizedQuery.replaceAll("%", "\\%").replaceAll("_", "\\_");
-    leadsQuery = leadsQuery.or(
+    request = request.or(
       `first_name.ilike.%${escapedQuery}%,email.ilike.%${escapedQuery}%,redemption_code.ilike.%${escapedQuery}%`,
     );
   }
 
-  const leadsResult = await leadsQuery;
-  const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
-  const leadRows = (leadsData as LeadRow[] | null) ?? [];
-  const prizeIds = [...new Set(leadRows.map((lead) => lead.prize_id).filter(Boolean) as string[])];
+  type ContactRow = Pick<LeadRow, "id" | "campaign_id" | "first_name" | "email" |
+    "status" | "created_at" | "prize_id" | "prize_label_snapshot"> & {
+      campaign: { title: string };
+      prize: { label: string; campaign_id: string } | null;
+      redemption_code?: string | null;
+    };
+  const rows = unwrapSupabaseResult(
+    await request.overrideTypes<ContactRow[], { merge: false }>(),
+    "Lecture des contacts impossible",
+  ) ?? [];
 
-  const [prizesResult, deliveriesResult] = await Promise.all([
-    getMerchantPagePrizes(merchantId).then(rows => ({ data: rows.filter(row => prizeIds.includes(row.id)), error: null })),
-    leadRows.length
-      ? readAllRows((offset,end) => supabase
-          .from("reward_email_deliveries")
-          .select("lead_id,status,sent_at,delivered_at,error_message", { count: "exact" })
-          .in(
-            "lead_id",
-            leadRows.map((lead) => lead.id),
-          ).order("id").range(offset,end))
-      : Promise.resolve({ data: [], error: null }),
-  ]);
-  const prizesData = unwrapSupabaseResult(prizesResult, "Lecture des lots impossible");
-  const deliveriesData = unwrapSupabaseResult(deliveriesResult, "Lecture des e-mails de gain impossible");
-
-  const prizes = ((prizesData as PrizeRow[] | null) ?? []).map(toPrize);
-  const campaignMap = new Map(campaigns.map((item) => [item.id, item]));
-  const leads = leadRows
-    .map(toLead)
-    .map((lead) => ({
-      ...lead,
-      campaignTitle: campaignMap.get(lead.campaignId)?.title ?? "Campagne",
-      goalType: campaignMap.get(lead.campaignId)?.goal_type ?? "lead_capture",
-      prizeLabel: lead.prizeId
-        ? lead.prizeLabelSnapshot ?? prizes.find((item) => item.id === lead.prizeId)?.label ?? "Lot inconnu"
-        : "Perdu",
-    }))
-    .filter((lead) =>
-      normalizedQuery
-        ? `${lead.firstName} ${lead.email} ${lead.campaignTitle} ${lead.redemptionCode ?? ""}`
-            .toLowerCase()
-            .includes(normalizedQuery)
-        : true,
-    )
-    .slice(0, limit);
-
-  return enrichLeadRowsWithEmailDeliveries(
-    leads,
-    (deliveriesData as RewardEmailDeliverySummaryRow[] | null) ?? [],
-  );
+  return rows
+    .filter((row) => !normalizedQuery ||
+      `${row.first_name} ${row.email} ${row.campaign.title} ${row.redemption_code ?? ""}`
+        .toLowerCase().includes(normalizedQuery))
+    .slice(0, limit)
+    .map((row) => ({
+      id: row.id,
+      campaignId: row.campaign_id,
+      campaignTitle: row.campaign.title,
+      firstName: row.first_name,
+      email: row.email,
+      status: row.status,
+      createdAt: row.created_at,
+      prizeLabel: row.prize_label_snapshot ?? (row.prize_id
+        ? (row.prize?.campaign_id === row.campaign_id ? row.prize.label : "Lot inconnu")
+        : "Perdu"),
+    }));
 }
 
 export async function findSupabaseMerchantLeadCampaign(
