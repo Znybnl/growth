@@ -158,13 +158,15 @@ test("#500 timings : résultat/erreur préservés, données exclues, désactivat
 
 test("#500 Résultats : projection JSON des conditions, pagination et opt-ins conservés",async()=>{
   const selections=[];
+  let releaseContacts;
+  const pendingContacts = new Promise(resolve => { releaseContacts = resolve; });
   const campaign={id:"c",merchant_id:"m",title:"Test",game_type:"wheel",created_at:"2026-01-01"};
   const metrics={campaign_id:"c",opt_ins:9,undated_redemptions:2,scans_count:100,games_count:12,
     leads_count:11,wins_count:10,redeemed_count:3,actions_count:14,estimated_spend:20};
   function query(data,table) {
     const q={select(columns){selections.push({table,columns});return q},eq(){return q},
       order(){return q},limit(){return q},range(){return q},maybeSingle(){return q},
-      then(resolve,reject){return Promise.resolve({data,count:Array.isArray(data)?data.length:undefined,error:null}).then(resolve,reject)}};
+      async then(resolve,reject){if(table==="leads") await pendingContacts;return Promise.resolve({data,count:Array.isArray(data)?data.length:undefined,error:null}).then(resolve,reject)}};
     return q;
   }
   const db={rpc(name) {
@@ -187,11 +189,13 @@ test("#500 Résultats : projection JSON des conditions, pagination et opt-ins co
     "@/lib/poster-utils":{resolvePosterLogoSettings:v=>v,normalizePosterSettings:(v,d)=>d,createPosterSettingsDefaults:()=>({})},
     "@/lib/email-settings":{normalizeCampaignEmailSettings:(v,d)=>d,createCampaignEmailDefaults:()=>({})},
   });
-  const result=await repo.getSupabaseCampaignDataView("c",{id:"m",companyName:"Commerce fictif"},{leadOffset:50,leadLimit:50});
+  const result=await repo.getSupabaseCampaignResults("c",{id:"m",companyName:"Commerce fictif"},{leadOffset:50,leadLimit:50});
   assert.equal(result.performance.kpis.optIns,9);
   assert.equal(result.performance.kpis.games,12);
   assert.equal(result.undatedRedemptions,2);
-  assert.equal(result.leadOffset,50);
+  assert.equal(selections.find(r=>r.table==="get_merchant_page_overview").columns,"campaign_id,campaign,metrics");
+  releaseContacts();
+  assert.equal((await result.contacts).leadOffset,50);
   assert.equal(result.performance.prizes[0].usageConditions,"Avec un soin");
   assert.equal(selections.find(r=>r.table==="campaigns").columns,"prizeSettings:campaign_local_settings->prizeSettings");
 });

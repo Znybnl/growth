@@ -69,7 +69,7 @@ test('#500 sélecteur de campagnes : DTO sans configuration ni image',async()=>{
 });
 
 test('#500 Résultats : campagne étrangère refusée avant contacts ou configuration',async()=>{
-  const result=await repository().getSupabaseCampaignDataView('foreign',{id:'m'});
+  const result=await repository().getSupabaseCampaignResults('foreign',{id:'m'});
   assert.equal(result,null);
 });
 test('export paginé : identifiant de jeu étranger refusé avant lecture des contacts',async()=>{
