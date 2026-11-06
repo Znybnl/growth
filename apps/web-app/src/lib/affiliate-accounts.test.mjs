@@ -10,8 +10,8 @@ const mocks = {
   "@/lib/product-analytics": "export const captureProductEvent=async()=>{};export const merchantDistinctId=id=>id;",
   "@/lib/support-log": "export const logSupportEvent=()=>{};",
   "@/lib/auth": "export const getAuthenticatedSession=async()=>globalThis.__affiliate.session;export const requireAuthenticatedSession=getAuthenticatedSession;",
-  "@/lib/merchant-account-repository": "export const syncMerchantBillingFromStripeCustomerIdInSupabase=async()=>{throw Error('Unexpected Stripe sync')};",
-  "@/lib/store": "export const getMerchantRedemptionPinStates=async()=>({});",
+  "@/lib/merchant-account-repository": "export const syncMerchantBillingFromStripeCustomerIdInSupabase=async id=>{globalThis.__affiliate.stripeCalls.push(id);return globalThis.__affiliate.synced};",
+  "@/lib/store": "export const getMerchantRedemptionPinStates=async ids=>{globalThis.__affiliate.pinCalls.push(ids);return Object.fromEntries(ids.map(id=>[id,{value:'2468',configured:true,recoverable:true}]))};",
   "@/components/merchant/account-settings-form": "export const AccountSettingsForm=props=>{globalThis.__affiliate.accountProps=props;return null};",
   "next/navigation": "export const redirect=p=>{throw Error('redirect:'+p)};export const useRouter=()=>({refresh(){}});",
 };
@@ -29,6 +29,7 @@ registerHooks({
 });
 const repo = await import("./affiliate-repository.ts");
 const route = await import("../app/api/affiliates/accounts/[id]/route.ts");
+const details = await import("../app/api/account/details/route.ts");
 const { default: accountPage } = await import("../app/(merchant)/account/page.tsx");
 let state;
 function db() {
@@ -68,7 +69,7 @@ function db() {
   };
 }
 beforeEach(() => {
-  state = globalThis.__affiliate = { writes: [], rpcs: [], rpcId: "commission", pageSize: Infinity, tables: {
+  state = globalThis.__affiliate = { writes: [], rpcs: [], pinCalls: [], stripeCalls: [], rpcId: "commission", pageSize: Infinity, tables: {
     merchants: [{ id: "a1", workspace_id: "a", company_name: "Site A", restaurant_email: "site@example.test" }, { id: "a2", workspace_id: "a", company_name: "Annexe" }, { id: "b1", workspace_id: "b", company_name: "Site B" }, { id: "b2", workspace_id: "b", company_name: "Annexe B" }],
     merchant_users: [{ id: "u1", merchant_id: "a1", first_name: "Camille", last_name: "Durand", email: "owner@example.test", created_at: "2026-06-01" }, { id: "u2", merchant_id: "b1", first_name: "Nouvelle", last_name: "Inscription", email: "new@example.test", created_at: "2026-10-28" }],
     merchant_workspaces: [{ id: "a", name: "Compte A", created_at: "2026-06-01" }, { id: "b", name: "Compte B", created_at: "2026-10-28" }],
@@ -127,11 +128,49 @@ test("API administration : refus marchand et origine étrangère, activation aut
   assert.equal((await route.PATCH(request("https://foreign.example"), context)).status, 403);
   assert.equal((await route.PATCH(request("http://localhost"), context)).status, 200);
 });
-test("Mon compte : lecture du compte actif, exclusion des rôles d’établissement et des comptes désactivés", async () => {
-  renderToStaticMarkup(await accountPage({})); assert.equal(state.accountProps.affiliateSummary.account.workspaceId, "a");
-  state.session.user.role = "manager"; renderToStaticMarkup(await accountPage({})); assert.equal(state.accountProps.affiliateSummary, null);
-  state.session.user.role = "owner"; state.tables.affiliate_accounts[0].status = "disabled";
-  renderToStaticMarkup(await accountPage({})); assert.equal(state.accountProps.affiliateSummary, null);
+test("Mon compte : premier rendu limité au site actif, y compris après un paiement", async () => {
+  state.session.merchant.stripeCustomerId = "cus_fixture";
+  renderToStaticMarkup(await accountPage({ searchParams: Promise.resolve({ billing: "success" }) }));
+  assert.deepEqual(state.pinCalls, [["a2"]]);
+  assert.deepEqual(state.stripeCalls, []);
+  assert.equal(state.accountProps.paymentReturn, true);
+  assert.equal(state.accountProps.affiliateSummary, undefined);
+});
+
+test("Mon compte : l’affiliation différée vérifie le rôle et le statut", async () => {
+  const request = new Request("http://localhost/api/account/details?section=affiliate");
+  const response = await details.GET(request);
+  assert.equal(response.headers.get("cache-control"), "private, no-store");
+  assert.equal((await response.json()).summary.account.workspaceId, "a");
+  state.session.user.role = "manager";
+  assert.equal((await details.GET(request)).status, 403);
+  state.session.user.role = "owner";
+  state.tables.affiliate_accounts[0].status = "disabled";
+  assert.equal((await (await details.GET(request)).json()).summary, null);
+});
+
+test("Mon compte : un PIN différé est lu uniquement pour un site autorisé", async () => {
+  state.session.locations = [{ merchant: { id: "a1" } }, { merchant: { id: "a2" } }];
+  const request = id => new Request("http://localhost/api/account/details?section=pin&locationId=" + id);
+  assert.equal((await details.GET(request("b1"))).status, 403);
+  assert.deepEqual(state.pinCalls, []);
+  assert.equal((await (await details.GET(request("a1"))).json()).pin.configured, true);
+  assert.deepEqual(state.pinCalls, [["a1"]]);
+});
+
+test("Mon compte : retour de paiement synchronisé sur le client Stripe de la session", async () => {
+  state.session.merchant.stripeCustomerId = "cus_fixture";
+  state.session.merchant.stripeSubscriptionStatus = "active";
+  state.synced = { stripeSubscriptionId: "sub_fixture", stripeSubscriptionStatus: "active" };
+  const request = (origin, query = "") => new Request("http://localhost/api/account/details?section=billing" + query,
+    { method: "POST", headers: { origin } });
+  assert.equal((await details.POST(request("https://foreign.example", "&billing=success"))).status, 403);
+  assert.equal((await (await details.POST(request("http://localhost"))).json()).synced, false);
+  assert.deepEqual(state.stripeCalls, []);
+  const result = await (await details.POST(request("http://localhost", "&billing=success"))).json();
+  assert.equal(result.billing.isSubscribed, true);
+  assert.equal(result.billing.hasPaymentMethodOnFile, true);
+  assert.deepEqual(state.stripeCalls, ["cus_fixture"]);
 });
 test("erreur de lecture : pas d’affiliés manquants présentés comme un résultat vide", async () => {
   state.failTable = "merchant_users";
