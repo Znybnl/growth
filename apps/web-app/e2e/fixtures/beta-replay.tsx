@@ -11,6 +11,7 @@ export function BetaReplayProof() {
   const [mounted, setMounted] = useState(false);
   const [clicks, setClicks] = useState(0);
   return <main className="p-8">
+    <h1>Toutes vos campagnes</h1>
     {mounted && <BetaReplayBoundary subject={subject} />}
     {mounted && <MerchantAnalyticsIdentity accountMerchantId={subject.split(":")[0]} userId={subject.split(":")[1]} activeMerchantId={subject.split(":")[0]} email="beta-fixture@example.test" />}
     <button onClick={() => {

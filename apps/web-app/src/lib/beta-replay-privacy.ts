@@ -4,6 +4,11 @@ const SAFE_LABELS = new Set([
   "Accueil", "Campagnes", "Le jeu", "La promesse", "L’apparence", "Les lots", "Les actions",
   "Continuer", "Retour", "Enregistrer", "Publier", "Prévisualiser", "QR code", "Affiche",
   "Roue de la fortune", "Ticket à gratter", "Ajouter", "Annuler", "Fermer",
+  "Résultats", "Mon compte", "Gestion des animations", "Toutes vos campagnes",
+  "Créer une campagne", "Modifier", "Dupliquer", "Supprimer", "Enregistrer le brouillon",
+  "Nom de l’animation", "Promesse affichée au client", "Templates Beauté", "Autres templates",
+  "Nom du lot", "Conditions d’utilisation", "Règles de participation et de validité",
+  "Participations", "Gagnants", "Lots utilisés", "Taux de consommation",
 ]);
 
 export function maskBetaReplayText(text: string) {
