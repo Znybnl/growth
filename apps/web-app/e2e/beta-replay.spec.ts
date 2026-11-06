@@ -93,21 +93,31 @@ for (const choice of ["absent", "rejected", "accepted"] as const) {
     await page.waitForTimeout(3_000);
     const snapshots = state.packets.filter(p => p.event === "$snapshot");
     const decoded = unpack(snapshots);
+    const metadata: Record<string, unknown>[] = [];
     const styleNodes: { attrs: Record<string, unknown> }[] = [];
     const inspect = (value: unknown) => {
       if (Array.isArray(value)) { value.forEach(inspect); return; }
       if (value && typeof value === "object") {
         const node = value as Record<string, unknown>;
+        if (node.type === 4 && node.data && typeof node.data === "object") {
+          metadata.push(node.data as Record<string, unknown>);
+        }
         if (node.tagName === "link" || node.tagName === "style") styleNodes.push({ attrs: node.attributes as Record<string, unknown> });
         Object.values(node).forEach(inspect);
       }
     };
     inspect(decoded);
+    const viewport = page.viewportSize();
+    const replayUrl = new URL("/campaigns/new/guided", page.url()).href;
+    expect(metadata).toContainEqual(expect.objectContaining({
+      href: replayUrl, width: viewport?.width, height: viewport?.height,
+    }));
     expect(styleNodes.some(node => typeof node.attrs?._cssText === "string" && node.attrs._cssText.length > 100)).toBe(true);
     await test.info().attach("synthetic-snapshots", { body: JSON.stringify(decoded), contentType: "application/json" });
     expect(snapshots.every(p => p.properties.distinct_id === state.subject)).toBe(true);
     const raw = JSON.stringify(decoded);
     if (choice !== "accepted") expect(state.outbound.join(" ")).not.toContain("private-query");
+    expect(raw).toContain("Toutes vos campagnes");
     expect(raw).toContain("childNodes"); // A real DOM snapshot was inspected, not just compressed bytes.
     for (const secret of ["client-secret", "private-input", "9876-private-pin", "private-destination", "private-token", "private-title", "private-image", "private-query", "private-hash", "private-private-container", "private-console-secret", "private-network-secret", "private-response-secret", "private-css-secret"]) {
       expect(raw).not.toContain(secret);

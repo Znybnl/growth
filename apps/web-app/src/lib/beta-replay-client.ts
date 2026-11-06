@@ -55,9 +55,14 @@ function getRecorder(subject: string): Promise<PostHog> {
         maskAttributeFn: maskBetaReplayAttribute, blockSelector: BETA_REPLAY_BLOCK_SELECTOR,
         recordCrossOriginIframes: false, recordHeaders: false, recordBody: false,
         captureCanvas: { recordCanvas: false }, captureJsonLd: false,
-        maskCapturedNetworkRequestFn: () => null,
-        // Also covers rrweb's initial page URL; no queries, hashes or campaign IDs.
-        maskNetworkRequestFn: request => ({ ...request, url: betaReplayUrl(request.url) }),
+        maskCapturedNetworkRequestFn: request => {
+          // The SDK also calls this hook with only { name } for the replay page URL.
+          // Dropping that call drops rrweb's viewport metadata before the full snapshot.
+          if (typeof request.name === "string" && Object.keys(request).length === 1) {
+            return { name: betaReplayUrl(request.name) };
+          }
+          return null;
+        },
       },
       before_send(event) {
         if (!mayRecord() || event.event !== "$snapshot") return null;
