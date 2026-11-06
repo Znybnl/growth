@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { measureServerStage } from "@/lib/server-performance";
 import Link from "next/link";
 
@@ -19,10 +20,11 @@ import {
 } from "@/lib/format";
 import {
   findMerchantLeadCampaign,
-  getCampaignDataView,
-  getMerchantCampaignLibrary,
+  getCampaignResults,
+  getCampaignResultsKpis,
+  getResultsCampaignLibrary,
 } from "@/lib/store";
-import { CampaignAction, CampaignEvent, MerchantLeadRow, RewardEmailDeliveryStatus } from "@/lib/types";
+import type { CampaignAction, CampaignEvent, CampaignKpi, CampaignResultContacts, Merchant, MerchantLeadRow, RewardEmailDeliveryStatus } from "@/lib/types";
 
 type DataPageProps = {
   searchParams: Promise<{
@@ -324,7 +326,7 @@ async function DataPageContent({ searchParams }: DataPageProps) {
   const currentPage = Number.isFinite(requestedPage) ? Math.max(requestedPage, 1) : 1;
   const leadLimit = 50;
   const [campaignOptions, matchedCampaignId] = await Promise.all([
-    getMerchantCampaignLibrary(session.merchant.id, session.merchant),
+    getResultsCampaignLibrary(session.merchant),
     query && !initialSelectedCampaignId
       ? findMerchantLeadCampaign(session.merchant.id, query)
       : Promise.resolve(null),
@@ -333,16 +335,9 @@ async function DataPageContent({ searchParams }: DataPageProps) {
     matchedCampaignId ??
     initialSelectedCampaignId ??
     campaignOptions[0]?.id;
-  const dataView = selectedCampaignId
-    ? await getCampaignDataView(selectedCampaignId, session.merchant, {
-        leadLimit,
-        leadOffset: (currentPage - 1) * leadLimit,
-        query,
-        emailStatus,
-      })
-    : null;
+  const selectedCampaign = campaignOptions.find(campaign => campaign.id === selectedCampaignId);
 
-  if (!dataView || dataView.performance.campaign.merchantId !== session.merchant.id) {
+  if (!selectedCampaign) {
     return (
       <section className="okado-card okado-section-card">
         <EmptyState
@@ -353,6 +348,99 @@ async function DataPageContent({ searchParams }: DataPageProps) {
       </section>
     );
   }
+
+  const kpis = await getCampaignResultsKpis(selectedCampaign.id, session.merchant);
+
+  return (
+    <div className="space-y-6">
+      <section className="px-1 py-2">
+        <PageHeader
+          eyebrow="Données de campagne"
+          title={selectedCampaign.title}
+          description="Visualisez les indicateurs clés, le stock de dotation et les données de saisie exportables pour chaque campagne."
+          actions={
+            <Link
+              href={`/campaigns/${selectedCampaign.id}/edit/guided`}
+              prefetch={false}
+              className="okado-filled-action px-5"
+            >
+              Modifier la campagne
+            </Link>
+          }
+        />
+
+        <div className="mt-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+            <DataCampaignSelector
+              campaigns={campaignOptions}
+              selectedCampaignId={selectedCampaign.id}
+              query={query}
+              emailStatus={emailStatus}
+            />
+            <DataSearchForm
+              campaignId={selectedCampaign.id}
+              initialValue={query}
+            />
+          </div>
+        </div>
+        {emailStatus === "attention" ? (
+          <StatusNotice tone="warning" className="mt-4">
+            Cette vue affiche uniquement les e-mails en échec pour un gain attribué et encore à retirer. Renvoyez l’e-mail ou consultez son historique pour résoudre l’alerte.
+          </StatusNotice>
+        ) : null}
+      </section>
+
+      {kpis ? <ResultsKpis kpis={kpis} /> : null}
+
+      <Suspense
+        key={JSON.stringify([selectedCampaign.id, query, emailStatus, currentPage])}
+        fallback={<ResultsLoading>Chargement des graphiques et des détails…</ResultsLoading>}
+      >
+        <CampaignResultsContent
+          campaignId={selectedCampaign.id}
+          merchant={session.merchant}
+          query={query}
+          emailStatus={emailStatus}
+          leadLimit={leadLimit}
+          leadOffset={(currentPage - 1) * leadLimit}
+        />
+      </Suspense>
+    </div>
+  );
+}
+
+function ResultsKpis({ kpis }: { kpis: CampaignKpi }) {
+  return (
+    <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+      {[
+        ["Scans", String(kpis.scans)],
+        ["Participations", String(kpis.games)],
+        ["Opt-ins", String(kpis.optIns)],
+        ["Conversion", formatPercent(kpis.conversionRate)],
+        ["Lots retirés", String(kpis.redeemed)],
+        ["Coût / participation", formatCurrency(kpis.games
+          ? kpis.estimatedSpend / kpis.games : 0)],
+      ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
+    </section>
+  );
+}
+
+function ResultsLoading({ children }: { children: string }) {
+  return <p className="okado-card p-6 text-sm text-ash" role="status">{children}</p>;
+}
+
+async function CampaignResultsContent({
+  campaignId, merchant, query, emailStatus, leadLimit, leadOffset,
+}: {
+  campaignId: string;
+  merchant: Merchant;
+  query: string;
+  emailStatus?: "attention";
+  leadLimit: number;
+  leadOffset: number;
+}) {
+  const dataView = await getCampaignResults(campaignId, merchant, { query, emailStatus, leadLimit, leadOffset });
+  if (!dataView) return <StatusNotice tone="warning">Cette campagne est indisponible.</StatusNotice>;
 
   const performanceMax = Math.max(
     dataView.performance.kpis.scans,
@@ -375,68 +463,9 @@ async function DataPageContent({ searchParams }: DataPageProps) {
     dataView.performance.campaign.actions,
   );
   const actionVolumeMax = Math.max(...actionVolumes.map((item) => item.value), 1);
-  const leadById = new Map(dataView.leads.map((lead) => [lead.id, lead]));
 
   return (
-    <div className="space-y-6">
-      <section className="px-1 py-2">
-        <PageHeader
-          eyebrow="Données de campagne"
-          title={dataView.performance.campaign.title}
-          description="Visualisez les indicateurs clés, le stock de dotation et les données de saisie exportables pour chaque campagne."
-          actions={
-            <Link
-              href={`/campaigns/${dataView.performance.campaign.id}/edit/guided`}
-              prefetch={false}
-              className="okado-filled-action px-5"
-            >
-              Modifier la campagne
-            </Link>
-          }
-        />
-
-          <div className="mt-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
-              <DataCampaignSelector
-                campaigns={campaignOptions}
-                selectedCampaignId={dataView.performance.campaign.id}
-                query={query}
-                emailStatus={emailStatus}
-              />
-              <DataSearchForm
-                campaignId={dataView.performance.campaign.id}
-                initialValue={query}
-              />
-            </div>
-          </div>
-          {emailStatus === "attention" ? (
-            <StatusNotice tone="warning" className="mt-4">
-              Cette vue affiche uniquement les e-mails en échec pour un gain attribué et encore à retirer. Renvoyez l’e-mail ou consultez son historique pour résoudre l’alerte.
-            </StatusNotice>
-          ) : null}
-          {emailStatus === "attention" && dataView.leadTotal === 0 ? (
-            <StatusNotice tone="success" className="mt-4">
-              Aucun e-mail à traiter pour cette campagne.
-            </StatusNotice>
-          ) : query && dataView.leadTotal === 0 ? (
-            <StatusNotice tone="warning" className="mt-4">
-              Aucun résultat pour « {query} ».
-            </StatusNotice>
-          ) : null}
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
-        {[
-          ["Scans", String(dataView.performance.kpis.scans)],
-          ["Participations", String(dataView.performance.kpis.games)],
-          ["Opt-ins", String(dataView.performance.kpis.optIns)],
-          ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
-          ["Lots retirés", String(dataView.performance.kpis.redeemed)],
-          ["Coût / participation", formatCurrency(dataView.performance.kpis.games
-            ? dataView.performance.kpis.estimatedSpend / dataView.performance.kpis.games : 0)],
-        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
-      </section>
-
+    <>
       <section className="grid gap-6 xl:grid-cols-2">
         <Histogram
           eyebrow="Participations"
@@ -457,15 +486,9 @@ async function DataPageContent({ searchParams }: DataPageProps) {
         mais non répartis par jour. Aucune date n’a été estimée.
       </StatusNotice> : null}
 
-      <LeadsExportSection
-        campaignId={dataView.performance.campaign.id}
-        leads={dataView.leads}
-        total={dataView.leadTotal}
-        offset={dataView.leadOffset}
-        limit={dataView.leadLimit}
-        query={query}
-        emailStatus={emailStatus}
-      />
+      <Suspense fallback={<ResultsLoading>Chargement des contacts et des e-mails…</ResultsLoading>}>
+        <ResultsContacts campaignId={campaignId} contacts={dataView.contacts} query={query} emailStatus={emailStatus} />
+      </Suspense>
 
       <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-6">
@@ -597,40 +620,96 @@ async function DataPageContent({ searchParams }: DataPageProps) {
             </div>
           ) : null}
 
-          <div className="okado-card p-6">
-            <p className="okado-label">Chronologie</p>
-            <h2 className="okado-section-title mt-2">Derniers événements</h2>
-
-            <div className="mt-5 space-y-2">
-              {dataView.events.slice(0, 8).map((event) => {
-                const lead = event.leadId ? leadById.get(event.leadId) : undefined;
-
-                return (
-                  <div
-                    key={event.id}
-                    className="flex items-center gap-3 rounded-[8px] border border-border bg-linen-canvas px-4 py-3"
-                  >
-                    <span
-                      className="h-2.5 w-2.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: dataView.performance.campaign.accent.signal }}
-                    />
-                    <p className="min-w-0 flex-1 truncate text-sm text-slate">
-                      <span className="font-semibold text-graphite">
-                        {eventLabel(event.eventType)}
-                      </span>
-                      {lead ? ` · ${lead.firstName}` : ""}
-                    </p>
-                    <span className="shrink-0 text-xs text-ash">
-                      {formatDateTime(event.createdAt)}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <Suspense fallback={<ResultsLoading>Chargement de la chronologie…</ResultsLoading>}>
+            <ResultsTimeline events={dataView.events} contacts={dataView.contacts} color={dataView.performance.campaign.accent.signal} />
+          </Suspense>
         </div>
       </section>
+    </>
+  );
+}
+
+async function ResultsContacts({
+  campaignId, contacts, query, emailStatus,
+}: {
+  campaignId: string;
+  contacts: Promise<CampaignResultContacts>;
+  query: string;
+  emailStatus?: "attention";
+}) {
+  const result = await contacts.catch(() => null);
+  if (!result) {
+    return (
+      <StatusNotice tone="warning">
+        Impossible de charger les contacts et les e-mails. Rechargez la page pour réessayer.
+      </StatusNotice>
+    );
+  }
+  return (
+    <div className="space-y-4">
+      {emailStatus === "attention" && result.leadTotal === 0 ? (
+        <StatusNotice tone="success" className="mt-4">
+          Aucun e-mail à traiter pour cette campagne.
+        </StatusNotice>
+      ) : query && result.leadTotal === 0 ? (
+        <StatusNotice tone="warning" className="mt-4">
+          Aucun résultat pour « {query} ».
+        </StatusNotice>
+      ) : null}
+
+      <LeadsExportSection
+        campaignId={campaignId}
+        leads={result.leads}
+        total={result.leadTotal}
+        offset={result.leadOffset}
+        limit={result.leadLimit}
+        query={query}
+        emailStatus={emailStatus}
+      />
     </div>
   );
 }
 
+async function ResultsTimeline({
+  events, contacts, color,
+}: {
+  events: CampaignEvent[];
+  contacts: Promise<CampaignResultContacts>;
+  color: string;
+}) {
+  const result = events.some(event => event.leadId) ? await contacts.catch(() => null) : null;
+  const leadById = new Map(result?.leads.map(lead => [lead.id, lead]));
+  return (
+    <div className="okado-card p-6">
+      <p className="okado-label">Chronologie</p>
+      <h2 className="okado-section-title mt-2">Derniers événements</h2>
+
+      <div className="mt-5 space-y-2">
+        {events.slice(0, 8).map((event) => {
+          const lead = event.leadId ? leadById.get(event.leadId) : undefined;
+
+          return (
+            <div
+              key={event.id}
+              className="flex items-center gap-3 rounded-[8px] border border-border bg-linen-canvas px-4 py-3"
+            >
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: color }}
+              />
+              <p className="min-w-0 flex-1 truncate text-sm text-slate">
+                <span className="font-semibold text-graphite">
+                  {eventLabel(event.eventType)}
+                </span>
+                {lead ? ` · ${lead.firstName}` : ""}
+              </p>
+              <span className="shrink-0 text-xs text-ash">
+                {formatDateTime(event.createdAt)}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

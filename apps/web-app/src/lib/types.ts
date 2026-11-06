@@ -944,6 +944,12 @@ export interface CampaignDataView {
   undatedRedemptions?: number;
 }
 
+export type CampaignResultContacts = Pick<CampaignDataView, "leads" | "leadTotal" | "leadOffset" | "leadLimit">;
+
+export type CampaignResults = Omit<CampaignDataView, keyof CampaignResultContacts> & {
+  contacts: Promise<CampaignResultContacts>;
+};
+
 export interface CampaignSetupInput {
   googleClickRequired?: boolean;
   googleClickAcceptanceId?: string;

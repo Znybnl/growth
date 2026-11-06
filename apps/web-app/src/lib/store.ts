@@ -7,7 +7,9 @@ import {
   deleteCampaignForMerchantInSupabase,
   drawForLeadInSupabase,
   finalizeDrawSessionInSupabase,
-  getSupabaseCampaignDataView,
+  getSupabaseCampaignResults,
+  getSupabaseResultsKpis,
+  splitCampaignDataView,
   getSupabaseCampaignPerformance,
   getSupabaseCampaignSetupPerformance,
   getSupabaseMerchantCampaignLibrary,
@@ -2596,17 +2598,35 @@ export const getMerchantRecentLeads = cache(async function getMerchantRecentLead
     .slice(0, limit);
 });
 
-export const getCampaignDataView = cache(async function getCampaignDataView(
+export async function getResultsCampaignLibrary(merchant: Merchant) {
+  if (getDataBackend("la lecture du sélecteur de résultats") === "supabase") {
+    return getSupabaseMerchantCampaignLibrary(merchant.id, true);
+  }
+
+  return getMerchantCampaignLibraryFromMemory(merchant.id, merchant);
+}
+
+export async function getCampaignResultsKpis(campaignId: string, merchant: Merchant) {
+  if (getDataBackend("la lecture des indicateurs de résultats") === "supabase") {
+    return getSupabaseResultsKpis(merchant.id, campaignId);
+  }
+
+  const performance = getCampaignPerformanceFromMemory(campaignId);
+  return performance?.campaign.merchantId === merchant.id ? performance.kpis : null;
+}
+
+export async function getCampaignResults(
   campaignId: string,
-  fallbackMerchant?: Merchant,
+  merchant: Merchant,
   options: { leadLimit?: number; leadOffset?: number; query?: string; emailStatus?: "attention" } = {},
 ) {
   if (getDataBackend("la lecture des données campagne") === "supabase") {
-    return measureServerStage("data.results", () => getSupabaseCampaignDataView(campaignId, fallbackMerchant, options));
+    return measureServerStage("data.results", () => getSupabaseCampaignResults(campaignId, merchant, options));
   }
 
-  return getCampaignDataViewFromMemory(campaignId, options);
-});
+  const view = getCampaignDataViewFromMemory(campaignId, options);
+  return view?.performance.campaign.merchantId === merchant.id ? splitCampaignDataView(view) : null;
+}
 
 export const getMerchantSupportOverview = cache(async function getMerchantSupportOverview(
   merchantId = merchantSeed.id,
