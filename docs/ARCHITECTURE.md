@@ -156,3 +156,11 @@ La RPC privée `record_affiliate_paid_invoice_677` verrouille l’attribution et
 crée la commission/fixe la fenêtre dans une même transaction. Le statut canceled
 n’empêche pas une nouvelle facture payée pendant la fenêtre initiale. La clé
 unique de facture empêche les doubles commissions. [Livraison et rollback](releases/2026-10-28-affiliate-accounts-677.md).
+
+## Lectures de contexte et navigation marchande — #743
+
+Les profils sont joints aux lectures utilisateur et associations de sites existantes,
+avec adhésion active et pagination des associations. Le contexte reste limité à la
+requête ; aucun cache partagé de session ou de droits n’est ajouté. Les lots sont
+filtrés directement par la propriété de leur campagne, en parallèle des agrégats.
+Auth et calculs métier sont conservés. Voir [mesures et limites](releases/2026-11-05-merchant-page-loading-743.md).

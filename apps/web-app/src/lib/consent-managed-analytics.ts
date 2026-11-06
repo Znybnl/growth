@@ -52,6 +52,7 @@ const measuredPages = new Set([
   "/blog",
   "/blog/programme-fidelite-institut-beaute",
   "/blog/roue-fortune-institut-beaute",
+  "/blog/fideliser-clients-agence-voyage",
   "/blog/creer-fiche-google-restaurant",
   "/blog/creer-fiche-google-institut-beaute",
   "/blog/idees-animations-commerciales-boutique",
