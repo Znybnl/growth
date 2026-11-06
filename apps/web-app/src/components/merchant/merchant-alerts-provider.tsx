@@ -6,12 +6,18 @@ import { EMPTY_MERCHANT_ALERTS, type MerchantAlerts } from "@/lib/merchant-alert
 const AlertsContext = createContext<MerchantAlerts | null>(null);
 
 // One provider per mounted user/site shell. No browser storage or global user cache.
-export function MerchantAlertsProvider({ children }: { children: React.ReactNode }) {
+export function MerchantAlertsProvider({
+  children, initialAlerts,
+}: {
+  children: React.ReactNode;
+  initialAlerts?: Promise<MerchantAlerts | null>;
+}) {
   const [alerts, setAlerts] = useState<MerchantAlerts | null>(null);
   useEffect(() => {
     let cancelled = false;
     let pending = false;
     let refreshPending = false;
+    let refreshed = false;
     let controller: AbortController | undefined;
     async function load(invalidated = false) {
       if (cancelled) return;
@@ -38,8 +44,16 @@ export function MerchantAlertsProvider({ children }: { children: React.ReactNode
         }
       }
     }
-    const timeout = window.setTimeout(() => { void load(); }, 700);
+    // The first read streams with the authenticated layout. Ignore a late
+    // snapshot once an explicit refresh has started.
+    const timeout = initialAlerts ? undefined : window.setTimeout(() => { void load(); }, 700);
+    if (initialAlerts) {
+      void initialAlerts.then((snapshot) => {
+        if (!cancelled && !refreshed && snapshot) setAlerts(snapshot);
+      }, () => {});
+    }
     const refresh = () => {
+      refreshed = true;
       window.clearTimeout(timeout);
       void load(true);
     };
@@ -52,7 +66,7 @@ export function MerchantAlertsProvider({ children }: { children: React.ReactNode
       window.removeEventListener("merchant-alerts-refresh", refresh);
       window.removeEventListener("campaigns-updated", refresh);
     };
-  }, []);
+  }, [initialAlerts]);
   return <AlertsContext.Provider value={alerts}>{children}</AlertsContext.Provider>;
 }
 

@@ -255,3 +255,96 @@ test("#743 campagnes : lots et agrégats démarrent ensemble avec le même péri
   release();
   assert.equal((await pending).campaigns.length,0);
 });
+
+
+test("#747 : les contacts récents utilisent une lecture limitée au site et conservent les libellés historiques", async () => {
+  const queries = [];
+  const rows = [
+    { id: "snapshot", prize_id: "p", prize_label_snapshot: "Soin historique", prize: { label: "Soin actuel", campaign_id: "c" } },
+    { id: "current", prize_id: "p", prize: { label: "Soin actuel", campaign_id: "c" } },
+    { id: "foreign-prize", prize_id: "other", prize: { label: "Donnée étrangère", campaign_id: "other" } },
+    { id: "lost", prize_id: null, prize: null },
+  ].map((row) => ({
+    campaign_id: "c", campaign: { title: "Jeu fictif" }, first_name: "Camille",
+    email: "camille@example.test", status: "claimed", created_at: "2026-11-06", ...row,
+  }));
+  const query = {
+    select(fields) { queries.push(["select", fields]); return query; },
+    eq(field, value) { queries.push(["eq", field, value]); return query; },
+    order() { return query; },
+    limit(value) { queries.push(["limit", value]); return query; },
+    or(value) { queries.push(["or", value]); return query; },
+    async overrideTypes() { return { data: rows, error: null }; },
+  };
+  const repo = load("./campaign-repository.ts", {
+    react: { cache: (fn) => fn },
+    "@/lib/supabase": {
+      getSupabaseAdmin: () => ({
+        from(table) { assert.equal(table, "leads"); return query; },
+        rpc() { assert.fail("Contacts must not read campaign aggregates"); },
+      }),
+      unwrapSupabaseResult: (result) => result.data,
+    },
+  });
+
+  const contacts = await repo.getSupabaseMerchantRecentLeads("site", 5);
+  assert.deepEqual(Array.from(contacts, (row) => row.prizeLabel),
+    ["Soin historique", "Soin actuel", "Lot inconnu", "Perdu"]);
+  assert.deepEqual(queries[1], ["eq", "campaign.merchant_id", "site"]);
+  assert.match(queries[0][1], /leads_campaign_id_fkey!inner/);
+  assert.doesNotMatch(queries[0][1], /phone|consent|redemption_code|email_deliveries/);
+  assert.deepEqual(queries[2], ["limit", 5]);
+  assert.equal((await repo.getSupabaseMerchantRecentLeads("site", 2, "Camille")).length, 2);
+  assert.equal((await repo.getSupabaseMerchantRecentLeads("site", 5, "aucune correspondance")).length, 0);
+});
+
+
+test("#747 : le replay utilise l’identité Auth vérifiée et résout le compte historique si nécessaire", async () => {
+  const identity = { id: "user", merchantId: "site-0" };
+  for (const mode of ["linked", "legacy", "stale", "anonymous", "expired"]) {
+    const reads = [];
+    const authUser = {
+      id: "auth",
+      app_metadata: mode === "legacy" ? {} : { merchant_user_id: "user" },
+    };
+    const auth = load("./auth.ts", {
+      react: { cache: (fn) => fn },
+      "next/navigation": {},
+      "next/headers": { cookies: async () => ({
+        get: (name) => name === "started" && mode === "expired" ? { value: "1" } : undefined,
+      }) },
+      "@/lib/session-security": {
+        SESSION_STARTED_COOKIE: "started", SESSION_LAST_ACTIVITY_COOKIE: "activity",
+        SESSION_MAX_AGE_MS: 90 * 86400000, SESSION_INACTIVITY_MS: 30 * 86400000,
+      },
+      "@/lib/server-performance": { measureServerStage },
+      "@/lib/supabase-server": { createAppRouterSupabaseServerClient: async () => ({
+        auth: { getUser: async () => {
+          reads.push("auth");
+          return { data: { user: mode === "anonymous" ? null : authUser } };
+        } },
+      }) },
+      "@/lib/merchant-account-repository": {
+        readMerchantReplayIdentity: async (id) => {
+          assert.equal(id, "user");
+          reads.push("identity");
+          return mode === "stale" ? null : identity;
+        },
+        resolveMerchantSessionFromAuthUser: async (user) => {
+          assert.equal(user, authUser);
+          reads.push("legacy");
+          return { user: identity };
+        },
+      },
+    }, { process: { env: { NEXT_PUBLIC_SUPABASE_URL: "fixture", NEXT_PUBLIC_SUPABASE_ANON_KEY: "fixture" } } });
+    assert.equal(await auth.getAuthenticatedReplayIdentity(),
+      ["anonymous", "expired"].includes(mode) ? null : identity);
+    assert.deepEqual(reads, {
+      linked: ["auth", "identity"],
+      legacy: ["auth", "legacy"],
+      stale: ["auth", "identity", "legacy"],
+      anonymous: ["auth"],
+      expired: [],
+    }[mode]);
+  }
+});

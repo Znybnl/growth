@@ -887,6 +887,11 @@ export interface MerchantLeadRow extends Lead {
   emailErrorMessage?: string;
 }
 
+export type MerchantRecentContact = Pick<
+  MerchantLeadRow,
+  "id" | "campaignId" | "campaignTitle" | "firstName" | "email" | "prizeLabel" | "status" | "createdAt"
+>;
+
 export type CashierRedemptionStatus =
   | "available"
   | "redeemed"
