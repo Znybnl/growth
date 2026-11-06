@@ -1692,6 +1692,11 @@ async function readCampaignResultsContacts(
   return { leads, leadTotal: leadsResult.count ?? 0, leadOffset, leadLimit };
 }
 
+export async function getSupabaseResultsKpis(merchantId: string, campaignId: string) {
+  const row = (await getMerchantPageRows(merchantId, true)).find(item => item.campaign_id === campaignId);
+  return row ? toOverviewKpis({ ...row.campaign, ...row.metrics }, Number(row.metrics.opt_ins)) : null;
+}
+
 export async function getSupabaseCampaignResults(
   campaignId: string,
   merchant: Merchant,
@@ -1784,29 +1789,7 @@ export async function getSupabaseCampaignResults(
     throw new Error("Les indicateurs de campagne sont indisponibles.");
   }
 
-  performance.kpis = {
-    scans: Number(summary.scans_count) || 0,
-    contacts: Number(summary.leads_count) || 0,
-    optIns: Number(pageRow.metrics.opt_ins),
-    leads: Number(summary.leads_count) || 0,
-    actions: Number(summary.actions_count) || 0,
-    games: Number(summary.games_count) || 0,
-    wins: Number(summary.wins_count) || 0,
-    redeemed: Number(summary.redeemed_count) || 0,
-    conversionRate: summary.scans_count
-      ? Math.round((Number(summary.games_count) / Number(summary.scans_count)) * 100)
-      : 0,
-    redemptionRate: summary.wins_count
-      ? Math.round((Number(summary.redeemed_count) / Number(summary.wins_count)) * 100)
-      : 0,
-    estimatedSpend: Number(Number(summary.estimated_spend || 0).toFixed(2)),
-    costPerLead: summary.leads_count
-      ? Number((Number(summary.estimated_spend || 0) / Number(summary.leads_count)).toFixed(2))
-      : 0,
-    costPerRedeemed: summary.redeemed_count
-      ? Number((Number(summary.estimated_spend || 0) / Number(summary.redeemed_count)).toFixed(2))
-      : 0,
-  };
+  performance.kpis = toOverviewKpis({ ...row, ...pageRow.metrics }, Number(pageRow.metrics.opt_ins));
 
   return {
     performance,

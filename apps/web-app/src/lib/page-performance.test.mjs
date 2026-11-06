@@ -158,6 +158,8 @@ test("#500 timings : résultat/erreur préservés, données exclues, désactivat
 
 test("#500 Résultats : projection JSON des conditions, pagination et opt-ins conservés",async()=>{
   const selections=[];
+  let releaseSummary;
+  const pendingSummary = new Promise(resolve => { releaseSummary = resolve; });
   let releaseContacts;
   const pendingContacts = new Promise(resolve => { releaseContacts = resolve; });
   const campaign={id:"c",merchant_id:"m",title:"Test",game_type:"wheel",created_at:"2026-01-01"};
@@ -166,13 +168,13 @@ test("#500 Résultats : projection JSON des conditions, pagination et opt-ins co
   function query(data,table) {
     const q={select(columns){selections.push({table,columns});return q},eq(){return q},
       order(){return q},limit(){return q},range(){return q},maybeSingle(){return q},
-      async then(resolve,reject){if(table==="leads") await pendingContacts;return Promise.resolve({data,count:Array.isArray(data)?data.length:undefined,error:null}).then(resolve,reject)}};
+      async then(resolve,reject){if(table==="leads") await pendingContacts;if(table==="get_campaign_data_summary") await pendingSummary;return Promise.resolve({data,count:Array.isArray(data)?data.length:undefined,error:null}).then(resolve,reject)}};
     return q;
   }
   const db={rpc(name) {
     if(name==="get_merchant_page_overview")return query([{campaign_id:"c",campaign,metrics,pending_redemptions:[]}],name);
     assert.equal(name,"get_campaign_data_summary");
-    return query([{...metrics,daily_stats:[],action_volumes:[]}],name);
+    return query([{...metrics,games_count:13,daily_stats:[],action_volumes:[]}],name);
   },from(table){
     if(table==="campaigns")return query({prizeSettings:{p:{usageConditions:"Avec un soin"}}},table);
     return query(table==="prizes"?[{id:"p",campaign_id:"c",label:"Lot",remaining_quantity:null,total_quantity:null}]:[],table);
@@ -189,7 +191,12 @@ test("#500 Résultats : projection JSON des conditions, pagination et opt-ins co
     "@/lib/poster-utils":{resolvePosterLogoSettings:v=>v,normalizePosterSettings:(v,d)=>d,createPosterSettingsDefaults:()=>({})},
     "@/lib/email-settings":{normalizeCampaignEmailSettings:(v,d)=>d,createCampaignEmailDefaults:()=>({})},
   });
-  const result=await repo.getSupabaseCampaignResults("c",{id:"m",companyName:"Commerce fictif"},{leadOffset:50,leadLimit:50});
+  const pendingResult=repo.getSupabaseCampaignResults("c",{id:"m",companyName:"Commerce fictif"},{leadOffset:50,leadLimit:50});
+  const kpis=await repo.getSupabaseResultsKpis("m","c");
+  assert.equal(kpis.games,12);
+  assert.equal(kpis.optIns,9);
+  releaseSummary();
+  const result=await pendingResult;
   assert.equal(result.performance.kpis.optIns,9);
   assert.equal(result.performance.kpis.games,12);
   assert.equal(result.undatedRedemptions,2);

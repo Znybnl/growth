@@ -8,6 +8,7 @@ import {
   drawForLeadInSupabase,
   finalizeDrawSessionInSupabase,
   getSupabaseCampaignResults,
+  getSupabaseResultsKpis,
   splitCampaignDataView,
   getSupabaseCampaignPerformance,
   getSupabaseCampaignSetupPerformance,
@@ -2600,6 +2601,15 @@ export async function getResultsCampaignLibrary(merchant: Merchant) {
   }
 
   return getMerchantCampaignLibraryFromMemory(merchant.id, merchant);
+}
+
+export async function getCampaignResultsKpis(campaignId: string, merchant: Merchant) {
+  if (getDataBackend("la lecture des indicateurs de résultats") === "supabase") {
+    return getSupabaseResultsKpis(merchant.id, campaignId);
+  }
+
+  const performance = getCampaignPerformanceFromMemory(campaignId);
+  return performance?.campaign.merchantId === merchant.id ? performance.kpis : null;
 }
 
 export async function getCampaignResults(

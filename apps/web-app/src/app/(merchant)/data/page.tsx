@@ -21,9 +21,10 @@ import {
 import {
   findMerchantLeadCampaign,
   getCampaignResults,
+  getCampaignResultsKpis,
   getResultsCampaignLibrary,
 } from "@/lib/store";
-import type { CampaignAction, CampaignEvent, CampaignResultContacts, Merchant, MerchantLeadRow, RewardEmailDeliveryStatus } from "@/lib/types";
+import type { CampaignAction, CampaignEvent, CampaignKpi, CampaignResultContacts, Merchant, MerchantLeadRow, RewardEmailDeliveryStatus } from "@/lib/types";
 
 type DataPageProps = {
   searchParams: Promise<{
@@ -348,6 +349,8 @@ async function DataPageContent({ searchParams }: DataPageProps) {
     );
   }
 
+  const kpis = await getCampaignResultsKpis(selectedCampaign.id, session.merchant);
+
   return (
     <div className="space-y-6">
       <section className="px-1 py-2">
@@ -387,9 +390,11 @@ async function DataPageContent({ searchParams }: DataPageProps) {
         ) : null}
       </section>
 
+      {kpis ? <ResultsKpis kpis={kpis} /> : null}
+
       <Suspense
         key={JSON.stringify([selectedCampaign.id, query, emailStatus, currentPage])}
-        fallback={<ResultsLoading>Chargement des indicateurs…</ResultsLoading>}
+        fallback={<ResultsLoading>Chargement des graphiques et des détails…</ResultsLoading>}
       >
         <CampaignResultsContent
           campaignId={selectedCampaign.id}
@@ -401,6 +406,22 @@ async function DataPageContent({ searchParams }: DataPageProps) {
         />
       </Suspense>
     </div>
+  );
+}
+
+function ResultsKpis({ kpis }: { kpis: CampaignKpi }) {
+  return (
+    <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+      {[
+        ["Scans", String(kpis.scans)],
+        ["Participations", String(kpis.games)],
+        ["Opt-ins", String(kpis.optIns)],
+        ["Conversion", formatPercent(kpis.conversionRate)],
+        ["Lots retirés", String(kpis.redeemed)],
+        ["Coût / participation", formatCurrency(kpis.games
+          ? kpis.estimatedSpend / kpis.games : 0)],
+      ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
+    </section>
   );
 }
 
@@ -445,18 +466,6 @@ async function CampaignResultsContent({
 
   return (
     <>
-      <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
-        {[
-          ["Scans", String(dataView.performance.kpis.scans)],
-          ["Participations", String(dataView.performance.kpis.games)],
-          ["Opt-ins", String(dataView.performance.kpis.optIns)],
-          ["Conversion", formatPercent(dataView.performance.kpis.conversionRate)],
-          ["Lots retirés", String(dataView.performance.kpis.redeemed)],
-          ["Coût / participation", formatCurrency(dataView.performance.kpis.games
-            ? dataView.performance.kpis.estimatedSpend / dataView.performance.kpis.games : 0)],
-        ].map(([label, value]) => <MetricCard key={label} label={label} value={value} />)}
-      </section>
-
       <section className="grid gap-6 xl:grid-cols-2">
         <Histogram
           eyebrow="Participations"
