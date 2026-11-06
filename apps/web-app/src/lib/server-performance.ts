@@ -3,7 +3,7 @@ import { emitOperationalRecord } from "@/lib/operational-telemetry";
 export type PerformanceStage =
   | "auth.validate" | "auth.context" | "auth.workspace"
   | "data.overview" | "data.activity" | "data.prizes"
-  | "data.recent-contacts" | "data.results" | "data.account-pins"
+  | "data.recent-contacts" | "data.results" | "data.account-pins" | "data.account-affiliate" | "data.account-billing"
   | "data.alerts" | "page.home" | "page.campaigns" | "page.results" | "page.account";
 
 export async function measureServerStage<T>(stage: PerformanceStage, work: () => Promise<T>): Promise<T> {
