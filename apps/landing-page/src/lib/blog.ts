@@ -128,6 +128,440 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
+    "path": "/blog/programme-fidelite-institut-beaute",
+    "title": "Programme de fidélité pour institut de beauté : carte, parrainage ou jeu ?",
+    "seoTitle": "Programme de fidélité pour institut de beauté : comparatif",
+    "description": "Carte à tampons, points, parrainage, remise ou jeu. Comparez les coûts et le travail en institut, avec un budget fictif pour 100 clientes.",
+    "eyebrow": "Fidélité en institut",
+    "author": "L’équipe Okado",
+    "publishedAt": "2026-11-06",
+    "updatedAt": "2026-11-06",
+    "reviewedAt": "2026-11-05",
+    "readingTime": "8 min de lecture",
+    "image": "/images/blog/programme-fidelite-institut-beaute.webp",
+    "imageAlt": "Illustration de trois options pour un institut : carte à tampons, points et roue",
+    "intro": "Une cliente revient chaque mois pour ses ongles. Une autre n’a pas repris rendez-vous après son premier soin du visage. Leur proposer la même carte de fidélité paraît simple, mais elles n’ont pas le même motif de revenir. Le choix dépend aussi de ce que votre équipe peut gérer entre deux encaissements. Voici comment comparer cinq dispositifs, du tampon papier à la roue par QR code, et calculer ce que chacun pourrait coûter à un institut sur trois mois.",
+    "answer": "Une carte à tampons convient à des visites fréquentes et assez semblables. Les points sont plus souples si les montants varient et que votre caisse sait les suivre. Le parrainage sert surtout à accueillir de nouvelles clientes. Une remise ciblée peut aider à déclencher un retour précis. Un jeu convient à une animation courte, avec un stock de cadeaux fixé à l’avance.",
+    "guide": [
+      {
+        "label": "Comparer les cinq options",
+        "description": "Le geste au comptoir et le coût à anticiper.",
+        "sectionId": "comparatif"
+      },
+      {
+        "label": "Voir les outils",
+        "description": "Caisse, carte dans le téléphone et suivi du parrainage.",
+        "sectionId": "outils"
+      },
+      {
+        "label": "Faire le calcul",
+        "description": "Budget et engagements pour 100 clientes.",
+        "sectionId": "budget"
+      }
+    ],
+    "sections": [
+      {
+        "id": "comparatif",
+        "title": "Quel programme choisir selon le problème à résoudre ?",
+        "paragraphs": [
+          "Regardez d’abord le délai entre deux rendez-vous honorés pour la prestation qui vous intéresse. Avec un soin par mois, une carte qui offre un complément au sixième rendez-vous demande environ cinq mois à partir de la première visite. C’est un repère pour l’entretien régulier. Pour travailler le retour après un premier soin, préférez une offre que la cliente peut utiliser dès la prochaine visite.",
+          "Pour une clientèle qui alterne soins et achats de produits, les points permettent de tenir compte des montants dépensés. Par exemple, un point par euro et un bon de 6 € à 200 points représentent 3 € de récompense pour 100 € dépensés sur les achats éligibles, quand le bon est utilisé. Choisissez le seuil d’après le rythme d’achat que vous voyez en caisse.",
+          "Si les clientes recommandent déjà l’institut et que vous avez des créneaux pour recevoir leurs proches, le parrainage aide à suivre ces premiers rendez-vous. Si vous voulez animer une semaine précise, le jeu permet de choisir le nombre de cadeaux à l’avance. Dans un agenda déjà plein, réservez les avantages qui mobilisent du temps aux prestations ou aux créneaux que vous pouvez réellement accueillir."
+        ],
+        "table": {
+          "caption": "Cinq dispositifs de fidélité comparés pour un institut",
+          "headers": [
+            "Dispositif",
+            "Quand il convient",
+            "Travail pour l’institut",
+            "Coût et contrainte"
+          ],
+          "rows": [
+            [
+              "Carte à tampons papier",
+              "Entretien régulier, par exemple une pose ou une épilation récurrente.",
+              "Tamponner une visite payée, puis vérifier et marquer la récompense utilisée.",
+              "Impression, tampon et récompenses. Prévoir une règle simple pour les cartes perdues et les doublons."
+            ],
+            [
+              "Points digitaux",
+              "Prestations et paniers variés, avec une clientèle assez régulière pour atteindre un palier.",
+              "Associer l’achat à la bonne fiche, régler le barème et corriger les annulations.",
+              "Module ou abonnement, temps de paramétrage et avantages acquis. Vérifier l’export des soldes avant de changer d’outil."
+            ],
+            [
+              "Parrainage",
+              "Les clientes recommandent déjà l’institut et il reste de la place pour recevoir leurs proches.",
+              "Fournir un code, noter qui a recommandé la nouvelle cliente, puis valider après la prestation honorée.",
+              "Un ou deux avantages par parrainage. Anticiper les doublons et le coût si les deux personnes utilisent leur bon."
+            ],
+            [
+              "Remise au prochain rendez-vous",
+              "Une prestation ou un créneau précis mérite d’être testé, sur un groupe choisi.",
+              "Remettre un code, vérifier la date et le service, puis le marquer comme utilisé.",
+              "La remise réduit la recette du rendez-vous. Elle peut aussi être utilisée pour une visite qui aurait eu lieu de toute façon."
+            ],
+            [
+              "Roue ou ticket à gratter",
+              "Une animation limitée dans le temps, à l’accueil ou lors d’un événement déjà prévu.",
+              "Préparer le QR, choisir les lots et les conditions, puis vérifier chaque retrait.",
+              "Logiciel, affiche, lots et temps de suivi. Les stocks permettent de chiffrer le maximum à réserver."
+            ]
+          ]
+        }
+      },
+      {
+        "id": "outils",
+        "title": "Une carte papier, votre caisse ou un outil de plus ?",
+        "paragraphs": [
+          "Une carte papier se prépare avec une règle lisible en une phrase. Par exemple, cinq prestations payées donnent droit à un complément précis lors de la suivante. Identifiez les prestations qui donnent un tampon et indiquez comment le cadeau se prend. Avant de lancer la carte, simulez un encaissement avec deux collègues. Si elles appliquent la règle différemment, simplifiez-la.",
+          "Si vous utilisez déjà Planity, vérifiez ce que permet votre offre avant de chercher un autre logiciel. L’aide de Planity décrit une carte liée à sa fonction Caisse, avec calcul selon les passages ou le montant dépensé. Testez aussi ce qui se passe quand vous remboursez un achat. [Documentation Planity](https://support.planity.com/hc/fr/articles/26915782461330-Comment-cr%C3%A9er-une-carte-de-fid%C3%A9lit%C3%A9)",
+          "Si vous préférez une carte que la cliente peut garder dans son téléphone, Fidtap illustre le parcours QR vers une carte dans le navigateur ou dans le Wallet. L’équipe crédite les points depuis la carte. L’intérêt dépend du nombre de gestes que cela ajoute à votre encaissement habituel. [Carte Fidtap pour institut](https://www.fidtap.fr/carte-de-fidelite-institut-de-beaute)",
+          "Fresha documente un autre parcours, où la cliente consulte ses points et ses récompenses dans son compte et peut partager un lien de parrainage. Si vous utilisez déjà ce logiciel, vérifiez l’option disponible dans votre offre et essayez un parrainage du premier rendez-vous jusqu’au bon utilisé. [Aide Fresha sur la fidélité](https://www.fresha.com/help-center/knowledge-base/clients/101624-understand-how-clients-engage-with-your-loyalty-program)"
+        ],
+        "items": [
+          "Faites un essai à deux sur une vente, une annulation et une récompense utilisée. Chronométrez le geste qui se répète. À 20 secondes de plus par encaissement, 100 passages représentent environ 33 minutes de travail.",
+          "Vérifiez qui peut corriger un solde, retrouver une cliente ou exporter les droits déjà acquis.",
+          "Demandez le prix complet pour votre situation, avec les modules, l’équipement et le temps passé à former l’équipe."
+        ]
+      },
+      {
+        "id": "budget",
+        "title": "Combien prévoir pour 100 clientes ?",
+        "paragraphs": [
+          "Imaginons un institut qui invite 100 clientes et dispose de 180 € pour un test de trois mois. Il valorise le temps de l’équipe à 30 € par heure. Les cinq lignes sont des options séparées. Pour les tampons et les points, certaines clientes ont déjà commencé à cumuler. Le nombre de récompenses acquises et utilisées dépend des hypothèses de chaque ligne.",
+          "Pour refaire le calcul, multipliez les récompenses utilisées par leur coût unitaire, puis ajoutez l’impression, le logiciel et le temps d’équipe. Refaites ensuite le calcul avec tous les avantages prévus. Le tableau suppose 30 € de module pour les points et trois mois d’Okado à 20 € HT pour le jeu, hors effets de TVA. [Tarifs Okado](https://www.okado.app/tarifs)",
+          "Avec 180 €, la carte et le parrainage couvrent l’ensemble des avantages prévus dans l’exemple. Les points et la remise entrent dans le budget au taux d’usage supposé, mais dépassent l’enveloppe si tous les bons sont utilisés. Pour une carte ou des points, comptez aussi les avantages déjà acquis avant le test et les clientes proches d’un palier, même si elles utilisent leur cadeau plus tard.",
+          "Pour le jeu, 180 € moins 115 € de frais laissent 65 € pour les lots. Vous pouvez donc prévoir jusqu’à 16 lots à 4 €, pour un total de 179 €. Si vous budgétez un quatrième mois d’abonnement pour suivre les derniers gains, les frais montent à 135 €. Il reste 45 €, soit 11 lots à 4 € pour le même total. Vérifiez la durée nécessaire avant d’annoncer les quantités."
+        ],
+        "table": {
+          "caption": "Budget fictif sur trois mois pour 100 clientes invitées",
+          "headers": [
+            "Dispositif",
+            "Récompenses prévues",
+            "Frais et temps",
+            "Coût selon l’usage",
+            "Réserve pour les avantages prévus"
+          ],
+          "rows": [
+            [
+              "Tampons",
+              "20 compléments acquis à 5 €. 12 utilisés.",
+              "15 € d’impression et 1 h de gestion.",
+              "105 €",
+              "145 €"
+            ],
+            [
+              "Points digitaux",
+              "25 bons acquis à 6 €. 15 utilisés.",
+              "30 € de module et 1 h 30 de gestion.",
+              "165 €",
+              "225 €"
+            ],
+            [
+              "Parrainage",
+              "10 parrainages validés. 20 bons à 5 €, dont 16 utilisés.",
+              "1 h de gestion.",
+              "110 €",
+              "130 €"
+            ],
+            [
+              "Remise ciblée",
+              "40 bons à 5 €, dont 25 utilisés.",
+              "45 min de gestion.",
+              "147,50 €",
+              "222,50 €"
+            ],
+            [
+              "Jeu QR",
+              "60 parties dans l’hypothèse. Stock de 25 lots à 4 €, dont 20 utilisés.",
+              "60 € de logiciel, 10 € d’affiche et 1 h 30 de gestion.",
+              "195 €",
+              "215 €"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "association",
+        "title": "Quels dispositifs peuvent se compléter ?",
+        "paragraphs": [
+          "Une carte à tampons peut récompenser l’entretien régulier pendant qu’une roue anime une semaine anniversaire. Le jeu a alors ses propres dates et son budget. Convenez avant le lancement de la façon de traiter un soin qui donne un tampon et sur lequel une cliente utilise un lot.",
+          "Chiffrez aussi le cumul. Dans cet exemple fictif, un soin à 50 € HT coûte 18 € à réaliser. Il laisse 32 € avant fidélisation, 27 € avec une remise de 5 € et 22 € si vous ajoutez un complément qui vous coûte aussi 5 €. Si 22 € est trop bas pour ce créneau, annoncez un seul avantage par rendez-vous et laissez la cliente choisir lequel utiliser. Expliquez cette règle à l’équipe et aux clientes avant la réservation.",
+          "Pour le parrainage, laissez la cliente transmettre elle-même son lien à sa proche. Si vous envisagez des e-mails ou SMS promotionnels, vérifiez les permissions et prévoyez une opposition facile à chaque envoi. Une adresse recueillie pour confirmer un rendez-vous ne suffit pas à autoriser toutes les offres. [Règles de parrainage de la CNIL](https://www.cnil.fr/fr/cnil-direct/question/quelles-sont-les-regles-suivre-en-matiere-de-parrainage) · [Communications électroniques](https://www.cnil.fr/fr/communication-electronique-quelles-regles)"
+        ]
+      },
+      {
+        "id": "essai",
+        "title": "Comment tester un dispositif avant de le généraliser ?",
+        "paragraphs": [
+          "Prenons un essai fictif de remise sur un soin pour lequel les clientes reviennent généralement dans les six semaines. Choisissez deux groupes comparables de 20 clientes qui viennent de faire ce soin. Si possible, répartissez-les au hasard. Un groupe reçoit un bon de 5 € valable six semaines. L’autre conserve le suivi habituel. Proposez les mêmes créneaux aux deux groupes. Les 20 bons et 30 minutes de gestion à 30 € l’heure donnent une enveloppe de 115 €.",
+          "Au bout de six semaines par cliente, comparez les soins effectivement honorés. Par exemple, 11 clientes sur 20 reviennent avec l’offre et 8 sur 20 avec le suivi habituel. Si 8 bons sont utilisés, ils coûtent 40 €, auxquels s’ajoutent 15 € de gestion. L’écart de trois visites est un premier signal à vérifier sur une autre série avant d’étendre l’offre.",
+          "Adaptez le bilan au mécanisme. Pour les tampons ou les points, suivez les paliers atteints puis les cadeaux utilisés. Pour le parrainage, le scénario à 110 € et dix premiers rendez-vous honorés représente 11 € par nouvelle cliente parrainée. Pour le jeu, séparez les parties, les lots utilisés et les rendez-vous qui ont suivi.",
+          "Pour préparer un jeu, retrouvez les six lots, les probabilités et le budget de l’exemple de campagne. La démo Beauté montre le tour de roue et l’e-mail de gain simulé sur téléphone. [Voir l’exemple de campagne](/blog/roue-fortune-institut-beaute) · [Essayer la démo Beauté](/instituts-beaute#demo-care)"
+        ]
+      }
+    ],
+    "takeaway": {
+      "title": "Choisissez selon le geste que vous voulez encourager",
+      "text": "Une visite régulière, une recommandation et un retour après un premier soin demandent des outils différents. Pour votre premier essai, prenez un groupe de clientes, un seul dispositif et un budget qui couvre les avantages promis. Vérifiez ensuite si l’équipe peut tenir la règle au comptoir et si les clientes utilisent l’avantage comme prévu."
+    },
+    "related": [
+      "/blog/roue-fortune-institut-beaute",
+      "/blog/fideliser-clients-sans-programme-points",
+      "/blog/faire-revenir-cliente-apres-premiere-visite-institut-beaute",
+      "/instituts-beaute"
+    ],
+    "source": [
+      {
+        "label": "Planity — créer une carte de fidélité, 2 novembre 2026",
+        "href": "https://support.planity.com/hc/fr/articles/26915782461330-Comment-cr%C3%A9er-une-carte-de-fid%C3%A9lit%C3%A9"
+      },
+      {
+        "label": "Fidtap — carte de fidélité pour institut de beauté",
+        "href": "https://www.fidtap.fr/carte-de-fidelite-institut-de-beaute"
+      },
+      {
+        "label": "Fresha — parcours fidélité et parrainage côté cliente",
+        "href": "https://www.fresha.com/help-center/knowledge-base/clients/101624-understand-how-clients-engage-with-your-loyalty-program"
+      },
+      {
+        "label": "CNIL — règles du parrainage",
+        "href": "https://www.cnil.fr/fr/cnil-direct/question/quelles-sont-les-regles-suivre-en-matiere-de-parrainage"
+      },
+      {
+        "label": "CNIL — communications électroniques, 10 juin 2026",
+        "href": "https://www.cnil.fr/fr/communication-electronique-quelles-regles"
+      },
+      {
+        "label": "Okado — tarif public France vérifié le 5 novembre 2026",
+        "href": "https://www.okado.app/tarifs"
+      }
+    ],
+    "ctaLabel": "Essayer la démo Beauté sur téléphone",
+    "ctaHref": "/instituts-beaute#demo-care"
+  },
+  {
+    "path": "/blog/roue-fortune-institut-beaute",
+    "title": "Roue de la fortune pour institut de beauté : exemple complet et budget",
+    "seoTitle": "Roue de la fortune pour institut de beauté : lots et budget",
+    "description": "Préparez une roue pour votre institut avec six lots, leurs probabilités, les stocks et le coût pour 100 parties. Démo mobile à essayer.",
+    "eyebrow": "Animation en institut",
+    "author": "L’équipe Okado",
+    "publishedAt": "2026-11-06",
+    "updatedAt": "2026-11-06",
+    "reviewedAt": "2026-11-05",
+    "readingTime": "8 min de lecture",
+    "image": "/images/blog/roue-fortune-institut-beaute.webp",
+    "imageAlt": "Illustration d’une roue à sept cases pour six récompenses et une issue sans gain",
+    "intro": "Vous aimeriez proposer un tour de roue à l’accueil. Combien de cadeaux faut-il prévoir ? Et si plusieurs clientes gagnent un soin qui prend un quart d’heure ? Cet exemple fictif montre comment choisir six lots, préparer leur remise et chiffrer la campagne avant d’imprimer le QR code.",
+    "answer": "Pour 100 parties, cette roue d’institut donne environ 38 gains en moyenne avec les stocks proposés. Si 60 % des gains sont utilisés, le coût économique estimé est de 223 €. Prévoyez jusqu’à 337 € pour couvrir l’utilisation de tout le stock et les frais du scénario. Les dates, les prestations et les créneaux ci-dessous vous permettent d’adapter le calcul à votre institut.",
+    "guide": [
+      {
+        "label": "Voir les six lots",
+        "description": "Chances, quantités et conditions à afficher.",
+        "sectionId": "lots"
+      },
+      {
+        "label": "Calculer le coût",
+        "description": "Projection sur 100 parties et plafond.",
+        "sectionId": "projection"
+      },
+      {
+        "label": "Jouer sur mobile",
+        "description": "Essayer la roue et voir l’e-mail simulé.",
+        "sectionId": "demo-mobile"
+      }
+    ],
+    "sections": [
+      {
+        "id": "campagne",
+        "title": "Une roue de quatre semaines avec des gains à utiliser au retour",
+        "paragraphs": [
+          "Dans cet exemple, l’institut fait jouer les personnes majeures qui se présentent à l’accueil du 1er au 28 février 2027. Elles scannent le QR code et jouent sur leur téléphone, sans achat obligatoire. Certains lots s’utilisent ensuite avec un soin payé. Indiquez la condition dans la description du lot avant le jeu.",
+          "Chaque gain devient disponible sept jours après son attribution et reste utilisable pendant 60 jours à partir de cette date. Un gain attribué le 28 février à midi devient donc utilisable le 7 mars et arrive à échéance le 6 mai. La cliente peut réserver plus tôt un soin qui aura lieu pendant cette période. À la fermeture du jeu, retirez l’affiche et vérifiez que l’équipe peut encore consulter et valider les gains attribués.",
+          "À l’accueil, une phrase suffit pour présenter l’opération. « Jusqu’au 28 février, scannez pour tenter de gagner un cadeau pour votre prochaine visite. Le jeu est gratuit et les conditions de chaque lot sont accessibles avant de jouer. » L’affiche renvoie au règlement complet."
+        ],
+        "items": [
+          "Une participation tous les sept jours selon les règles du jeu. Pour atteindre 100 parties, comptez environ 25 par semaine. Une même personne peut jouer plusieurs fois pendant la campagne.",
+          "Saisir les six lots avec leurs stocks et laisser le mode 100 % gagnant désactivé. Les chances des lots totalisent 40 % au départ, ce qui laisse 60 % sans gain.",
+          "Prévoir un seul avantage par rendez-vous. Afficher les dates, l’organisateur, les conditions de chaque lot et le contact en cas de question.",
+          "Utiliser un e-mail de test pour vérifier la réception du gain et le passage au comptoir avant d’imprimer le QR public."
+        ]
+      },
+      {
+        "id": "lots",
+        "title": "Quels lots mettre sur une roue d’institut ?",
+        "paragraphs": [
+          "Choisissez des cadeaux que l’équipe peut remettre et des compléments qu’elle a le temps de réaliser. Ici, quatre massages de 10 minutes et deux soins express de 15 minutes demandent jusqu’à 1 h 10 de travail au total. Prévoyez aussi le temps du masque et du nail art dans les rendez-vous concernés. Si le planning est serré, réduisez le stock des lots longs avant le lancement.",
+          "Pour estimer un lot, comptez le produit, les consommables et le temps ajouté. Un masque qui coûte 1,50 € et prend trois minutes à 30 € de l’heure revient à 3 € dans cet exemple. Pour une remise, comptez la recette que vous abandonnez. Les montants sont simplifiés, hors effets de TVA. Si un soin offert remplace une prestation que vous auriez pu vendre, chiffrez aussi la marge perdue sur ce créneau.",
+          "Les chances sont celles du départ, avec tous les lots disponibles. La taille dessinée d’une case sert à présenter le jeu. La probabilité est un réglage distinct. Dans cette campagne, les lots épuisés sortent du tirage et leur part augmente la chance de ne rien gagner."
+        ],
+        "table": {
+          "caption": "Six lots et une issue sans gain pour une roue d’institut",
+          "headers": [
+            "Lot et condition",
+            "Chance au départ",
+            "Stock total",
+            "Coût par utilisation",
+            "Sur 100 parties en moyenne"
+          ],
+          "rows": [
+            [
+              "Mini crème pour les mains, à retirer à l’accueil sans achat",
+              "12 %",
+              "14",
+              "1,50 €",
+              "11,45"
+            ],
+            [
+              "Masque complémentaire avec un soin du visage payé",
+              "10 %",
+              "12",
+              "3 €",
+              "9,53"
+            ],
+            [
+              "Nail art sur deux ongles avec une pose payée",
+              "8 %",
+              "10",
+              "4 €",
+              "7,61"
+            ],
+            [
+              "5 € de remise sur un soin du visage d’au moins 45 €",
+              "6 %",
+              "8",
+              "5 €",
+              "5,71"
+            ],
+            [
+              "Massage des mains de 10 min avec un soin payé, sur réservation",
+              "3 %",
+              "4",
+              "8 €",
+              "2,69"
+            ],
+            [
+              "Soin express des mains de 15 min, sans achat, sur réservation",
+              "1 %",
+              "2",
+              "14 €",
+              "0,90"
+            ],
+            [
+              "Sans gain",
+              "60 %",
+              "Sans objet",
+              "0 €",
+              "62,11"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "projection",
+        "title": "Quel budget prévoir pour 100 participations ?",
+        "paragraphs": [
+          "Sans limite de stock, 100 parties à 12 % donnent en moyenne 12 mini-crèmes. En faisant le même calcul pour les six lots, on arrive à 40 gains et 148 € si tous sont utilisés. Ce repère aide à lire les probabilités. Sur une série réelle, un lot peut être gagné plus ou moins souvent.",
+          "La dernière colonne du tableau tient compte du stock. Pour chaque lot, nous calculons la moyenne du nombre de gains sur 100 tirages, en arrêtant le compte au plafond prévu. Par exemple, si une série donne 16 mini-crèmes, l’institut en attribue au plus 14. En supposant que les parties aboutissent sans remise en stock, on obtient environ 38 gains pour 139 € si tous sont utilisés.",
+          "Avec 60 % d’utilisation supposée pour chaque type de lot, prévoyez environ 23 retraits et 83 € de récompenses utilisées. Le tableau compare plusieurs taux, car le résultat dépend des conditions et des disponibilités de l’institut. Les mini-crèmes achetées d’avance peuvent demander 21 € de trésorerie dès le lancement, même si peu sont retirées.",
+          "Ajoutez 140 € de frais dans cet exemple. Il faut compter deux heures à 25 € pour préparer et suivre le jeu, 10 € d’impression et quatre mois payés à 20 € HT si l’institut garde Okado jusqu’à l’expiration des derniers gains. [Tarifs Okado](https://www.okado.app/tarifs)",
+          "Pour fixer votre enveloppe, multipliez le stock de chaque lot par son coût. Les six lignes totalisent 197 €, soit 337 € avec les frais. Si vous avez 250 € en tout, il reste 110 € pour les lots. Par exemple, des stocks de 8, 7, 6, 4, 2 et 1 dans l’ordre du tableau ramènent la dotation à 107 €. Recalculez la projection avec ces stocks avant de lancer."
+        ],
+        "table": {
+          "caption": "Budget économique de la roue fictive selon l’utilisation des gains",
+          "headers": [
+            "Hypothèse",
+            "Coût des récompenses",
+            "Total avec 140 € de frais"
+          ],
+          "rows": [
+            [
+              "30 % des gains projetés utilisés",
+              "Environ 42 €",
+              "Environ 182 €"
+            ],
+            [
+              "60 % des gains projetés utilisés",
+              "Environ 83 €",
+              "Environ 223 €"
+            ],
+            [
+              "100 % des gains projetés utilisés",
+              "Environ 139 €",
+              "Environ 279 €"
+            ],
+            [
+              "Réserve pour tout le stock",
+              "197 €",
+              "337 €"
+            ]
+          ]
+        }
+      },
+      {
+        "id": "retrait",
+        "title": "Que doit faire l’équipe quand la cliente présente son gain ?",
+        "paragraphs": [
+          "Dans Okado, l’institut choisit ses lots, leurs probabilités, leur stock et leurs conditions. Le résultat apparaît sur le téléphone et la gagnante peut recevoir son e-mail de gain avec le QR de retrait. Lors de la réservation, rappelez la prestation éligible et vérifiez la date. Quand le cadeau est remis ou la remise appliquée, validez le retrait. [Fonctionnement d’une roue Okado](/roue-de-la-fortune)",
+          "Avant l’ouverture, testez deux situations au comptoir. Une cliente revient avec un gain valable et le soin prévu. Une autre montre un gain déjà utilisé, expiré ou associé à un autre soin. Demandez à une collègue d’expliquer la réponse et de retrouver le bon écran. Si la règle exige trop d’explications, modifiez-la avant le premier tirage.",
+          "Présentez les conditions du jeu et des lots avant la participation. Dans cet exemple, l’avis Google et sa note restent entièrement en dehors du parcours. Si vous proposez des offres par e-mail après le jeu, distinguez-les de l’envoi du gain et vérifiez les conditions de prospection applicables. [Loteries publicitaires, DGCCRF](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees) · [Règles de Google sur les avis](https://support.google.com/contributionpolicy/answer/7400114?hl=fr) · [Communications électroniques, CNIL](https://www.cnil.fr/fr/communication-electronique-quelles-regles)"
+        ]
+      },
+      {
+        "id": "demo-mobile",
+        "title": "Essayer la roue Beauté sur un téléphone",
+        "paragraphs": [
+          "Ouvrez la démo Beauté « Soins visage & corps » et choisissez « Jouer maintenant ». Vous pouvez suivre le parcours jusqu’au masque offert et à l’e-mail simulé. La démo illustre l’expérience sur téléphone. Pour régler votre campagne, reprenez les six lots et les chiffres du tableau. [Jouer à la démo Beauté](/instituts-beaute#demo-care)"
+        ]
+      },
+      {
+        "id": "bilan",
+        "title": "Comment savoir si la roue a donné lieu à des rendez-vous ?",
+        "paragraphs": [
+          "Au comptoir, notez le lot et, s’il accompagne un soin, le rendez-vous auquel il correspond. Gardez quatre compteurs dans votre bilan pour les parties jouées, les gains attribués, les retraits validés et les soins payés honorés avec un gain. Une crème retirée à l’accueil renseigne uniquement le compteur des retraits.",
+          "Exemple fictif après expiration des gains : 100 parties donnent 36 gains, dont 22 sont utilisés. Le taux de retrait est de 22 ÷ 36, soit 61 %. Sur ces retraits, 15 accompagnent un soin payé et honoré. Pour savoir combien de rendez-vous la roue a réellement déclenchés, comparez les retours de clientes similaires sur la même durée, avec et sans invitation au jeu. Certaines auraient pris rendez-vous de toute façon.",
+          "Si les gains sont souvent attribués mais rarement utilisés, demandez à l’équipe quelles conditions posent problème. Un lot peut être difficile à réserver ou valable sur un soin peu demandé. Ajustez d’abord ce point pour la prochaine campagne. Si vous cherchez surtout à récompenser des visites régulières, une carte mérite aussi d’être envisagée. [Comparatif des programmes de fidélité en institut](/blog/programme-fidelite-institut-beaute)"
+        ]
+      }
+    ],
+    "takeaway": {
+      "title": "Fixez le stock avant de choisir les probabilités",
+      "text": "Commencez par ce que votre équipe peut remettre et par les créneaux qu’elle peut réserver. Fixez le coût maximum de chaque lot, puis essayez le jeu et le retrait sur un téléphone. Au premier bilan, comparez le temps passé, les lots utilisés et les visites qui ont effectivement suivi."
+    },
+    "related": [
+      "/blog/programme-fidelite-institut-beaute",
+      "/blog/animation-commerciale-institut-beaute",
+      "/guides/lots-institut-beaute",
+      "/roue-de-la-fortune"
+    ],
+    "source": [
+      {
+        "label": "DGCCRF — loteries publicitaires",
+        "href": "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees"
+      },
+      {
+        "label": "Google Maps — règles concernant les avis avec contrepartie",
+        "href": "https://support.google.com/contributionpolicy/answer/7400114?hl=fr"
+      },
+      {
+        "label": "CNIL — communications électroniques, 10 juin 2026",
+        "href": "https://www.cnil.fr/fr/communication-electronique-quelles-regles"
+      },
+      {
+        "label": "Okado — roue par QR code et retrait",
+        "href": "https://www.okado.app/roue-de-la-fortune"
+      },
+      {
+        "label": "Okado — tarif public France vérifié le 5 novembre 2026",
+        "href": "https://www.okado.app/tarifs"
+      }
+    ],
+    "ctaLabel": "Jouer à la roue Beauté sur mobile",
+    "ctaHref": "/instituts-beaute#demo-care"
+  },
+  {
     path: "/blog/fideliser-clients-agence-voyage",
     title: "Comment fidéliser les clients d’une agence de voyage ? 9 actions concrètes",
     seoTitle: "Fidéliser les clients d’une agence de voyage : 9 actions",

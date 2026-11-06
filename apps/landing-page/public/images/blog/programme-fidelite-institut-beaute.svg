@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="800" viewBox="0 0 1600 800" role="img">
+  <title>Carte, points et jeu au comptoir d’un institut</title>
+  <rect width="1600" height="800" fill="#faf2eb"/>
+  <circle cx="1400" cy="36" r="275" fill="#f0e3f2"/>
+  <circle cx="72" cy="770" r="214" fill="#f3dcd6"/>
+  <g fill="#45263f" font-family="Arial, sans-serif">
+    <text x="110" y="168" font-size="30" font-weight="700" letter-spacing="5">OKADO · FIDÉLITÉ EN INSTITUT</text>
+    <text x="110" y="283" font-size="71" font-weight="700">Quel dispositif choisir ?</text>
+    <g stroke="#a986a0" stroke-width="2">
+      <rect x="110" y="363" width="434" height="278" rx="32" fill="#fff9f2"/>
+      <rect x="583" y="363" width="434" height="278" rx="32" fill="#f6e8f5"/>
+      <rect x="1056" y="363" width="434" height="278" rx="32" fill="#f8e5df"/>
+    </g>
+    <g fill="#a36891">
+      <circle cx="211" cy="472" r="19"/><circle cx="268" cy="472" r="19"/><circle cx="325" cy="472" r="19"/>
+      <circle cx="382" cy="472" r="19" fill="#ecd9e6"/><circle cx="439" cy="472" r="19" fill="#ecd9e6"/>
+    </g>
+    <text x="327" y="575" text-anchor="middle" font-size="38" font-weight="700">Carte</text>
+    <g fill="#845176">
+      <rect x="734" y="478" width="36" height="42" rx="7"/>
+      <rect x="782" y="453" width="36" height="67" rx="7"/>
+      <rect x="830" y="428" width="36" height="92" rx="7"/>
+    </g>
+    <text x="800" y="575" text-anchor="middle" font-size="38" font-weight="700">Points</text>
+    <circle cx="1273" cy="474" r="57" fill="#9b516f"/>
+    <path d="M1273 417A57 57 0 0 1 1330 474H1273Z" fill="#efc2ba"/>
+    <path d="M1273 531A57 57 0 0 1 1216 474H1273Z" fill="#efc2ba"/>
+    <circle cx="1273" cy="474" r="10" fill="#fff9f2"/>
+    <text x="1273" y="575" text-anchor="middle" font-size="38" font-weight="700">Jeu</text>
+  </g>
+</svg>
