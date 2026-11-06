@@ -55,6 +55,7 @@
 .actionsColumn { width: 60px; }
 
 .mobileLabel { display: none; }
+.detail { color: var(--okado-text-muted); }
 .stockCampaignColumn { width: 25%; }
 .stockCountColumn { width: 102px; }
 .stockRemainingColumn { width: 125px; }
@@ -88,9 +89,10 @@
   .table tbody tr:last-child { border-bottom: 0; }
   .table tbody :is(th, td) { padding: 0; border: 0; white-space: normal; }
   .table tbody [data-align="right"] { text-align: left; }
-  .name { grid-column: 1; min-width: 0; overflow-wrap: anywhere; }
+  .name { grid-column: 1 / -1; min-width: 0; overflow-wrap: anywhere; }
+  .table tr:has(> .action) .name { grid-row: 1; padding-inline-end: 48px; }
   .name span[title] { white-space: normal; }
-  .detail { grid-column: 1 / -1; color: var(--okado-text-muted); overflow-wrap: anywhere; }
+  .detail { grid-column: 1 / -1; overflow-wrap: anywhere; }
   .action { grid-row: 1; grid-column: 2; justify-self: end; }
   .stockStatus { grid-column: 1 / -1; }
   .mobileLabel {
