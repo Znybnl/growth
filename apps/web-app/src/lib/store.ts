@@ -11,7 +11,7 @@ import {
   getSupabaseCampaignPerformance,
   getSupabaseCampaignSetupPerformance,
   getSupabaseMerchantCampaignLibrary,
-  getSupabaseMerchantCampaignOverview,
+  getSupabaseMerchantCampaignList,
   getSupabaseMerchantDashboard,
   findSupabaseMerchantLeadCampaign,
   getSupabaseMerchantLeads,
@@ -80,6 +80,7 @@ import {
   CampaignEmailSettings,
   CampaignEvent,
   CampaignLibraryItem,
+  CampaignListItem,
   CampaignPerformance,
   CampaignPresentation,
   CampaignBackgroundSettings,
@@ -1926,12 +1927,12 @@ function merchantCampaignsTag(merchantId: string) {
   return `merchant:${merchantId}:campaigns`;
 }
 
-function getCachedSupabaseMerchantCampaignOverview(merchant: Merchant) {
+function getCachedSupabaseMerchantCampaignList(merchantId: string) {
   return unstable_cache(
-    () => getSupabaseMerchantCampaignOverview(merchant),
-    ["merchant-campaign-overview", merchant.id],
+    () => getSupabaseMerchantCampaignList(merchantId),
+    ["merchant-campaign-list", merchantId],
     {
-      tags: [merchantCampaignsTag(merchant.id)],
+      tags: [merchantCampaignsTag(merchantId)],
       revalidate: MERCHANT_NAVIGATION_CACHE_SECONDS,
     },
   )();
@@ -2510,17 +2511,20 @@ export const getMerchantWorkspaceDashboard = cache(async function getMerchantWor
   } satisfies MerchantDashboardData;
 });
 
-export const getMerchantCampaignOverview = cache(async function getMerchantCampaignOverview(
+export const getMerchantCampaignList = cache(async function getMerchantCampaignList(
   merchantId = merchantSeed.id,
   fallbackMerchant?: Merchant,
 ) {
   if (getDataBackend("la lecture de la liste des campagnes") === "supabase") {
-    return getCachedSupabaseMerchantCampaignOverview(
-      await resolveMerchantForSupabase(merchantId, fallbackMerchant),
-    );
+    return getCachedSupabaseMerchantCampaignList(merchantId);
   }
 
-  return getMerchantDashboardFromMemory(merchantId, fallbackMerchant);
+  return getMerchantDashboardFromMemory(merchantId, fallbackMerchant).campaigns
+    .map(({ campaign, kpis }): CampaignListItem => ({
+      id: campaign.id, title: campaign.title, subtitle: campaign.subtitle,
+      gameType: campaign.gameType, isActive: campaign.isActive,
+      games: kpis.games, wins: kpis.wins, redeemed: kpis.redeemed,
+    }));
 });
 
 export const getMerchantCampaignLibrary = cache(async function getMerchantCampaignLibrary(

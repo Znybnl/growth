@@ -15,15 +15,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
-import { DeleteCampaignDialog } from "@/components/merchant/delete-campaign-button";
-import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
+import { openCampaignPreview } from "@/lib/game-preview-viewport";
 import { DuplicateCampaignButton } from "@/components/merchant/duplicate-campaign-button";
-import { CampaignQrDownloadDialog } from "@/components/merchant/campaign-qr-download";
 import { DownloadFeedbackDialog, downloadBlob, fetchDownload, useDownloadTask } from "@/components/merchant/download-feedback";
-import {
-  DuplicateCampaignToLocationsButton,
-  DuplicateCampaignToLocationsDialog,
-} from "@/components/merchant/duplicate-campaign-to-locations-button";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -43,6 +37,11 @@ type CampaignActionsMenuProps = {
 const itemClass =
   "min-h-9 cursor-pointer gap-2 rounded-[4px] px-2.5 py-2 text-sm font-medium text-graphite focus:bg-purple-haze";
 
+const CampaignPreviewDialog = dynamic(() => import("./campaign-preview-dialog").then((module) => module.CampaignPreviewDialog));
+const CampaignQrDownloadDialog = dynamic(() => import("./campaign-qr-download").then((module) => module.CampaignQrDownloadDialog));
+const DeleteCampaignDialog = dynamic(() => import("./delete-campaign-button").then((module) => module.DeleteCampaignDialog));
+const DuplicateCampaignToLocationsDialog = dynamic(() =>
+  import("./duplicate-campaign-to-locations-button").then((module) => module.DuplicateCampaignToLocationsDialog));
 const AdminDuplicateCampaignDialog = dynamic(() => import("@/components/merchant/admin-duplicate-campaign-button").then((module) => module.AdminDuplicateCampaignDialog));
 
 export function CampaignActionsMenu({
@@ -125,7 +124,9 @@ export function CampaignActionsMenu({
 
           <div className="space-y-1">
             <DuplicateCampaignButton campaignId={campaignId} variant="menu" />
-            <DuplicateCampaignToLocationsButton onOpen={() => setIsDuplicateLocationsOpen(true)} />
+            <DropdownMenuItem className={itemClass} onSelect={() => setIsDuplicateLocationsOpen(true)}>
+              <CopyPlus className="h-4 w-4" aria-hidden="true" /> Dupliquer vers des sites
+            </DropdownMenuItem>
             {allowAdminDuplicate ? <DropdownMenuItem className={itemClass} onSelect={() => setIsAdminDuplicateOpen(true)}>
               <CopyPlus className="h-4 w-4" aria-hidden="true" /> Dupliquer vers un marchand
             </DropdownMenuItem> : null}
@@ -140,23 +141,18 @@ export function CampaignActionsMenu({
         </DropdownMenuContent>
       </DropdownMenu>
       {isQrOpen ? <CampaignQrDownloadDialog campaignId={campaignId} isActive={isActive} onClose={() => setIsQrOpen(false)} /> : null}
-      <DownloadFeedbackDialog state={posterTask.state} title="Affiche A4 / A5" onClose={posterTask.close} onRetry={downloadPoster} />
-      <DeleteCampaignDialog
-        campaignId={campaignId}
-        campaignTitle={campaignTitle}
-        open={isDeleteOpen}
-        onClose={() => setIsDeleteOpen(false)}
-      />
-      <CampaignPreviewDialog
-        open={isPreviewOpen}
-        campaignId={campaignId}
-        onClose={() => setIsPreviewOpen(false)}
-      />
-      <DuplicateCampaignToLocationsDialog
-        campaignId={campaignId}
-        open={isDuplicateLocationsOpen}
-        onClose={() => setIsDuplicateLocationsOpen(false)}
-      />
+      {posterTask.state ? (
+        <DownloadFeedbackDialog state={posterTask.state} title="Affiche A4 / A5" onClose={posterTask.close} onRetry={downloadPoster} />
+      ) : null}
+      {isDeleteOpen ? (
+        <DeleteCampaignDialog campaignId={campaignId} campaignTitle={campaignTitle} open onClose={() => setIsDeleteOpen(false)} />
+      ) : null}
+      {isPreviewOpen ? (
+        <CampaignPreviewDialog campaignId={campaignId} open onClose={() => setIsPreviewOpen(false)} />
+      ) : null}
+      {isDuplicateLocationsOpen ? (
+        <DuplicateCampaignToLocationsDialog campaignId={campaignId} open onClose={() => setIsDuplicateLocationsOpen(false)} />
+      ) : null}
       {allowAdminDuplicate && isAdminDuplicateOpen ? <AdminDuplicateCampaignDialog campaignId={campaignId} onClose={() => setIsAdminDuplicateOpen(false)} /> : null}
     </>
   );
