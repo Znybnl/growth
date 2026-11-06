@@ -59,7 +59,7 @@ function getRecorder(subject: string): Promise<PostHog> {
           // The SDK also calls this hook with only { name } for the replay page URL.
           // Dropping that call drops rrweb's viewport metadata before the full snapshot.
           if (typeof request.name === "string" && Object.keys(request).length === 1) {
-            return { name: betaReplayUrl(request.name) };
+            return { ...request, name: betaReplayUrl(request.name) };
           }
           return null;
         },
