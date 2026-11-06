@@ -1197,14 +1197,35 @@ function toMerchantWorkspace(row: MerchantWorkspaceRow): MerchantWorkspace {
   };
 }
 
-type WorkspaceMembershipRow = {
-  id: string; workspace_id: string; role: MerchantWorkspaceRole; status: string;
+type MembershipLocationRow = {
+  merchant_id: string;
+  merchant: MerchantRow | null;
 };
+
+type WorkspaceMembershipRow = {
+  id: string;
+  role: MerchantWorkspaceRole;
+  workspace: MerchantWorkspaceRow | null;
+  locations: MembershipLocationRow[];
+  location_count: { count: number }[];
+};
+
+const EMBEDDED_MEMBERSHIP_LOCATIONS_LIMIT = 50;
+const membershipLocationColumns =
+  "merchant_id, merchant:merchants!merchant_membership_locations_merchant_id_fkey(*)";
 
 async function readWorkspaceMembership(merchantUserId: string) {
   return getSupabaseAdmin().from("merchant_workspace_memberships")
-    .select("id, workspace_id, role, status").eq("merchant_user_id", merchantUserId)
-    .eq("status", "active").order("created_at", { ascending: true }).limit(1)
+    .select(`
+      id, role,
+      workspace:merchant_workspaces(id, name, slug, default_time_zone, created_at),
+      locations:merchant_membership_locations(${membershipLocationColumns}),
+      location_count:merchant_membership_locations(count)
+    `)
+    .eq("merchant_user_id", merchantUserId).eq("status", "active")
+    .order("created_at", { ascending: true }).limit(1)
+    .order("merchant_id", { referencedTable: "locations" })
+    .limit(EMBEDDED_MEMBERSHIP_LOCATIONS_LIMIT, { referencedTable: "locations" })
     .maybeSingle<WorkspaceMembershipRow>();
 }
 
@@ -1241,27 +1262,24 @@ async function resolveMerchantWorkspaceContext(
     }
 
     const membership = membershipQuery.data;
-    const [{ data: workspaceRow }, { data: locationRows }] = await Promise.all([
-      supabase
-        .from("merchant_workspaces")
-        .select("id, name, slug, default_time_zone, created_at")
-        .eq("id", membership.workspace_id)
-        .maybeSingle<MerchantWorkspaceRow>(),
-      readAllRows((start, end) => supabase.from("merchant_membership_locations")
-        .select("merchant_id, merchant:merchants!merchant_membership_locations_merchant_id_fkey(*)", { count: "exact" })
-        .eq("membership_id", membership.id).order("merchant_id").range(start, end)),
-    ]);
+    // Compare with the exact count so a PostgREST row cap cannot hide an authorized site.
+    const complete = membership.locations.length === membership.location_count[0]?.count;
+    const locationRows = complete ? membership.locations : (await readAllRows((start, end) =>
+      supabase.from("merchant_membership_locations")
+        .select(membershipLocationColumns, { count: "exact" })
+        .eq("membership_id", membership.id).order("merchant_id").range(start, end)
+        .overrideTypes<MembershipLocationRow[], { merge: false }>())).data;
 
     // PostgREST joins only profiles explicitly associated with this membership.
     const profiles = (locationRows ?? []).map(row => row.merchant_id === fallbackMerchant.id
-      ? fallbackMerchant : row.merchant ? toMerchant(row.merchant as unknown as MerchantRow) : undefined);
+      ? fallbackMerchant : row.merchant ? toMerchant(row.merchant) : undefined);
     const locations = profiles
       .filter((merchant): merchant is Merchant => Boolean(merchant))
       .filter((merchant) => merchant.locationStatus !== "archived")
       .map((merchant) => ({ merchant, role: membership.role }));
 
     return {
-      workspace: workspaceRow ? toMerchantWorkspace(workspaceRow) : undefined,
+      workspace: membership.workspace ? toMerchantWorkspace(membership.workspace) : undefined,
       locations:
         locations.length > 0
           ? locations

@@ -22,11 +22,11 @@ function workspace({ count = 8, cap = 500, archived = false, fail = false, hold 
   const repairs = [];
   const fallback = {id:ids[0],companyName:"Commerce",locationStatus:"active"};
   const db = { auth:{admin:{updateUserById:async(id,payload)=>{repairs.push({id,payload});return {error:null}}}}, from(table) {
-    const filters = {}; let start=0,end=Infinity;
+    const filters = {}; let start=0,end=Infinity,embeddedLimit=Infinity;
     const q = {
-      select(){return q},eq(k,v){filters[k]=v;return q},order(){return q},limit(){return q},
+      select(){return q},eq(k,v){filters[k]=v;return q},order(){return q},limit(value,options){if(options?.referencedTable==="locations")embeddedLimit=value;return q},
       in(k,v){filters[k]=v;return q},range(a,b){start=a;end=b;return q},
-      maybeSingle(){return q},single(){return q},
+      maybeSingle(){return q},single(){return q},overrideTypes(){return q},
       async then(resolve,reject) {
         reads.push({table,filters,start});
         await hold(table);
@@ -40,10 +40,13 @@ function workspace({ count = 8, cap = 500, archived = false, fail = false, hold 
         } else if(table==="merchant_workspace_memberships") {
           assert.ok(["user","stale"].includes(filters.merchant_user_id));
           assert.equal(filters.status,"active");
-          data={id:filters.merchant_user_id==="stale"?"foreign-member":"member",workspace_id:"workspace",role:"viewer",status:"active"};
-        } else if(table==="merchant_workspaces") {
-          assert.equal(filters.id,"workspace");
-          data={id:"workspace",name:"Groupe",created_at:"2026-01-01"};
+          const foreign=filters.merchant_user_id==="stale";
+          const allowedIds=foreign?["foreign"]:ids;
+          data={id:foreign?"foreign-member":"member",role:foreign?"owner":"viewer",
+            workspace:{id:foreign?"foreign-workspace":"workspace",name:"Groupe",created_at:"2026-01-01"},
+            locations:fail?[]:allowedIds.slice(0,Math.min(embeddedLimit,cap))
+              .map(merchant_id=>({merchant_id,merchant:profile(merchant_id)})),
+            location_count:[{count:allowedIds.length}]};
         } else if(table==="merchant_membership_locations") {
           assert.equal(filters.membership_id,"member");
           data=fail?null:ids.slice(start,Math.min(end+1,start+cap))
@@ -80,7 +83,7 @@ test("#743 workspace : profils joints aux sites autorisés, rôles et archivage 
   assert.equal(reads.filter(r=>r.table==="merchants").length,0);
   assert.equal(result.locations[0].merchant.id,fallback.id);
 });
-test("#500 session complète : quatre lectures, site actif autorisé, substitution étrangère ignorée",async()=>{
+test("#500 session complète : deux lectures, site actif autorisé, substitution étrangère ignorée",async()=>{
   for(const requested of ["site-4","foreign"]) {
     const {repo,reads}=workspace();
     const session=await repo.resolveMerchantSessionFromAuthUser({
@@ -88,7 +91,8 @@ test("#500 session complète : quatre lectures, site actif autorisé, substituti
     },requested);
     assert.equal(session.merchant.id,requested==="foreign"?"site-0":"site-4");
     assert.equal(session.user.role,"viewer");
-    assert.equal(reads.length,4);
+    assert.equal(reads.length,2);
+    assert.equal(session.user.workspaceId,"workspace");
     assert.equal(reads.filter(r=>r.table==="merchant_workspace_memberships").length,1);
   }
 });
@@ -98,6 +102,12 @@ test("#500 workspace : pagination des profils joints sous plafond",async()=>{
   assert.equal(result.locations.length,405);
   assert.equal(new Set(result.locations.map(l=>l.merchant.id)).size,405);
   assert.equal(reads.filter(r=>r.table==="merchant_membership_locations").length,6);
+});
+test("#753 workspace : le plafond des relations imbriquées ne tronque pas les sites autorisés", async () => {
+  const {repo,fallback,reads}=workspace({count:8,cap:3});
+  const result=await repo.getSupabaseMerchantWorkspaceContext("user",fallback);
+  assert.equal(result.locations.length,8);
+  assert.equal(reads.filter(r=>r.table==="merchant_membership_locations").length,3);
 });
 test("#500 workspace : lecture défaillante ne donne pas accès à un site supplémentaire",async()=>{
   const {repo,fallback}=workspace({fail:true});
@@ -215,7 +225,8 @@ test("#743 session : rapprochement par e-mail, droits relus pour le bon utilisat
   assert.equal(session.user.role,"viewer");
   assert.equal(session.locations.length,8);
   assert.deepEqual(reads.filter(r=>r.table==="merchant_workspace_memberships").map(r=>r.filters.merchant_user_id),["stale","user"]);
-  assert.equal(reads.find(r=>r.table==="merchant_membership_locations").filters.membership_id,"member");
+  assert.equal(session.user.workspaceId,"workspace");
+  assert.ok(session.locations.every(location=>location.merchant.id!=="foreign"));
   assert.equal(repairs[0].id,"auth");
   assert.equal(repairs[0].payload.app_metadata.merchant_user_id,"user");
 });
