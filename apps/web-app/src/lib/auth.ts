@@ -3,7 +3,7 @@ import { cache } from "react";
 import { measureServerStage } from "@/lib/server-performance";
 import { cookies } from "next/headers";
 
-import { resolveMerchantSessionFromAuthUser } from "@/lib/merchant-account-repository";
+import { readMerchantReplayIdentity, resolveMerchantSessionFromAuthUser } from "@/lib/merchant-account-repository";
 import {
   SESSION_INACTIVITY_MS,
   SESSION_LAST_ACTIVITY_COOKIE,
@@ -13,7 +13,7 @@ import {
 import { createAppRouterSupabaseServerClient } from "@/lib/supabase-server";
 import { LEGACY_SESSION_COOKIE } from "@/lib/supabase-auth-config";
 
-export const getAuthenticatedSession = cache(async function getAuthenticatedSession() {
+const getValidatedMerchantAuth = cache(async function getValidatedMerchantAuth() {
   // Login and signup pages are prerendered during builds where runtime secrets may be absent.
   // Treat a missing Supabase configuration as an anonymous session instead of failing the build.
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -43,13 +43,35 @@ export const getAuthenticatedSession = cache(async function getAuthenticatedSess
     return null;
   }
 
+  return { user, activeLocationId: cookieStore.get("okado_active_location")?.value };
+});
+
+async function resolveAuthenticatedSession(auth: NonNullable<Awaited<ReturnType<typeof getValidatedMerchantAuth>>>) {
   try {
-    const activeLocationId = cookieStore.get("okado_active_location")?.value;
-    return await measureServerStage("auth.context", () => resolveMerchantSessionFromAuthUser(user, activeLocationId));
+    return await measureServerStage("auth.context", () =>
+      resolveMerchantSessionFromAuthUser(auth.user, auth.activeLocationId));
   } catch {
     return null;
   }
+}
+
+export const getAuthenticatedSession = cache(async function getAuthenticatedSession() {
+  const auth = await getValidatedMerchantAuth();
+  return auth ? resolveAuthenticatedSession(auth) : null;
 });
+
+export async function getAuthenticatedReplayIdentity() {
+  const auth = await getValidatedMerchantAuth();
+  if (!auth) return null;
+  const linkedId = auth.user.app_metadata?.merchant_user_id;
+  if (typeof linkedId === "string") {
+    const identity = await measureServerStage("auth.context", () => readMerchantReplayIdentity(linkedId));
+    if (identity) return identity;
+  }
+
+  // Legacy or stale links still use the existing account reconciliation path.
+  return (await resolveAuthenticatedSession(auth))?.user ?? null;
+}
 
 export async function requireAuthenticatedSession() {
   const session = await getAuthenticatedSession();

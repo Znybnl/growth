@@ -10,7 +10,7 @@ const patterns = families.map(route => ({ route,
 const methods = new Set(["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]);
 export const OPERATIONAL_STAGES = ["auth.validate", "auth.context", "auth.workspace",
   "data.overview", "data.activity", "data.prizes", "data.recent-contacts", "data.results",
-  "data.account-pins", "data.alerts", "page.home", "page.campaigns", "page.results", "page.account"] as const;
+  "data.account-pins", "data.account-affiliate", "data.account-billing", "data.alerts", "page.home", "page.campaigns", "page.results", "page.account"] as const;
 const outcomes = new Set(["success", "redirect", "client_error", "server_error", "unknown", "interrupted"]);
 
 export function operationalDeployment() {

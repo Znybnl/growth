@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { MerchantAlertsProvider, useMerchantAlerts } from "@/components/merchant/merchant-alerts-provider";
-import { EMPTY_MERCHANT_ALERTS } from "@/lib/merchant-alerts";
+import { EMPTY_MERCHANT_ALERTS, type MerchantAlerts } from "@/lib/merchant-alerts";
 import { MerchantSessionGuard } from "@/components/merchant/merchant-session-guard";
 import { MerchantPageSkeleton } from "@/components/merchant/merchant-page-skeleton";
 import { LocationSwitcher } from "@/components/merchant/location-switcher";
@@ -21,6 +21,7 @@ import { Merchant, MerchantLocationAccess, MerchantUser } from "@/lib/types";
 
 type MerchantShellProps = {
   children: React.ReactNode;
+  initialAlerts?: Promise<MerchantAlerts | null>;
   merchant: Merchant;
   user: MerchantUser;
   locations: MerchantLocationAccess[];
@@ -42,7 +43,7 @@ const prefetchedNavRoutes = new Set<string>();
 
 export function MerchantShell(props: MerchantShellProps) {
   return (
-    <MerchantAlertsProvider key={props.user.id + ":" + props.activeLocationId}>
+    <MerchantAlertsProvider key={props.user.id + ":" + props.activeLocationId} initialAlerts={props.initialAlerts}>
       <MerchantShellContent {...props} />
     </MerchantAlertsProvider>
   );

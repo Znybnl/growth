@@ -4,9 +4,7 @@ import { Settings2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/workspace";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { getMerchantBillingSummary } from "@/lib/billing";
-import { syncMerchantBillingFromStripeCustomerIdInSupabase } from "@/lib/merchant-account-repository";
 import { getMerchantRedemptionPinStates } from "@/lib/store";
-import { getAffiliateSummaryForMerchant } from "@/lib/affiliate-repository";
 
 type AccountPageProps = {
   searchParams?: Promise<{
@@ -21,49 +19,10 @@ export default async function AccountPage(props: Parameters<typeof AccountPageCo
 async function AccountPageContent({ searchParams }: AccountPageProps) {
   const session = await requireAuthenticatedSession();
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  let merchant = session.merchant;
-
-  const shouldAttemptStripeSync = Boolean(
-    merchant.stripeCustomerId &&
-      (resolvedSearchParams?.billing === "success" ||
-        (!merchant.stripeSubscriptionId && !merchant.stripeSubscriptionStatus)),
-  );
-
-  if (shouldAttemptStripeSync && merchant.stripeCustomerId) {
-    try {
-      const syncedMerchant = await syncMerchantBillingFromStripeCustomerIdInSupabase(
-        merchant.stripeCustomerId,
-      );
-
-      if (syncedMerchant) {
-        // Stripe billing belongs to the workspace owner, while the account
-        // page edits the currently selected establishment. Merge only the
-        // billing fields so a sync can never replace establishment-specific
-        // settings such as the Google review URL.
-        merchant = {
-          ...merchant,
-          stripeCustomerId: syncedMerchant.stripeCustomerId ?? merchant.stripeCustomerId,
-          stripeSubscriptionId: syncedMerchant.stripeSubscriptionId ?? merchant.stripeSubscriptionId,
-          stripeSubscriptionStatus:
-            syncedMerchant.stripeSubscriptionStatus ?? merchant.stripeSubscriptionStatus,
-          trialStartDate: syncedMerchant.trialStartDate ?? merchant.trialStartDate,
-          trialEndDate: syncedMerchant.trialEndDate ?? merchant.trialEndDate,
-          subscriptionCurrentPeriodEnd:
-            syncedMerchant.subscriptionCurrentPeriodEnd ?? merchant.subscriptionCurrentPeriodEnd,
-          subscriptionCancelAtPeriodEnd:
-            syncedMerchant.subscriptionCancelAtPeriodEnd ?? merchant.subscriptionCancelAtPeriodEnd,
-        };
-      }
-    } catch (error) {
-      console.error("Stripe billing sync failed on account page", error);
-    }
-  }
-
+  const merchant = session.merchant;
+  const paymentReturn = resolvedSearchParams?.billing === "success";
   const billing = getMerchantBillingSummary(merchant);
-  const [redemptionPinStates, affiliateSummary] = await Promise.all([
-    getMerchantRedemptionPinStates(session.locations.map(({ merchant: location }) => location.id)),
-    ["owner", "admin"].includes(session.user.role ?? "owner") ? getAffiliateSummaryForMerchant(merchant) : null,
-  ]);
+  const redemptionPinStates = await getMerchantRedemptionPinStates([merchant.id]).catch(() => ({}));
   return (
     <div className="space-y-4">
       <PageHeader
@@ -78,7 +37,7 @@ async function AccountPageContent({ searchParams }: AccountPageProps) {
         locations={session.locations}
         redemptionPinStates={redemptionPinStates}
         billing={billing}
-        affiliateSummary={affiliateSummary}
+        paymentReturn={paymentReturn}
       />
     </div>
   );

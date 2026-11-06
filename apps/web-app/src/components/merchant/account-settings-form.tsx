@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import { Link2, ShieldCheck, Store, UserRound } from "lucide-react";
 
 import { AccountSectionCard } from "@/components/merchant/account-section-card";
@@ -40,18 +41,53 @@ type AccountSettingsFormProps = {
   redemptionPinStates: Record<string, MerchantRedemptionPinState>;
   billing: MerchantBillingSummary;
   affiliateSummary?: AffiliateSummary | null;
+  paymentReturn?: boolean;
   onDirtyChange?: (isDirty: boolean) => void;
 };
 
 type AccountTab = "establishment" | "user" | "subscription";
 
-function accountTabFromHash(hash: string): AccountTab {
+function accountTabFromHash(hash: string, initialTab: AccountTab): AccountTab {
+  if (!hash) return initialTab;
   const normalizedHash = hash.replace(/^#/, "");
   return normalizedHash === "account-user"
     ? "user"
     : normalizedHash === "account-subscription"
       ? "subscription"
       : "establishment";
+}
+
+function useAccountDetails<T>(url: string | null, method: "GET" | "POST" = "GET") {
+  const [attempt, setAttempt] = useState(0);
+  const [result, setResult] = useState<{ key: string; data: T | null }>();
+  const key = url ? `${url}:${attempt}` : null;
+  const current = result?.key === key ? result : undefined;
+
+  useEffect(() => {
+    if (!url || !key || current) return;
+    const controller = new AbortController();
+    fetch(url, { method, cache: "no-store", signal: controller.signal })
+      .then(async response => {
+        if (!response.ok) throw new Error("Account detail unavailable");
+        const data = await response.json() as T;
+        if (!controller.signal.aborted) setResult({ key, data });
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setResult({ key, data: null });
+      });
+    return () => controller.abort();
+  }, [url, method, key, current]);
+
+  return { data: current?.data, retry: () => setAttempt(value => value + 1) };
+}
+
+function AccountDetailFeedback({ loading, error, retry }: { loading: string; error?: string; retry: () => void }) {
+  return error ? (
+    <div className="flex flex-wrap items-center gap-3 text-sm text-ash" role="status">
+      <p>{error}</p>
+      <Button type="button" variant="secondary" onClick={retry}>Réessayer</Button>
+    </div>
+  ) : <p className="text-sm text-ash" role="status">{loading}</p>;
 }
 
 const inputClass =
@@ -90,7 +126,7 @@ function createAccountSettingsForm(
     customLinkUrl: merchant.customLinkUrl ?? "",
     timeZone: merchant.timeZone ?? "Europe/Paris",
     defaultPrizeCost: merchant.defaultPrizeCost ?? 3,
-    redemptionPin: redemptionPinState?.value ?? "",
+    redemptionPin: redemptionPinState?.value ?? undefined,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
@@ -104,8 +140,11 @@ export function AccountSettingsForm({
   redemptionPinStates,
   billing,
   affiliateSummary,
+  paymentReturn = false,
   onDirtyChange,
 }: AccountSettingsFormProps) {
+  const router = useRouter();
+  const [initialPinStates, setInitialPinStates] = useState(redemptionPinStates);
   const [selectedLocationId, setSelectedLocationId] = useState(merchant.id);
   const [pendingLocationId, setPendingLocationId] = useState<string | null>(null);
   const [pendingTab, setPendingTab] = useState<AccountTab | null>(null);
@@ -117,20 +156,45 @@ export function AccountSettingsForm({
   const [error, setError] = useState<string | null>(null);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+  const initialTab = paymentReturn ? "subscription" : "establishment";
   const activeTab = useSyncExternalStore(
     (onStoreChange) => {
       window.addEventListener("hashchange", onStoreChange);
       return () => window.removeEventListener("hashchange", onStoreChange);
     },
-    () => accountTabFromHash(window.location.hash),
-    () => "establishment" as AccountTab,
+    () => accountTabFromHash(window.location.hash, initialTab),
+    () => initialTab,
   );
 
   const selectedMerchant =
     selectedLocationId === merchant.id
       ? merchant
       : locations.find(({ merchant: location }) => location.id === selectedLocationId)?.merchant ?? merchant;
-  const selectedPinState = redemptionPinStates[selectedMerchant.id];
+  const initialPin = initialPinStates[selectedMerchant.id];
+  const pinRead = useAccountDetails<{ pin: MerchantRedemptionPinState }>(initialPin ? null :
+    `/api/account/details?section=pin&locationId=${encodeURIComponent(selectedMerchant.id)}`);
+  const selectedPinState = initialPin ?? pinRead.data?.pin;
+
+  const showAffiliate = ["owner", "admin"].includes(user.role ?? "owner");
+  const loadAffiliate = showAffiliate && affiliateSummary === undefined && activeTab === "user";
+  const affiliation = useAccountDetails<{ summary: AffiliateSummary | null }>(
+    loadAffiliate ? "/api/account/details?section=affiliate" : null,
+  );
+  const displayedAffiliate = affiliateSummary ?? affiliation.data?.summary;
+
+  const loadBilling = activeTab === "subscription" && Boolean(billing.stripeCustomerId &&
+    (paymentReturn || (!billing.stripeSubscriptionId && !billing.subscriptionStatus)));
+  const billingRead = useAccountDetails<{ billing: MerchantBillingSummary; synced: boolean }>(
+    loadBilling ? `/api/account/details?section=billing${paymentReturn ? "&billing=success" : ""}` : null, "POST",
+  );
+
+  const lastBillingRefresh = useRef<typeof billingRead.data>(undefined);
+  useEffect(() => {
+    if (billingRead.data?.synced && billingRead.data !== lastBillingRefresh.current) {
+      lastBillingRefresh.current = billingRead.data;
+      router.refresh();
+    }
+  }, [billingRead.data, router]);
   useProductStepTracking("account_tab_viewed", activeTab);
 
   function applyTabSelection(tab: AccountTab) {
@@ -171,7 +235,8 @@ export function AccountSettingsForm({
     if (!nextMerchant) return;
 
     setSelectedLocationId(locationId);
-    setForm(createAccountSettingsForm(nextMerchant, user, redemptionPinStates[nextMerchant.id]));
+    pinRead.retry();
+    setForm(createAccountSettingsForm(nextMerchant, user, initialPinStates[nextMerchant.id]));
     setIsDirty(false);
     onDirtyChange?.(false);
     setError(null);
@@ -215,6 +280,8 @@ export function AccountSettingsForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!selectedPinState) return;
+    const redemptionPin = form.redemptionPin ?? selectedPinState.value ?? "";
     setError(null);
     setIsSuccessOpen(false);
     setIsSaving(true);
@@ -223,7 +290,7 @@ export function AccountSettingsForm({
       const response = await fetch("/api/account", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, locationId: selectedLocationId }),
+        body: JSON.stringify({ ...form, redemptionPin, locationId: selectedLocationId }),
       });
       const payload = (await response.json()) as { error?: string; user?: { email: string } };
 
@@ -234,6 +301,11 @@ export function AccountSettingsForm({
       setIsDirty(false);
       onDirtyChange?.(false);
       setNotificationEmail(payload.user?.email ?? form.email.trim().toLowerCase());
+      if (initialPin) {
+        setInitialPinStates(current => ({ ...current, [selectedLocationId]: {
+          value: redemptionPin || "0000", configured: true, recoverable: true,
+        } }));
+      }
       setIsSuccessOpen(true);
       captureClientProductEvent("account_settings_saved", {
         hasGoogleReviewUrl: Boolean(form.googleReviewUrl),
@@ -283,11 +355,16 @@ export function AccountSettingsForm({
             </button>
           ))}
         </div>
-        <Button type="submit" disabled={isSaving} variant="primary" size="default" className="shrink-0 px-5">
+        <Button type="submit" disabled={isSaving || !selectedPinState} variant="primary" size="default" className="shrink-0 px-5">
           {isSaving ? "Enregistrement..." : "Enregistrer"}
         </Button>
       </div>
       <div className="space-y-6 pt-6">
+        {activeTab === "user" && !selectedPinState ? (
+          <AccountDetailFeedback loading="Chargement du PIN de l’établissement sélectionné…"
+            error={pinRead.data === null ? "Impossible de charger le PIN." : undefined}
+            retry={pinRead.retry} />
+        ) : null}
 
         {activeTab === "user" ? <div id="account-tabpanel-user" role="tabpanel" aria-labelledby="account-user-tab" className="space-y-4">
         <AccountSectionCard
@@ -341,7 +418,12 @@ export function AccountSettingsForm({
           merchantName={selectedMerchant.companyName} email={notificationEmail}
           timeZone={selectedMerchant.timeZone ?? "Europe/Paris"} />
         <RewardReminderSettings key={selectedMerchant.workspaceId ?? selectedMerchant.id} accountKey={selectedMerchant.workspaceId ?? selectedMerchant.id} />
-        {affiliateSummary?.account.status === "active" ? <AffiliateReferralCard summary={affiliateSummary} /> : null}
+        {loadAffiliate && !affiliation.data ? (
+          <AccountDetailFeedback loading="Chargement de l’affiliation…"
+            error={affiliation.data === null ? "Impossible de charger l’affiliation." : undefined}
+            retry={affiliation.retry} />
+        ) : null}
+        {showAffiliate && displayedAffiliate?.account.status === "active" ? <AffiliateReferralCard summary={displayedAffiliate} /> : null}
         </div> : null}
 
         {activeTab === "establishment" ? <div id="account-tabpanel-establishment" role="tabpanel" aria-labelledby="account-establishment-tab">
@@ -584,20 +666,25 @@ export function AccountSettingsForm({
               maxLength={4}
               minLength={4}
               required
-              value={form.redemptionPin ?? ""}
+              value={form.redemptionPin ?? selectedPinState?.value ?? ""}
+              disabled={!selectedPinState}
               onChange={(event) => updateField("redemptionPin", event.target.value.replace(/\D/g, ""))}
               placeholder="0000"
               aria-describedby="account-pin-help"
               className={inputClass}
             />
           </label>
-              <p id="account-pin-help" className={`rounded-[8px] px-4 py-3 text-sm ${selectedPinState?.recoverable ? "bg-purple-haze text-charcoal" : "border border-amber-200 bg-amber-50 text-amber-900"}`}>
-            {selectedPinState?.recoverable
+              <div id="account-pin-help" className={`rounded-[8px] px-4 py-3 text-sm ${selectedPinState?.recoverable ? "bg-purple-haze text-charcoal" : "border border-amber-200 bg-amber-50 text-amber-900"}`}>
+            {!selectedPinState ? (
+              <AccountDetailFeedback loading="Chargement du PIN…"
+                error={pinRead.data === null ? "Impossible de charger le PIN." : undefined}
+                retry={pinRead.retry} />
+            ) : selectedPinState.recoverable
               ? "Le PIN affiché correspond à l’établissement sélectionné. Modifiez-le puis enregistrez pour le remplacer."
               : selectedPinState?.configured
                 ? "Ce PIN existait déjà mais n’est pas récupérable depuis son ancien stockage sécurisé. Saisissez un nouveau PIN de 4 chiffres pour le remplacer."
                 : "Aucun PIN n’est configuré. Le PIN 0000 sera utilisé par défaut après l’enregistrement."}
-              </p>
+              </div>
             </div>
           </div>
         </div>
@@ -605,7 +692,11 @@ export function AccountSettingsForm({
         </div> : null}
 
         {activeTab === "subscription" ? <div id="account-tabpanel-subscription" role="tabpanel" aria-labelledby="account-subscription-tab">
-          <BillingSubscriptionCard billing={billing} />
+          {loadBilling && !billingRead.data ? (
+            <AccountDetailFeedback loading="Actualisation de l’abonnement…"
+              error={billingRead.data === null ? "Impossible d’actualiser l’abonnement." : undefined}
+              retry={billingRead.retry} />
+          ) : <BillingSubscriptionCard billing={billingRead.data?.billing ?? billing} />}
         </div> : null}
 
       {error ? (
