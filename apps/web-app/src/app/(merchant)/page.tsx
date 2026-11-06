@@ -4,6 +4,7 @@ import { ArrowRight, Gift, PackageCheck, PackageX, TriangleAlert } from "lucide-
 
 import { DashboardRecentContacts } from "@/components/merchant/dashboard-recent-contacts";
 import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
+import tableStyles from "@/components/merchant/dashboard-recent-campaigns.module.css";
 import { DashboardRecentCampaigns } from "@/components/merchant/dashboard-recent-campaigns";
 import { ConsumptionRateInfo } from "@/components/merchant/consumption-rate-info";
 import { DashboardOperationalAlerts } from "@/components/merchant/dashboard-operational-alerts";
@@ -125,11 +126,11 @@ async function DashboardPageContent({
 
       <DashboardRecentContacts contacts={contacts} campaignIds={merchantCampaignIds} />
 
-      <section className="okado-card min-w-0 p-5 md:p-6">
+      <section className={`okado-card min-w-0 p-5 md:p-6 ${tableStyles.section}`}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
             <p className="okado-label">Stocks et retraits</p>
-            <h2 className="okado-section-title mt-2">Lots à remettre et stock disponible</h2>
+            <h2 id="dashboard-stock-title" className="okado-section-title mt-2">Lots à remettre et stock disponible</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-ash">
               Retrouvez les gains qui attendent un retrait et le stock restant pour chaque lot.
             </p>
@@ -140,40 +141,56 @@ async function DashboardPageContent({
         </div>
 
         {activePrizeInventory.length ? (
-          <>
-            <div className="mt-6 hidden overflow-x-auto md:block">
-              <div className="min-w-[680px]">
-                <div className="okado-table-header grid grid-cols-[minmax(180px,1.1fr)_minmax(180px,1fr)_110px_130px_120px] items-center gap-4 px-4 py-3">
-                  <span>Lot</span><span>Campagne</span><span className="text-right">À retirer</span><span className="text-right">Stock restant</span><span>État</span>
-                </div>
+          <div className="mt-6">
+            <table role="table" className={tableStyles.table} aria-labelledby="dashboard-stock-title">
+              <colgroup>
+                <col /><col className={tableStyles.stockCampaignColumn} />
+                <col className={tableStyles.stockCountColumn} /><col className={tableStyles.stockRemainingColumn} />
+                <col className={tableStyles.stockStatusColumn} />
+              </colgroup>
+              <thead role="rowgroup">
+                <tr role="row" className="okado-table-header">
+                  <th role="columnheader" scope="col">Lot</th>
+                  <th role="columnheader" scope="col">Campagne</th>
+                  <th role="columnheader" scope="col" data-align="right">À retirer</th>
+                  <th role="columnheader" scope="col" data-align="right">Stock restant</th>
+                  <th role="columnheader" scope="col">État</th>
+                </tr>
+              </thead>
+              <tbody role="rowgroup">
                 {activePrizeInventory.map((item) => {
                   const state = stockState(item);
                   const StateIcon = state.icon;
                   return (
-                    <div key={item.prizeId} className="okado-table-row grid grid-cols-[minmax(180px,1.1fr)_minmax(180px,1fr)_110px_130px_120px] items-center gap-4 px-4 py-4 text-sm">
-                      <div className="flex min-w-0 items-center gap-3"><Gift className="size-4 shrink-0 text-aubergine" aria-hidden="true" /><span className="truncate font-semibold text-carbon">{item.prizeLabel}</span></div>
-                      <span className="truncate text-ash">{item.campaignTitle}</span>
-                      <span data-align="right" className="font-semibold text-graphite">{item.pendingRedemptions}</span>
-                      <span data-align="right" className="font-semibold text-graphite">{item.remainingQuantity === null ? "Illimité" : `${item.remainingQuantity}${item.totalQuantity === null ? "" : ` / ${item.totalQuantity}`}`}</span>
-                      <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${state.tone === "danger" ? "text-coral-alert" : state.tone === "warning" ? "text-amber-700" : "text-emerald-700"}`}><StateIcon className="size-4" aria-hidden="true" />{state.label}</span>
-                    </div>
+                    <tr role="row" key={item.prizeId}>
+                      <th role="rowheader" scope="row" className={tableStyles.name}>
+                        <div className="flex min-w-0 items-center gap-3">
+                          <Gift className="size-4 shrink-0 text-aubergine" aria-hidden="true" />
+                          <span className="truncate font-semibold text-carbon" title={item.prizeLabel}>{item.prizeLabel}</span>
+                        </div>
+                      </th>
+                      <td role="cell" className={tableStyles.detail}>
+                        <span className="block truncate" title={item.campaignTitle}>{item.campaignTitle}</span>
+                      </td>
+                      <td role="cell" data-align="right">
+                        <span className={tableStyles.mobileLabel} aria-hidden="true">À retirer</span>
+                        {item.pendingRedemptions}
+                      </td>
+                      <td role="cell" data-align="right">
+                        <span className={tableStyles.mobileLabel} aria-hidden="true">Stock restant</span>
+                        {item.remainingQuantity === null ? "Illimité" : `${item.remainingQuantity}${item.totalQuantity === null ? "" : ` / ${item.totalQuantity}`}`}
+                      </td>
+                      <td role="cell" className={tableStyles.stockStatus}>
+                        <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${state.tone === "danger" ? "text-coral-alert" : state.tone === "warning" ? "text-amber-700" : "text-emerald-700"}`}>
+                          <StateIcon className="size-4 shrink-0" aria-hidden="true" />{state.label}
+                        </span>
+                      </td>
+                    </tr>
                   );
                 })}
-              </div>
-            </div>
-            <div className="mt-5 space-y-0 md:hidden">
-              {activePrizeInventory.map((item) => {
-                const state = stockState(item);
-                const StateIcon = state.icon;
-                return (
-                  <article key={item.prizeId} className="border-b border-fog py-4 first:pt-0 last:border-b-0 last:pb-0">
-                    <div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-start gap-3"><Gift className="mt-0.5 size-4 shrink-0 text-aubergine" aria-hidden="true" /><div className="min-w-0"><p className="truncate font-semibold text-carbon">{item.prizeLabel}</p><p className="mt-1 truncate text-sm text-ash">{item.campaignTitle}</p></div></div><span className={`inline-flex shrink-0 items-center gap-1 text-xs font-semibold ${state.tone === "danger" ? "text-coral-alert" : state.tone === "warning" ? "text-amber-700" : "text-emerald-700"}`}><StateIcon className="size-4" aria-hidden="true" />{state.label}</span></div>
-                    <div className="mt-4 grid grid-cols-2 gap-3 text-sm"><div><p className="okado-mobile-table-stat-label">À retirer</p><p className="mt-1 okado-mobile-table-stat-value">{item.pendingRedemptions}</p></div><div><p className="okado-mobile-table-stat-label">Stock restant</p><p className="mt-1 okado-mobile-table-stat-value">{item.remainingQuantity === null ? "Illimité" : item.remainingQuantity}</p></div></div>
-                  </article>
-                );
-              })}
-            </div>
-          </>
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div className="mt-6"><EmptyState title="Aucun lot de campagne active" description="Les lots des campagnes actives apparaîtront ici dès qu’une campagne en contient." /></div>
         )}

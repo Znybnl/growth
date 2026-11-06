@@ -503,6 +503,16 @@ async function readSessionUser(field: "id" | "email", value: string) {
   return error || !data ? null : data;
 }
 
+// Replay policy is account-scoped and needs neither a site selection nor workspace roles.
+export async function readMerchantReplayIdentity(merchantUserId: string) {
+  const { data, error } = await getSupabaseAdmin().from("merchant_users")
+    .select("id, merchant:merchants!merchant_users_merchant_id_fkey!inner(id)")
+    .eq("id", merchantUserId)
+    .maybeSingle<{ id: string; merchant: { id: string } }>();
+
+  return error || !data?.merchant ? null : { id: data.id, merchantId: data.merchant.id };
+}
+
 export async function resolveMerchantSessionFromAuthUser(
   authUser: Pick<SupabaseAuthUser, "id" | "email" | "app_metadata" | "user_metadata">,
   activeLocationId?: string,

@@ -184,3 +184,10 @@ terminer pendant la lecture `data.recent-contacts`. Mesurer la visibilité
 des indicateurs et l’arrivée des contacts séparément. Une erreur de lecture
 reste observable dans `data.recent-contacts` et s’affiche dans le bloc
 concerné. Le périmètre multi-sites provient de la session de la requête.
+
+Les alertes initiales utilisent la session du layout et sont transmises avec
+le flux serveur. Les rafraîchissements après mutation continuent d’utiliser
+`/api/merchant/email-alerts`. La politique de replay valide toujours Auth,
+puis lit uniquement l’identité du compte lié dans le cas courant. Pour
+comparer `auth.context`, séparer les routes de politique du replay des routes
+qui chargent le contexte complet.

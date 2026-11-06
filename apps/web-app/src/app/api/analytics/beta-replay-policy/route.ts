@@ -1,4 +1,4 @@
-import { getAuthenticatedSession } from "@/lib/auth";
+import { getAuthenticatedReplayIdentity } from "@/lib/auth";
 import { betaReplayPolicy } from "@/lib/beta-replay-policy";
 
 export const dynamic = "force-dynamic";
@@ -13,9 +13,9 @@ export async function GET() {
     return Response.json(betaReplayPolicy(null, phase, project), { headers });
   }
   try {
-    const session = await getAuthenticatedSession();
-    return Response.json(betaReplayPolicy(session?.user ?? null, phase, project), {
-      headers, status: session ? 200 : 401,
+    const identity = await getAuthenticatedReplayIdentity();
+    return Response.json(betaReplayPolicy(identity, phase, project), {
+      headers, status: identity ? 200 : 401,
     });
   } catch {
     return Response.json(betaReplayPolicy(null, phase, project), { headers, status: 503 });

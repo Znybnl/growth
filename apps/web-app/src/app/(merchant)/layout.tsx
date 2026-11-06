@@ -1,3 +1,4 @@
+import { getMerchantOperationalAlerts } from "@/lib/merchant-alerts-repository";
 import { MerchantShell } from "@/components/merchant/merchant-shell";
 import { requireAuthenticatedSession } from "@/lib/auth";
 import { isSaasAdminEmail } from "@/lib/admin";
@@ -17,6 +18,7 @@ export default async function MerchantLayout({
 
   return (
     <MerchantShell
+      initialAlerts={getMerchantOperationalAlerts(session.merchant.id).catch(() => null)}
       merchant={session.merchant}
       user={session.user}
       locations={session.locations}

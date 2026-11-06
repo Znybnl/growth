@@ -297,3 +297,54 @@ test("#747 : les contacts récents utilisent une lecture limitée au site et con
   assert.equal((await repo.getSupabaseMerchantRecentLeads("site", 2, "Camille")).length, 2);
   assert.equal((await repo.getSupabaseMerchantRecentLeads("site", 5, "aucune correspondance")).length, 0);
 });
+
+
+test("#747 : le replay utilise l’identité Auth vérifiée et résout le compte historique si nécessaire", async () => {
+  const identity = { id: "user", merchantId: "site-0" };
+  for (const mode of ["linked", "legacy", "stale", "anonymous", "expired"]) {
+    const reads = [];
+    const authUser = {
+      id: "auth",
+      app_metadata: mode === "legacy" ? {} : { merchant_user_id: "user" },
+    };
+    const auth = load("./auth.ts", {
+      react: { cache: (fn) => fn },
+      "next/navigation": {},
+      "next/headers": { cookies: async () => ({
+        get: (name) => name === "started" && mode === "expired" ? { value: "1" } : undefined,
+      }) },
+      "@/lib/session-security": {
+        SESSION_STARTED_COOKIE: "started", SESSION_LAST_ACTIVITY_COOKIE: "activity",
+        SESSION_MAX_AGE_MS: 90 * 86400000, SESSION_INACTIVITY_MS: 30 * 86400000,
+      },
+      "@/lib/server-performance": { measureServerStage },
+      "@/lib/supabase-server": { createAppRouterSupabaseServerClient: async () => ({
+        auth: { getUser: async () => {
+          reads.push("auth");
+          return { data: { user: mode === "anonymous" ? null : authUser } };
+        } },
+      }) },
+      "@/lib/merchant-account-repository": {
+        readMerchantReplayIdentity: async (id) => {
+          assert.equal(id, "user");
+          reads.push("identity");
+          return mode === "stale" ? null : identity;
+        },
+        resolveMerchantSessionFromAuthUser: async (user) => {
+          assert.equal(user, authUser);
+          reads.push("legacy");
+          return { user: identity };
+        },
+      },
+    }, { process: { env: { NEXT_PUBLIC_SUPABASE_URL: "fixture", NEXT_PUBLIC_SUPABASE_ANON_KEY: "fixture" } } });
+    assert.equal(await auth.getAuthenticatedReplayIdentity(),
+      ["anonymous", "expired"].includes(mode) ? null : identity);
+    assert.deepEqual(reads, {
+      linked: ["auth", "identity"],
+      legacy: ["auth", "legacy"],
+      stale: ["auth", "identity", "legacy"],
+      anonymous: ["auth"],
+      expired: [],
+    }[mode]);
+  }
+});

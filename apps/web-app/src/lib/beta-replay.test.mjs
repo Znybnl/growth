@@ -57,10 +57,10 @@ test("free text, attributes and uploads are masked, while fixed UI labels remain
 let session = { user };
 let authCalls = 0;
 registerHooks({ resolve(specifier, context, next) {
-  if (specifier === "@/lib/auth") return { url: "data:text/javascript,export const getAuthenticatedSession=()=>globalThis.__betaReplayAuth()", shortCircuit: true };
+  if (specifier === "@/lib/auth") return { url: "data:text/javascript,export const getAuthenticatedReplayIdentity=()=>globalThis.__betaReplayAuth()", shortCircuit: true };
   return next(specifier, context);
 } });
-globalThis.__betaReplayAuth = async () => { authCalls++; if (session instanceof Error) throw session; return session; };
+globalThis.__betaReplayAuth = async () => { authCalls++; if (session instanceof Error) throw session; return session?.user ?? null; };
 const { GET } = await import("../app/api/analytics/beta-replay-policy/route.ts");
 
 test("private policy authenticates the actual user and ignores client claims; kill switch survives auth outage", async () => {

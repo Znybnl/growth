@@ -22,12 +22,12 @@ test("@visual-1280 : accueil, une ligne par campagne à 1280×720 et 1280×600",
     await section.scrollIntoViewIfNeeded();
     const table = section.getByRole("table");
     await expect(table).toBeVisible();
-    await expect(section.getByTestId("recent-campaign-cards")).toBeHidden();
+    await expect(section.getByTestId("recent-campaign-cards")).toHaveCount(0);
     await expect(table.getByRole("columnheader")).toHaveText(["Campagne", "Type", "Scans", "Participations", "Conversion", "Actions"]);
     const rows = table.locator("tbody tr");
     await expect(rows).toHaveCount(6);
-    await expect(rows.nth(1).getByRole("cell")).toHaveText(["Ticket à gratter", "12345678", "9876543", "40%", ""]);
-    await expect(rows.last().getByRole("cell")).toHaveText(["Ticket à gratter", "0", "2", "200%", ""]);
+    await expect(rows.nth(1).getByRole("cell")).toHaveText(["Ticket à gratter", "12345678", "9876543", "40%", ""], { useInnerText: true });
+    await expect(rows.last().getByRole("cell")).toHaveText(["Ticket à gratter", "0", "2", "200%", ""], { useInnerText: true });
     await expect(table.getByRole("img", { name: "Campagne active", exact: true })).toHaveCount(4);
     await expect(table.getByRole("img", { name: "Campagne en pause", exact: true })).toHaveCount(1);
     await expect(table.getByRole("img", { name: "Campagne arrêtée : stock épuisé", exact: true })).toHaveCount(1);
@@ -73,13 +73,13 @@ test("accueil : cartes sur petits conteneurs, tableau sur ordinateur et redimens
     await assertNoPageOverflow(page);
     if (tabular) {
       await expect(section.getByRole("table")).toBeVisible();
-      await expect(section.getByTestId("recent-campaign-cards")).toBeHidden();
+      await expect(section.getByTestId("recent-campaign-cards")).toHaveCount(0);
     } else {
-      await expect(section.getByRole("table")).toBeHidden();
-      const cards = section.getByTestId("recent-campaign-cards");
-      await expect(cards.locator("article")).toHaveCount(6);
-      await expect(cards.locator("article").first().getByText("Roue de la fortune", { exact: true })).toBeVisible();
-      await cards.getByRole("button").first().click();
+      const rows = section.getByRole("table").locator("tbody tr");
+      await expect(rows).toHaveCount(6);
+      await expect(rows.first().getByText("Roue de la fortune", { exact: true })).toBeVisible();
+      await expect(rows.first().getByText("Participations", { exact: true })).toBeVisible();
+      await rows.first().getByRole("button").click();
       await expect(page.getByRole("menuitem", { name: "Modifier", exact: true })).toBeVisible();
       const menu = (await page.getByRole("menu").boundingBox())!;
       expect(menu.x).toBeGreaterThanOrEqual(0);

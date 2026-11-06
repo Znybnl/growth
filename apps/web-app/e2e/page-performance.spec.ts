@@ -84,3 +84,23 @@ test("Accueil @visual-1280 : contacts vides ou en erreur, les indicateurs resten
     await page.screenshot({ path: info.outputPath(`accueil-contacts-${state}-1280.png`) });
   }
 });
+
+
+test("les alertes du rendu initial évitent une requête et un ancien résultat ne remplace pas le rafraîchissement", async ({ page }) => {
+  let calls = 0;
+  await page.route("**/api/merchant/email-alerts", (route) => {
+    calls++;
+    return route.fulfill({ json: alerts(3) });
+  });
+  await page.goto("/dev/page-performance?seed=ready");
+  await expect(page.getByTestId("alerts")).toHaveText("9");
+  expect(calls).toBe(0);
+
+  await page.goto("/dev/page-performance?seed=slow", { waitUntil: "commit" });
+  await expect(page.getByTestId("alerts")).toHaveText("loading");
+  await page.getByRole("button", { name: "Actualiser les alertes" }).click();
+  await expect(page.getByTestId("alerts")).toHaveText("3");
+  await page.getByRole("button", { name: "Livrer les alertes initiales" }).click();
+  await expect(page.getByTestId("alerts")).toHaveText("3");
+  expect(calls).toBe(1);
+});
