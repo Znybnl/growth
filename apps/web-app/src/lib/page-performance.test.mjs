@@ -370,3 +370,45 @@ test("#747 : le replay utilise l’identité Auth vérifiée et résout le compt
     }[mode]);
   }
 });
+
+test("#748 : la liste garde les indicateurs canoniques et rejette une ligne d’un autre établissement", async () => {
+  const row = {
+    campaign_id: "own-game", merchant_id: "own", metrics_id: "own-game", title: "Jeu",
+    subtitle: "Sous-titre", game_type: "scratch", is_active: "false", created_at: "2026-11-06",
+    games: "12", wins: "4", redeemed: "2",
+  };
+  let rows = [row];
+  const query = {
+    select(columns) {
+      assert.match(columns, /games:metrics->>games_count/);
+      assert.doesNotMatch(columns, /pending_redemptions|prize_id|logo/);
+      return query;
+    },
+    order() { return query; },
+    range() { return query; },
+    async overrideTypes() { return { data: rows, count: rows.length, error: null }; },
+  };
+  const repo = load("./campaign-repository.ts", {
+    react: { cache: (fn) => fn },
+    "@/lib/server-performance": { measureServerStage },
+    "@/lib/paginated-read": { readAllRows },
+    "@/lib/supabase": {
+      getSupabaseAdmin: () => ({
+        from() { assert.fail("La liste n’a pas besoin de lire les lots"); },
+        rpc(name, args) {
+          assert.equal(name, "get_merchant_page_overview");
+          assert.equal(args.p_merchant_id, "own");
+          return query;
+        },
+      }),
+      unwrapSupabaseResult: (result) => result.data,
+    },
+  });
+  const [item] = await repo.getSupabaseMerchantCampaignList("own");
+  assert.deepEqual({ ...item }, {
+    id: "own-game", title: "Jeu", subtitle: "Sous-titre", gameType: "scratch", isActive: false,
+    games: 12, wins: 4, redeemed: 2,
+  });
+  rows = [{ ...row, merchant_id: "foreign" }];
+  await assert.rejects(repo.getSupabaseMerchantCampaignList("own"), /indicateurs sont incomplets/);
+});

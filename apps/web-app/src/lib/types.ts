@@ -852,6 +852,9 @@ export interface DashboardPrizeInventoryItem {
   totalQuantity: number | null;
 }
 
+export type CampaignListItem = Pick<Campaign, "id" | "title" | "subtitle" | "gameType" | "isActive"> &
+  Pick<CampaignKpi, "games" | "wins" | "redeemed">;
+
 export interface CampaignLibraryItem {
   id: string;
   title: string;

@@ -11,6 +11,7 @@ import {
   CampaignResults,
   CampaignEvent,
   CampaignLibraryItem,
+  CampaignListItem,
   CampaignKpi,
   CashierRedemptionContext,
   CampaignPerformance,
@@ -1086,6 +1087,37 @@ export async function getSupabaseMerchantCampaignOverview(merchant: Merchant): P
     totalRedeemed: campaigns.reduce((n, item) => n + item.kpis.redeemed, 0),
     averageConversion: globalConversion(campaigns), activityPoints: [],
   };
+}
+
+export async function getSupabaseMerchantCampaignList(merchantId: string): Promise<CampaignListItem[]> {
+  const columns = [
+    "campaign_id", "merchant_id:campaign->>merchant_id", "metrics_id:metrics->>campaign_id",
+    "title:campaign->>title", "subtitle:campaign->>subtitle", "game_type:campaign->>game_type",
+    "is_active:campaign->>is_active", "created_at:campaign->>created_at",
+    "games:metrics->>games_count", "wins:metrics->>wins_count", "redeemed:metrics->>redeemed_count",
+  ].join(",");
+  type ListRow = {
+    campaign_id: string; merchant_id: string; metrics_id: string;
+    title: string; subtitle: string; game_type: Campaign["gameType"];
+    is_active: string; created_at: string; games: string; wins: string; redeemed: string;
+  };
+  return measureServerStage("data.overview", async () => {
+    const result = await readAllRows((start, end) => getSupabaseAdmin()
+      .rpc("get_merchant_page_overview", { p_merchant_id: merchantId }, { count: "exact" })
+      .select(columns).order("campaign_id").range(start, end)
+      .overrideTypes<ListRow[], { merge: false }>());
+    const rows = unwrapSupabaseResult(result, "Lecture des campagnes impossible") ?? [];
+    if (rows.some((row) => row.merchant_id !== merchantId || row.metrics_id !== row.campaign_id)) {
+      throw new Error("Les indicateurs sont incomplets.");
+    }
+    return rows
+      .sort((a, b) => b.created_at.localeCompare(a.created_at) || a.campaign_id.localeCompare(b.campaign_id))
+      .map((row) => ({
+        id: row.campaign_id, title: row.title, subtitle: row.subtitle,
+        gameType: row.game_type, isActive: row.is_active === "true",
+        games: Number(row.games) || 0, wins: Number(row.wins) || 0, redeemed: Number(row.redeemed) || 0,
+      }));
+  });
 }
 
 export async function getSupabaseMerchantCampaignLibrary(merchantId: string, resultsOnly = false): Promise<CampaignLibraryItem[]> {
