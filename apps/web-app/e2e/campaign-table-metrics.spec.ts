@@ -50,10 +50,11 @@ test.describe("Indicateurs du tableau des campagnes", () => {
 
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(rows).toHaveCount(count);
-    for (const label of ["Participations", "Gagnants", "Lots utilisés"]) {
+    for (const label of ["Participations", "Gagnants"]) {
       await expect(first.getByText(label, { exact: true })).toBeVisible();
     }
-    await expect(first.getByRole("button", { name: "À propos du taux de consommation" })).toBeVisible();
+    await expect(first.getByText("Lots utilisés", { exact: true })).toBeHidden();
+    await expect(first.getByRole("button", { name: "À propos du taux de consommation" })).toBeHidden();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await trigger.click();
     await expect(page.getByRole("menuitem", { name: "Prévisualiser", exact: true })).toBeVisible();
@@ -77,18 +78,18 @@ test("@visual-1280 : liste Campagnes et actions sur ordinateur et mobile", async
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto("/dev/campaign-list-proof");
   const table = page.getByRole("table", { name: "Campagnes et indicateurs" });
-  await expect(table.getByRole("rowheader")).toHaveCount(2);
-  await expect(table.getByText("50%", { exact: true })).toBeVisible();
-  await expect(table.getByText("0%", { exact: true })).toBeVisible();
+  await expect(table.getByRole("rowheader")).toHaveCount(10);
+  await expect(table.getByText("50%", { exact: true }).first()).toBeVisible();
+  await expect(table.getByText("0%", { exact: true }).first()).toBeVisible();
   await assertNoPageOverflow(page);
   await captureVisualAt1280(page, info, "liste-campagnes");
 
   for (const width of [390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     await assertNoPageOverflow(page);
-    await expect(table.getByRole("rowheader")).toHaveCount(2);
+    await expect(table.getByRole("rowheader")).toHaveCount(10);
     const triggers = table.getByRole("button", { name: "Ouvrir les actions de la campagne", includeHidden: true });
-    await expect(triggers).toHaveCount(2);
+    await expect(triggers).toHaveCount(10);
     await triggers.first().click();
     await page.getByRole("menuitem", { name: "QR Code", exact: true }).click();
     await expect(page.getByRole("img", { name: "QR code de diffusion du jeu" })).toBeVisible();

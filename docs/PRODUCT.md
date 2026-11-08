@@ -28,6 +28,15 @@ templates, couleurs/texte, logo et réglages avancés. Le template sélectionné
 reste identifiable par son état sélectionné existant. Le desktop conserve sa
 navigation habituelle. Voir [livraison et vérifications](releases/2026-11-08-mobile-wizard-762.md).
 
+### Parcours Campagnes sur mobile — #763
+
+La liste mobile propose des accès rapides Toutes, Actives et En pause avec leurs
+comptages. Elle présente dix jeux par page et conserve recherche et statut dans
+les liens de pagination. Les cartes mobiles affichent le type de jeu, les
+participations et les gagnants ; lots utilisés et taux de consommation restent
+dans le tableau bureau et les indicateurs détaillés. Aucun calcul ou statut n'est
+modifié. Voir [implémentation et vérifications](releases/2026-11-08-mobile-campaign-list-763.md).
+
 ## Règles initiales et lisibilité des lots du wizard — #740
 
 Les nouvelles campagnes Beauté créées via le wizard commencent avec 60 jours

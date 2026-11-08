@@ -29,7 +29,7 @@ jobs:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
           NEXT_PUBLIC_POSTHOG_ENABLED: "true"
       - name: Verify mobile filters and separate preview windows
-        run: npx playwright test e2e/mobile-ux.spec.ts e2e/wizard-mobile-navigation.spec.ts --grep-invert @visual-1280 --output=test-results/mobile-ux
+        run: npx playwright test e2e/mobile-ux.spec.ts e2e/wizard-mobile-navigation.spec.ts e2e/campaign-list-mobile-pagination.spec.ts --grep-invert @visual-1280 --output=test-results/mobile-ux
         working-directory: apps/web-app
         env:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
