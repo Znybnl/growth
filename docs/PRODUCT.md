@@ -19,6 +19,15 @@ Le brouillon de l'aperçu visuel n'est jamais sauvegardé implicitement. L'accè
 préférences cookies reste dans le menu, sans rangée réservée sous le SaaS et sans
 changer le consentement. Voir [analyse et recette](releases/2026-11-08-mobile-ux-760.md).
 
+## Navigation du Wizard mobile — #762
+
+Sur téléphone, la progression affiche un sélecteur compact avec l’étape courante,
+le titre de l’étape reste le titre principal du formulaire et le nom de la
+campagne reste visible en contexte. Dans Apparence, des liens rapides mènent aux
+templates, couleurs/texte, logo et réglages avancés. Le template sélectionné
+reste identifiable par son état sélectionné existant. Le desktop conserve sa
+navigation habituelle. Voir [livraison et vérifications](releases/2026-11-08-mobile-wizard-762.md).
+
 ## Règles initiales et lisibilité des lots du wizard — #740
 
 Les nouvelles campagnes Beauté créées via le wizard commencent avec 60 jours

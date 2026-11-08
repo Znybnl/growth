@@ -59,6 +59,13 @@ test("@visual-1280 le ticket Noël rose poudré est dans Templates Beauté sans 
       await christmasRose.click();
       await expect(christmasRose).toHaveAttribute("aria-pressed", "true");
       await expect(page.getByRole("textbox", { name: /Couleur principale du ticket/ })).toHaveValue("#c6a0aa");
+      // The compact wizard uses the toolbar preview flow for existing games.
+      // Its integrated preview is deliberately hidden on mobile; the artwork is
+      // checked below in the editor and in the desktop wizard preview.
+      if (width === 390 && mode.startsWith("wizard")) {
+        await expect(page.getByTestId("wizard-mobile-actions").getByRole("button", { name: "Aperçu", exact: true })).toBeVisible();
+        continue;
+      }
       const previewToggle = page.getByRole("button", { name: /Voir l.?aperçu/ });
       if (await previewToggle.count() && await previewToggle.isVisible()) await previewToggle.click();
       const nativeArtwork = mode.startsWith("wizard")

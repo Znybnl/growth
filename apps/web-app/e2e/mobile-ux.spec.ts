@@ -41,8 +41,8 @@ test("enregistrer puis prévisualiser réserve un onglet et le ferme en cas d’
 test("un navigateur bloquant les onglets garde un aperçu intégré utilisable", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 740 });
   await page.addInitScript(() => { window.open = () => null; });
-  await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-edit");
-  await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
+  await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-create");
+  await page.getByTestId("wizard-mobile-actions").getByRole("button", { name: "Aperçu", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "Aperçu du jeu" })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog", { name: "Aperçu du jeu" })).toHaveCount(0);
@@ -132,7 +132,7 @@ test("@visual-1280 barre compacte, accès Plus et cookies sans rangée réservé
   }
 });
 
-test("aperçus mobiles en nouvel onglet, brouillon conservé et aucune sauvegarde implicite", async ({ page, context }) => {
+test("aperçu mobile : confirmation avant sauvegarde et conservation du brouillon sans sauvegarde", async ({ page, context }) => {
   await page.setViewportSize({ width: 390, height: 740 });
   const writes: string[] = [];
   page.on("request", request => { if (request.method() === "POST" && request.url().includes("/api/")) writes.push(request.url()); });
@@ -141,17 +141,20 @@ test("aperçus mobiles en nouvel onglet, brouillon conservé et aucune sauvegard
   const title = page.locator("textarea").first();
   await title.fill("Un titre encore non enregistré");
   const parentUrl = page.url();
+  const confirmation = page.getByRole("dialog", { name: "Enregistrer avant de prévisualiser ?" });
+  await page.getByTestId("wizard-mobile-actions").getByRole("button", { name: "Aperçu", exact: true }).click();
+  await expect(confirmation).toBeVisible();
   const popupPromise = page.waitForEvent("popup");
-  await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
+  await confirmation.getByRole("button", { name: "Prévisualiser sans enregistrer", exact: true }).click();
   const popup = await popupPromise;
   await popup.setViewportSize({ width: 390, height: 740 });
-  await expect(popup.frameLocator("iframe").getByText("Un titre encore non enregistré", { exact: true })).toBeVisible();
+  await expect(popup).toHaveURL(/\/campaign\/template-proof-campaign\?preview=1$/);
   expect(await popup.evaluate(() => window.opener)).toBeNull();
   expect(page.url()).toBe(parentUrl);
   await popup.close();
   await expect(title).toHaveValue("Un titre encore non enregistré");
   expect(writes).toEqual([]);
-  // Full interactive preview remains the existing preview-only URL, in another tab.
+  // The action from the campaign list still opens the preview-only URL in a separate tab.
   await page.goto("/dev/campaign-list-proof");
   await context.route("**/campaign/wheel?preview=1", route => route.fulfill({ contentType: "text/html", body: "<h1>Mode prévisualisation</h1>" }));
   await page.getByRole("button", { name: "Ouvrir les actions de la campagne" }).first().click();

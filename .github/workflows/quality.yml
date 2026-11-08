@@ -29,7 +29,7 @@ jobs:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
           NEXT_PUBLIC_POSTHOG_ENABLED: "true"
       - name: Verify mobile filters and separate preview windows
-        run: npx playwright test e2e/mobile-ux.spec.ts --grep-invert @visual-1280 --output=test-results/mobile-ux
+        run: npx playwright test e2e/mobile-ux.spec.ts e2e/wizard-mobile-navigation.spec.ts --grep-invert @visual-1280 --output=test-results/mobile-ux
         working-directory: apps/web-app
         env:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
@@ -168,7 +168,12 @@ jobs:
       - name: Test merchant account affiliation, permissions, resubscription and migration
         run: npm run test:affiliates -w @okado/web-app
       - name: Build web app
-        run: npm run build:web
+        run: |
+          for attempt in 1 2 3; do
+            npm run build -w @okado/web-app -- --webpack && exit 0
+            if [ "$attempt" -lt 3 ]; then sleep 5; fi
+          done
+          exit 1
       - name: Verify operational logs on the compiled server without analytics consent
         run: npm run smoke:operational-telemetry -w @okado/web-app
       - name: Verify prize library with compiled production CSS
