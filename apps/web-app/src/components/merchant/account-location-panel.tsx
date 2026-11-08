@@ -11,13 +11,18 @@ type AccountLocationPanelProps = {
   merchant: Merchant;
   locations: MerchantLocationAccess[];
   onSelectLocation: (locationId: string) => void;
+  hasUnsavedChanges?: boolean;
 };
 
-export function AccountLocationPanel({ merchant, locations, onSelectLocation }: AccountLocationPanelProps) {
+export function AccountLocationPanel({ merchant, locations, onSelectLocation, hasUnsavedChanges = false }: AccountLocationPanelProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ companyName: "", city: "", address: "", timeZone: "Europe/Paris" });
+  function openAddLocation() {
+    if (hasUnsavedChanges && !window.confirm("Vous avez des modifications non enregistrées. L'ajout d'un établissement recharge cette page. Continuer et abandonner ces modifications ?")) return;
+    setIsAdding(true);
+  }
 
   async function addLocation() {
     if (!form.companyName.trim()) {
@@ -44,7 +49,11 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
 
   return (
     <>
-      <section className="border-b border-border/70 pb-6 md:pb-7">
+      {locations.length === 1 ? <section className="flex items-center justify-between gap-3 border-b border-border/70 pb-4 sm:hidden" aria-label="Établissement sélectionné">
+        <div className="min-w-0"><p className="text-xs text-ash">Établissement sélectionné</p><p className="truncate text-sm font-semibold text-carbon">{merchant.companyName}</p><p className="truncate text-xs text-ash">{merchant.city || "Ville à renseigner"}</p></div>
+        <button type="button" onClick={openAddLocation} className="okado-secondary-action shrink-0 px-3 text-sm"><Plus className="h-4 w-4" aria-hidden="true" /> Ajouter</button>
+      </section> : null}
+      <section className={`${locations.length === 1 ? "hidden sm:block" : ""} border-b border-border/70 pb-6 md:pb-7`}>
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="flex items-start gap-3.5">
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[4px] bg-purple-haze text-aubergine">
@@ -56,7 +65,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
               <p className="mt-2 max-w-2xl text-sm leading-6 text-ash">Choisissez l’établissement dont vous souhaitez modifier les informations.</p>
             </div>
           </div>
-          <button type="button" onClick={() => setIsAdding(true)} className="okado-secondary-action px-4 text-sm">
+          <button type="button" onClick={openAddLocation} className="okado-secondary-action px-4 text-sm">
             <Plus className="h-4 w-4" aria-hidden="true" />
             Ajouter
           </button>
@@ -87,7 +96,7 @@ export function AccountLocationPanel({ merchant, locations, onSelectLocation }: 
                 </button>
               );
             })}
-            <button type="button" onClick={() => setIsAdding(true)} className="flex min-h-[76px] items-center justify-center gap-2 rounded-[8px] border border-dashed border-lavender-mist px-3 text-sm font-semibold text-charcoal transition hover:border-aubergine hover:bg-purple-haze/50">
+            <button type="button" onClick={openAddLocation} className="flex min-h-[76px] items-center justify-center gap-2 rounded-[8px] border border-dashed border-lavender-mist px-3 text-sm font-semibold text-charcoal transition hover:border-aubergine hover:bg-purple-haze/50">
               <Plus className="h-4 w-4" aria-hidden="true" /> Ajouter un établissement
             </button>
           </div>

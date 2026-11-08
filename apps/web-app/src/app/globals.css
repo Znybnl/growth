@@ -364,15 +364,16 @@ select {
 
 @media (max-width: 639px) {
   .okado-account-toolbar {
-    flex-wrap: wrap;
+    gap: .25rem;
+    padding-block: .25rem;
   }
 
   .okado-account-toolbar > [role="tablist"] {
-    width: 100%;
+    flex: 1 1 0;
   }
 
   .okado-account-toolbar > button {
-    margin-left: auto;
+    padding-inline: .5rem;
   }
 }
 

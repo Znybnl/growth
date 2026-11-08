@@ -1,5 +1,12 @@
 # Produit — Okado
 
+## Mon compte sur mobile — #766
+
+La barre d'onglets et d'enregistrement est compacte ; les noms complets des
+onglets restent accessibles. Un compte mono-établissement dispose d'un résumé
+et de raccourcis vers les informations, liens marketing et PIN. L'ajout d'un
+établissement demande confirmation si des modifications ne sont pas enregistrées.
+
 ## Ergonomie mobile du SaaS — #760
 
 Décision du propriétaire du 8 novembre 2026 : descriptions d'introduction masquées
