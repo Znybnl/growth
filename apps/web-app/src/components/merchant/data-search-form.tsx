@@ -12,6 +12,11 @@ export function DataSearchForm({ campaignId, initialValue }: DataSearchFormProps
   const router = useRouter();
   const searchParams = useSearchParams();
   const [value, setValue] = useState(initialValue);
+  const clearParams = new URLSearchParams(searchParams.toString());
+  clearParams.set("campaign", campaignId);
+  clearParams.delete("q");
+  clearParams.delete("code");
+  clearParams.delete("page");
 
   function apply(nextValue: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -31,14 +36,21 @@ export function DataSearchForm({ campaignId, initialValue }: DataSearchFormProps
 
   return (
     <form
-      className="min-w-[280px] flex-1"
+      action="/data"
+      method="get"
+      className="min-w-0 max-w-2xl"
       onSubmit={(event) => {
         event.preventDefault();
         apply(value);
       }}
     >
+      <input type="hidden" name="campaign" value={campaignId} />
+      {searchParams.get("emailStatus") === "attention" ? <input type="hidden" name="emailStatus" value="attention" /> : null}
+      <label htmlFor="results-contact-search" className="mb-2 block text-sm font-semibold text-carbon">Rechercher dans les contacts de cette campagne</label>
       <div className="flex gap-3">
         <input
+          id="results-contact-search"
+          name="q"
           type="search"
           value={value}
           onChange={(event) => {
@@ -50,19 +62,15 @@ export function DataSearchForm({ campaignId, initialValue }: DataSearchFormProps
             }
           }}
           placeholder="Rechercher par code de retrait ou e-mail client"
-          className="w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 text-sm text-carbon outline-none focus:border-aubergine focus:ring-2 focus:ring-aubergine/15"
+          className="min-w-0 w-full rounded-[12px] border border-[#cfcfcf] bg-white px-4 py-3 text-base text-carbon outline-none focus:border-aubergine focus:ring-2 focus:ring-aubergine/15 sm:text-sm"
         />
         {value ? (
-          <button
-            type="button"
-            onClick={() => {
-              setValue("");
-              apply("");
-            }}
+          <a
+            href={`/data?${clearParams.toString()}`}
             className="cursor-pointer rounded-[4px] border border-border bg-white px-4 py-3 text-sm font-semibold text-carbon hover:bg-purple-haze"
           >
             Effacer
-          </button>
+          </a>
         ) : null}
       </div>
     </form>
