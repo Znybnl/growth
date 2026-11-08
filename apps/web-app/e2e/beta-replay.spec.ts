@@ -3,6 +3,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { resolve } from "node:path";
 import { BETA_REPLAY_VERSION, BETA_REPLAY_LEASE_MS } from "../src/lib/beta-replay-contract";
+import { assertNoPageOverflow } from "./helpers/visual-1280";
 
 type Packet = { event: string; properties: Record<string, unknown>; distinct_id?: string };
 function unpack(value: unknown): unknown {
@@ -223,3 +224,66 @@ test("an expired server lease stops snapshots without a new policy response", as
   await page.waitForTimeout(3_000);
   expect(state.packets.length).toBe(count);
 });
+
+// Read the actual SDK output with an independent rrweb player, not a second copy
+// of our serializer. The player has no access to the original DOM or stylesheet.
+for (const size of [{ width: 1280, height: 720 }, { width: 1280, height: 600 }, { width: 390, height: 844 }]) {
+  test(`@visual-1280 reconstructed replay keeps the workspace layout at ${size.width}x${size.height}`, async ({ page, context }, info) => {
+    await page.setViewportSize(size);
+    const state = await setup(page);
+    await page.getByRole("button", { name: "Refuser", exact: true }).click();
+    await open(page);
+    await waitForSnapshots(page, state);
+    if (size.width < 1024) {
+      await page.getByRole("button", { name: "Ouvrir le menu" }).click();
+      await expect.poll(async () => (await page.locator("aside").boundingBox())?.x).toBe(0);
+    }
+    await page.waitForTimeout(3_000);
+    const events: { type: number; timestamp: number; data: unknown }[] = [];
+    const collect = (value: unknown) => {
+      if (!value || typeof value !== "object") return;
+      if (Array.isArray(value)) { value.forEach(collect); return; }
+      const node = value as Record<string, unknown>;
+      if (typeof node.timestamp === "number" && typeof node.type === "number" && node.data) events.push(node as typeof events[number]);
+      else Object.values(node).forEach(collect);
+    };
+    collect(unpack(state.packets.filter(packet => packet.event === "$snapshot")));
+    events.sort((a, b) => a.timestamp - b.timestamp);
+    expect(events.some(event => event.type === 2)).toBe(true);
+    const raw = JSON.stringify(events);
+    for (const secret of ["private-company-secret", "private-first-secret", "private-last-secret", "beta-fixture@example.test", "private-input", "private-image", "private-css-secret"]) expect(raw).not.toContain(secret);
+    const original = await page.locator("aside").boundingBox();
+    const player = await context.newPage();
+    await player.setViewportSize(size);
+    await player.setContent('<html><head></head><body style="margin:0"><div id="player"></div></body></html>');
+    await player.addStyleTag({ path: resolve(__dirname, "../../../node_modules/@rrweb/replay/dist/style.css") });
+    await player.addStyleTag({ content: "iframe { border: 0; display: block; }" });
+    await player.addScriptTag({ path: resolve(__dirname, "../../../node_modules/@rrweb/replay/dist/replay.umd.cjs") });
+    await player.evaluate(({ events }) => {
+      const runtime = window as unknown as { rrwebReplay: { Replayer: new (events: unknown[], config: object) => { pause: (time: number) => void } } };
+      const replay = new runtime.rrwebReplay.Replayer(events, { root: document.getElementById("player"), mouseTail: false, showWarning: true });
+      replay.pause(events.at(-1)!.timestamp - events[0].timestamp);
+    }, { events });
+    const replay = player.frameLocator("iframe");
+    await expect(replay.locator("aside")).toBeVisible();
+    await expect(replay.getByRole("heading", { name: "Pilotez vos campagnes" })).toBeVisible();
+    await expect(replay.locator("aside nav").first()).toContainText("Campagnes");
+    await expect(replay.locator("aside nav svg").first()).toBeVisible();
+    await expect(replay.locator(".okado-metric-card__value").first()).toHaveText("12");
+    const restored = await replay.locator("aside").boundingBox();
+    expect(restored?.width).toBeCloseTo(original!.width, 0);
+    // rrweb reconstructs the mobile class mutation, then CSS finishes its slide.
+    await expect.poll(async () => (await replay.locator("aside").boundingBox())?.x).toBeCloseTo(original!.x, 0);
+    expect(await replay.locator("aside").evaluate(element => getComputedStyle(element).position)).toBe("fixed");
+    expect(await replay.locator("aside").evaluate(element => getComputedStyle(element).backgroundColor)).not.toBe("rgba(0, 0, 0, 0)");
+    if (size.width >= 1024) {
+      const main = await replay.locator("main").boundingBox();
+      expect(main!.x).toBeGreaterThanOrEqual(restored!.width);
+    }
+    await assertNoPageOverflow(player);
+    const path = info.outputPath(`reconstructed-${size.width}x${size.height}.png`);
+    await player.screenshot({ path });
+    await info.attach("Reconstructed SDK recording", { path, contentType: "image/png" });
+    await player.close();
+  });
+}

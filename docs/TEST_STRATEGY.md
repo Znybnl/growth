@@ -711,6 +711,13 @@ est inaccessible hors développement (404 en production).
 
 ## Replay bêta fermée — #712
 
+Complément #755 du 7 novembre : la présence du CSS dans un paquet ne suffit pas.
+La recette reconstruit les vrais snapshots du SDK dans un lecteur rrweb indépendant
+avec le vrai `MerchantShell`, à 1280×720, 1280×600 et 390×844. Elle vérifie la
+géométrie de la navigation, ses icônes, les titres/KPI et le menu mobile, en plus
+de l'absence des données privées fictives. Voir
+[diagnostic et recette](releases/2026-11-07-replay-layout-755.md).
+
 `test:beta-replay` couvre phase serveur, comptes futurs, mauvais projet, expiration
 et API authentifiée non cachée. `e2e/beta-replay.spec.ts` vérifie le SDK et recorder
 réels avec requêtes interceptées : absence/refus/accord cookies, DOM décompressé

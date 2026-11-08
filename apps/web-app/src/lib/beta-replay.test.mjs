@@ -53,6 +53,25 @@ test("free text, attributes and uploads are masked, while fixed UI labels remain
   assert.equal(maskBetaReplayAttribute("href", "https://private.example/_next/static/private.css"), "");
 });
 
+test("Tailwind layout tokens survive independently of rejected private tokens", () => {
+  const layout = "fixed inset-y-0 w-[248px] shadow-[8px_0_32px_rgba(72,26,84,0.12)] lg:translate-x-0 [&>*]:shrink-0 lg:ml-[248px] bg-[#16ca2e]/10";
+  assert.equal(maskBetaReplayAttribute("class", layout), layout);
+  assert.equal(maskBetaReplayAttribute("class", `${layout} bg-[url(https://private.test/logo)] content-['secret'] person@example.test`), layout);
+  assert.equal(maskBetaReplayAttribute("data-state", "open"), "open");
+  assert.equal(maskBetaReplayAttribute("data-state", "private-state"), "");
+  assert.equal(maskBetaReplayAttribute("data-orientation", "vertical"), "vertical");
+  for (const label of ["Okado", "Navigation", "Pilotez vos campagnes", "Campagnes actives", "Stocks et retraits"]) assert.equal(maskBetaReplayText(label), label);
+  assert.equal(maskBetaReplayText("1234"), "****");
+  const metric = { closest: selector => selector === ".okado-metric-card__value" ? {} : null };
+  assert.equal(maskBetaReplayText("25 %", metric), "25 %");
+  assert.equal(maskBetaReplayText("private@example.test", metric), "********************");
+  const icon = { closest: () => ({}) };
+  assert.equal(maskBetaReplayAttribute("d", "M 2 4 L 8 12", icon), "M 2 4 L 8 12");
+  assert.equal(maskBetaReplayAttribute("stroke", "currentColor", icon), "currentColor");
+  assert.equal(maskBetaReplayAttribute("d", "private-vector-secret", icon), "");
+  assert.equal(maskBetaReplayAttribute("d", "M 2 4 L 8 12"), "");
+});
+
 // Real route handler, with auth as the only test double; no database or customer data.
 let session = { user };
 let authCalls = 0;

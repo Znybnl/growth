@@ -33,9 +33,13 @@ masqués. Il ne permet donc pas une recette pixel à pixel des créations.
   sans profil ou e-mail ajouté, avec l’identifiant pseudonyme stable compte/utilisateur.
   Aucun événement produit ordinaire dans cette instance ; aucun accord cookies
   fabriqué ni modification de l’analytics existant.
-- Saisies et textes masqués sauf une courte liste de libellés UI fixes ; attributs
+- Saisies et textes masqués sauf une liste explicite de libellés UI fixes et les
+  valeurs numériques des cartes KPI agrégées ; attributs
   privés supprimés, en conservant seulement le CSS public compilé par Next.js pour
-  que les replays gardent leur mise en page. Médias, images, SVG, canvas, iframes, éléments privés et contenus
+  que les replays gardent leur mise en page. Les classes Tailwind sont filtrées
+  individuellement, y compris les dimensions, couleurs et variantes entre crochets.
+  Les icônes Lucide du produit conservent leur géométrie vectorielle. Les autres
+  SVG, médias, images, canvas, iframes, éléments privés et contenus
   éditables bloqués. Ni console, ni corps/en-têtes réseau, ni capture JSON-LD.
   URL sans requête, fragment ou identifiant dynamique.
 - Projet **212872 EU** exclusivement. Le contrôle privé du 30 octobre confirme

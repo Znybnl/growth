@@ -5,12 +5,27 @@ import { BetaReplayBoundary } from "@/components/merchant/beta-replay-boundary";
 import { stopBetaReplayForSignOut } from "@/lib/beta-replay-client";
 import { MerchantAnalyticsIdentity } from "@/components/merchant/merchant-analytics-identity";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
+import { MerchantShell } from "@/components/merchant/merchant-shell";
+import { MetricCard, PageHeader } from "@/components/ui/workspace";
+import type { Merchant } from "@/lib/types";
+
+const merchant: Merchant = { id: "merchant-fixture", companyName: "private-company-secret", logoText: "private-logo-secret", createdAt: "2026-10-30T00:00:00Z" };
 
 export function BetaReplayProof() {
   const [subject, setSubject] = useState("merchant-fixture:user-fixture");
   const [mounted, setMounted] = useState(false);
   const [clicks, setClicks] = useState(0);
-  return <main className="p-8">
+  return <MerchantShell merchant={merchant}
+    user={{ id: "user-fixture", merchantId: merchant.id, role: "owner", firstName: "private-first-secret", lastName: "private-last-secret", email: "beta-fixture@example.test", password: "", createdAt: merchant.createdAt }}
+    locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
+    <section className="space-y-5">
+    <PageHeader eyebrow="Vue d'ensemble" title="Pilotez vos campagnes" description="Suivez vos campagnes en direct, comparez les mécaniques qui performent et lancez rapidement une nouvelle campagne." />
+    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <MetricCard label="Campagnes actives" value="12" />
+      <MetricCard label="Participations" value="345" />
+      <MetricCard label="Lots consommés" value="10" />
+      <MetricCard label="Taux de consommation" value="25 %" />
+    </section>
     <h1>Toutes vos campagnes</h1>
     {mounted && <BetaReplayBoundary subject={subject} />}
     {mounted && <MerchantAnalyticsIdentity accountMerchantId={subject.split(":")[0]} userId={subject.split(":")[1]} activeMerchantId={subject.split(":")[0]} email="beta-fixture@example.test" />}
@@ -36,5 +51,5 @@ export function BetaReplayProof() {
     {/* The image itself must never be sent to the replay collector. */}
     {/* eslint-disable-next-line @next/next/no-img-element */}
     <img src="/private-logo.png?token=private-image-token" alt="private-image-description" />
-  </main>;
+  </section></MerchantShell>;
 }
