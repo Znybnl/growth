@@ -168,7 +168,12 @@ jobs:
       - name: Test merchant account affiliation, permissions, resubscription and migration
         run: npm run test:affiliates -w @okado/web-app
       - name: Build web app
-        run: npm run build:web
+        run: |
+          for attempt in 1 2 3; do
+            npm run build -w @okado/web-app -- --webpack && exit 0
+            if [ "$attempt" -lt 3 ]; then sleep 5; fi
+          done
+          exit 1
       - name: Verify operational logs on the compiled server without analytics consent
         run: npm run smoke:operational-telemetry -w @okado/web-app
       - name: Verify prize library with compiled production CSS
