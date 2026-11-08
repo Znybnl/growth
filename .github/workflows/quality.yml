@@ -28,6 +28,12 @@ jobs:
         env:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
           NEXT_PUBLIC_POSTHOG_ENABLED: "true"
+      - name: Verify mobile filters and separate preview windows
+        run: npx playwright test e2e/mobile-ux.spec.ts --grep-invert @visual-1280 --output=test-results/mobile-ux
+        working-directory: apps/web-app
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
+          NEXT_PUBLIC_POSTHOG_ENABLED: "true"
       - name: Verify Christmas templates on mobile, rotation and scratch gestures
         run: npx playwright test e2e/christmas-wheels.spec.ts e2e/christmas-scratch.spec.ts e2e/christmas-background-coverage.spec.ts --grep-invert @visual-1280 --output=test-results/christmas
         working-directory: apps/web-app

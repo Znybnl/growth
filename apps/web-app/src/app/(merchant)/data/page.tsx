@@ -411,7 +411,7 @@ async function DataPageContent({ searchParams }: DataPageProps) {
 
 function ResultsKpis({ kpis }: { kpis: CampaignKpi }) {
   return (
-    <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+    <section className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6" data-testid="results-kpis">
       {[
         ["Scans", String(kpis.scans)],
         ["Participations", String(kpis.games)],

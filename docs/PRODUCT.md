@@ -1,5 +1,17 @@
 # Produit — Okado
 
+## Ergonomie mobile du SaaS — #760
+
+Décision du propriétaire du 8 novembre 2026 : descriptions d'introduction masquées
+sur téléphone, KPI Accueil/Résultats sur deux colonnes, graphique à axes lisibles,
+conversion alignée avec scans/participations, cartes Campagnes compactes avec
+recherche et statut. Le taux de consommation est masqué dans les cartes mobiles.
+Le wizard garde Aperçu, Enregistrer et Plus dans sa barre mobile. Les aperçus
+s'ouvrent dans un autre onglet, avec recours intégré si le navigateur le refuse.
+Le brouillon de l'aperçu visuel n'est jamais sauvegardé implicitement. L'accès aux
+préférences cookies reste dans le menu, sans rangée réservée sous le SaaS et sans
+changer le consentement. Voir [analyse et recette](releases/2026-11-08-mobile-ux-760.md).
+
 ## Règles initiales et lisibilité des lots du wizard — #740
 
 Les nouvelles campagnes Beauté créées via le wizard commencent avec 60 jours

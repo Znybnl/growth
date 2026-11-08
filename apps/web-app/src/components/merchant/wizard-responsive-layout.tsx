@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 import { Eye, X } from "lucide-react";
 import { DialogShell } from "@/components/ui/dialog";
 import { WIZARD_PHONE_SIZE } from "@/lib/game-preview-viewport";
+import { useMobilePreviewWindow } from "./mobile-preview-window";
 
 /** Width belongs to the workspace, not the browser (the sidebar is outside it). */
 export function useWizardLayout() {
@@ -85,11 +86,18 @@ export function FittedWizardPhone({ children, inDialog = false }: { children: Re
   </div>;
 }
 
-export function WizardResponsivePreview({ children, inline }: { children: ReactNode; inline: boolean }) {
+export function WizardResponsivePreview({ children, inline, mobileChildren, triggerLabel = "Voir l’aperçu" }: {
+  children: ReactNode; inline: boolean; mobileChildren?: ReactNode; triggerLabel?: string;
+}) {
   const [open, setOpen] = useState(false);
+  const previewWindow = useMobilePreviewWindow();
+  const show = () => {
+    if (!window.matchMedia("(min-width: 768px)").matches && previewWindow.open()) return;
+    setOpen(true);
+  };
   return <aside className="wizard-live-preview min-w-0 self-start" data-testid="wizard-live-preview">
-    {!inline ? <button type="button" onClick={() => setOpen(true)} className="okado-secondary-action gap-2 px-4 text-sm">
-      <Eye className="h-4 w-4" aria-hidden="true" /> Voir l’aperçu
+    {!inline ? <button type="button" onClick={show} className="okado-secondary-action gap-2 px-3 text-sm">
+      <Eye className="h-4 w-4" aria-hidden="true" /> {triggerLabel}
     </button> : null}
     {inline && !open ? <FittedWizardPhone>{children}</FittedWizardPhone> : null}
     <DialogShell open={open} onClose={() => setOpen(false)} labelledBy="wizard-live-preview-title" className="max-w-[380px] p-4">
@@ -100,5 +108,6 @@ export function WizardResponsivePreview({ children, inline }: { children: ReactN
       </div>
       {open ? <FittedWizardPhone inDialog>{children}</FittedWizardPhone> : null}
     </DialogShell>
+    {previewWindow.render(mobileChildren ?? children)}
   </aside>;
 }

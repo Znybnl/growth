@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { ANALYTICS_CONSENT_EVENT, readAnalyticsConsent } from "@/lib/analytics-consent";
 import { isAnalyticsConfigured, setAnalyticsChoice } from "@/lib/consent-managed-analytics";
 import { isPublicGamePage } from "@/lib/cookie-preferences-visibility";
+import { OPEN_COOKIE_PREFERENCES } from "@/lib/cookie-preferences-control";
 import type { AnalyticsChoice } from "@/lib/analytics-consent";
 
 // The analytics component is only downloaded when the accepted branch renders.
@@ -16,7 +17,7 @@ export function CookiePreferences({ alignment = "left" }: { alignment?: "left" |
   const [visible, setVisible] = useState(false);
   const [currentChoice, setCurrentChoice] = useState<AnalyticsChoice | null>(null);
   const [error, setError] = useState(false);
-  const launcherRef = useRef<HTMLButtonElement | null>(null);
+  const launcherRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     function refresh() {
@@ -25,8 +26,16 @@ export function CookiePreferences({ alignment = "left" }: { alignment?: "left" |
       setVisible(!consent);
     }
     refresh();
+    const open = (event: Event) => {
+      launcherRef.current = (event as CustomEvent<{ trigger: HTMLElement | null }>).detail?.trigger ?? null;
+      setVisible(true);
+    };
+    window.addEventListener(OPEN_COOKIE_PREFERENCES, open);
     window.addEventListener(ANALYTICS_CONSENT_EVENT, refresh);
-    return () => window.removeEventListener(ANALYTICS_CONSENT_EVENT, refresh);
+    return () => {
+      window.removeEventListener(OPEN_COOKIE_PREFERENCES, open);
+      window.removeEventListener(ANALYTICS_CONSENT_EVENT, refresh);
+    };
   }, []);
 
   useEffect(() => {

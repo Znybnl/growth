@@ -46,9 +46,12 @@ test("aperçu compact, chargement, réouverture et viewport mobile", async ({ pa
     await expect(dialog.getByRole("status")).toBeHidden({ timeout: 60_000 });
     await page.keyboard.press("Escape");
     await page.setViewportSize({ width: 390, height: 844 });
-    await preview.click();
-    await expect(page).toHaveURL(new RegExp(`/campaign/${id}\\?preview=1`));
-    await page.screenshot({ path: testInfo.outputPath("mobile-direct.png") });
+    const opened = page.waitForEvent("popup");
+    await page.getByTestId("wizard-mobile-actions").getByRole("button", { name: "Aperçu", exact: true }).click();
+    const mobile = await opened;
+    await expect(mobile).toHaveURL(new RegExp(`/campaign/${id}\\?preview=1`));
+    await mobile.screenshot({ path: testInfo.outputPath("mobile-direct.png") });
+    await mobile.close();
   } finally {
     if (id) expect((await page.request.delete(`/api/campaigns/${id}`, { headers: { origin: new URL(page.url()).origin } })).ok()).toBe(true);
   }

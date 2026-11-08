@@ -79,7 +79,7 @@
 
   .table tbody tr {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: start;
     gap: 10px 12px;
     padding: 14px 0;
@@ -93,7 +93,7 @@
   .table tr:has(> .action) .name { grid-row: 1; padding-inline-end: 48px; }
   .name span[title] { white-space: normal; }
   .detail { grid-column: 1 / -1; overflow-wrap: anywhere; }
-  .action { grid-row: 1; grid-column: 2; justify-self: end; }
+  .action { grid-row: 1; grid-column: 3; justify-self: end; }
   .stockStatus { grid-column: 1 / -1; }
   .mobileLabel {
     display: block;
@@ -101,4 +101,10 @@
     font-weight: 500;
     color: var(--okado-text-muted);
   }
+}
+
+/* Only the campaign rows use three stats. The stock table shares this module. */
+@container recent-campaigns (width < 760px) {
+  .table tr:not(:has(> .action)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .table tr:has(> .action) .mobileLabel { overflow-wrap: anywhere; }
 }

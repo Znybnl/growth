@@ -19,7 +19,7 @@ export function PageHeader({ eyebrow, title, description, actions, icon, classNa
         <div className="min-w-0">
           {eyebrow ? <p className="okado-label">{eyebrow}</p> : null}
           <h1 className="okado-page-title mt-3">{title}</h1>
-          {description ? <p className="mt-4 max-w-3xl text-sm leading-6 text-ash">{description}</p> : null}
+          {description ? <p className="mt-4 hidden max-w-3xl text-sm leading-6 text-ash md:block">{description}</p> : null}
         </div>
       </div>
       {actions ? <div className="okado-action-row flex flex-wrap items-center gap-3">{actions}</div> : null}
@@ -50,7 +50,7 @@ export function MetricCard({
         <p className="okado-label">{label}</p>
         {icon ? <span className="okado-metric-card__icon" aria-hidden="true">{icon}</span> : null}
       </div>
-      <p className="okado-metric-card__value">{value}</p>
+      <p className={cn("okado-metric-card__value", typeof value === "string" && value.length > 7 && "okado-metric-card__value--long")}>{value}</p>
       {detail ? <p className="okado-metric-card__detail">{detail}</p> : null}
     </section>
   );

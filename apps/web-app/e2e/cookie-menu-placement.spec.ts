@@ -48,9 +48,9 @@ for (const admin of [false, true]) {
       await captureVisualAt1280(page, info, "cookie-menu-closed", height);
       const cookieBox = (await launcher.boundingBox())!;
       const logoutBox = (await signOut.boundingBox())!;
-      expect(cookieBox.x).toBeGreaterThanOrEqual(248);
-      expect(cookieBox.x + cookieBox.width).toBeCloseTo(1280 - 8, 0);
-      expect(cookieBox.y + cookieBox.height).toBeCloseTo(height - 8, 0);
+      expect(cookieBox.x).toBeGreaterThanOrEqual(0);
+      expect(cookieBox.x + cookieBox.width).toBeLessThanOrEqual(248);
+      await expect(page.locator(".okado-cookie-floating-trigger")).toBeHidden();
       expect(logoutBox.x + logoutBox.width).toBeLessThanOrEqual(248);
       await launcher.focus();
       await page.keyboard.press("Enter");
@@ -65,20 +65,21 @@ for (const admin of [false, true]) {
 
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 720 });
+      await page.getByRole("button", { name: "Ouvrir le menu", exact: true }).click();
       await assertClickableWithoutOverlay(page, launcher);
       await launcher.click();
       await expect(preferences).toBeVisible();
       await assertNoPageOverflow(page);
       await page.screenshot({ path: info.outputPath(`cookie-preferences-${width}.png`) });
       await preferences.getByRole("button", { name: "Continuer sans modifier mon choix" }).click();
-      await expect(launcher).toBeFocused();
+      await expect(page.getByRole("button", { name: "Ouvrir le menu", exact: true })).toBeFocused();
       await page.getByRole("button", { name: "Ouvrir le menu", exact: true }).click();
       await assertClickableWithoutOverlay(page, signOut);
       await page.screenshot({ path: info.outputPath(`cookie-menu-${width}.png`) });
       await page.keyboard.press("Escape");
       await expect(page.getByRole("button", { name: "Ouvrir le menu", exact: true })).toBeFocused();
       await expect(page.getByRole("complementary", { name: "Navigation de l’espace de travail" })).not.toBeInViewport();
-      await assertClickableWithoutOverlay(page, launcher);
+      await expect(page.locator(".okado-cookie-floating-trigger")).toBeHidden();
       await page.screenshot({ path: info.outputPath(`cookie-header-${width}.png`) });
     }
   });
@@ -131,14 +132,9 @@ test("@visual-1280 le bouton cookies ne recouvre pas les actions fixes du wizard
     await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
     await selectWizardStep(page, 3);
     const save = page.getByTestId("wizard-footer").getByRole("button", { name: "Enregistrer le brouillon", exact: true });
-    const cookies = page.getByRole("button", { name: "Gérer les cookies", exact: true });
     await assertClickableWithoutOverlay(page, save);
-    await assertClickableWithoutOverlay(page, cookies);
-    const saveBox = (await save.boundingBox())!;
-    const cookieBox = (await cookies.boundingBox())!;
-    expect(saveBox.y + saveBox.height).toBeLessThanOrEqual(cookieBox.y);
-    expect(cookieBox.x + cookieBox.width).toBeCloseTo(width - 8, 0);
-    expect(cookieBox.y + cookieBox.height).toBeCloseTo(height - 8, 0);
+    await expect(page.locator(".okado-cookie-floating-trigger")).toBeHidden();
+    expect(await page.locator(".okado-workspace-shell").evaluate(element => element.clientHeight)).toBe(height);
     if (width === 1280) await captureVisualAt1280(page, info, "cookie-wizard-actions", height);
     else await page.screenshot({ path: info.outputPath(`cookie-wizard-actions-${width}.png`) });
   }

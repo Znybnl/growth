@@ -94,7 +94,7 @@ async function DashboardPageContent({
         }
       />
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid grid-cols-2 gap-4 xl:grid-cols-4" data-testid="dashboard-kpis">
         <MetricCard label="Campagnes actives" value={String(activeCampaigns.length)} />
         <MetricCard label="Participations" value={String(participationCount)} />
         <MetricCard
