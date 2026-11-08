@@ -1,5 +1,14 @@
 # Stratégie de test — Okado
 
+## Navigation du Wizard mobile — #762
+
+`e2e/wizard-mobile-navigation.spec.ts` contrôle le contexte de campagne et la
+progression condensée à 320×568, 390×740 et 412×844, les liens d’accès rapide
+de l’étape Apparence, le repère accessible du template sélectionné et l’absence
+de débordement horizontal. Le parcours desktop capture l’écran Apparence dans le
+vrai shell à 1280×720 et 1280×600 ; la navigation et le titre bureau restent
+inchangés. Données synthétiques et API interceptées, aucune sauvegarde réelle.
+
 ## Mesures opérationnelles serveur — #710
 
 `test:operational-telemetry` vérifie le vrai SDK de traces et le schéma fermé :

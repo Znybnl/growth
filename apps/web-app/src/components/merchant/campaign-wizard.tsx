@@ -1656,7 +1656,7 @@ export function CampaignWizard({
   );
 
   return (
-    <div ref={wizardLayoutRef} data-layout={wizardLayout} data-inline-preview={inlinePreview} className="okado-wizard space-y-6 pb-10">
+    <div ref={wizardLayoutRef} data-layout={wizardLayout} data-inline-preview={inlinePreview} data-step-index={stepIndex} className="okado-wizard space-y-6 pb-10">
       {noMarketingActionDialog}
       <div className="wizard-save-toolbar sticky top-0 z-30 -mx-3 -mt-6 border-b border-fog bg-soft-white/95 px-3 py-3 backdrop-blur-sm lg:-mx-6 lg:px-6" data-testid="wizard-save-toolbar">
         <div className="flex items-center justify-between gap-2 md:hidden" data-testid="wizard-mobile-actions">
@@ -1743,11 +1743,20 @@ export function CampaignWizard({
         <div>
           <p className="okado-label">Assistant de création</p>
           <h1 className="okado-page-title mt-3">
-            {adminSaveEndpoint
-              ? isEditing
-                ? `Modifier le jeu pour ${merchant.companyName}`
-                : `Créer un jeu pour ${merchant.companyName}`
-              : "Créer une campagne"}
+            <span className="hidden md:inline">
+              {adminSaveEndpoint
+                ? isEditing
+                  ? `Modifier le jeu pour ${merchant.companyName}`
+                  : `Créer un jeu pour ${merchant.companyName}`
+                : "Créer une campagne"}
+            </span>
+            <span className="block max-w-full truncate md:hidden">
+              {stepIndex === 0
+                ? adminSaveEndpoint
+                  ? isEditing ? `Modifier le jeu pour ${merchant.companyName}` : `Créer un jeu pour ${merchant.companyName}`
+                  : "Créer une campagne"
+                : draft.title || (isEditing ? "Modifier une campagne" : "Nouvelle campagne")}
+            </span>
           </h1>
           {draft.isActive ? <p className="mt-2 text-sm leading-6 text-ash">Les modifications enregistrées sont immédiatement visibles sur le jeu en ligne.</p> : null}
         </div>
@@ -1755,14 +1764,14 @@ export function CampaignWizard({
 
       <div className="wizard-layout grid items-start gap-5">
         <aside className="wizard-progress okado-card min-w-0 p-3">
-          <p className="px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">
+          <p className="wizard-progress-label px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">
             Progression
           </p>
           {wizardLayout === "narrow" ? <label className="mt-2 block text-sm font-semibold">
             <span className="sr-only">Étape de création</span>
             <select aria-label="Étape de création" value={stepIndex} onChange={(event) => setStepIndex(Number(event.target.value))} className="w-full rounded-[12px] border border-fog bg-white px-3 py-3 text-sm text-carbon">
               {WIZARD_STEPS.map((item, index) => <option key={item.id} value={index} disabled={!(isEditing || Boolean(draft.id) || index <= furthestStepIndex)}>
-                Étape {index + 1}/5 — {item.title}{!isEditing && !draft.id && index < stepIndex ? " · Terminée" : ""}
+                {index === stepIndex ? `Étape ${index + 1}/${WIZARD_STEPS.length}` : `Étape ${index + 1}/${WIZARD_STEPS.length} — ${item.title}`}{!isEditing && !draft.id && index < stepIndex ? " · Terminée" : ""}
               </option>)}
             </select>
           </label> : <nav className={`mt-3 ${wizardLayout === "compact" ? "grid grid-cols-5 gap-1" : "space-y-1"}`} aria-label="Étapes de création">
@@ -1802,7 +1811,7 @@ export function CampaignWizard({
         <main className="wizard-form okado-card min-w-0 p-4 sm:p-5" data-testid="wizard-form">
           <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-aubergine">
+              <p className="wizard-step-kicker text-xs font-semibold uppercase tracking-[0.2em] text-aubergine">
                 Étape {step.number}
               </p>
               <h2 ref={stepHeadingRef} tabIndex={-1} className="okado-section-title mt-2">{step.id === "prizes" ? "Composez vos lots" : step.title}</h2>
@@ -1810,11 +1819,13 @@ export function CampaignWizard({
                 <p className="mt-2 hidden text-sm text-[#7a8498]">{step.description}</p>
               ) : null}
             </div>
-            {inlinePreview ? <div className="hidden rounded-[4px] bg-purple-haze p-3 text-aubergine sm:block">
-              <Sparkles className="h-5 w-5" />
-            </div> : <WizardResponsivePreview inline={false} mobileChildren={<WizardGamePreview draft={draft} merchant={merchant} standalone />}>
-              <WizardGamePreview draft={draft} merchant={merchant} />
-            </WizardResponsivePreview>}
+            <div className="hidden md:block">
+              {inlinePreview ? <div className="rounded-[4px] bg-purple-haze p-3 text-aubergine">
+                <Sparkles className="h-5 w-5" />
+              </div> : <WizardResponsivePreview inline={false} mobileChildren={<WizardGamePreview draft={draft} merchant={merchant} standalone />}>
+                <WizardGamePreview draft={draft} merchant={merchant} />
+              </WizardResponsivePreview>}
+            </div>
           </div>
 
           {step.id === "identity" ? (
@@ -2410,6 +2421,13 @@ export function CampaignWizard({
 
           {step.id === "appearance" ? (
             <div className="mt-7 space-y-5">
+              <nav className="wizard-appearance-shortcuts" aria-label="Accès rapide aux réglages d’apparence">
+                <a href="#wizard-appearance-templates">Templates</a>
+                <a href="#wizard-appearance-colors">Couleurs et texte</a>
+                <a href="#wizard-appearance-logo">Logo</a>
+                <a href="#wizard-appearance-advanced">Fond et autres réglages</a>
+              </nav>
+              <div id="wizard-appearance-templates" className="wizard-appearance-anchor" aria-hidden="true" />
               {draft.gameType === "wheel" && isBeautyIndustry(merchant.industry) ? (
                 <BeautyWheelTemplateGallery
                   selectedTemplateId={draft.presentation.layout.templateId}
@@ -2598,7 +2616,7 @@ export function CampaignWizard({
                 ))}
                </div>
 
-               <div className="space-y-4 rounded-[16px] border border-[#e2e8f0] bg-white p-4">
+               <div id="wizard-appearance-colors" className="wizard-appearance-anchor space-y-4 rounded-[16px] border border-[#e2e8f0] bg-white p-4">
                  <label className="block">
                    <span className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#182033]">
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
@@ -2725,9 +2743,9 @@ export function CampaignWizard({
                  </label>
                </div>
 
-               {logoSettings}
+               <div id="wizard-appearance-logo" className="wizard-appearance-anchor">{logoSettings}</div>
 
-               <section aria-labelledby="wizard-advanced-settings-title" className="rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe]">
+               <section id="wizard-appearance-advanced" aria-labelledby="wizard-advanced-settings-title" className="wizard-appearance-anchor rounded-[16px] border border-[#e2e8f0] bg-[#fbfcfe]">
                 <div className="px-4 py-4 text-sm font-semibold text-[#182033]"><h3 id="wizard-advanced-settings-title">Paramètres avancés</h3></div>
                  <div className="space-y-5 border-t border-[#e2e8f0] px-4 pb-4 pt-4">
                <div className="hidden">
