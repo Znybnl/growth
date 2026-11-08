@@ -19,10 +19,21 @@ test("@visual-1280 : illustrations pleines, trois lignes et actions accessibles 
     await page.goto(fixture("wizard-responsive-edit"));
     const toolbar = page.getByTestId("wizard-save-toolbar");
     const appHeader = page.locator(".okado-workspace-shell > div > header").first();
-    await expect(toolbar.getByRole("button", { name: "Prévisualiser" })).toBeVisible();
-    await expect(toolbar.getByRole("button", { name: "Options du QR code" })).toBeVisible();
-    await expect(toolbar.getByRole("link", { name: "Affiche" })).toBeVisible();
-    await expect(toolbar.getByRole("link", { name: "Modifier l'e-mail de gain" })).toBeVisible();
+    if (width < 768) {
+      const actions = page.getByTestId("wizard-mobile-actions");
+      await expect(actions.getByRole("button", { name: "Aperçu", exact: true })).toBeVisible();
+      await expect(actions.getByRole("button", { name: "Enregistrer", exact: true })).toBeVisible();
+      await actions.getByRole("button", { name: "Plus d’actions du jeu" }).click();
+      await expect(page.getByRole("menuitem", { name: "QR code de prévisualisation" })).toBeVisible();
+      await expect(page.getByRole("menuitem", { name: "Affiche" })).toBeVisible();
+      await expect(page.getByRole("menuitem", { name: "Modifier l’e-mail de gain" })).toBeVisible();
+      await page.keyboard.press("Escape");
+    } else {
+      await expect(toolbar.getByRole("button", { name: "Prévisualiser" })).toBeVisible();
+      await expect(toolbar.getByRole("button", { name: "Options du QR code" })).toBeVisible();
+      await expect(toolbar.getByRole("link", { name: "Affiche" })).toBeVisible();
+      await expect(toolbar.getByRole("link", { name: "Modifier l'e-mail de gain" })).toBeVisible();
+    }
     const headerRect = await appHeader.boundingBox();
     const toolbarRect = await toolbar.boundingBox();
     expect(headerRect).not.toBeNull();
@@ -56,9 +67,14 @@ test("@visual-1280 : illustrations pleines, trois lignes et actions accessibles 
       expect(pinnedPreviewRect).not.toBeNull();
       expect(pinnedPreviewRect!.y).toBeGreaterThanOrEqual(pinnedToolbarRect!.y + pinnedToolbarRect!.height);
     }
-    await expect(toolbar.getByRole("link", { name: "Retour aux jeux" })).toBeInViewport();
-    await expect(toolbar.getByRole("button", { name: "Enregistrer le brouillon", exact: true })).toBeInViewport();
-    await expect(toolbar.getByRole("button", { name: "Publier", exact: true })).toBeInViewport();
+    if (width < 768) {
+      await expect(page.getByTestId("wizard-mobile-actions").getByRole("button", { name: "Enregistrer", exact: true })).toBeInViewport();
+      await expect(page.getByTestId("wizard-mobile-actions").getByRole("button", { name: "Plus d’actions du jeu" })).toBeInViewport();
+    } else {
+      await expect(toolbar.getByRole("link", { name: "Retour aux jeux" })).toBeInViewport();
+      await expect(toolbar.getByRole("button", { name: "Enregistrer le brouillon", exact: true })).toBeInViewport();
+      await expect(toolbar.getByRole("button", { name: "Publier", exact: true })).toBeInViewport();
+    }
     await expect(subtitle).toHaveValue("Un sous-titre\nDeuxième ligne\nTroisième ligne");
     await assertNoPageOverflow(page);
     await page.screenshot({ path: info.outputPath(`promesse-actions-${width}x${height}.png`) });
