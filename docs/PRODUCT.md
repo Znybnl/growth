@@ -1,5 +1,11 @@
 # Produit — Okado
 
+## Résultats — contexte et recherche (#764)
+
+Le titre « Résultats » identifie l'écran ; le sélecteur indique la campagne
+analysée. La recherche par code ou e-mail apparaît près de la liste des contacts
+et s'applique à la campagne sélectionnée.
+
 ## Ergonomie mobile du SaaS — #760
 
 Décision du propriétaire du 8 novembre 2026 : descriptions d'introduction masquées

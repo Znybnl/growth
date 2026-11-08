@@ -356,7 +356,7 @@ async function DataPageContent({ searchParams }: DataPageProps) {
       <section className="px-1 py-2">
         <PageHeader
           eyebrow="Données de campagne"
-          title={selectedCampaign.title}
+          title="Résultats"
           description="Visualisez les indicateurs clés, le stock de dotation et les données de saisie exportables pour chaque campagne."
           actions={
             <Link
@@ -376,10 +376,6 @@ async function DataPageContent({ searchParams }: DataPageProps) {
               selectedCampaignId={selectedCampaign.id}
               query={query}
               emailStatus={emailStatus}
-            />
-            <DataSearchForm
-              campaignId={selectedCampaign.id}
-              initialValue={query}
             />
           </div>
         </div>
@@ -486,6 +482,9 @@ async function CampaignResultsContent({
         mais non répartis par jour. Aucune date n’a été estimée.
       </StatusNotice> : null}
 
+      <section aria-label="Recherche des contacts" className="space-y-2">
+        <DataSearchForm campaignId={campaignId} initialValue={query} />
+      </section>
       <Suspense fallback={<ResultsLoading>Chargement des contacts et des e-mails…</ResultsLoading>}>
         <ResultsContacts campaignId={campaignId} contacts={dataView.contacts} query={query} emailStatus={emailStatus} />
       </Suspense>
