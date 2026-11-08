@@ -7,6 +7,12 @@ onglets restent accessibles. Un compte mono-établissement dispose d'un résumé
 et de raccourcis vers les informations, liens marketing et PIN. L'ajout d'un
 établissement demande confirmation si des modifications ne sont pas enregistrées.
 
+## Modales de lots sur mobile — #765
+
+La bibliothèque et l'éditeur de lot adaptent leurs zones fixes à la hauteur
+disponible. En paysage de faible hauteur, l'éditeur peut défiler jusqu'aux
+champs et aux actions ; les règles et valeurs des lots restent inchangées.
+
 ## Ergonomie mobile du SaaS — #760
 
 Décision du propriétaire du 8 novembre 2026 : descriptions d'introduction masquées

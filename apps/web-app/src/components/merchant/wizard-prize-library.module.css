@@ -178,3 +178,28 @@
     flex-grow: 1;
   }
 }
+
+/* Keep the list usable when the viewport is short, including landscape keyboards. */
+@media (max-width: 639px), (max-height: 500px) {
+  :global(.okado-dialog-overlay):has(.prizeLibrarySurface) { padding: 0; }
+  .prizeLibrarySurface:global(.okado-dialog-surface) {
+    width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0;
+  }
+  .libraryHeader { padding: max(.5rem, env(safe-area-inset-top)) 1rem .5rem; }
+  .libraryHeader > div > p:first-child { display: none; }
+  .libraryHeader > div > p[id] {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+  .libraryHeader h2 { margin-top: 0; font-size: 1.125rem; }
+  .libraryTabs { padding: .25rem .5rem; }
+  .libraryContent { flex: 1 1 0; padding: .75rem 1rem; }
+  .libraryFooter { padding: .5rem 1rem max(.5rem, env(safe-area-inset-bottom)); }
+  .libraryFooter > div { flex-wrap: nowrap; gap: .5rem; }
+  .libraryFooter > div > div:first-child { font-size: 12px; line-height: 1rem; }
+  .libraryFooter > div > div:last-child { flex-shrink: 0; justify-content: flex-end; }
+  .libraryFooter > div:has(> div:last-child button:nth-child(2)) { flex-wrap: wrap; }
+  .libraryFooter > div:has(> div:last-child button:nth-child(2)) > div:first-child { flex-basis: 100%; }
+  .libraryFooter > div:has(> div:last-child button:nth-child(2)) > div:last-child { width: 100%; }
+  .libraryFooter > [role="alert"] { max-height: 20dvh; overflow-y: auto; padding: .5rem; }
+}

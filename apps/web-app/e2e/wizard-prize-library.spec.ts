@@ -23,6 +23,31 @@ async function openLibrary(page: Page, width = 1280, height = 720) {
   return page.getByRole("dialog", { name: "Ajouter des lots", exact: true });
 }
 
+test("bibliothèque et éditeur restent utilisables en faible hauteur", async ({ page }, info) => {
+  await page.route("**/api/prize-suggestions?**", (route) => route.fulfill({ json: { suggestions } }));
+  for (const [width, height] of [[320, 568], [390, 740], [740, 390]]) {
+    const library = await openLibrary(page, width, height);
+    const card = library.getByTestId("wizard-prize-suggestion-card").first();
+    const add = card.getByRole("button", { name: "Ajouter : MASQUE OFFERT" });
+    await add.scrollIntoViewIfNeeded();
+    await expect(add).toBeInViewport({ ratio: 1 });
+    await expect(library.getByRole("button", { name: "Terminer" })).toBeInViewport({ ratio: 1 });
+    await page.screenshot({ path: info.outputPath(`library-${width}x${height}.png`) });
+    await add.click();
+    await library.getByRole("button", { name: "Terminer" }).click();
+    await page.getByRole("button", { name: "Modifier MASQUE OFFERT" }).click();
+    const editor = page.getByRole("dialog", { name: "Modifier le lot" });
+    const conditions = editor.getByLabel("Conditions d’utilisation");
+    await conditions.scrollIntoViewIfNeeded();
+    await conditions.focus();
+    await conditions.fill("Condition de recette");
+    await page.screenshot({ path: info.outputPath(`editor-${width}x${height}.png`) });
+    await editor.getByRole("button", { name: "Enregistrer le lot" }).click();
+    await expect(editor).toHaveCount(0);
+    await assertNoPageOverflow(page);
+  }
+});
+
 test("@visual-1280 phase 2 : ajouts multiples, doublons, ajustement explicite et sauvegarde des champs suggérés", async ({ page }, info) => {
   const queries: string[] = [];
   await page.route("**/api/prize-suggestions?**", (route) => {
@@ -220,6 +245,9 @@ for (const width of [320, 390]) {
     await library.getByRole("button", { name: "Ajouter : -15% RITUEL", exact: true }).click();
     await library.getByRole("spinbutton").fill("20");
     await expect(library.getByRole("alert")).toHaveCount(0);
+    await expect(library.getByRole("button", { name: "Annuler l’ajout" })).toBeInViewport({ ratio: 1 });
+    await expect(library.getByRole("button", { name: "Ajouter le lot", exact: true })).toBeInViewport({ ratio: 1 });
+    expect(await library.evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
     await page.screenshot({ path: info.outputPath(`bibliotheque-mobile-${width}.png`), animations: "disabled" });
     await library.getByRole("button", { name: "Ajouter le lot", exact: true }).click();
     await page.keyboard.press("Tab");

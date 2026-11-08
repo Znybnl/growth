@@ -1410,6 +1410,19 @@ button:disabled,
   }
 }
 
+@media (max-width: 639px), (max-height: 500px) {
+  .okado-prize-editor-header { padding: .5rem 1rem; }
+  .okado-prize-editor-header > div > p:first-child { display: none; }
+  .okado-prize-editor-header h2 { margin-top: 0; font-size: 1.125rem; }
+  .okado-prize-editor-header p[id] { margin-top: .125rem; font-size: .75rem; line-height: 1rem; }
+  .okado-prize-editor-footer { padding: .5rem 1rem max(.5rem, env(safe-area-inset-bottom)); }
+  .okado-prize-editor-footer > [role="alert"] { max-height: 20dvh; overflow-y: auto; padding: .5rem; }
+}
+
+@media (max-height: 500px) {
+  .okado-prize-editor-header, .okado-prize-editor-footer { position: static; }
+}
+
 .okado-primary-action:disabled,
 .okado-filled-action:disabled,
 .okado-secondary-action:disabled {

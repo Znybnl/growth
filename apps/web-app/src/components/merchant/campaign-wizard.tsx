@@ -650,7 +650,7 @@ function PrizeEditorPanel({
       describedBy="wizard-prize-editor-description"
       className="okado-prize-editor"
     >
-      <header className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-[#eee8f0] bg-white px-5 py-5 sm:px-7">
+      <header className="okado-prize-editor-header sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-[#eee8f0] bg-white px-5 py-5 sm:px-7">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#716b78]">
             Récompense
@@ -779,7 +779,7 @@ function PrizeEditorPanel({
         ) : null}
       </div>
       {!editor.discardPrompt ? (
-        <footer className="sticky bottom-0 space-y-3 border-t border-[#eee8f0] bg-white px-5 py-4 sm:px-7">
+        <footer className="okado-prize-editor-footer sticky bottom-0 space-y-3 border-t border-[#eee8f0] bg-white px-5 py-4 sm:px-7">
           {exceedsProbabilityTotal && !editor.error ? (
             <p role="alert" data-testid="wizard-prize-probability-warning" className="rounded-[10px] border border-[#f1c8c6] bg-[#fff6f5] px-3 py-3 text-sm leading-5 text-[#b42318]">
               Les probabilités dépassent 100 % de {new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(projectedTotal - 100)} points. Vous pouvez enregistrer ce lot, puis ajuster les chances dans la liste avant d’enregistrer le jeu.
