@@ -23,6 +23,7 @@
 .actions { justify-content: end; }
 .metric { min-width: 0; overflow-wrap: anywhere; }
 .mobileLabel { display: none; }
+.secondaryMetric { min-width: 0; }
 .title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 @container campaign-list (width < 800px) {
@@ -45,6 +46,7 @@
   .title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; overflow-wrap: anywhere; }
   .subtitle { display: none; }
   .consumption { display: none; }
+  .secondaryMetric { display: none; }
 
   .identity {
     grid-column: 1 / -1;

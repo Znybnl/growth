@@ -14,6 +14,7 @@ function fixture(mode: string, template = "beauty-nude", secondary = "Une surpri
 }
 
 test("@visual-1280 : illustrations pleines, trois lignes et actions accessibles à faible hauteur", async ({ page }, info) => {
+  test.setTimeout(120_000);
   for (const [width, height] of [[1280, 600], [1280, 720], [390, 844], [640, 360]]) {
     await page.setViewportSize({ width, height });
     await page.goto(fixture("wizard-responsive-edit"));

@@ -9,6 +9,13 @@ export async function selectWizardStep(page: Page, index: number) {
   const width = (await wizard.boundingBox())!.width;
   await expect(wizard).toHaveAttribute("data-layout", width >= 1200 ? "wide" : width >= 900 ? "compact" : "narrow");
   const select = page.getByRole("combobox", { name: "Étape de création" });
-  if (await select.isVisible()) await select.selectOption(String(index));
-  else await page.getByRole("navigation", { name: "Étapes de création" }).getByRole("button").nth(index).click();
+  if (await wizard.getAttribute("data-layout") === "narrow") {
+    await expect(select).toBeVisible();
+    await select.selectOption(String(index));
+  } else {
+    const stepButton = page.getByRole("navigation", { name: "Étapes de création" }).getByRole("button").nth(index);
+    await expect(stepButton).toBeVisible();
+    await expect(stepButton).toBeEnabled();
+    await stepButton.click();
+  }
 }

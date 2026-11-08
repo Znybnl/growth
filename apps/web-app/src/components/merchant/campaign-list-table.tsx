@@ -51,7 +51,7 @@ export function CampaignListTable({ campaigns, allowAdminDuplicate = false }: {
                   </div>
                 </div>
                 {metrics.map(([label, value]) => (
-                  <div role="cell" key={label} className={`${styles.metric} ${label === "Taux de consommation" ? styles.consumption : ""}`}>
+                  <div role="cell" key={label} className={`${styles.metric} ${label === "Taux de consommation" ? styles.consumption : ""} ${label === "Lots utilisés" ? styles.secondaryMetric : ""}`}>
                     <span className={styles.mobileLabel} aria-hidden={label === "Taux de consommation" ? undefined : true}>
                       {label}
                       {label === "Taux de consommation" ? <ConsumptionRateInfo id={`consumption-help-${item.id}`} /> : null}
