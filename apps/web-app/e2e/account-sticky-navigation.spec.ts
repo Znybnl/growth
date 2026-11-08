@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { assertNoPageOverflow, rejectAnalyticsForVisualTests } from "./helpers/visual-1280";
 
-for (const viewport of [{ width: 1280, height: 720 }, { width: 1280, height: 600 }, { width: 390, height: 844 }, { width: 320, height: 740 }]) {
+for (const viewport of [{ width: 1280, height: 720 }, { width: 1280, height: 600 }, { width: 390, height: 844 }, { width: 320, height: 740 }, { width: 412, height: 844 }]) {
   test(`@visual-1280 Mon compte : navigation stable au défilement ${viewport.width}x${viewport.height}`, async ({ page, context, baseURL }, info) => {
     await page.setViewportSize(viewport);
     await rejectAnalyticsForVisualTests(context, baseURL!);
@@ -13,7 +13,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 1280, height: 600
     const toolbar = page.locator(".okado-account-toolbar");
     const save = toolbar.getByRole("button", { name: "Enregistrer", exact: true });
     await expect(tabs).toBeVisible();
-    for (const tab of await tabs.getByRole("tab").all()) await expect(tab).toBeInViewport({ ratio: 1 });
+    await expect(tabs.getByRole("tab", { selected: true })).toBeInViewport({ ratio: 1 });
     await expect(save).toBeInViewport();
     await page.screenshot({ path: info.outputPath(`account-initial-${viewport.width}x${viewport.height}.png`) });
     await page.evaluate(() => document.fonts.ready);
@@ -46,6 +46,7 @@ for (const viewport of [{ width: 1280, height: 720 }, { width: 1280, height: 600
     await tabs.getByRole("tab", { name: "Utilisateur", exact: true }).focus();
     await page.keyboard.press("ArrowRight");
     await expect(tabs.getByRole("tab", { name: "Abonnement", exact: true })).toHaveAttribute("aria-selected", "true");
+    await expect(tabs.getByRole("tab", { selected: true })).toBeInViewport({ ratio: 1 });
     await expect(page.getByRole("tabpanel")).toBeInViewport();
     await assertNoPageOverflow(page);
   });

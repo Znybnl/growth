@@ -197,6 +197,11 @@ export function AccountSettingsForm({
   }, [billingRead.data, router]);
   useProductStepTracking("account_tab_viewed", activeTab);
 
+  useEffect(() => {
+    const tab = document.getElementById(`account-${activeTab}-tab`);
+    tab?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [activeTab]);
+
   function applyTabSelection(tab: AccountTab) {
     const nextHash = `#account-${tab === "establishment" ? "establishment" : tab === "user" ? "user" : "subscription"}`;
     window.history.replaceState(null, "", nextHash);
@@ -335,6 +340,7 @@ export function AccountSettingsForm({
               id={`account-${tab}-tab`}
               type="button"
               role="tab"
+              aria-label={label}
               aria-selected={activeTab === tab}
               aria-controls={`account-tabpanel-${tab}`}
               tabIndex={activeTab === tab ? 0 : -1}
@@ -351,7 +357,8 @@ export function AccountSettingsForm({
               onClick={() => selectTab(tab)}
               className={`shrink-0 rounded-[4px] px-1 py-2.5 text-[13px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aubergine sm:px-4 sm:text-sm ${activeTab === tab ? "bg-purple-haze text-aubergine" : "text-ash hover:bg-[#f7f0fa] hover:text-aubergine"}`}
             >
-              {label}
+              <span className="sm:hidden">{tab === "establishment" ? "Étab." : tab === "subscription" ? "Abonn." : label}</span>
+              <span className="hidden sm:inline">{label}</span>
             </button>
           ))}
         </div>
@@ -431,7 +438,12 @@ export function AccountSettingsForm({
           merchant={selectedMerchant}
           locations={locations}
           onSelectLocation={requestLocationSelection}
+          hasUnsavedChanges={isDirty}
           />
+
+          <nav aria-label="Accès rapide aux réglages" className="flex flex-wrap gap-2 py-4 sm:hidden">
+            {[["account-location", "Informations"], ["account-channels", "Liens marketing"], ["account-pin", "PIN"]].map(([id, label]) => <button key={id} type="button" onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })} className="min-h-11 rounded-full border border-fog bg-white px-2 text-xs font-semibold text-aubergine">{label}</button>)}
+          </nav>
 
       <section className="okado-card scroll-mt-28 p-5 md:p-6">
         <div className="flex items-start gap-3 border-b border-border/70 pb-5">
