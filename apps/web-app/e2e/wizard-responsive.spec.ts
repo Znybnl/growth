@@ -78,6 +78,13 @@ for (const [width, height] of [[320, 740], [390, 844], [768, 900], [1024, 768], 
       expect(fitted.y).toBeGreaterThanOrEqual(0);
       expect(fitted.y + fitted.height).toBeLessThanOrEqual(height + 1);
       await expect(page.getByRole("button", { name: "Agrandir", exact: true })).toHaveCount(0);
+    } else if (width < 768) {
+      const opened = page.waitForEvent("popup");
+      await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
+      const popup = await opened;
+      await expect(popup.locator("iframe")).toBeVisible();
+      await expect(page.getByRole("dialog", { name: "Aperçu du jeu" })).toHaveCount(0);
+      await popup.close();
     } else {
       await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: "Aperçu du jeu" });

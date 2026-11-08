@@ -51,6 +51,7 @@ import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CampaignEmailPreview } from "@/components/merchant/campaign-email-preview";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
+import { reserveCampaignPreviewWindow } from "@/lib/game-preview-viewport";
 import { CampaignLivePreview as SharedCampaignLivePreview } from "@/components/merchant/campaign-live-preview";
 import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-controls";
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
@@ -2844,7 +2845,7 @@ export function CampaignEditor({
     }
   }
 
-  function openPreviewForCampaign(campaignId: string) {
+  function openPreviewForCampaign(campaignId: string, reservedWindow?: Window | null) {
     openCampaignPreview(
       campaignId,
       () => {
@@ -2854,7 +2855,7 @@ export function CampaignEditor({
         });
         setPreviewOpen(true);
       },
-      (path) => router.push(path),
+      undefined, reservedWindow,
     );
   }
 
@@ -2870,6 +2871,7 @@ export function CampaignEditor({
 
   async function saveAndPreview() {
     if (!form.id || isSavingBeforePreview) return;
+    const tab = form.isActive && !form.actions.length ? null : reserveCampaignPreviewWindow();
     setPreviewSaveError(null);
     setIsSavingBeforePreview(true);
     const campaignId = await saveCampaign({
@@ -2878,9 +2880,9 @@ export function CampaignEditor({
       onError: setPreviewSaveError,
     });
     setIsSavingBeforePreview(false);
-    if (!campaignId) return;
+    if (!campaignId) { tab?.close(); return; }
     setPreviewSaveDialogOpen(false);
-    openPreviewForCampaign(campaignId);
+    openPreviewForCampaign(campaignId, tab);
   }
 
   function previewWithoutSaving() {

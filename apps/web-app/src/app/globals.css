@@ -2,10 +2,14 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* Reserve the bottom-right cookie control's row outside the scrolling workspace,
-   including sticky wizard actions. No empty row when analytics is unconfigured. */
-body:has(.okado-cookie-floating-trigger) .okado-workspace-shell {
-  height: calc(100dvh - 3.25rem - env(safe-area-inset-bottom));
+/* Workspace preferences stay available in its navigation, without a reserved
+   footer or a floating control over forms. Public/auth pages retain their launcher. */
+.okado-workspace-shell { height: 100dvh; }
+body:has(.okado-workspace-shell) .okado-cookie-floating-trigger { display: none; }
+
+@media (width < 768px) {
+  .okado-workspace-shell .okado-metric-card { container-type: inline-size; padding-inline: 12px 8px; }
+  .okado-metric-card .okado-metric-card__value--long { font-size: clamp(1rem, 18cqi, 2rem); }
 }
 
 @font-face {

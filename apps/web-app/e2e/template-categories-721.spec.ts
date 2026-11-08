@@ -44,6 +44,7 @@ test("@visual-1280 le ticket Noël rose poudré est dans Templates Beauté sans 
   for (const width of [390, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     for (const mode of ["wizard-responsive-edit", "editor-prize-budget"]) {
+      if (width === 390 && mode.startsWith("wizard")) await page.addInitScript(() => { window.open = () => null; });
       const assetsLoaded = mode === "editor-prize-budget"
         ? page.waitForResponse((response) => response.url().includes("/api/campaigns/template-proof-campaign/assets"))
         : null;

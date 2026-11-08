@@ -12,7 +12,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
 import { openCampaignPreview } from "@/lib/game-preview-viewport";
@@ -50,7 +49,6 @@ export function CampaignActionsMenu({
   isActive,
   allowAdminDuplicate = false,
 }: CampaignActionsMenuProps) {
-  const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDuplicateLocationsOpen, setIsDuplicateLocationsOpen] = useState(false);
   const [isAdminDuplicateOpen, setIsAdminDuplicateOpen] = useState(false);
@@ -86,7 +84,7 @@ export function CampaignActionsMenu({
           <DropdownMenuItem
             className={itemClass}
             onSelect={() =>
-              openCampaignPreview(campaignId, () => setIsPreviewOpen(true), (path) => router.push(path))
+              openCampaignPreview(campaignId, () => setIsPreviewOpen(true))
             }
           >
             <Eye className="h-4 w-4" />

@@ -18,6 +18,8 @@ import { getMerchantBillingSummary } from "@/lib/billing";
 import { MerchantAnalyticsIdentity } from "@/components/merchant/merchant-analytics-identity";
 import { getPlatformAdminNavigationItems } from "@/lib/platform-admin-navigation";
 import { Merchant, MerchantLocationAccess, MerchantUser } from "@/lib/types";
+import { isAnalyticsConfigured } from "@/lib/consent-managed-analytics";
+import { openCookiePreferences } from "@/lib/cookie-preferences-control";
 
 type MerchantShellProps = {
   children: React.ReactNode;
@@ -324,6 +326,13 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
             <div className="mt-4">
               <SignOutButton />
             </div>
+            {isAnalyticsConfigured ? <button type="button" aria-controls="okado-cookie-preferences"
+              className="mt-3 min-h-11 text-left text-sm text-white/80 underline underline-offset-4 hover:text-white"
+              onClick={event => {
+                const trigger = window.matchMedia("(min-width: 1024px)").matches ? event.currentTarget : menuButtonRef.current;
+                setMenuOpen(false);
+                openCookiePreferences(trigger);
+              }}>Gérer les cookies</button> : null}
           </div>
         </div>
       </aside>

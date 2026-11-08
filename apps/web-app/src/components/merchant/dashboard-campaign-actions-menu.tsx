@@ -2,7 +2,6 @@
 
 import { BarChart3, Eye, MoreVertical, Pencil } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
@@ -24,7 +23,6 @@ const itemClass =
 export function DashboardCampaignActionsMenu({
   campaignId,
 }: DashboardCampaignActionsMenuProps) {
-  const router = useRouter();
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   return (
@@ -61,7 +59,7 @@ export function DashboardCampaignActionsMenu({
           <DropdownMenuItem
             className={itemClass}
             onSelect={() =>
-              openCampaignPreview(campaignId, () => setIsPreviewOpen(true), (path) => router.push(path))
+              openCampaignPreview(campaignId, () => setIsPreviewOpen(true))
             }
           >
             <Eye className="h-4 w-4" />

@@ -52,7 +52,7 @@ export function DashboardRecentCampaigns({ campaigns }: { campaigns: CampaignPer
                 </div></th>
                 <td role="cell" className={styles.detail}>{gameTypeLabel(item.campaign.gameType)}</td>
                 <td role="cell" data-align="right"><span className={styles.mobileLabel} aria-hidden="true">Scans</span>{item.kpis.scans}</td>
-                <td role="cell" data-align="right"><span className={styles.mobileLabel} aria-hidden="true">Participations</span>{item.kpis.games}</td>
+                <td role="cell" data-align="right"><span className={styles.mobileLabel} aria-hidden="true"><span className="min-[380px]:hidden">Particip.</span><span className="hidden min-[380px]:inline">Participations</span></span>{item.kpis.games}</td>
                 <td role="cell" data-align="right"><span className={styles.mobileLabel} aria-hidden="true">Conversion</span>{formatPercent(item.kpis.conversionRate)}</td>
                 <td role="cell" className={styles.action}><DashboardCampaignActionsMenu campaignId={item.campaign.id} /></td>
               </tr>

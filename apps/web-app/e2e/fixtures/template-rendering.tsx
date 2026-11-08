@@ -10,6 +10,7 @@ import { AccountSettingsForm } from "@/components/merchant/account-settings-form
 import { CampaignExperience } from "@/components/public/campaign-experience";
 import { MerchantShell } from "@/components/merchant/merchant-shell";
 import { DashboardRecentCampaigns } from "@/components/merchant/dashboard-recent-campaigns";
+import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
 import { MetricCard, PageHeader } from "@/components/ui/workspace";
 import { captureClientProductEvent, resetProductAnalytics } from "@/lib/client-product-analytics";
 import { createDefaultPosterSettings, defaultScratchTextColor, wheelHeadingColorForTemplateSelection, wheelPaletteForTemplate } from "@/lib/campaign-defaults";
@@ -120,10 +121,11 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       <div className="min-w-0 space-y-5">
         <PageHeader eyebrow="Vue d'ensemble" title="Pilotez vos campagnes"
           description={marketing ? "Exemple fictif · Vos jeux et leurs participations, en un regard." : "Données fictives pour le contrôle responsive de l’accueil."} />
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid grid-cols-2 gap-4 xl:grid-cols-4" data-testid="dashboard-kpis">
           <MetricCard label="Campagnes actives" value={marketing ? "3" : "5"} /><MetricCard label="Participations" value={marketing ? "882" : "9 878 467"} />
           <MetricCard label="Lots consommés" value={marketing ? "60" : "182"} /><MetricCard label="Taux de consommation" value={marketing ? "40%" : "25%"} />
         </section>
+        {mode === "dashboard-responsive-mobile" ? <DashboardActivityChart title="Scans et participations par jour" eyebrow="Activité récente" points={Array.from({ length: 30 }, (_, index) => ({ label: `2026-10-${String(index + 1).padStart(2, "0")}`, scans: index * 3, participations: index * 2 }))} /> : null}
         <DashboardRecentCampaigns campaigns={campaigns} />
       </div>
     </MerchantShell>;

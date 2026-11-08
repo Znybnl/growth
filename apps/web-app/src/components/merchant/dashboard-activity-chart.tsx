@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CalendarDays, ChevronDown } from "lucide-react";
 
 import { FieldSelect } from "@/components/ui/field";
@@ -36,6 +36,15 @@ export function DashboardActivityChart({
   points,
 }: DashboardActivityChartProps) {
   const [period, setPeriod] = useState<number>(7);
+  const chartRef = useRef<HTMLDivElement>(null);
+  const [chartWidth, setChartWidth] = useState(900);
+  useEffect(() => {
+    const node = chartRef.current;
+    if (!node) return;
+    const observer = new ResizeObserver(([entry]) => setChartWidth(Math.max(240, Math.floor(entry.contentRect.width))));
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   const data = useMemo(() => {
     const visiblePoints = points.slice(-Math.min(period, points.length || period));
@@ -46,8 +55,7 @@ export function DashboardActivityChart({
     }));
   }, [period, points]);
 
-  const chartWidth = 900;
-  const chartHeight = 330;
+  const chartHeight = chartWidth < 640 ? 250 : 314;
   const plot = { left: 48, right: 24, top: 24, bottom: 44 };
   const maxValue = Math.max(
     1,
@@ -64,10 +72,10 @@ export function DashboardActivityChart({
   const participationPoints = data
     .map((point, index) => `${xFor(index)},${yFor(point.participations)}`)
     .join(" ");
-  const yTicks = Array.from({ length: 5 }, (_, index) => {
-    const value = Math.round((maxValue * (4 - index)) / 4);
-    return { value, y: yFor(value) };
-  });
+  const yTicks = [...new Set(Array.from({ length: 5 }, (_, index) => Math.round((maxValue * (4 - index)) / 4)))].map(value => ({ value, y: yFor(value) }));
+  // Keep readable 12px labels instead of shrinking a 900px SVG to phone width.
+  const labelCount = Math.min(data.length, Math.max(2, Math.floor((chartWidth - plot.left - plot.right) / 72) + 1));
+  const tickIndexes = new Set(Array.from({ length: labelCount }, (_, index) => Math.round(index * (data.length - 1) / Math.max(1, labelCount - 1))));
 
   return (
     <section className="okado-card overflow-hidden p-0">
@@ -114,7 +122,8 @@ export function DashboardActivityChart({
         </span>
       </div>
 
-      <div className="h-[330px] w-full px-2 pb-3 pt-1">
+      <div className="w-full px-2 pb-3 pt-1">
+        <div ref={chartRef} style={{ height: chartHeight }} data-testid="activity-plot">
         <svg
           viewBox={`0 0 ${chartWidth} ${chartHeight}`}
           className="h-full w-full"
@@ -151,7 +160,7 @@ export function DashboardActivityChart({
                 stroke="var(--color-fog)"
                 strokeDasharray="4 8"
               />
-              <text
+              {tickIndexes.has(index) ? <text
                 x={xFor(index)}
                 y={chartHeight - 14}
                 textAnchor="middle"
@@ -159,7 +168,7 @@ export function DashboardActivityChart({
                 fontSize="12"
               >
                 {point.date}
-              </text>
+              </text> : null}
             </g>
           ))}
           <polyline points={scanPoints} fill="none" stroke="var(--color-aubergine)" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" filter="url(#okado-chart-shadow)" />
@@ -175,6 +184,7 @@ export function DashboardActivityChart({
             </g>
           ))}
         </svg>
+        </div>
       </div>
     </section>
   );

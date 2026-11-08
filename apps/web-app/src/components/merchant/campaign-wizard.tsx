@@ -41,6 +41,7 @@ import { useNoMarketingActionConfirmation } from "@/components/merchant/no-marke
 import { marketingActionEntry, marketingActionKey, normalizeMarketingActionUrl } from "@/lib/marketing-action-library";
 import { CampaignPreviewQrDialog } from "@/components/merchant/campaign-preview-qr";
 import { CampaignPreviewDialog, openCampaignPreview } from "@/components/merchant/campaign-preview-dialog";
+import { reserveCampaignPreviewWindow } from "@/lib/game-preview-viewport";
 import { CampaignSavedDialog } from "@/components/merchant/campaign-saved-dialog";
 import { AdminCampaignQrDownload } from "@/components/merchant/admin-campaign-qr-download";
 import { CampaignQrDownloadDialog } from "@/components/merchant/campaign-qr-download";
@@ -483,11 +484,14 @@ export function WizardPhoneFrame({ children }: { children: ReactNode }) {
 function WizardGamePreview({
   draft,
   merchant,
+  standalone = false,
 }: {
   draft: WizardDraft;
   merchant: Merchant;
+  standalone?: boolean;
 }) {
   const preview = buildCampaignLivePreviewModel(draft, merchant);
+  if (standalone) return <DraftPreviewViewport fullWindow><CampaignLivePreview merchant={merchant} preview={preview} mobileViewport flushTop /></DraftPreviewViewport>;
   return (
     <WizardPhoneFrame>
       <DraftPreviewViewport><CampaignLivePreview
@@ -911,10 +915,11 @@ export function CampaignWizard({
   const [isSaving, setIsSaving] = useState(false);
   const saveRequestInFlightRef = useRef(false);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileSaveButtonRef = useRef<HTMLButtonElement>(null);
   function restoreSavedDialogFocus() {
     // Modal teardown first restores its own trigger, which may now be detached.
     // Return to the stable save action after confirmation → preview transitions.
-    window.requestAnimationFrame(() => saveButtonRef.current?.focus({ preventScroll: true }));
+    window.requestAnimationFrame(() => (window.matchMedia("(min-width: 768px)").matches ? saveButtonRef : mobileSaveButtonRef).current?.focus({ preventScroll: true }));
   }
   const [previewSaveDialogOpen, setPreviewSaveDialogOpen] = useState(false);
   const [previewSaveError, setPreviewSaveError] = useState<string | null>(null);
@@ -1562,7 +1567,7 @@ export function CampaignWizard({
     }
   }
 
-  function openPreviewForCampaign(campaignId: string) {
+  function openPreviewForCampaign(campaignId: string, reservedWindow?: Window | null) {
     openCampaignPreview(
       campaignId,
       () => {
@@ -1572,8 +1577,8 @@ export function CampaignWizard({
         });
         setPreviewOpen(true);
       },
-      (path) => router.push(path),
       adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(campaignId)}/preview` : undefined,
+      reservedWindow,
     );
   }
 
@@ -1589,6 +1594,9 @@ export function CampaignWizard({
 
   async function saveAndPreview() {
     if (!draft.id || isSavingBeforePreview) return;
+    // A second confirmation may be needed in the editor. Do not leave the user
+    // in a loading tab while that dialog waits in the original window.
+    const tab = draft.isActive && !draft.actions.length ? null : reserveCampaignPreviewWindow();
     setPreviewSaveError(null);
     setIsSavingBeforePreview(true);
     const campaignId = await saveCampaign("save", {
@@ -1597,9 +1605,9 @@ export function CampaignWizard({
       onError: setPreviewSaveError,
     });
     setIsSavingBeforePreview(false);
-    if (!campaignId) return;
+    if (!campaignId) { tab?.close(); return; }
     setPreviewSaveDialogOpen(false);
-    openPreviewForCampaign(campaignId);
+    openPreviewForCampaign(campaignId, tab);
   }
 
   function previewWithoutSaving() {
@@ -1651,7 +1659,28 @@ export function CampaignWizard({
     <div ref={wizardLayoutRef} data-layout={wizardLayout} data-inline-preview={inlinePreview} className="okado-wizard space-y-6 pb-10">
       {noMarketingActionDialog}
       <div className="wizard-save-toolbar sticky top-0 z-30 -mx-3 -mt-6 border-b border-fog bg-soft-white/95 px-3 py-3 backdrop-blur-sm lg:-mx-6 lg:px-6" data-testid="wizard-save-toolbar">
-        <div className="flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center xl:justify-between">
+        <div className="flex items-center justify-between gap-2 md:hidden" data-testid="wizard-mobile-actions">
+          {draft.id ? <button type="button" onClick={requestPreview} disabled={isSaving || isSavingBeforePreview} className="okado-secondary-action gap-2 px-3 text-sm"><Eye className="h-4 w-4" aria-hidden="true" />Aperçu</button> :
+            <WizardResponsivePreview inline={false} triggerLabel="Aperçu" mobileChildren={<WizardGamePreview draft={draft} merchant={merchant} standalone />}>
+              <WizardGamePreview draft={draft} merchant={merchant} />
+            </WizardResponsivePreview>}
+          <button ref={mobileSaveButtonRef} type="button" onClick={() => void saveCampaign("save")} disabled={isSaving} className="okado-filled-action px-3 text-sm disabled:opacity-50">{isSaving ? "En cours…" : "Enregistrer"}</button>
+          <DropdownMenu><DropdownMenuTrigger asChild>
+            <button type="button" aria-label="Plus d’actions du jeu" className="okado-secondary-action gap-1 px-3 text-sm">Plus<ChevronDown className="h-4 w-4" aria-hidden="true" /></button>
+          </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="max-h-[70dvh] w-[min(270px,calc(100vw-24px))] overflow-y-auto [&_[role=menuitem]]:min-h-11">
+              {draft.id ? <>
+                <DropdownMenuItem onSelect={() => setDiffusionQrOpen(true)}>QR code de diffusion</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setQrPreviewOpen(true)}>QR code de prévisualisation</DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href={`${adminSaveEndpoint ? "/admin" : ""}/campaigns/${encodeURIComponent(draft.id)}/poster`} prefetch={false}>Affiche</Link></DropdownMenuItem>
+                {!adminSaveEndpoint ? <DropdownMenuItem asChild><Link href={`/campaigns/${encodeURIComponent(draft.id)}/email`} prefetch={false}>Modifier l’e-mail de gain</Link></DropdownMenuItem> : null}
+              </> : null}
+              {!draft.isActive && (isEditing || stepIndex === WIZARD_STEPS.length - 1) ? <DropdownMenuItem disabled={isSaving} onSelect={() => void saveCampaign("publish")}>Publier la campagne</DropdownMenuItem> : null}
+              <DropdownMenuItem asChild><Link href={adminSaveEndpoint ? "/admin/campaigns" : "/campaigns"} prefetch={false}>Retour aux jeux</Link></DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="hidden flex-col gap-3 md:flex xl:flex-row xl:flex-wrap xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             {adminSaveEndpoint ? <StatusBadge tone="muted">Administration · {merchant.companyName}</StatusBadge> : (
               <StatusBadge tone={!draft.id || !draft.isActive ? "muted" : "active"}>
@@ -1783,7 +1812,7 @@ export function CampaignWizard({
             </div>
             {inlinePreview ? <div className="hidden rounded-[4px] bg-purple-haze p-3 text-aubergine sm:block">
               <Sparkles className="h-5 w-5" />
-            </div> : <WizardResponsivePreview inline={false}>
+            </div> : <WizardResponsivePreview inline={false} mobileChildren={<WizardGamePreview draft={draft} merchant={merchant} standalone />}>
               <WizardGamePreview draft={draft} merchant={merchant} />
             </WizardResponsivePreview>}
           </div>
@@ -3183,7 +3212,7 @@ export function CampaignWizard({
           if (!isSavingBeforeNavigation) setPendingNavigation(null);
         }}
       />
-      {diffusionQrOpen && draft.id ? <CampaignQrDownloadDialog campaignId={draft.id} isActive={draft.isActive} onClose={() => setDiffusionQrOpen(false)} /> : null}
+      {diffusionQrOpen && draft.id ? <CampaignQrDownloadDialog campaignId={draft.id} admin={Boolean(adminSaveEndpoint)} isActive={draft.isActive} onClose={() => setDiffusionQrOpen(false)} /> : null}
       {draft.id ? (
         <CampaignPreviewQrDialog
           open={qrPreviewOpen}
@@ -3223,7 +3252,8 @@ export function CampaignWizard({
             restoreSavedDialogFocus();
           }}
           onPreview={() => {
-            setSavedPreviewCampaignId(savedCampaignId);
+            openCampaignPreview(savedCampaignId, () => setSavedPreviewCampaignId(savedCampaignId),
+              adminSaveEndpoint ? `/api/admin/campaigns/${encodeURIComponent(savedCampaignId)}/preview` : undefined);
             setSavedCampaignId(null);
           }}
         />

@@ -9,7 +9,7 @@ import { GAME_PREVIEW_VIEWPORT } from "@/lib/game-preview-viewport";
 const DOCUMENT = '<!doctype html><html lang="fr" style="height:100%"><head></head><body style="height:100%;margin:0;overflow-x:hidden"><div id="draft-preview-root" style="height:100%" inert></div></body></html>';
 
 /** A real mobile CSS viewport; no game endpoint, persisted draft, or player API. */
-export function DraftPreviewViewport({ children }: { children: ReactNode }) {
+export function DraftPreviewViewport({ children, fullWindow = false }: { children: ReactNode; fullWindow?: boolean }) {
   const [mount, setMount] = useState<HTMLElement | null>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
 
@@ -40,7 +40,7 @@ export function DraftPreviewViewport({ children }: { children: ReactNode }) {
       sandbox="allow-same-origin"
       tabIndex={-1}
       className="block border-0 bg-white"
-      style={GAME_PREVIEW_VIEWPORT}
+      style={fullWindow ? { width: "100vw", height: "100dvh" } : GAME_PREVIEW_VIEWPORT}
       onLoad={event => setMount(event.currentTarget.contentDocument?.getElementById("draft-preview-root") ?? null)}
     />
     {mount ? createPortal(children, mount) : null}

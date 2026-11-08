@@ -78,7 +78,7 @@ test("accueil : cartes sur petits conteneurs, tableau sur ordinateur et redimens
       const rows = section.getByRole("table").locator("tbody tr");
       await expect(rows).toHaveCount(6);
       await expect(rows.first().getByText("Roue de la fortune", { exact: true })).toBeVisible();
-      await expect(rows.first().getByText("Participations", { exact: true })).toBeVisible();
+      await expect(rows.first().getByText(width < 380 ? "Particip." : "Participations", { exact: true })).toBeVisible();
       await rows.first().getByRole("button").click();
       await expect(page.getByRole("menuitem", { name: "Modifier", exact: true })).toBeVisible();
       const menu = (await page.getByRole("menu").boundingBox())!;

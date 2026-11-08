@@ -25,7 +25,7 @@ export function CampaignListTable({ campaigns, allowAdminDuplicate = false }: {
             <span role="columnheader">Participations</span>
             <span role="columnheader">Gagnants</span>
             <span role="columnheader">Lots utilisés</span>
-            <span role="columnheader">
+            <span role="columnheader" className={styles.consumption}>
               Taux de consommation <ConsumptionRateInfo id="campaign-consumption-help" />
             </span>
             <span role="columnheader" className="sr-only">Actions</span>
@@ -46,12 +46,12 @@ export function CampaignListTable({ campaigns, allowAdminDuplicate = false }: {
                 <div role="rowheader" className={styles.identity}>
                   <StatusBadge tone={item.isActive ? "active" : "muted"}>{item.isActive ? "Active" : "En pause"}</StatusBadge>
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-graphite" title={item.title}>{item.title}</p>
-                    <p className="truncate text-sm text-ash" title={item.subtitle}>{item.subtitle}</p>
+                    <p className={`${styles.title} font-semibold text-graphite`} title={item.title}>{item.title}</p>
+                    <p className={`${styles.subtitle} truncate text-sm text-ash`} title={item.subtitle}>{item.subtitle}</p>
                   </div>
                 </div>
                 {metrics.map(([label, value]) => (
-                  <div role="cell" key={label} className={styles.metric}>
+                  <div role="cell" key={label} className={`${styles.metric} ${label === "Taux de consommation" ? styles.consumption : ""}`}>
                     <span className={styles.mobileLabel} aria-hidden={label === "Taux de consommation" ? undefined : true}>
                       {label}
                       {label === "Taux de consommation" ? <ConsumptionRateInfo id={`consumption-help-${item.id}`} /> : null}

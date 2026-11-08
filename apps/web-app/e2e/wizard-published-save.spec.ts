@@ -24,7 +24,7 @@ for (const [width, height] of [[1280, 720], [1280, 600], [390, 844]]) {
   test(`@visual-1280 jeu publié : une action claire à ${width}×${height}`, async ({ page }, info) => {
     await page.setViewportSize({ width, height });
     await page.goto(fixture());
-    await expect(toolbar(page).getByRole("button", { name: saveLabel, exact: true })).toBeInViewport();
+    await expect(toolbar(page).getByRole("button", { name: width < 768 ? "Enregistrer" : saveLabel, exact: true })).toBeInViewport();
     await expect(page.getByRole("button", { name: /^Publier/ })).toHaveCount(0);
     await expect(page.getByText("Les modifications enregistrées sont immédiatement visibles sur le jeu en ligne.")).toBeVisible();
     if (width === 1280) await captureVisualAt1280(page, info, "commandes-jeu-publie", height);
