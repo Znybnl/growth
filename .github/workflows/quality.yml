@@ -197,6 +197,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Validate editorial content
+        run: npm run content:test && npm run content:briefs && npm run content:audit
       - name: Lint landing page
         run: npm run lint:landing
       - name: Build landing page

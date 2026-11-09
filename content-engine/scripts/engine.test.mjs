@@ -1,0 +1,37 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+const script = 'content-engine/scripts/engine.mjs';
+const run = (...args) => spawnSync(process.execPath, [script, ...args], {encoding:'utf8'});
+test('validates real inventory and rejects an unknown article', () => {
+ assert.equal(run('audit','/blog/idees-animations-commerciales-boutique').status,0);
+ assert.equal(run('audit','/blog/article-inexistant').status,1);
+});
+test('rejects malformed sources and unfinished checks marked ready', () => {
+ const dir=mkdtempSync(path.join(tmpdir(),'okado-brief-'));
+ try {
+  const brief=JSON.parse(readFileSync('content-engine/briefs/example.json','utf8'));
+  brief.status='READY_FOR_HUMAN_REVIEW'; brief.sources[0].url='not-a-url';
+  const file=path.join(dir,'brief.json');writeFileSync(file,JSON.stringify(brief));
+  const result=run('briefs',file); assert.equal(result.status,1);
+  assert.match(result.stderr,/url invalide/); assert.match(result.stderr,/READY exige/);
+ } finally {rmSync(dir,{recursive:true,force:true});}
+});
+
+test('a blocked item does not stop validation of other batch items', () => {
+ const dir=mkdtempSync(path.join(tmpdir(),'okado-batch-'));
+ try {
+  const base=JSON.parse(readFileSync('content-engine/briefs/lots-jeu-qr.json','utf8'));
+  const results=[];
+  for(let i=0;i<4;i++) {
+   const b=structuredClone(base); b.topic=`Simulation ${i+1}`;
+   if(i===1){b.status='BLOCKED'; b.sources=[];}
+   const f=path.join(dir,`${i}.json`);writeFileSync(f,JSON.stringify(b));
+   results.push(run('briefs',f).status);
+  }
+  assert.deepEqual(results,[0,1,0,0]);
+ } finally {rmSync(dir,{recursive:true,force:true});}
+});

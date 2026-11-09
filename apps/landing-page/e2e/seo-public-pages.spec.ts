@@ -80,8 +80,13 @@ test("chaque page publique : HTML indexable, canonical, image sociale et navigat
         fullPage: true,
       });
   }
-  for (const path of internalLinks)
-    expect(routes, `Lien interne valide : ${path}`).toContain(path);
+  for (const path of internalLinks) {
+    if (path.startsWith("/_next/static/") || path.startsWith("/images/")) {
+      expect((await page.request.get(path)).status(), path).toBe(200);
+    } else {
+      expect(routes, `Lien interne valide : ${path}`).toContain(path);
+    }
+  }
   expect(errors).toEqual([]);
 });
 
