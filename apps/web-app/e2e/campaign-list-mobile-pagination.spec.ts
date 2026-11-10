@@ -14,6 +14,10 @@ test("mobile : accès Actives, métriques compactes et pagination préservant le
     const table = page.getByRole("table", { name: "Campagnes et indicateurs" });
     const statusLinks = page.getByRole("navigation", { name: "Filtre rapide par statut" });
     await expect(statusLinks.getByRole("link", { name: /^Actives \d+$/ })).toBeVisible();
+    const selectedStatusLink = statusLinks.locator('a[aria-current="page"]');
+    await expect(selectedStatusLink).toHaveText(/^Toutes\s*\d+$/);
+    await expect.poll(() => selectedStatusLink.evaluate((element) => getComputedStyle(element).color)).toBe("rgb(255, 255, 255)");
+    await expect.poll(() => selectedStatusLink.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe("rgb(97, 31, 105)");
     await expect(table.getByRole("rowheader")).toHaveCount(10);
     await expect(table.getByRole("row").nth(1).getByText("Lots utilisés")).toBeHidden();
     await expect(table.getByRole("row").nth(1).getByText("Participations")).toBeVisible();
@@ -21,6 +25,7 @@ test("mobile : accès Actives, métriques compactes et pagination préservant le
 
     await statusLinks.getByRole("link", { name: /^Actives \d+$/ }).click();
     await expect(page).toHaveURL(/status=active/);
+    await expect.poll(() => statusLinks.locator('a[aria-current="page"]').evaluate((element) => getComputedStyle(element).color)).toBe("rgb(255, 255, 255)");
     await expect(table.getByRole("rowheader")).toHaveCount(10);
     await expect(table.getByText("En pause", { exact: true })).toHaveCount(0);
 
@@ -34,6 +39,7 @@ test("mobile : accès Actives, métriques compactes et pagination préservant le
     await expect(page.getByText("Aucune campagne trouvée", { exact: true })).toBeVisible();
     await statusLinks.getByRole("link", { name: /^En pause \d+$/ }).click();
     await expect(page).toHaveURL(/q=samedi&status=paused/);
+    await expect.poll(() => statusLinks.locator('a[aria-current="page"]').evaluate((element) => getComputedStyle(element).color)).toBe("rgb(255, 255, 255)");
     await expect(table.getByRole("rowheader")).toHaveCount(1);
     await expect(table.getByText("Ticket du samedi au nom volontairement très long", { exact: true })).toBeVisible();
     await assertNoPageOverflow(page);
