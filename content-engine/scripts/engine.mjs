@@ -9,7 +9,7 @@ function load(relative) {
   const source = fs.readFileSync(path.join(landing, 'src/lib', relative), 'utf8');
   const js = ts.transpileModule(source, {compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020}}).outputText;
   const exports = {};
-  vm.runInNewContext(js, {exports}, {filename: relative, timeout: 2000});
+  vm.runInNewContext(js, {exports, process: {env: {NODE_ENV: "development"}}}, {filename: relative, timeout: 2000});
   return exports;
 }
 const posts = load('blog.ts').blogPosts;

@@ -1,0 +1,171 @@
+[
+  {
+    "id": "choisir-lots-jeu-qr-code-commerce",
+    "title": "Choisir les lots d’un jeu",
+    "intent": "choisir des récompenses",
+    "decision": "créer",
+    "page": "/blog/choisir-lots-jeu-qr-code-commerce",
+    "keywords": [
+      "idée lot jeu concours magasin",
+      "idées récompenses clients commerce"
+    ],
+    "overlap": "Budget et mécanique déjà traités ; distinct : choix et remise des lots.",
+    "commercial_relevance": "forte",
+    "product_fit": "direct",
+    "original_value": "hypothèse à valider : Budget et mécanique déjà traités ; distinct : choix et remise des lots.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  },
+  {
+    "id": "jeu-qr-code-salon-coiffure",
+    "title": "Jeu QR en salon de coiffure",
+    "intent": "organiser un jeu en salon",
+    "decision": "créer",
+    "page": "/blog/jeu-qr-code-salon-coiffure",
+    "keywords": [
+      "jeu qr code pour salon de coiffure",
+      "jeu concours salon de coiffure"
+    ],
+    "overlap": "Proche des guides institut ; adapter au déroulement d’un salon.",
+    "commercial_relevance": "forte",
+    "product_fit": "direct",
+    "original_value": "hypothèse à valider : Proche des guides institut ; adapter au déroulement d’un salon.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  },
+  {
+    "id": "jeu-qr-code-file-attente-commerce",
+    "title": "Jeu pendant l’attente",
+    "intent": "utiliser une attente sans gêner le service",
+    "decision": "créer",
+    "page": "/blog/jeu-qr-code-file-attente-commerce",
+    "keywords": [
+      "jeu qr code magasin",
+      "animation point de vente commerce"
+    ],
+    "overlap": "Proche du guide QR point de vente ; angle attente à différencier.",
+    "commercial_relevance": "à évaluer",
+    "product_fit": "direct",
+    "original_value": "hypothèse à valider : Proche du guide QR point de vente ; angle attente à différencier.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  },
+  {
+    "id": "organiser-remise-lots-jeu-magasin",
+    "title": "Organiser la remise des lots",
+    "intent": "préparer la remise d’un gain",
+    "decision": "créer",
+    "page": "/blog/organiser-remise-lots-jeu-magasin",
+    "keywords": [
+      "organiser remise lots jeu magasin"
+    ],
+    "overlap": "Proche du pilote lots ; angle procédure à confirmer.",
+    "commercial_relevance": "à évaluer",
+    "product_fit": "direct",
+    "original_value": "hypothèse à valider : Proche du pilote lots ; angle procédure à confirmer.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  },
+  {
+    "id": "qr-magasin",
+    "title": "Jeu QR en magasin",
+    "intent": "mettre en place un jeu en point de vente",
+    "decision": "enrichir",
+    "page": "/blog/animer-point-de-vente-qr-code",
+    "keywords": [
+      "jeu qr code magasin",
+      "jeu marketing qr code",
+      "créer un jeu qr code"
+    ],
+    "overlap": "Contenu existant ; évaluer les lacunes avant de créer.",
+    "commercial_relevance": "forte",
+    "product_fit": "direct",
+    "original_value": "hypothèse à valider : Contenu existant ; évaluer les lacunes avant de créer.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  },
+  {
+    "id": "roue-ticket",
+    "title": "Choisir roue ou ticket",
+    "intent": "choisir une mécanique",
+    "decision": "enrichir",
+    "page": "/blog/roue-ou-ticket-a-gratter-commerce",
+    "keywords": [
+      "roue de la fortune commerce",
+      "ticket à gratter numérique"
+    ],
+    "overlap": "Comparatif existant ; éviter un second guide généraliste.",
+    "commercial_relevance": "à évaluer",
+    "product_fit": "à évaluer",
+    "original_value": "hypothèse à valider : Comparatif existant ; éviter un second guide généraliste.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  },
+  {
+    "id": "jeu-commercial",
+    "title": "Jeu-concours en magasin",
+    "intent": "animer un commerce",
+    "decision": "enrichir",
+    "page": "/blog/idees-animations-commerciales-boutique",
+    "keywords": [
+      "jeu concours en magasin",
+      "organiser un jeu concours en boutique"
+    ],
+    "overlap": "Guide animations existant ; choix à confirmer après lecture.",
+    "commercial_relevance": "à évaluer",
+    "product_fit": "à évaluer",
+    "original_value": "hypothèse à valider : Guide animations existant ; choix à confirmer après lecture.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  },
+  {
+    "id": "solution-roue",
+    "title": "Solution roue QR",
+    "intent": "évaluer une solution produit",
+    "decision": "optimiser page commerciale",
+    "page": "/roue-de-la-fortune",
+    "keywords": [
+      "roue de la fortune digitale",
+      "roue de la fortune qr code"
+    ],
+    "overlap": "Intention potentiellement transactionnelle, à valider par observation des résultats.",
+    "commercial_relevance": "forte",
+    "product_fit": "direct",
+    "original_value": "hypothèse à valider : Intention potentiellement transactionnelle, à valider par observation des résultats.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  },
+  {
+    "id": "fidelite",
+    "title": "Fidéliser un commerce",
+    "intent": "faire revenir les clients",
+    "decision": "enrichir",
+    "page": "/blog/fideliser-clients-sans-programme-points",
+    "keywords": [
+      "fidéliser clients commerce de proximité",
+      "faire revenir ses clients en magasin"
+    ],
+    "overlap": "Guide existant sur le retour client.",
+    "commercial_relevance": "à évaluer",
+    "product_fit": "à évaluer",
+    "original_value": "hypothèse à valider : Guide existant sur le retour client.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  },
+  {
+    "id": "interdit-doublon",
+    "title": "Reprendre le même guide sans angle nouveau",
+    "intent": "recherche redondante",
+    "decision": "ne rien faire",
+    "page": "/blog/mesurer-animation-commerciale",
+    "keywords": [
+      "comment mesurer une animation commerciale"
+    ],
+    "overlap": "Le sujet est déjà couvert ; aucune valeur distincte démontrée.",
+    "commercial_relevance": "à évaluer",
+    "product_fit": "à évaluer",
+    "original_value": "hypothèse à valider : Le sujet est déjà couvert ; aucune valeur distincte démontrée.",
+    "organic_competition": "non observée",
+    "basis": "hypothèses éditoriales ; aucune métrique Google importée"
+  }
+]

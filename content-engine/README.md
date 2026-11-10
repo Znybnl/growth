@@ -1,6 +1,6 @@
 # Okado Content Engine
 
-Moteur local assisté par Codex, sans API IA ni publication automatique. Le catalogue reste `apps/landing-page/src/lib/blog.ts` ; un article ajouté à ce registre devient une route publique au prochain déploiement. Une branche ou PR n'est pas une prévisualisation privée : ne jamais fusionner ni déployer sans validation propriétaire.
+Moteur local assisté par Codex, sans API IA ni publication automatique. Le catalogue reste `apps/landing-page/src/lib/blog.ts` ; les brouillons sont accessibles uniquement avec le serveur de développement, et exclus du build de production. Une branche ou PR n'est pas une prévisualisation privée : ne jamais fusionner ni déployer sans validation propriétaire.
 
 ## Utilisation
 
@@ -31,4 +31,6 @@ Pour un lot ou une actualisation, suivre content-engine/roadmap/workflow-lots.md
 
 Dans Codex, demander « Propose les cinq meilleures opportunités SEO », « Prépare trois nouveaux articles complets », « Actualise les articles qui nécessitent une mise à jour », « Analyse les doublons et le maillage interne » ou « Prépare les articles approuvés pour publication ». Actualiser l’inventaire, comparer les intentions et vérifier sources et fonctionnalités. Sans données Search Console, qualifier le classement d’hypothèse. Pour préparer une publication, contrôler l’approbation explicite de chaque article, les dates réelles, sources, liens et tests ; présenter le diff. Ne jamais fusionner ni déployer sans autorisation explicite. Voir `roadmap/search-console.md`.
 
-**Attention — brouillons dans le registre :** le drapeau `draft` masque la date de publication et affiche « Brouillon — non publié » ; il ne retire pas les pages du catalogue ni du sitemap et ne bloque pas leur indexation. Ne pas fusionner ni déployer cette branche tant que chaque article inclus n’a pas été approuvé et préparé. Avant publication, fixer la vraie date, enlever `draft` et revérifier rendu et métadonnées.
+**Brouillons :** `draft: true` exclut la route du build, la liste et le sitemap publics et filtre les liens. Le développement local conserve leur consultation. Pour un article portant `requiresApproval`, après approbation écrite du propriétaire, renseigner `publicationApproval` avec son nom et la date réelle d’approbation, renseigner `publishedAt` avec la date effective, enlever `draft`, puis vérifier les routes et le build. Ne pas déployer sans validation explicite. Un indicateur de validation est une trace documentaire, pas une authentification du valideur.
+
+Pour les exports Keyword Planner et Search Console et la priorisation, voir `roadmap/google-seo.md`. Ne jamais placer les exports privés dans Git.

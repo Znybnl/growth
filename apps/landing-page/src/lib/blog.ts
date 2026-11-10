@@ -105,6 +105,8 @@ export type BlogSection = ContentSection & {
 export type BlogPost = {
   path: string;
   draft?: boolean;
+  requiresApproval?: boolean;
+  publicationApproval?: { approver: string; date: string };
   title: string;
   seoTitle?: string;
   description: string;
@@ -131,6 +133,7 @@ export const blogPosts: BlogPost[] = [
   {
     "path": "/blog/jeu-qr-code-salon-coiffure",
     "draft": true,
+    "requiresApproval": true,
     "title": "Comment organiser un jeu QR code dans un salon de coiffure ?",
     "seoTitle": "Jeu QR code en salon de coiffure : mode d’emploi",
     "description": "Préparez un jeu en salon de coiffure : moment de présentation, lots, budget fictif et retrait sans perturber les rendez-vous.",
@@ -205,6 +208,7 @@ export const blogPosts: BlogPost[] = [
   {
     "path": "/blog/jeu-qr-code-file-attente-commerce",
     "draft": true,
+    "requiresApproval": true,
     "title": "Comment proposer un jeu QR code pendant l’attente en magasin ?",
     "seoTitle": "Jeu QR code pendant l’attente en magasin : guide",
     "description": "Choisissez le bon emplacement et préparez un parcours court : exemples, test du support et mesure distincte des participations.",
@@ -279,6 +283,7 @@ export const blogPosts: BlogPost[] = [
   {
     "path": "/blog/organiser-remise-lots-jeu-magasin",
     "draft": true,
+    "requiresApproval": true,
     "title": "Comment organiser la remise des lots d’un jeu en magasin ?",
     "seoTitle": "Remise des lots d’un jeu en magasin : méthode",
     "description": "Préparez la remise des lots : conditions, rôles de l’équipe, suivi des stocks et distinction entre gain et retrait.",
@@ -353,6 +358,7 @@ export const blogPosts: BlogPost[] = [
   {
     path: "/blog/choisir-lots-jeu-qr-code-commerce",
     draft: true,
+    requiresApproval: true,
     title: "Comment choisir les lots d’un jeu QR code pour son commerce ?",
     seoTitle: "Quels lots pour un jeu QR code en magasin ? Idées et budget",
     description: "Trouvez des idées de lots pour votre jeu en magasin : exemples par métier, budget fictif, stocks et conseils pour préparer la remise.",
@@ -6821,4 +6827,26 @@ export const blogPosts: BlogPost[] = [
 
 export function blogPostByPath(path: string) {
   return blogPosts.find((post) => post.path === path);
+}
+
+// Publication is opt-in for articles prepared under the editorial workflow.
+export function isPublicBlogPost(post: BlogPost): boolean {
+  if (post.draft) return false;
+  if (!post.requiresApproval) return true;
+  const approval = post.publicationApproval;
+  return Boolean(approval && approval.approver === "Pierre-Henri BRUNELLE" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(approval.date) &&
+    /^\d{4}-\d{2}-\d{2}$/.test(post.publishedAt) &&
+    !Number.isNaN(Date.parse(approval.date + "T00:00:00Z")) &&
+    !Number.isNaN(Date.parse(post.publishedAt + "T00:00:00Z")) &&
+    new Date(approval.date + "T00:00:00Z").toISOString().slice(0,10) === approval.date &&
+    new Date(post.publishedAt + "T00:00:00Z").toISOString().slice(0,10) === post.publishedAt &&
+    approval.date <= post.publishedAt && post.publishedAt <= new Date().toISOString().slice(0,10));
+}
+export const publicBlogPosts = blogPosts.filter(isPublicBlogPost);
+export const visibleBlogPosts = process.env.NODE_ENV === "development" ? blogPosts : publicBlogPosts;
+export function isVisibleBlogLink(href: string): boolean {
+  const pathname = href.split(/[?#]/)[0];
+  if (!pathname.startsWith("/blog/")) return true;
+  return visibleBlogPosts.some((post) => post.path === pathname);
 }

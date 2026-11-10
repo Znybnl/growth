@@ -35,3 +35,17 @@ test('a blocked item does not stop validation of other batch items', () => {
   assert.deepEqual(results,[0,1,0,0]);
  } finally {rmSync(dir,{recursive:true,force:true});}
 });
+
+test('draft publication requires owner and a real, nonfuture date', async () => {
+ const ts=(await import('typescript')).default;
+ const vm=(await import('node:vm')).default;
+ const js=ts.transpileModule(readFileSync('apps/landing-page/src/lib/blog.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+ const exports={};vm.runInNewContext(js,{exports,process:{env:{NODE_ENV:'production'}}});
+ const draft=exports.blogPosts.find(p=>p.draft && p.requiresApproval);
+ assert.ok(draft);assert.equal(exports.isPublicBlogPost(draft),false);
+ assert.equal(exports.isPublicBlogPost({...draft,draft:false}),false);
+ assert.equal(exports.isPublicBlogPost({...draft,draft:false,publicationApproval:{approver:'Pierre-Henri BRUNELLE',date:'2026-02-30'}}),false);
+ assert.equal(exports.isPublicBlogPost({...draft,draft:false,publicationApproval:{approver:'Autre',date:'2026-01-01'}}),false);
+ assert.equal(exports.isPublicBlogPost({...draft,draft:false,publishedAt:'2099-01-01',publicationApproval:{approver:'Pierre-Henri BRUNELLE',date:'2026-01-01'}}),false);
+ assert.equal(exports.isPublicBlogPost({...draft,draft:false,publishedAt:'2026-01-02',publicationApproval:{approver:'Pierre-Henri BRUNELLE',date:'2026-01-01'}}),true);
+});

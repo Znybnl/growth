@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { blogPosts } from "../src/lib/blog";
+import { publicBlogPosts as blogPosts } from "../src/lib/blog";
 import { publicContent } from "../src/lib/public-content";
 import { ANALYTICS_CONSENT_COOKIE, ANALYTICS_CONSENT_VERSION } from "../src/lib/analytics-consent";
 

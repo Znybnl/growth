@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { BlogInlineText } from "@/components/marketing/blog-inline-text";
 import { PrimaryButton } from "@/components/marketing/primary-button";
-import { blogPostByPath, type BlogPost } from "@/lib/blog";
+import { blogPostByPath, isVisibleBlogLink, type BlogPost } from "@/lib/blog";
 import { APP_URL } from "@/lib/site";
 import styles from "./blog-post.module.css";
 
@@ -310,7 +310,7 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
             Des ressources pour passer à l’action
           </h2>
           <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {post.related.map((path) => (
+            {post.related.filter(isVisibleBlogLink).map((path) => (
               <li key={path} className="rounded-2xl border border-[#e4ddd3] bg-[#fffdf9] p-5">
                 <Link href={path} className="font-semibold leading-6 text-[#6c00f6] hover:underline">
                   {relatedTitle(path)}
