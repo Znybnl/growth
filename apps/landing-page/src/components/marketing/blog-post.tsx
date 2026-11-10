@@ -93,9 +93,9 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
             </p>
             <div className={practical ? "mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#667085]" : "mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#b9c7d9]"}>
               <span>Par {post.author}</span>
-              {!practical ? <span>
+              {!practical ? (post.draft ? <span>Brouillon — non publié</span> : <span>
                 Publié le <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
-              </span> : null}
+              </span>) : null}
               <span>
                 Mis à jour le <time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time>
               </span>

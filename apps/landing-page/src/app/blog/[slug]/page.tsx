@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       ...base.openGraph,
       type: "article",
-      publishedTime: post.publishedAt,
+      ...(post.draft ? {} : { publishedTime: post.publishedAt }),
       modifiedTime: post.updatedAt,
       authors: [post.author],
       ...(image
@@ -61,6 +61,7 @@ export default async function BlogPostPage({ params }: Props) {
         article
         articleType="BlogPosting"
         datePublished={post.publishedAt}
+        unpublished={post.draft}
         dateModified={post.updatedAt}
         breadcrumbs={[{ name: "Blog", path: "/blog" }, { name: post.title, path: post.path }]}
       />

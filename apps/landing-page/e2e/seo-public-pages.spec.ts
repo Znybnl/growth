@@ -266,10 +266,15 @@ test("tous les articles exposent liens, sources et métadonnées cohérentes dan
       .flatMap((value) => JSON.parse(value)["@graph"] ?? []);
     const schema = graph.find((item) => item["@type"] === "BlogPosting");
     expect(schema).not.toHaveProperty("about");
+    if (post.draft) {
+      expect(schema).not.toHaveProperty("datePublished");
+      await expect(page.locator('meta[property="article:published_time"]')).toHaveCount(0);
+      await expect(page.getByText("Brouillon — non publié")).toBeVisible();
+    }
     expect(schema).toMatchObject({
       headline: post.title,
       description: post.description,
-      datePublished: post.publishedAt,
+      ...(!post.draft ? { datePublished: post.publishedAt } : {}),
       dateModified: post.updatedAt,
       author: { "@type": "Organization", name: post.author },
       image: [`https://www.okado.app${post.image}`],

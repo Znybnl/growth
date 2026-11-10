@@ -5,7 +5,7 @@
   "decision": "create",
   "overlap_analysis": "Le catalogue traite du coût, du choix roue/ticket et de la mesure ; il ne comporte pas de guide consacré à la sélection et à la remise des lots.",
   "outline": "H1 choix des lots ; H2 objectif, comparaison, budget, conditions, configuration, bilan. Questions : quel lot, quel coût, quelles conditions et comment tester ?",
-  "cta": "Découvrir /comment-ca-marche.",
+  "cta": "Essayer Okado gratuitement via le CTA standard ; fonctionnement expliqué dans le corps.",
   "status": "READY_FOR_HUMAN_REVIEW",
   "sources": [
     {
@@ -39,5 +39,5 @@
       "evidence": "Lint, build et sept tests SEO desktop réussis ; captures 1280 et 390 consultées."
     }
   ],
-  "review_notes": "Mot-clé principal : lots jeu QR code commerce. Expressions : récompense jeu magasin, budget lots, conditions de retrait. Angle : méthode opérationnelle avec enveloppe chiffrée fictive et contrôle de remise. Pas de volume SEO inventé ; image spécifique à décider."
+  "review_notes": "Mot-clé principal : lots jeu QR code commerce. Expressions : récompense jeu magasin, budget lots, conditions de retrait. Angle : méthode opérationnelle avec enveloppe chiffrée fictive et contrôle de remise. Pas de volume SEO inventé ; image spécifique à décider. Relecture et enrichissement le 10 novembre 2026 ; rédaction initiale le 9 novembre. Date publishedAt provisoire : fixer la date réelle avant publication. Liens entrants : QR en point de vente, roue/ticket et budget."
 }

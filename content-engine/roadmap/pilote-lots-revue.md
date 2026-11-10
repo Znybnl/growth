@@ -21,3 +21,13 @@ Le registre récent recensait 39 articles avant ajout du pilote. Le 9 novembre 2
 ## Recette complémentaire du 9 novembre 2026
 
 Sur le serveur local compilé, à 390 × 844 px : largeur du document 390 px sans débordement global ; tableau de largeur visible 298 px, contenu 395 px, focus clavier et défilement par flèches jusqu'à 97 px. Le canonical correspond à l'URL publique prévue, aucune directive noindex n'est présente, et le CTA vise /comment-ca-marche. Le statut READY_FOR_HUMAN_REVIEW ne constitue pas une approbation de publication. Le contexte réglementaire propre à chaque opération et l'adéquation commerciale restent à valider par le propriétaire.
+
+## Relecture et enrichissement du 10 novembre 2026
+
+Rédaction initiale : 9 novembre. Révision et contrôle éditorial : 10 novembre. L'article n'est pas publié ; `publishedAt` est une valeur technique provisoire (9 novembre), à remplacer par la date effective de première publication avant merge et déploiement. Ne pas présenter cette date comme une publication déjà réalisée. Les dates `updatedAt` et `reviewedAt` correspondent à la révision du 10 novembre ; les réévaluer au moment de la livraison si nécessaire.
+
+Exemples fictifs ajoutés pour restaurant, institut, coiffure, boutique et fleuriste ; budget fictif : 30 + 20 + 20 = 70 €, hors frais énumérés. Le guide conserve son angle de sélection et remise ; l'article budget traite le cadrage global et l'article roue/ticket compare les mécaniques. Trois liens entrants sont ajoutés dans les lectures associées de ces deux articles et du guide QR en point de vente. Le CTA utilise le parcours d'inscription par défaut du site ; la page de fonctionnement reste liée dans le corps. Sources DGCCRF et CNIL reconsultées le 10 novembre. Validation humaine et date de publication effective restent obligatoires.
+
+## Finalisation du 10 novembre
+
+Titre SEO demandé appliqué. Le tableau fictif distingue 10 × 3 €, 5 × 4 € et 2 × 10 € : plafond 70 €, hors coûts listés. L’exemple d’une remise distingue prix, coût du produit, marge brute restante et hypothèse de vente supplémentaire. La propriété `draft` masque la date de publication à l’affichage et dans les métadonnées ; elle ne retire pas le contenu du catalogue ni du sitemap. Avant publication, fixer la date effective, enlever le drapeau et vérifier les métadonnées. La validation explicite du propriétaire est nécessaire.

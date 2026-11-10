@@ -104,6 +104,7 @@ export type BlogSection = ContentSection & {
 
 export type BlogPost = {
   path: string;
+  draft?: boolean;
   title: string;
   seoTitle?: string;
   description: string;
@@ -128,18 +129,241 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
+    "path": "/blog/jeu-qr-code-salon-coiffure",
+    "draft": true,
+    "title": "Comment organiser un jeu QR code dans un salon de coiffure ?",
+    "seoTitle": "Jeu QR code en salon de coiffure : mode d’emploi",
+    "description": "Préparez un jeu en salon de coiffure : moment de présentation, lots, budget fictif et retrait sans perturber les rendez-vous.",
+    "eyebrow": "Coiffure",
+    "intro": "Proposez le jeu pendant un temps d’attente réellement disponible, après avoir demandé à la personne si elle souhaite participer. Ne présumez pas que chaque cliente ou client veut utiliser son téléphone.",
+    "answer": "Mettre en place une animation réalisable entre deux rendez-vous. Commencez par définir le parcours, tester le support et préciser les responsabilités de l’équipe.",
+    "author": "L’équipe Okado",
+    "publishedAt": "2026-11-10",
+    "updatedAt": "2026-11-10",
+    "reviewedAt": "2026-11-10",
+    "readingTime": "4 min de lecture",
+    "image": "/images/blog/animation-institut-beaute.webp",
+    "imageAlt": "Illustration d’une animation dans un établissement de beauté",
+    "takeaway": {
+      "title": "Préparez un parcours réaliste",
+      "text": "Testez le parcours avec votre équipe et précisez les conditions avant toute diffusion."
+    },
+    "source": [
+      {
+        "label": "DGCCRF — règles françaises sur les loteries publicitaires",
+        "href": "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees"
+      },
+      {
+        "label": "CNIL — prospection par courriel et SMS : consentement et exceptions",
+        "href": "https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel"
+      }
+    ],
+    "sections": [
+      {
+        "title": "Choisissez un moment compatible avec le service",
+        "paragraphs": [
+          "Proposez le jeu pendant un temps d’attente réellement disponible, après avoir demandé à la personne si elle souhaite participer. Ne présumez pas que chaque cliente ou client veut utiliser son téléphone.",
+          "Exemple fictif : un salon de deux coiffeurs propose une animation sur cinq jours. Une personne présente la carte à l’accueil ; l’autre continue ses rendez-vous. Avant le lancement, l’équipe décide qui répond aux questions et qui vérifie les gains."
+        ]
+      },
+      {
+        "title": "Préparez des lots que le salon peut remettre",
+        "paragraphs": [
+          "Un échantillon de soin compatible avec le stock ou une option courte lors d’un prochain rendez-vous peuvent être des pistes. Indiquez les références, prestations compatibles, dates et éventuelles restrictions ; ne promettez pas une prestation que le planning ne peut pas accueillir.",
+          "Exemple fictif de budget maximal : 10 échantillons à 2 € et 5 accessoires à 4 € représentent 40 € de dotations si tous sont remis, hors temps d’équipe et supports. Les montants sont des hypothèses. Le [guide de choix des lots](/blog/choisir-lots-jeu-qr-code-commerce) détaille les conditions et le coût."
+        ]
+      },
+      {
+        "title": "Testez le parcours avant de poser l’affiche",
+        "paragraphs": [
+          "Avec Okado, configurez une roue ou un ticket, les stocks et conditions, puis testez en prévisualisation. Vérifiez ensuite le QR de diffusion et la lisibilité de l’affiche à la distance réelle. Le [fonctionnement d’Okado](/comment-ca-marche) explique la différence entre prévisualisation et diffusion.",
+          "Prévoyez une phrase simple : « Si vous souhaitez jouer, scannez ce QR code ; les conditions sont indiquées avant la participation. » Adaptez-la à votre jeu réellement configuré."
+        ]
+      },
+      {
+        "title": "Organisez la remise sans improviser",
+        "paragraphs": [
+          "Attribuez à une personne la vérification des dates et conditions, puis la validation du retrait. Distinguez le message de gain de toute proposition de prospection : la CNIL explique les règles applicables aux messages commerciaux. Une demande d’avis reste facultative et le gain ne dépend pas de sa note.",
+          "Pour une loterie publicitaire en France, consultez la DGCCRF et vérifiez les règles propres à votre opération. Le texte et les lots annoncés doivent correspondre à ce que le salon peut offrir."
+        ]
+      },
+      {
+        "title": "Faites le bilan sans confondre les résultats",
+        "paragraphs": [
+          "Notez séparément les ouvertures, participations, gains et retraits. Un retrait ne prouve pas une réservation supplémentaire. Comparez les dotations effectivement remises et le temps consacré à votre enveloppe, puis recueillez les questions de l’équipe.",
+          "Pour approfondir la mesure, consultez [mesurer une animation](/blog/mesurer-animation-commerciale)."
+        ]
+      }
+    ],
+    "related": [
+      "/comment-ca-marche",
+      "/blog/choisir-lots-jeu-qr-code-commerce",
+      "/blog/mesurer-animation-commerciale"
+    ],
+    "ctaLabel": "Essayer Okado gratuitement"
+  },
+  {
+    "path": "/blog/jeu-qr-code-file-attente-commerce",
+    "draft": true,
+    "title": "Comment proposer un jeu QR code pendant l’attente en magasin ?",
+    "seoTitle": "Jeu QR code pendant l’attente en magasin : guide",
+    "description": "Choisissez le bon emplacement et préparez un parcours court : exemples, test du support et mesure distincte des participations.",
+    "eyebrow": "Expérience en magasin",
+    "intro": "Observez où les personnes patientent sans gêner le passage : accueil, table, zone de retrait ou comptoir. Un jeu n’est pertinent que si le client dispose du temps nécessaire et que le support ne masque pas les informations de service.",
+    "answer": "Animer un temps d’attente sans gêner le parcours client. Commencez par définir le parcours, tester le support et préciser les responsabilités de l’équipe.",
+    "author": "L’équipe Okado",
+    "publishedAt": "2026-11-10",
+    "updatedAt": "2026-11-10",
+    "reviewedAt": "2026-11-10",
+    "readingTime": "4 min de lecture",
+    "image": "/images/blog/qr-code-point-de-vente.webp",
+    "imageAlt": "Illustration d’un QR code en point de vente",
+    "takeaway": {
+      "title": "Préparez un parcours réaliste",
+      "text": "Testez le parcours avec votre équipe et précisez les conditions avant toute diffusion."
+    },
+    "source": [
+      {
+        "label": "DGCCRF — règles françaises sur les loteries publicitaires",
+        "href": "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees"
+      },
+      {
+        "label": "CNIL — prospection par courriel et SMS : consentement et exceptions",
+        "href": "https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel"
+      }
+    ],
+    "sections": [
+      {
+        "title": "Repérez une attente réelle",
+        "paragraphs": [
+          "Observez où les personnes patientent sans gêner le passage : accueil, table, zone de retrait ou comptoir. Un jeu n’est pertinent que si le client dispose du temps nécessaire et que le support ne masque pas les informations de service.",
+          "Exemple fictif : une boutique place une carte près du comptoir de retrait, où l’équipe constate une attente ponctuelle. Elle demande au personnel de déplacer le support si une file gêne la circulation."
+        ]
+      },
+      {
+        "title": "Donnez le choix de participer",
+        "paragraphs": [
+          "Une phrase explique l’expérience, les conditions essentielles et où trouver le détail ; laissez la possibilité d’attendre sans jouer. Testez la taille des textes et le contraste sur le support réel, ainsi que la lecture du QR avec plusieurs téléphones.",
+          "Ne promettez ni accès hors ligne ni solution alternative que vous n’avez pas organisée. Pour préparer le support, consultez la [checklist d’affiche QR](/blog/affiche-qr-code-animation-commerciale)."
+        ]
+      },
+      {
+        "title": "Raccourcissez les explications, pas les conditions",
+        "paragraphs": [
+          "Vérifiez que les lots, leur disponibilité et les modalités de remise sont compréhensibles. Une promesse de gain ne doit pas masquer les restrictions. La DGCCRF rappelle le cadre des loteries publicitaires et des pratiques déloyales.",
+          "Dans Okado, le marchand peut prévisualiser son jeu et distinguer ce test du QR public. Le [parcours de configuration](/comment-ca-marche) présente les étapes avant diffusion."
+        ]
+      },
+      {
+        "title": "Préparez une solution pour le service",
+        "paragraphs": [
+          "Expliquez à l’équipe où se trouve le support, qui répond aux questions et comment gérer un gain. Si le comptoir doit être libéré, prévoyez de déplacer l’affiche plutôt que d’interrompre le service pour solliciter tout le monde.",
+          "Exemple fictif : pendant une heure de pointe, l’équipe retire la carte du comptoir et la replace lorsque le passage est dégagé. Le test sert à apprécier la faisabilité, pas à mesurer une hausse de fréquentation."
+        ]
+      },
+      {
+        "title": "Évaluez séparément la participation et le service",
+        "paragraphs": [
+          "Notez les questions posées, les moments où le support gêne et les participations observées. Un scan n’est pas une partie ; un gain n’est pas un retrait. Comparez également les contraintes remontées par l’équipe, sans attribuer automatiquement une vente au jeu.",
+          "L’article [mesurer une animation](/blog/mesurer-animation-commerciale) aide à choisir des indicateurs cohérents."
+        ]
+      }
+    ],
+    "related": [
+      "/blog/animer-point-de-vente-qr-code",
+      "/blog/affiche-qr-code-animation-commerciale",
+      "/comment-ca-marche"
+    ],
+    "ctaLabel": "Essayer Okado gratuitement"
+  },
+  {
+    "path": "/blog/organiser-remise-lots-jeu-magasin",
+    "draft": true,
+    "title": "Comment organiser la remise des lots d’un jeu en magasin ?",
+    "seoTitle": "Remise des lots d’un jeu en magasin : méthode",
+    "description": "Préparez la remise des lots : conditions, rôles de l’équipe, suivi des stocks et distinction entre gain et retrait.",
+    "eyebrow": "Organisation des lots",
+    "intro": "Pour chaque lot, notez ce qui est remis, le lieu, la période, les éventuelles exclusions et la personne qui peut répondre aux questions. L’information annoncée au participant doit correspondre à ce que l’équipe peut effectivement délivrer.",
+    "answer": "Organiser la remise des gains en point de vente. Commencez par définir le parcours, tester le support et préciser les responsabilités de l’équipe.",
+    "author": "L’équipe Okado",
+    "publishedAt": "2026-11-10",
+    "updatedAt": "2026-11-10",
+    "reviewedAt": "2026-11-10",
+    "readingTime": "4 min de lecture",
+    "image": "/images/blog/jeu-concours-evenement-local.webp",
+    "imageAlt": "Illustration d’une animation commerciale locale",
+    "takeaway": {
+      "title": "Préparez un parcours réaliste",
+      "text": "Testez le parcours avec votre équipe et précisez les conditions avant toute diffusion."
+    },
+    "source": [
+      {
+        "label": "DGCCRF — règles françaises sur les loteries publicitaires",
+        "href": "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees"
+      },
+      {
+        "label": "CNIL — prospection par courriel et SMS : consentement et exceptions",
+        "href": "https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel"
+      }
+    ],
+    "sections": [
+      {
+        "title": "Décrivez la remise avant le lancement",
+        "paragraphs": [
+          "Pour chaque lot, notez ce qui est remis, le lieu, la période, les éventuelles exclusions et la personne qui peut répondre aux questions. L’information annoncée au participant doit correspondre à ce que l’équipe peut effectivement délivrer.",
+          "Exemple fictif : un commerce offre cinq accessoires disponibles en deux couleurs. Il précise que le choix dépend du stock et indique les horaires auxquels le retrait est possible."
+        ]
+      },
+      {
+        "title": "Répartissez les rôles dans l’équipe",
+        "paragraphs": [
+          "Une personne prépare la liste des lots et leur emplacement ; chaque membre concerné sait à qui demander de l’aide si un article manque. Testez le scénario avant diffusion, y compris une demande présentée après la date indiquée : l’équipe doit connaître la procédure prévue par le commerce.",
+          "Ne donnez pas à un client une nouvelle condition qui contredit la promesse initiale. Pour choisir les dotations et estimer leur plafond, consultez le [guide des lots](/blog/choisir-lots-jeu-qr-code-commerce)."
+        ]
+      },
+      {
+        "title": "Testez le parcours de retrait",
+        "paragraphs": [
+          "Dans Okado, le gagnant conserve un QR de gain et un code de secours ; l’équipe vérifie les conditions puis valide le retrait avec le PIN de l’établissement. La page [comment ça marche](/comment-ca-marche) décrit ce parcours. Testez le jeu en prévisualisation puis le support de diffusion selon les procédures du site.",
+          "Le QR de gain et le QR de diffusion ont des usages différents : le premier sert à présenter un gain, le second ouvre le jeu. Un gain attribué ne doit pas être compté comme un retrait avant validation."
+        ]
+      },
+      {
+        "title": "Anticipez les écarts et les questions",
+        "paragraphs": [
+          "Si le lot annoncé n’est plus disponible, mettez de côté la demande et recherchez une solution conforme aux conditions de votre opération ; ne promettez pas une substitution non prévue. La DGCCRF rappelle que les loteries publicitaires ne doivent pas être déloyales.",
+          "Si des coordonnées sont utilisées pour des messages commerciaux, distinguez cette finalité de la remise du gain et vérifiez les règles de la CNIL. Le consentement marketing dans Okado est distinct et facultatif."
+        ]
+      },
+      {
+        "title": "Faites un rapprochement simple",
+        "paragraphs": [
+          "Après l’opération, comparez les gains attribués, les retraits validés et les dotations restantes. Une différence peut correspondre à un gain pas encore retiré ; elle ne prouve pas une erreur sans examen.",
+          "Exemple fictif : sur 10 lots attribués, 7 retraits sont validés et 3 restent à présenter, sous réserve de leur validité. Suivez les échéances et le stock réel sans assimiler ces trois gains à des ventes."
+        ]
+      }
+    ],
+    "related": [
+      "/blog/choisir-lots-jeu-qr-code-commerce",
+      "/comment-ca-marche",
+      "/blog/mesurer-animation-commerciale"
+    ],
+    "ctaLabel": "Essayer Okado gratuitement"
+  },
+  {
     path: "/blog/choisir-lots-jeu-qr-code-commerce",
+    draft: true,
     title: "Comment choisir les lots d’un jeu QR code pour son commerce ?",
-    seoTitle: "Choisir les lots d’un jeu QR code en commerce",
-    description: "Choisissez des lots adaptés à votre commerce : budget, disponibilité, conditions et remise. Une méthode concrète pour préparer un jeu QR code.",
+    seoTitle: "Quels lots pour un jeu QR code en magasin ? Idées et budget",
+    description: "Trouvez des idées de lots pour votre jeu en magasin : exemples par métier, budget fictif, stocks et conseils pour préparer la remise.",
     eyebrow: "Jeu marketing local",
     intro: "Un lot pertinent donne envie de participer tout en restant facile à expliquer et à remettre. Avant de choisir une récompense spectaculaire, partez de ce que votre commerce peut réellement offrir.",
     answer: "Pour choisir vos lots, définissez votre objectif, le budget maximal, les stocks et les conditions de remise. Préférez quelques récompenses compréhensibles, adaptées à votre activité, puis testez le parcours avec votre équipe avant la diffusion.",
     author: "L’équipe Okado",
     publishedAt: "2026-11-09",
-    updatedAt: "2026-11-09",
-    reviewedAt: "2026-11-09",
-    readingTime: "5 min de lecture",
+    updatedAt: "2026-11-10",
+    reviewedAt: "2026-11-10",
+    readingTime: "6 min de lecture",
     image: "/images/blog/roue-ou-ticket-a-gratter-commerce.webp",
     imageAlt: "Illustration d’une roue et d’un ticket à gratter avec symboles de cadeaux",
     takeaway: { title: "Préparez des lots faciles à remettre", text: "Choisissez des lots disponibles, fixez une enveloppe et testez leur remise avec votre équipe avant de diffuser le jeu." },
@@ -147,14 +371,14 @@ export const blogPosts: BlogPost[] = [
     sections: [
       { title: "Commencez par le comportement recherché", paragraphs: ["Souhaitez-vous faire découvrir une nouveauté, animer un temps d’attente ou inviter à une prochaine visite ? Un objectif principal aide à sélectionner une récompense cohérente. Une dégustation peut servir la découverte ; un avantage valable plus tard demande une capacité disponible pendant sa période de validité.", "Le lot ne garantit ni une vente ni une visite supplémentaire. Décidez à l’avance comment observer le résultat, sans confondre une participation avec un achat."] },
       { title: "Comparez des lots que vous pouvez réellement remettre", paragraphs: ["Ces exemples sont des pistes fictives à adapter aux stocks, aux prix et aux capacités de votre établissement. Vérifiez les conditions de chaque offre avant de l’annoncer."], table: { caption: "Exemples de lots et points à vérifier", headers: ["Lot possible", "Intérêt pratique", "Vérification avant diffusion"], rows: [["Produit de découverte", "Faire connaître une référence", "Stock, variante et date limite éventuelle"], ["Option sur une prestation", "Présenter un service complémentaire", "Créneaux, compatibilité et durée"], ["Avantage sur un prochain achat", "Proposer une raison de revenir", "Produits concernés, montant et validité"]] } },
-      { title: "Calculez une enveloppe prudente", paragraphs: ["Pour chaque lot, estimez son coût pour le commerce et multipliez-le par le nombre maximal que vous acceptez de remettre. Ajoutez les coûts de support et le temps d’équipe si vous souhaitez comparer plusieurs formats. Une remise peut coûter moins que sa valeur affichée, mais son coût réel dépend notamment de la marge et des conditions : ne la traitez pas automatiquement comme gratuite.", "Exemple fictif : dix produits dont le coût est de 3 € représentent au maximum 30 € de produits, hors affiche et temps de préparation. Un stock illimité ne permet pas de fixer ce plafond par le seul nombre de lots : choisissez une limite adaptée si vous avez besoin d’un budget borné. Pour aller plus loin, consultez le [budget d’une animation](/blog/cout-animation-commerciale-commerce)."] },
+      { title: "Cinq idées à adapter à votre métier", paragraphs: ["Ces exemples sont fictifs : vérifiez vos prix, disponibilités et conditions avant de les proposer. Ils ne décrivent pas des campagnes ou résultats de clients Okado."], items: ["Restaurant : un café après le repas, si le service peut le préparer sur les créneaux annoncés.", "Institut de beauté : une option de soin courte lors d’un prochain rendez-vous, sous réserve de compatibilité avec la prestation et du temps disponible.", "Salon de coiffure : un échantillon de soin capillaire, dans la limite des références et stocks disponibles.", "Boutique : un accessoire assorti à une sélection de produits, avec les modèles concernés clairement indiqués.", "Fleuriste : une petite tige ou un complément de bouquet, selon arrivage et période de retrait."] },
+      { title: "Calculez une enveloppe prudente", paragraphs: ["Pour chaque lot, multipliez son coût unitaire estimé par son stock maximal. Ces chiffres sont des hypothèses fictives pour une boutique, pas des prix observés. Si tous les lots sont remis, le plafond de dotations est de 70 € ; l’impression, l’abonnement éventuel, le temps d’équipe et les frais de livraison ne sont pas compris. Ajoutez-les selon votre situation.", "Une remise réduit le prix payé ; son effet économique dépend aussi du coût du produit et de la marge restante. Exemple fictif : un article à 20 € dont le coût est de 12 € laisse 8 € de marge brute avant autres frais ; avec une réduction de 3 €, le client paie 17 € et cette marge devient 5 €. La réduction diminue donc la marge de 3 € si la vente aurait eu lieu sans elle. Si elle contribue à une vente supplémentaire, les 5 € de marge peuvent contribuer aux frais fixes, mais il faut vérifier les autres coûts et ne pas présumer que cette vente est due à l’offre.", "Un stock illimité ne fixe pas de plafond de dotations. Pour inclure les autres dépenses, consultez le [budget d’une animation](/blog/cout-animation-commerciale-commerce)."], table: { caption: "Budget fictif maximal des lots", headers: ["Lot", "Stock maximal", "Coût unitaire supposé", "Plafond"], rows: [["Accessoire", "10", "3 €", "30 €"], ["Produit découverte", "5", "4 €", "20 €"], ["Coffret", "2", "10 €", "20 €"], ["Total", "17", "—", "70 €"]] } },
       { title: "Écrivez des conditions compréhensibles", paragraphs: ["Pour chaque récompense, précisez ce qui est remis, où et quand, les éventuelles exclusions et la procédure de retrait. Évitez de présenter comme disponible un lot dont le stock ou les créneaux ne sont pas confirmés. Faites relire les messages par une personne qui ne connaît pas la campagne : sait-elle ce qu’elle peut obtenir et comment ?", "La [DGCCRF](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees) rappelle le cadre des loteries publicitaires et l’interdiction des pratiques déloyales. Vérifiez les règles applicables à votre opération et faites relire les conditions si nécessaire : cette checklist ne constitue pas un avis juridique."] },
       { title: "Configurez et testez la remise", paragraphs: ["Dans Okado, vous pouvez configurer une roue ou un ticket, les lots, leurs stocks, probabilités et conditions, puis prévisualiser le parcours. Testez ensuite le QR de diffusion et expliquez à l’équipe comment vérifier les conditions et valider le retrait. Le [fonctionnement d’Okado](/comment-ca-marche) décrit ces étapes.", "Distinguez le message de gain et toute prospection ultérieure. Pour les particuliers, la [CNIL](https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel) précise les règles de consentement et leurs exceptions. Dans Okado, l’accord marketing est distinct et facultatif ; un gain ne dépend pas d’un avis ou de sa note."] },
       { title: "Faites un bilan utile après l’opération", paragraphs: ["Notez séparément les participations, gains et retraits ainsi que les difficultés remontées par l’équipe. Un gain non retiré n’est pas une vente ; un retrait immédiat ne prouve pas une visite ultérieure. Comparez le coût réellement engagé à l’enveloppe prévue, puis ajustez le stock ou les conditions pour le prochain test.", "Pour choisir vos indicateurs sans inventer de retour sur investissement, utilisez la [méthode de mesure d’une animation](/blog/mesurer-animation-commerciale)."] }
     ],
     related: ["/comment-ca-marche", "/blog/roue-ou-ticket-a-gratter-commerce", "/blog/cout-animation-commerciale-commerce", "/blog/mesurer-animation-commerciale"],
-    ctaLabel: "Découvrir comment fonctionne Okado",
-    ctaHref: "/comment-ca-marche",
+    ctaLabel: "Essayer Okado gratuitement",
   },
 
   {
@@ -1603,6 +1827,7 @@ export const blogPosts: BlogPost[] = [
       },
     ],
     related: [
+      "/blog/choisir-lots-jeu-qr-code-commerce",
       "/affiches-qr-code",
       "/comment-ca-marche",
       "/restaurants",
@@ -3308,6 +3533,7 @@ export const blogPosts: BlogPost[] = [
       },
     ],
     related: [
+      "/blog/choisir-lots-jeu-qr-code-commerce",
       "/roue-de-la-fortune",
       "/ticket-a-gratter",
       "/blog/jeu-concours-ou-promotion",
@@ -3486,6 +3712,7 @@ export const blogPosts: BlogPost[] = [
       },
     ],
     related: [
+      "/blog/choisir-lots-jeu-qr-code-commerce",
       "/tarifs",
       "/guides/cout-jeu-marketing",
       "/blog/jeu-concours-ou-promotion",

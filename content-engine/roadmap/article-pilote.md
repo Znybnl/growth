@@ -1,8 +1,8 @@
 # Comment choisir les lots d’un jeu QR code pour son commerce ?
 
-**Titre SEO :** Choisir les lots d’un jeu QR code en commerce
+**Titre SEO :** Quels lots pour un jeu QR code en magasin ? Idées et budget
 
-**Meta description :** Choisissez des lots adaptés à votre commerce : budget, disponibilité, conditions et remise. Une méthode concrète pour préparer un jeu QR code.
+**Meta description :** Trouvez des idées de lots pour votre jeu en magasin : exemples par métier, budget fictif, stocks et conseils pour préparer la remise.
 
 **URL locale :** http://localhost:3000/blog/choisir-lots-jeu-qr-code-commerce
 
@@ -28,11 +28,32 @@ Ces exemples sont des pistes fictives à adapter aux stocks, aux prix et aux cap
 | Option sur une prestation | Présenter un service complémentaire | Créneaux, compatibilité et durée |
 | Avantage sur un prochain achat | Proposer une raison de revenir | Produits concernés, montant et validité |
 
+## Cinq idées à adapter à votre métier
+
+Ces exemples sont fictifs : vérifiez vos prix, disponibilités et conditions avant de les proposer. Ils ne décrivent pas des campagnes ou résultats de clients Okado.
+
+- Restaurant : un café après le repas, si le service peut le préparer sur les créneaux annoncés.
+- Institut de beauté : une option de soin courte lors d’un prochain rendez-vous, sous réserve de compatibilité avec la prestation et du temps disponible.
+- Salon de coiffure : un échantillon de soin capillaire, dans la limite des références et stocks disponibles.
+- Boutique : un accessoire assorti à une sélection de produits, avec les modèles concernés clairement indiqués.
+- Fleuriste : une petite tige ou un complément de bouquet, selon arrivage et période de retrait.
+
 ## Calculez une enveloppe prudente
 
-Pour chaque lot, estimez son coût pour le commerce et multipliez-le par le nombre maximal que vous acceptez de remettre. Ajoutez les coûts de support et le temps d’équipe si vous souhaitez comparer plusieurs formats. Une remise peut coûter moins que sa valeur affichée, mais son coût réel dépend notamment de la marge et des conditions : ne la traitez pas automatiquement comme gratuite.
+Pour chaque lot, multipliez son coût unitaire estimé par son stock maximal. Ces chiffres sont des hypothèses fictives pour une boutique, pas des prix observés. Si tous les lots sont remis, le plafond de dotations est de 70 € ; l’impression, l’abonnement éventuel, le temps d’équipe et les frais de livraison ne sont pas compris. Ajoutez-les selon votre situation.
 
-Exemple fictif : dix produits dont le coût est de 3 € représentent au maximum 30 € de produits, hors affiche et temps de préparation. Un stock illimité ne permet pas de fixer ce plafond par le seul nombre de lots : choisissez une limite adaptée si vous avez besoin d’un budget borné. Pour aller plus loin, consultez le [budget d’une animation](/blog/cout-animation-commerciale-commerce).
+Une remise réduit le prix payé ; son effet économique dépend aussi du coût du produit et de la marge restante. Exemple fictif : un article à 20 € dont le coût est de 12 € laisse 8 € de marge brute avant autres frais ; avec une réduction de 3 €, le client paie 17 € et cette marge devient 5 €. La réduction diminue donc la marge de 3 € si la vente aurait eu lieu sans elle. Si elle contribue à une vente supplémentaire, les 5 € de marge peuvent contribuer aux frais fixes, mais il faut vérifier les autres coûts et ne pas présumer que cette vente est due à l’offre.
+
+Un stock illimité ne fixe pas de plafond de dotations. Pour inclure les autres dépenses, consultez le [budget d’une animation](/blog/cout-animation-commerciale-commerce).
+
+**Budget fictif maximal des lots**
+
+| Lot | Stock maximal | Coût unitaire supposé | Plafond |
+| --- | --- | --- | --- |
+| Accessoire | 10 | 3 € | 30 € |
+| Produit découverte | 5 | 4 € | 20 € |
+| Coffret | 2 | 10 € | 20 € |
+| Total | 17 | — | 70 € |
 
 ## Écrivez des conditions compréhensibles
 
@@ -56,7 +77,7 @@ Pour choisir vos indicateurs sans inventer de retour sur investissement, utilise
 
 Choisissez des lots disponibles, fixez une enveloppe et testez leur remise avec votre équipe avant de diffuser le jeu.
 
-[Découvrir comment fonctionne Okado](/comment-ca-marche)
+[Essayer Okado gratuitement](https://app.okado.app/inscription)
 
 ## Sources
 

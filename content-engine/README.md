@@ -26,3 +26,9 @@ Comparer ponctuellement le registre au sitemap public : `node content-engine/scr
 Un fichier sitemap déjà téléchargé peut être fourni en argument à `compare-public` si Node ne dispose pas de l’accès réseau ; indiquer la date et la provenance du fichier.
 
 Pour un lot ou une actualisation, suivre content-engine/roadmap/workflow-lots.md. Générer une copie lisible depuis le registre avec node content-engine/scripts/reading-copy.mjs /blog/slug chemin.md.
+
+## Demandes quotidiennes
+
+Dans Codex, demander « Propose les cinq meilleures opportunités SEO », « Prépare trois nouveaux articles complets », « Actualise les articles qui nécessitent une mise à jour », « Analyse les doublons et le maillage interne » ou « Prépare les articles approuvés pour publication ». Actualiser l’inventaire, comparer les intentions et vérifier sources et fonctionnalités. Sans données Search Console, qualifier le classement d’hypothèse. Pour préparer une publication, contrôler l’approbation explicite de chaque article, les dates réelles, sources, liens et tests ; présenter le diff. Ne jamais fusionner ni déployer sans autorisation explicite. Voir `roadmap/search-console.md`.
+
+**Attention — brouillons dans le registre :** le drapeau `draft` masque la date de publication et affiche « Brouillon — non publié » ; il ne retire pas les pages du catalogue ni du sitemap et ne bloque pas leur indexation. Ne pas fusionner ni déployer cette branche tant que chaque article inclus n’a pas été approuvé et préparé. Avant publication, fixer la vraie date, enlever `draft` et revérifier rendu et métadonnées.
