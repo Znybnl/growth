@@ -35,3 +35,7 @@ Titre SEO demandé appliqué. Le tableau fictif distingue 10 × 3 €, 5 × 4 �
 ## Approbation éditoriale et livraison proposée
 
 Pierre-Henri BRUNELLE a approuvé éditorialement la dernière version le 10 novembre 2026. La date proposée de publication est le 10 novembre 2026, uniquement si la mise en ligne est autorisée et réalisée ce jour-là. Cette approbation ne permet ni merge ni déploiement. Si la date change, corriger `publishedAt`, refaire build et tests avant livraison. Les trois autres articles restent des brouillons exclus du site compilé.
+
+## Report au 11 novembre 2026
+
+La fusion est reportée selon l’instruction du propriétaire : le 10 novembre à 23 h 48 à Paris, le déploiement pouvait franchir minuit. La date prévue est désormais le 11 novembre, sous réserve d’une nouvelle confirmation explicite avant fusion. Le contrôle de date du catalogue utilise Europe/Paris.

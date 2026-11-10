@@ -366,8 +366,8 @@ export const blogPosts: BlogPost[] = [
     intro: "Un lot pertinent donne envie de participer tout en restant facile à expliquer et à remettre. Avant de choisir une récompense spectaculaire, partez de ce que votre commerce peut réellement offrir.",
     answer: "Pour choisir vos lots, définissez votre objectif, le budget maximal, les stocks et les conditions de remise. Préférez quelques récompenses compréhensibles, adaptées à votre activité, puis testez le parcours avec votre équipe avant la diffusion.",
     author: "L’équipe Okado",
-    publishedAt: "2026-11-10",
-    updatedAt: "2026-11-10",
+    publishedAt: "2026-11-11",
+    updatedAt: "2026-11-11",
     reviewedAt: "2026-11-10",
     readingTime: "6 min de lecture",
     image: "/images/blog/roue-ou-ticket-a-gratter-commerce.webp",
@@ -6830,7 +6830,7 @@ export function blogPostByPath(path: string) {
 }
 
 // Publication is opt-in for articles prepared under the editorial workflow.
-export function isPublicBlogPost(post: BlogPost): boolean {
+export function isPublicBlogPost(post: BlogPost, now: Date = new Date()): boolean {
   if (post.draft) return false;
   if (!post.requiresApproval) return true;
   const approval = post.publicationApproval;
@@ -6841,9 +6841,9 @@ export function isPublicBlogPost(post: BlogPost): boolean {
     !Number.isNaN(Date.parse(post.publishedAt + "T00:00:00Z")) &&
     new Date(approval.date + "T00:00:00Z").toISOString().slice(0,10) === approval.date &&
     new Date(post.publishedAt + "T00:00:00Z").toISOString().slice(0,10) === post.publishedAt &&
-    approval.date <= post.publishedAt && post.publishedAt <= new Date().toISOString().slice(0,10));
+    approval.date <= post.publishedAt && post.publishedAt <= new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit" }).format(now));
 }
-export const publicBlogPosts = blogPosts.filter(isPublicBlogPost);
+export const publicBlogPosts = blogPosts.filter((post) => isPublicBlogPost(post));
 export const visibleBlogPosts = process.env.NODE_ENV === "development" ? blogPosts : publicBlogPosts;
 export function isVisibleBlogLink(href: string): boolean {
   const pathname = href.split(/[?#]/)[0];

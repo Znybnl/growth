@@ -48,4 +48,10 @@ test('draft publication requires owner and a real, nonfuture date', async () => 
  assert.equal(exports.isPublicBlogPost({...draft,draft:false,publicationApproval:{approver:'Autre',date:'2026-01-01'}}),false);
  assert.equal(exports.isPublicBlogPost({...draft,draft:false,publishedAt:'2099-01-01',publicationApproval:{approver:'Pierre-Henri BRUNELLE',date:'2026-01-01'}}),false);
  assert.equal(exports.isPublicBlogPost({...draft,draft:false,publishedAt:'2026-01-02',publicationApproval:{approver:'Pierre-Henri BRUNELLE',date:'2026-01-01'}}),true);
+ const nextDay={...draft,draft:false,publishedAt:'2026-11-11',publicationApproval:{approver:'Pierre-Henri BRUNELLE',date:'2026-11-10'}};
+ assert.equal(exports.isPublicBlogPost(nextDay,new Date('2026-11-10T22:59:59Z')),false);
+ assert.equal(exports.isPublicBlogPost(nextDay,new Date('2026-11-10T23:00:00Z')),true);
+ const summer={...draft,draft:false,publishedAt:'2026-07-01',publicationApproval:{approver:'Pierre-Henri BRUNELLE',date:'2026-06-30'}};
+ assert.equal(exports.isPublicBlogPost(summer,new Date('2026-06-30T21:59:59Z')),false);
+ assert.equal(exports.isPublicBlogPost(summer,new Date('2026-06-30T22:00:00Z')),true);
 });

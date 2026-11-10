@@ -29,7 +29,7 @@ test("approved pilot is visible with valid metadata and incoming links", async (
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://www.okado.app${slug}`);
   await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", "Trouvez des idées de lots pour votre jeu en magasin : exemples par métier, budget fictif, stocks et conseils pour préparer la remise.");
   await expect(page).toHaveTitle(/Quels lots pour un jeu QR code en magasin/);
-  await expect(page.locator('meta[property="article:published_time"]')).toHaveAttribute("content", "2026-11-10");
+  await expect(page.locator('meta[property="article:published_time"]')).toHaveAttribute("content", "2026-11-11");
   await expect(page.getByRole("link", { name: "Essayer Okado gratuitement" })).toHaveAttribute("href", "https://app.okado.app/inscription");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   const table = page.getByRole("region", { name: "Budget fictif maximal des lots" });
@@ -38,7 +38,7 @@ test("approved pilot is visible with valid metadata and incoming links", async (
   expect(await table.evaluate((element) => element.scrollWidth)).toBeGreaterThan(await table.evaluate((element) => element.clientWidth));
   await page.screenshot({ path: testInfo.outputPath("pilote-mobile.png"), fullPage: true });
   const graph = (await page.locator('script[type="application/ld+json"]').allTextContents()).flatMap((v) => JSON.parse(v)["@graph"] ?? []);
-  expect(graph.find((item) => item["@type"] === "BlogPosting")).toMatchObject({ datePublished: "2026-11-10", headline: "Comment choisir les lots d’un jeu QR code pour son commerce ?" });
+  expect(graph.find((item) => item["@type"] === "BlogPosting")).toMatchObject({ datePublished: "2026-11-11", headline: "Comment choisir les lots d’un jeu QR code pour son commerce ?" });
   expect(await (await request.get("/sitemap.xml")).text()).toContain(`https://www.okado.app${slug}`);
   for (const path of ["/blog/animer-point-de-vente-qr-code", "/blog/roue-ou-ticket-a-gratter-commerce", "/blog/cout-animation-commerciale-commerce"]) {
     await page.goto(path);

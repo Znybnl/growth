@@ -6,7 +6,7 @@ Le blog propose « Comment choisir les lots d’un jeu QR code pour son commerce
 
 ## Validation et limites
 
-La date de publication proposée est le 10 novembre 2026, si la mise en ligne est autorisée et effectuée ce jour-là. Si elle intervient plus tard, ajuster la date réelle et relancer le build et les contrôles avant livraison. Cette PR n'autorise ni le merge ni le déploiement. Aucune issue dédiée n'est documentée pour cette livraison ; ne pas en inventer une.
+La date de publication proposée est le 11 novembre 2026, si la mise en ligne est autorisée et effectuée ce jour-là. Si elle intervient plus tard, ajuster la date réelle et relancer le build et les contrôles avant livraison. Cette PR n'autorise ni le merge ni le déploiement. Aucune issue dédiée n'est documentée pour cette livraison ; ne pas en inventer une.
 
 ## Risques et retour arrière
 
