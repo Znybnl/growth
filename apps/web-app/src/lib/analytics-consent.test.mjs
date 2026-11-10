@@ -10,7 +10,7 @@ process.env.NEXT_PUBLIC_POSTHOG_KEY = "phc_consent_fixture";
 delete process.env.NEXT_PUBLIC_POSTHOG_ENABLED;
 const root = new URL("../../../../", import.meta.url);
 // Test-only import: the editorial body stays outside both client bundles.
-const { blogPosts } = await import(new URL("apps/landing-page/src/lib/blog.ts", root));
+const { blogPosts, publicBlogPosts } = await import(new URL("apps/landing-page/src/lib/blog.ts", root));
 let state;
 registerHooks({
   resolve(name, context, next) {
@@ -138,7 +138,7 @@ for (const app of ["web-app", "landing-page"]) {
     for (const path of ["/", "/restaurants", "/instituts-beaute", "/tarifs", "/onboarding", "/guides/lots-restaurant"]) {
       assert.equal(client.safeAnalyticsPage(path), path);
     }
-    const publicBlogPages = ["/blog", ...blogPosts.map((post) => post.path)];
+    const publicBlogPages = ["/blog", ...publicBlogPosts.map((post) => post.path)];
     assert.equal(new Set(publicBlogPages).size, publicBlogPages.length);
     for (const path of publicBlogPages) {
       assert.equal(client.safeAnalyticsPage(path), path, "new articles must be explicitly allowed in both apps");
@@ -151,6 +151,7 @@ for (const app of ["web-app", "landing-page"]) {
     }
     for (const path of ["/campaign/private-id", "/redeem/secret", "/auth/callback", "/api/private", "/guides/person@example.test",
       "/blog/unknown-article", "/blog/person@example.test", "/blog/123456",
+      ...blogPosts.filter((post) => post.draft).map((post) => post.path),
       publicBlogPages[1] + "/private-id", publicBlogPages[1] + "?email=private",
       "/blog/%61ttirer-clients-fleuriste", "/blog//attirer-clients-fleuriste"]) {
       const expected = app === "web-app" && path === "/campaign/private-id" ? "/campaign/[id]"
