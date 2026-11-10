@@ -274,7 +274,7 @@ export function OnboardingFlow({ merchant }: OnboardingFlowProps) {
                   <span className="mt-2 block text-xs leading-5 text-ash">Planity ou votre outil de réservation. Vous pourrez aussi le renseigner plus tard dans Mon compte.</span>
                 </label>
               ) : null}
-              <label className="text-sm"><FieldLabel>Instagram</FieldLabel><input type="url" value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} placeholder="https://instagram.com/..." className={inputClass} /></label>
+              <label className="text-sm"><FieldLabel>Instagram</FieldLabel><input type="text" inputMode="url" value={instagramUrl} onChange={(event) => setInstagramUrl(event.target.value)} placeholder="Nom du compte ou https://instagram.com/..." className={inputClass} /></label>
               <label className="text-sm"><FieldLabel>Facebook</FieldLabel><input type="url" value={facebookUrl} onChange={(event) => setFacebookUrl(event.target.value)} placeholder="https://facebook.com/..." className={inputClass} /></label>
               <label className="text-sm"><FieldLabel>TikTok</FieldLabel><input type="url" value={tiktokUrl} onChange={(event) => setTiktokUrl(event.target.value)} placeholder="https://tiktok.com/@..." className={inputClass} /></label>
               <label className="text-sm"><FieldLabel>Tripadvisor</FieldLabel><input type="url" value={tripadvisorUrl} onChange={(event) => setTripadvisorUrl(event.target.value)} placeholder="https://tripadvisor.com/..." className={inputClass} /></label>
