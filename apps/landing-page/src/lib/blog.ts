@@ -357,8 +357,8 @@ export const blogPosts: BlogPost[] = [
   },
   {
     path: "/blog/choisir-lots-jeu-qr-code-commerce",
-    draft: true,
     requiresApproval: true,
+    publicationApproval: { approver: "Pierre-Henri BRUNELLE", date: "2026-11-10" },
     title: "Comment choisir les lots d’un jeu QR code pour son commerce ?",
     seoTitle: "Quels lots pour un jeu QR code en magasin ? Idées et budget",
     description: "Trouvez des idées de lots pour votre jeu en magasin : exemples par métier, budget fictif, stocks et conseils pour préparer la remise.",
@@ -366,7 +366,7 @@ export const blogPosts: BlogPost[] = [
     intro: "Un lot pertinent donne envie de participer tout en restant facile à expliquer et à remettre. Avant de choisir une récompense spectaculaire, partez de ce que votre commerce peut réellement offrir.",
     answer: "Pour choisir vos lots, définissez votre objectif, le budget maximal, les stocks et les conditions de remise. Préférez quelques récompenses compréhensibles, adaptées à votre activité, puis testez le parcours avec votre équipe avant la diffusion.",
     author: "L’équipe Okado",
-    publishedAt: "2026-11-09",
+    publishedAt: "2026-11-10",
     updatedAt: "2026-11-10",
     reviewedAt: "2026-11-10",
     readingTime: "6 min de lecture",

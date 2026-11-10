@@ -31,3 +31,7 @@ Exemples fictifs ajoutés pour restaurant, institut, coiffure, boutique et fleur
 ## Finalisation du 10 novembre
 
 Titre SEO demandé appliqué. Le tableau fictif distingue 10 × 3 €, 5 × 4 € et 2 × 10 € : plafond 70 €, hors coûts listés. L’exemple d’une remise distingue prix, coût du produit, marge brute restante et hypothèse de vente supplémentaire. La propriété `draft` masque la date de publication à l’affichage et dans les métadonnées ; elle ne retire pas le contenu du catalogue ni du sitemap. Avant publication, fixer la date effective, enlever le drapeau et vérifier les métadonnées. La validation explicite du propriétaire est nécessaire.
+
+## Approbation éditoriale et livraison proposée
+
+Pierre-Henri BRUNELLE a approuvé éditorialement la dernière version le 10 novembre 2026. La date proposée de publication est le 10 novembre 2026, uniquement si la mise en ligne est autorisée et réalisée ce jour-là. Cette approbation ne permet ni merge ni déploiement. Si la date change, corriger `publishedAt`, refaire build et tests avant livraison. Les trois autres articles restent des brouillons exclus du site compilé.
