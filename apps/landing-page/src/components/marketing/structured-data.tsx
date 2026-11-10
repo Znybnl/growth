@@ -10,6 +10,7 @@ export function PageSchema({
   article = false,
   articleType = "Article",
   datePublished,
+  unpublished = false,
   dateModified,
   author,
   image,
@@ -22,6 +23,7 @@ export function PageSchema({
   article?: boolean;
   articleType?: "Article" | "BlogPosting";
   datePublished?: string;
+  unpublished?: boolean;
   dateModified?: string;
   author?: string;
   image?: string;
@@ -38,7 +40,7 @@ export function PageSchema({
         ? {
             headline: name,
             ...(description ? { description } : {}),
-            datePublished: datePublished ?? CONTENT_REVIEWED_AT,
+            ...(unpublished ? {} : { datePublished: datePublished ?? CONTENT_REVIEWED_AT }),
             dateModified: dateModified ?? CONTENT_REVIEWED_AT,
             inLanguage: "fr",
             ...(author

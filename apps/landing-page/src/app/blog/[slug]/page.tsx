@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogPostTemplate } from "@/components/marketing/blog-post";
 import { PageSchema } from "@/components/marketing/structured-data";
-import { blogPostByPath, blogPosts } from "@/lib/blog";
+import { visibleBlogPosts } from "@/lib/blog";
 import { pageMetadata, SITE_URL } from "@/lib/site";
 
 export const dynamicParams = false;
@@ -10,10 +10,10 @@ export const dynamicParams = false;
 type Props = { params: Promise<{ slug: string }> };
 
 function postFromSlug(slug: string) {
-  return blogPostByPath(`/blog/${slug}`);
+  return visibleBlogPosts.find((post) => post.path === `/blog/${slug}`);
 }
 export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.path.replace("/blog/", "") }));
+  return visibleBlogPosts.map((post) => ({ slug: post.path.replace("/blog/", "") }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       ...base.openGraph,
       type: "article",
-      publishedTime: post.publishedAt,
+      ...(post.draft ? {} : { publishedTime: post.publishedAt }),
       modifiedTime: post.updatedAt,
       authors: [post.author],
       ...(image
@@ -61,6 +61,7 @@ export default async function BlogPostPage({ params }: Props) {
         article
         articleType="BlogPosting"
         datePublished={post.publishedAt}
+        unpublished={post.draft}
         dateModified={post.updatedAt}
         breadcrumbs={[{ name: "Blog", path: "/blog" }, { name: post.title, path: post.path }]}
       />

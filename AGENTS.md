@@ -65,3 +65,7 @@ Ce dépôt se publie directement avec Git via SSH. GitHub CLI (`gh`) n'est pas r
   `git -c core.sshCommand="ssh -i 'C:\\Users\\PBRUNELLE\\.ssh\\key_git' -o IdentitiesOnly=yes" <commande>`
 
 Avant un push vers `main`, toujours récupérer et intégrer l'état distant (`fetch origin main`, puis rebase sur `origin/main` si nécessaire), vérifier lint/build, puis pousser. Ne jamais bloquer une publication parce que `gh` est absent.
+
+## Blog — Okado Content Engine
+
+Pour toute stratégie, rédaction, actualisation ou vérification du blog, suivre `.agents/skills/okado-blog/SKILL.md` et `content-engine/README.md`. La validation humaine reste obligatoire avant merge ou publication.

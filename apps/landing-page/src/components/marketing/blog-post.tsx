@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { BlogInlineText } from "@/components/marketing/blog-inline-text";
 import { PrimaryButton } from "@/components/marketing/primary-button";
-import { blogPostByPath, type BlogPost } from "@/lib/blog";
+import { blogPostByPath, isVisibleBlogLink, type BlogPost } from "@/lib/blog";
 import { APP_URL } from "@/lib/site";
 import styles from "./blog-post.module.css";
 
@@ -93,9 +93,9 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
             </p>
             <div className={practical ? "mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#667085]" : "mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#b9c7d9]"}>
               <span>Par {post.author}</span>
-              {!practical ? <span>
+              {!practical ? (post.draft ? <span>Brouillon — non publié</span> : <span>
                 Publié le <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
-              </span> : null}
+              </span>) : null}
               <span>
                 Mis à jour le <time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time>
               </span>
@@ -310,7 +310,7 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
             Des ressources pour passer à l’action
           </h2>
           <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {post.related.map((path) => (
+            {post.related.filter(isVisibleBlogLink).map((path) => (
               <li key={path} className="rounded-2xl border border-[#e4ddd3] bg-[#fffdf9] p-5">
                 <Link href={path} className="font-semibold leading-6 text-[#6c00f6] hover:underline">
                   {relatedTitle(path)}

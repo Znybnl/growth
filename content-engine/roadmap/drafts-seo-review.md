@@ -1,0 +1,12 @@
+# Quatre brouillons : évaluation préliminaire
+
+Aucune donnée Keyword Planner ni Search Console n'a été fournie. La demande, la concurrence organique et la performance sont donc inconnues ; les propositions ci-dessous sont des hypothèses, non des estimations Google. Les correspondances lexiques dans `keyword-catalog-crosscheck.csv` nécessitent une lecture humaine. Les décisions sont provisoires ; aucun brouillon n'est supprimé.
+
+| Brouillon et intention | Expressions candidates | Pages voisines | Valeur proposée et ajustement à vérifier |
+| --- | --- | --- | --- |
+| Choisir les lots : sélectionner et budgéter les récompenses | idée lot jeu concours magasin ; idées récompenses clients commerce | `/blog/cout-animation-commerciale-commerce`, `/blog/roue-ou-ticket-a-gratter-commerce` | Tableau de dotations et exemples par métier ; vérifier si le titre capte aussi la recherche « jeu concours », et comparer le maillage au guide budget. |
+| Jeu en salon de coiffure : préparer une opération dans le planning | jeu qr code pour salon de coiffure ; jeu concours salon de coiffure | `/blog/animation-commerciale-institut-beaute`, `/blog/roue-fortune-institut-beaute` | Situation spécifique à l'accueil et aux rendez-vous ; examiner si l'intention « animation salon de coiffure » mérite un titre plus large et relier les guides beauté sans fusionner les métiers. |
+| Jeu pendant l'attente : intégrer l'animation au service | jeu qr code magasin ; animation point de vente commerce | `/blog/animer-point-de-vente-qr-code`, `/blog/affiche-qr-code-animation-commerciale` | Placement et gestion du service ; risque de chevauchement élevé avec le guide QR, analyser les requêtes/page avant création ou enrichissement. |
+| Remise des lots : organiser le retrait | organiser remise lots jeu magasin | `/blog/choisir-lots-jeu-qr-code-commerce`, `/comment-ca-marche` | Procédure d'équipe et distinction gain/retrait ; déterminer si la demande justifie une page autonome ou une section du pilote, renforcer les liens dans les deux sens si pertinent. |
+
+Pour chaque décision : vérifier volumes et fourchettes par pays, langue et période, requêtes et pages existantes, SERP concurrente et potentiel commercial. Une valeur manquante n'indique pas une absence de demande. Les données importées sont rattachées aux regroupements de `opportunities.json` par `prioritize.py` ; les recommandations ne constituent pas une validation de publication.

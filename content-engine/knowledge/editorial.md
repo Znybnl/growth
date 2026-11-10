@@ -1,0 +1,3 @@
+# Ligne éditoriale et qualité
+
+Cible : responsables de commerces locaux, restaurants et équipes. Ton clair, concret et respectueux, sans jargon ni superlatif non étayé. Répondre vite à l'intention ; présenter étapes, limites et exemples fictifs identifiés comme tels. Distinguer observation, recommandation et fait sourcé. Aucun résultat commercial, classement ou citation IA garanti. Vérifier les sujets réglementaires auprès de sources officielles et signaler le besoin d'une relecture compétente. Éviter promesses trompeuses, répétitions et CTA hors sujet. Les sources sont consultées, datées et associées à chaque affirmation pertinente.

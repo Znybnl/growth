@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isVisibleBlogLink } from "@/lib/blog";
 import type { ReactNode } from "react";
 
 // Editorial strings support links only; HTML and other Markdown stay escaped.
@@ -18,7 +19,7 @@ export function BlogInlineText({ text }: { text: string }) {
     }
     const className = "text-[#6c00f6] underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4";
     nodes.push(
-      internal ? (
+      internal && isVisibleBlogLink(href) ? (
         <Link key={match.index} href={href} className={className}>{label}</Link>
       ) : external ? (
         <a key={match.index} href={href} className={className}>{label}</a>

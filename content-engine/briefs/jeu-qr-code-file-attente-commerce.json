@@ -1,0 +1,43 @@
+{
+  "topic": "Comment proposer un jeu QR code pendant l’attente en magasin ?",
+  "intent": "Animer un temps d’attente sans gêner le parcours client.",
+  "audience": "Responsables de commerces de proximité",
+  "decision": "create",
+  "overlap_analysis": "Le guide QR présente l’animation en général ; celui-ci traite du moment d’attente et de la continuité du service.",
+  "outline": "Repérez une attente réelle ; Donnez le choix de participer ; Raccourcissez les explications, pas les conditions ; Préparez une solution pour le service ; Évaluez séparément la participation et le service",
+  "cta": "Essai gratuit via le parcours existant",
+  "status": "READY_FOR_HUMAN_REVIEW",
+  "sources": [
+    {
+      "url": "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
+      "accessed_at": "2026-11-10",
+      "claim": "Cadre des loteries publicitaires",
+      "evidence": "Source officielle DGCCRF"
+    },
+    {
+      "url": "https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel",
+      "accessed_at": "2026-11-10",
+      "claim": "Règles de prospection électronique",
+      "evidence": "Source officielle CNIL"
+    },
+    {
+      "url": "https://www.okado.app/comment-ca-marche",
+      "accessed_at": "2026-11-10",
+      "claim": "Configuration, prévisualisation et retrait",
+      "evidence": "Page produit Okado consultée"
+    }
+  ],
+  "checks": [
+    {
+      "item": "Sources et fonctions produit",
+      "result": "pass",
+      "evidence": "DGCCRF, CNIL et page fonctionnement Okado consultées le 10 novembre ; exemples explicitement fictifs."
+    },
+    {
+      "item": "Contrôles techniques",
+      "result": "pass",
+      "evidence": "Lint, build, vérification des briefs et du catalogue ; sept tests SEO desktop et contrôle de tous les articles sur mobile réussis."
+    }
+  ],
+  "review_notes": "Exemples fictifs ; date de publication technique provisoire à remplacer avant publication ; pas de volume SEO estimé."
+}

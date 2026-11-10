@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { blogPosts } from "../src/lib/blog";
+import { publicBlogPosts as blogPosts } from "../src/lib/blog";
 import { publicContent } from "../src/lib/public-content";
 import { ANALYTICS_CONSENT_COOKIE, ANALYTICS_CONSENT_VERSION } from "../src/lib/analytics-consent";
 
@@ -80,8 +80,13 @@ test("chaque page publique : HTML indexable, canonical, image sociale et navigat
         fullPage: true,
       });
   }
-  for (const path of internalLinks)
-    expect(routes, `Lien interne valide : ${path}`).toContain(path);
+  for (const path of internalLinks) {
+    if (path.startsWith("/_next/static/") || path.startsWith("/images/")) {
+      expect((await page.request.get(path)).status(), path).toBe(200);
+    } else {
+      expect(routes, `Lien interne valide : ${path}`).toContain(path);
+    }
+  }
   expect(errors).toEqual([]);
 });
 
@@ -261,10 +266,15 @@ test("tous les articles exposent liens, sources et métadonnées cohérentes dan
       .flatMap((value) => JSON.parse(value)["@graph"] ?? []);
     const schema = graph.find((item) => item["@type"] === "BlogPosting");
     expect(schema).not.toHaveProperty("about");
+    if (post.draft) {
+      expect(schema).not.toHaveProperty("datePublished");
+      await expect(page.locator('meta[property="article:published_time"]')).toHaveCount(0);
+      await expect(page.getByText("Brouillon — non publié")).toBeVisible();
+    }
     expect(schema).toMatchObject({
       headline: post.title,
       description: post.description,
-      datePublished: post.publishedAt,
+      ...(!post.draft ? { datePublished: post.publishedAt } : {}),
       dateModified: post.updatedAt,
       author: { "@type": "Organization", name: post.author },
       image: [`https://www.okado.app${post.image}`],

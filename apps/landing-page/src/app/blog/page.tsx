@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { PageSchema } from "@/components/marketing/structured-data";
-import { blogPosts } from "@/lib/blog";
+import { visibleBlogPosts } from "@/lib/blog";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata(
@@ -11,7 +11,7 @@ export const metadata = pageMetadata(
 );
 
 export default function BlogPage() {
-  const [featured, ...rest] = blogPosts;
+  const [featured, ...rest] = visibleBlogPosts;
 
   return (
     <main id="contenu" className="bg-[#f7f3ed] px-5 py-12 text-[#111827] md:py-16">

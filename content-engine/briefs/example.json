@@ -1,0 +1,13 @@
+{
+  "topic": "Audit de l'article animations commerciales en boutique",
+  "intent": "Aider un commerce à choisir une animation adaptée à son objectif",
+  "audience": "Responsables de commerces de proximité",
+  "decision": "update",
+  "overlap_analysis": "Comparer les articles promotions, QR code et mesure : intentions proches mais décisions distinctes ; aucune nouvelle URL proposée.",
+  "outline": "Relire choix de format, contraintes, mesure et liens contextuels.",
+  "cta": "Vérifier que les liens associés sont pertinents avant toute modification.",
+  "status": "NEEDS_EDITS",
+  "sources": [{"url": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content", "accessed_at": "2026-11-09", "claim": "La page doit aider son public et répondre à son intention.", "evidence": "Guide Google sur le contenu utile destiné aux personnes ; source méthodologique, pas preuve des affirmations métier."}],
+  "checks": [{"item": "Relire les faits métier et sources de l'article", "result": "unknown", "evidence": "Relecture détaillée à réaliser avant modification et validation."}],
+  "review_notes": "Test éditorial : pas de modification de l'article ni d'approbation implicite."
+}

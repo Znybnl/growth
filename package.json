@@ -26,6 +26,10 @@
     "check:dependencies": "npm run check:dependencies -w @okado/web-app",
     "check:dependencies:all": "npm run check:dependencies -w @okado/web-app -- --include-dev",
     "check:supabase": "npm run check:supabase -w @okado/web-app",
+    "content:inventory": "node content-engine/scripts/engine.mjs inventory",
+    "content:audit": "node content-engine/scripts/engine.mjs audit",
+    "content:briefs": "node content-engine/scripts/engine.mjs briefs",
+    "content:test": "node --test content-engine/scripts/engine.test.mjs",
     "verify:source": "node scripts/verify-source.mjs",
     "smoke:critical": "npm run smoke:critical -w @okado/web-app",
     "smoke:security": "npm run smoke:security -w @okado/web-app"

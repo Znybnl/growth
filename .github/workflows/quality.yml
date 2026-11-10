@@ -197,6 +197,10 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Validate editorial content
+        run: npm run content:test && npm run content:briefs && npm run content:audit
+      - name: Test editorial Google imports
+        run: python -m unittest discover -s content-engine/scripts -p "test_google_import.py"
       - name: Lint landing page
         run: npm run lint:landing
       - name: Build landing page
@@ -206,6 +210,9 @@ jobs:
           NEXT_PUBLIC_POSTHOG_ENABLED: "true"
       - name: Install landing browser
         run: npx playwright install --with-deps chromium
+      - name: Test production draft exclusion
+        working-directory: apps/landing-page
+        run: npx playwright test e2e/blog-drafts-production.spec.ts --project=desktop
       - name: Verify deferred loading, demo and consent
         working-directory: apps/landing-page
         run: npx playwright test e2e/mobile-performance.spec.ts e2e/landing-demo.spec.ts e2e/multisector-demo.spec.ts e2e/analytics-consent.spec.ts --project=desktop --project=mobile
