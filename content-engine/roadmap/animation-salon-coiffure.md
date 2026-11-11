@@ -29,7 +29,7 @@ Exemple fictif : dans un salon de deux professionnels et deux fauteuils occupés
 
 Autre scénario fictif : trois professionnels disposent de quatre fauteuils, dont deux libres après la fermeture. Un atelier sur inscription peut accueillir deux personnes avec un professionnel dédié, sous réserve du matériel et du temps de préparation. Les deux autres fauteuils restent hors atelier ; aucune place supplémentaire n’est promise.
 
-Si vous préférez un jeu pendant l’attente, demandez à la personne si elle souhaite participer et prévoyez une solution pour celles et ceux qui ne souhaitent pas utiliser leur téléphone. Les [animations pour institut](/blog/animation-commerciale-institut-beaute) abordent les contraintes propres aux soins en cabine.
+Si vous préférez un jeu pendant l’attente, proposez la participation sans obligation : les personnes qui ne souhaitent pas utiliser leur téléphone peuvent simplement ne pas jouer. Les [animations pour institut](/blog/animation-commerciale-institut-beaute) abordent les contraintes propres aux soins en cabine.
 
 ## Si vous choisissez un jeu QR code
 
