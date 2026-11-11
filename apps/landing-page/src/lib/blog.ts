@@ -132,8 +132,8 @@ export type BlogPost = {
 export const blogPosts: BlogPost[] = [
   {
     "path": "/blog/animation-salon-coiffure",
-    "draft": true,
     "requiresApproval": true,
+    "publicationApproval": { "approver": "Pierre-Henri BRUNELLE", "date": "2026-11-11" },
     "title": "Animation en salon de coiffure : idées et conseils pour se lancer",
     "seoTitle": "Animation salon de coiffure : idées et organisation",
     "description": "Choisissez une animation pour votre salon de coiffure : idées concrètes, temps d’équipe, exemples de lots et organisation d’un jeu QR code.",
@@ -141,7 +141,7 @@ export const blogPosts: BlogPost[] = [
     "intro": "Une animation en salon de coiffure peut prendre la forme d’un conseil, d’un atelier ou d’un jeu. Choisissez un format adapté à vos rendez-vous, au temps de l’équipe et à ce que vos clients souhaitent découvrir.",
     "answer": "Pour animer un salon de coiffure, choisissez un objectif et un moment disponible : conseil pour découvrir un soin, atelier sur inscription ou jeu court pendant l’attente. Préparez les ressources et les conditions avant de l’annoncer.",
     "author": "L’équipe Okado",
-    "publishedAt": "2026-11-10",
+    "publishedAt": "2026-11-11",
     "updatedAt": "2026-11-11",
     "reviewedAt": "2026-11-11",
     "readingTime": "4 min de lecture",
@@ -1730,7 +1730,7 @@ export const blogPosts: BlogPost[] = [
           "Boutique de décoration : lors d’une arrivée de collection, préparez une démonstration d’association de produits près de l’entrée. Gardez les références présentées disponibles et notez les questions sur leur usage. L’objectif est de faciliter la découverte ; il ne dépend pas nécessairement d’une remise.",
           "Restaurant : sur un déjeuner habituellement calme, proposez un jeu à table avec un dessert identifié. Vérifiez que la cuisine et la salle peuvent honorer les gains pendant le créneau annoncé. Observez les participations et les retraits sans compter chaque couvert comme acquis grâce au jeu.",
           "Institut : après une prestation, présentez une option disponible lors d’un prochain rendez-vous. Précisez les prestations compatibles et la validité. Le retour doit être observé séparément : une invitation remise n’est pas une réservation. Ces trois situations sont des exemples de conception, pas des retours clients documentés.",
-          "Pour approfondir un secteur, consultez les [idées de jeux pour restaurant](/blog/idees-jeux-concours-restaurant) ou les [animations pour institut](/blog/animation-commerciale-institut-beaute). Pour une offre certaine sur le prix, privilégiez les [idées de promotions locales](/blog/idees-promotions-commerce-local). Une opération avec hasard demande aussi de vérifier le cadre des loteries publicitaires indiqué dans les sources françaises.",
+          "Pour approfondir un secteur, consultez les [idées de jeux pour restaurant](/blog/idees-jeux-concours-restaurant), les [animations pour institut](/blog/animation-commerciale-institut-beaute) ou les [animations pour salon de coiffure](/blog/animation-salon-coiffure). Pour une offre certaine sur le prix, privilégiez les [idées de promotions locales](/blog/idees-promotions-commerce-local). Une opération avec hasard demande aussi de vérifier le cadre des loteries publicitaires indiqué dans les sources françaises.",
         ],
       },
       {
