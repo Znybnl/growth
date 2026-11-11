@@ -134,22 +134,22 @@ export const blogPosts: BlogPost[] = [
     "path": "/blog/jeu-qr-code-salon-coiffure",
     "draft": true,
     "requiresApproval": true,
-    "title": "Comment organiser un jeu QR code dans un salon de coiffure ?",
-    "seoTitle": "Jeu QR code en salon de coiffure : mode d’emploi",
-    "description": "Préparez un jeu en salon de coiffure : moment de présentation, lots, budget fictif et retrait sans perturber les rendez-vous.",
+    "title": "Animation en salon de coiffure : idées et conseils pour se lancer",
+    "seoTitle": "Animation salon de coiffure : idées et organisation",
+    "description": "Choisissez une animation pour votre salon de coiffure : idées concrètes, temps d’équipe, exemples de lots et organisation d’un jeu QR code.",
     "eyebrow": "Coiffure",
-    "intro": "Proposez le jeu pendant un temps d’attente réellement disponible, après avoir demandé à la personne si elle souhaite participer. Ne présumez pas que chaque cliente ou client veut utiliser son téléphone.",
-    "answer": "Mettre en place une animation réalisable entre deux rendez-vous. Commencez par définir le parcours, tester le support et préciser les responsabilités de l’équipe.",
+    "intro": "Une animation en salon de coiffure peut prendre la forme d’un conseil, d’un atelier ou d’un jeu. Choisissez un format adapté à vos rendez-vous, au temps de l’équipe et à ce que vos clients souhaitent découvrir.",
+    "answer": "Pour animer un salon de coiffure, choisissez un objectif et un moment disponible : conseil pour découvrir un soin, atelier sur inscription ou jeu court pendant l’attente. Préparez les ressources et les conditions avant de l’annoncer.",
     "author": "L’équipe Okado",
     "publishedAt": "2026-11-10",
-    "updatedAt": "2026-11-10",
-    "reviewedAt": "2026-11-10",
+    "updatedAt": "2026-11-11",
+    "reviewedAt": "2026-11-11",
     "readingTime": "4 min de lecture",
     "image": "/images/blog/animation-institut-beaute.webp",
     "imageAlt": "Illustration d’une animation dans un établissement de beauté",
     "takeaway": {
       "title": "Préparez un parcours réaliste",
-      "text": "Testez le parcours avec votre équipe et précisez les conditions avant toute diffusion."
+      "text": "Choisissez d’abord un objectif et un créneau que l’équipe peut tenir ; un jeu QR code n’est qu’une option parmi d’autres. Testez ensuite le parcours et précisez les conditions avant diffusion."
     },
     "source": [
       {
@@ -162,6 +162,19 @@ export const blogPosts: BlogPost[] = [
       }
     ],
     "sections": [
+      {
+        "title": "Quatre idées d’animation adaptées au salon",
+        "paragraphs": [
+          "Ces scénarios sont des pistes à adapter, pas des résultats observés. Avant de choisir, identifiez l’objectif, le temps disponible, les produits et la personne responsable. Une animation ne garantit ni rendez-vous supplémentaires ni chiffre d’affaires.",
+          "Si vous souhaitez comparer des formats pour d’autres commerces, consultez les [idées d’animations en boutique](/blog/idees-animations-commerciales-boutique). Les [animations pour institut](/blog/animation-commerciale-institut-beaute) traitent des contraintes propres aux soins en cabine."
+        ],
+        "items": [
+          "Conseil de coiffage : montrez un geste d’entretien avec une référence disponible à une personne déjà présente. Prévoyez un créneau de conseil et évitez ce format si les rendez-vous ne laissent aucun temps libre.",
+          "Atelier en petit groupe : présentez un geste simple sur inscription, avec matériel et nombre de places annoncés. Réservez les fauteuils et le temps d’un membre de l’équipe ; reportez si le service habituel en souffre.",
+          "Découverte d’un produit : présentez une gamme ou proposez un échantillon adapté aux références et stocks du salon. Vérifiez les conseils d’usage et la disponibilité avant de l’annoncer.",
+          "Jeu pendant l’attente : proposez une roue ou un ticket mobile si le client dispose d’un moment et souhaite participer. Préparez le support, les conditions et la remise des lots ; ce format n’est pas nécessaire pour les autres idées."
+        ]
+      },
       {
         "title": "Choisissez un moment compatible avec le service",
         "paragraphs": [
@@ -199,6 +212,8 @@ export const blogPosts: BlogPost[] = [
       }
     ],
     "related": [
+      "/blog/idees-animations-commerciales-boutique",
+      "/blog/animation-commerciale-institut-beaute",
       "/comment-ca-marche",
       "/blog/choisir-lots-jeu-qr-code-commerce",
       "/blog/mesurer-animation-commerciale"

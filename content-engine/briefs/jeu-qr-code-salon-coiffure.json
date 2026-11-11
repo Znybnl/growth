@@ -1,43 +1,49 @@
 {
-  "topic": "Comment organiser un jeu QR code dans un salon de coiffure ?",
-  "intent": "Mettre en place une animation réalisable entre deux rendez-vous.",
-  "audience": "Responsables de commerces de proximité",
+  "topic": "Animation en salon de coiffure : idées et conseils pour se lancer",
+  "intent": "Choisir une animation adaptée au salon, à ses rendez-vous et à son équipe, puis organiser un jeu QR si ce format est pertinent.",
+  "audience": "Responsables de salons de coiffure",
   "decision": "create",
-  "overlap_analysis": "Le guide institut concerne une autre activité ; le guide de choix des lots est transversal.",
-  "outline": "Choisissez un moment compatible avec le service ; Préparez des lots que le salon peut remettre ; Testez le parcours avant de poser l’affiche ; Organisez la remise sans improviser ; Faites le bilan sans confondre les résultats",
+  "overlap_analysis": "Guide boutique : formats transversaux ; guide institut : soins en cabine ; guide lots : calcul transversal. Ici : arbitrage coiffure, fauteuils, planning et préparation du jeu.",
+  "outline": "Comparer conseil, atelier, découverte produit et jeu ; choisir le moment ; préparer les lots ; tester le QR ; organiser la remise ; mesurer séparément.",
   "cta": "Essai gratuit via le parcours existant",
   "status": "READY_FOR_HUMAN_REVIEW",
   "sources": [
     {
       "url": "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
-      "accessed_at": "2026-11-10",
+      "accessed_at": "2026-11-11",
       "claim": "Cadre des loteries publicitaires",
       "evidence": "Source officielle DGCCRF"
     },
     {
       "url": "https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel",
-      "accessed_at": "2026-11-10",
+      "accessed_at": "2026-11-11",
       "claim": "Règles de prospection électronique",
       "evidence": "Source officielle CNIL"
     },
     {
       "url": "https://www.okado.app/comment-ca-marche",
-      "accessed_at": "2026-11-10",
+      "accessed_at": "2026-11-11",
       "claim": "Configuration, prévisualisation et retrait",
       "evidence": "Page produit Okado consultée"
+    },
+    {
+      "url": "https://www.mapa-assurances.fr/coiffeur/animation-salon",
+      "accessed_at": "2026-11-11",
+      "claim": "Comparaison qualitative de formats sectoriels proposés par une page accessible, sans déduire son classement ni valider ses affirmations commerciales.",
+      "evidence": "Page consultée : conseils, démonstrations, ateliers et jeux."
     }
   ],
   "checks": [
     {
       "item": "Sources et fonctions produit",
       "result": "pass",
-      "evidence": "DGCCRF, CNIL et page fonctionnement Okado consultées le 10 novembre ; exemples explicitement fictifs."
+      "evidence": "DGCCRF, CNIL et fonctionnement Okado consultés le 11 novembre ; idées sectorielles comparées à MAPA ; exemples identifiés comme pistes et hypothèses."
     },
     {
       "item": "Contrôles techniques",
       "result": "pass",
-      "evidence": "Lint, build, vérification des briefs et du catalogue ; sept tests SEO desktop et contrôle de tous les articles sur mobile réussis."
+      "evidence": "Lint et build landing, 5 briefs, audit 43 articles, 4 tests moteur et 4 tests production des brouillons réussis ; aperçu local 390 et 1280 px, liens internes et débordement contrôlés."
     }
   ],
-  "review_notes": "Exemples fictifs ; date de publication technique provisoire à remplacer avant publication ; pas de volume SEO estimé."
+  "review_notes": "Brouillon non approuvé ; date publishedAt provisoire à remplacer après accord. La relecture éditoriale et juridique reste nécessaire. Les exemples sont fictifs ou hypothétiques ; aucune performance garantie. Lien entrant candidat après publication approuvée : guide animations en boutique ; ne pas créer de lien public vers ce brouillon."
 }
