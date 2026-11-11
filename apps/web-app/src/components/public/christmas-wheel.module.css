@@ -63,6 +63,17 @@
 .button:focus-visible { outline: 3px solid white; outline-offset: 7px; }
 .button:hover:not(:disabled) { filter: brightness(1.08); }
 .button:disabled { cursor: default; }
+[data-travel-template] .brand { width: 58%; padding: 2cqw 3cqw; border: 1px solid currentColor; border-radius: 3cqw; background: #fff9e9dc; }
+[data-travel-template] .brandText { font-family: var(--font-dm-sans), sans-serif; font-weight: 700; }
+[data-travel-template] .rule { display: none; }
+[data-travel-template] .subtitle { font-family: var(--font-dm-sans), sans-serif; font-weight: 600; }
+[data-travel-template="travel-elegant"] .brand { border-style: dashed; background: #fff9e96b; }
+[data-travel-template="travel-tropical"] .title { padding: 1cqw 2cqw; border-radius: 3cqw; background: #007e91; }
+[data-travel-template="travel-roadtrip"] .title { padding: 1cqw 2cqw; border-radius: 40% 8% 35% 10%; background: #fff0d4; }
+.travelCenter { background: radial-gradient(circle at 30% 22%, #fff1b0, #d99620 62%, #8a540d); cursor: default; pointer-events: none; }
+.travelCta { position: absolute; top: 108%; left: 8%; width: 84%; z-index: 5; min-height: 13cqw; display: flex; align-items: center; justify-content: center; border: 2px solid #fff3d8; border-radius: 999px; box-shadow: 0 3px 8px #25140b66, inset 0 1px 3px #ffffff66; font-family: var(--font-dm-sans), sans-serif; font-size: 5.5cqw; font-weight: 700; cursor: pointer; }
+.travelCta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.travelCta:disabled { cursor: default; }
 @media (prefers-reduced-motion: reduce) { .rotor { transition-duration: .1s; } }
 .thumbnailCard {
   position: relative; isolation: isolate; display: grid; grid-template-columns: 1fr 1.05fr;

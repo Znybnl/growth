@@ -44,6 +44,7 @@ import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
 import { ChristmasCampaignPreview } from "./christmas-campaign-preview";
 import { SeasonalScratchPreview } from "./seasonal-scratch-preview";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme, isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
+import { TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-themes";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate, christmasScratchBackgroundImage } from "@/lib/christmas-scratch-templates";
 import { HALLOWEEN_SCRATCH_TEMPLATE, halloweenScratchTemplate, isHalloweenFixedPalette } from "@/lib/halloween-scratch-template";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
@@ -360,6 +361,7 @@ const wheelPageTemplateOptions: Array<{
   title: string;
   description: string;
 }> = [
+  ...TRAVEL_WHEEL_THEMES.map(theme => ({ value: theme.id, title: theme.name, description: theme.description })),
   ...CHRISTMAS_WHEEL_THEMES.map(theme => ({ value: theme.id, title: theme.name, description: theme.description })),
   { value: "halloween-gold", title: "Halloween doré", description: "Roses noires, bougies et roue dorée. Décor et palette fixes." },
   {
@@ -3114,7 +3116,7 @@ export function CampaignEditor({
               <h3 className="text-base font-semibold text-carbon">Autres templates</h3>
               <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="classic-template-options">
                 {(form.gameType === "wheel"
-                  ? wheelPageTemplateOptions.filter((template) => !isBeautyIndustry(merchant.industry) || (template.value !== "rose-institut" && template.value !== "christmas-rose"))
+                  ? wheelPageTemplateOptions.filter((template) => (!template.value.startsWith("travel-") || merchant.industry === "Agences de voyage") && (!isBeautyIndustry(merchant.industry) || (template.value !== "rose-institut" && template.value !== "christmas-rose")))
                   : scratchPageTemplateOptions.filter((template) => !isHiddenScratchTemplate(template.value) && (!isBeautyIndustry(merchant.industry) || template.value !== "scratch-christmas-rose"))
                 ).map((template) => {
                   const active =

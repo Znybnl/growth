@@ -25,7 +25,7 @@ export function ChristmasWheelScene({ templateId, background, logoMode = "text",
 }) {
   const artwork = renderBackgroundArt ? background.imageUrl || christmasWheelDefaultBackground(templateId, background) : null;
   const gildedTitle = templateId === "christmas-traditional" && titleColor.toLowerCase() === christmasWheelTheme(templateId)!.text;
-  return <section className={`${styles.scene} ${publicPage ? styles.public : ""}`} data-testid="christmas-wheel-scene" style={{ position: "relative", backgroundColor: renderBackgroundArt ? background.color : "transparent", color: logoTextColor }}>
+  return <section className={`${styles.scene} ${publicPage ? styles.public : ""}`} data-testid="christmas-wheel-scene" data-travel-template={templateId.startsWith("travel-") ? templateId : undefined} style={{ position: "relative", backgroundColor: renderBackgroundArt ? background.color : "transparent", color: logoTextColor }}>
     {artwork ? <Image src={artwork} alt="" fill sizes="(max-width: 600px) 100vw, 600px" loading="eager" className={styles.art} data-template-art={background.imageUrl ? undefined : templateId} unoptimized={Boolean(background.imageUrl)} /> : null}
     <div className={styles.content}>
       {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign }}>
@@ -89,7 +89,7 @@ export function ChristmasWheelVisual({ templateId, segments, palette, rotation =
           const location = point(mid, 204);
           const lines = labelLines(segment.label);
           const size = lines.length === 3 ? 25 : 29;
-          const upright = mid > 90 || mid < -90 ? mid + 180 : mid;
+          const upright = templateId.startsWith("travel-") ? 0 : mid > 90 || mid < -90 ? mid + 180 : mid;
           return <g key={segment.id} data-segment-id={segment.id}>
             <path d={`M320 320 L${start.x} ${start.y} A300 300 0 ${angle > 180 ? 1 : 0} 1 ${end.x} ${end.y} Z`} fill={`url(#${id}-sector-${index})`} stroke="#f4dfba" strokeWidth="1.8" />
             <FittedWheelLabel lines={lines} baseFontSize={size} lineHeight={size * .98} initialOffset={-(lines.length - 1) * size * .49}
@@ -122,8 +122,9 @@ export function ChristmasWheelVisual({ templateId, segments, palette, rotation =
       <path d="M6 15C6-2 58-2 58 15C58 36 40 68 32 88C24 68 6 36 6 15Z" fill={`url(#${id}-pointer)`} stroke="#ffecc0" strokeWidth="2.4" />
       <path d="M32 5L32 76C23 53 12 29 12 16C12 10 19 6 32 5Z" fill="#fff8d6" opacity=".3" />
       <path d="M12 17C12 7 23 5 32 5" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" opacity=".85" />
+      {templateId.startsWith("travel-") ? <circle cx="32" cy="22" r="11" fill="#fffaf0" stroke="#d9bb7d" strokeWidth="1" /> : null}
     </svg>
-    {interactive ? <button type="button" className={styles.button} aria-label="Jouer à la roue" aria-busy={spinning} disabled={disabled} onClick={onClick} style={centerStyle}>{buttonLabel}</button>
+    {templateId.startsWith("travel-") ? <><span className={`${styles.button} ${styles.travelCenter}`} aria-hidden="true" />{interactive ? <button type="button" className={styles.travelCta} aria-label="Jouer à la roue" aria-busy={spinning} disabled={disabled} onClick={onClick} style={{ backgroundColor: buttonColor, color: buttonInk }}>{buttonLabel}</button> : <span className={styles.travelCta} aria-hidden="true" style={{ backgroundColor: buttonColor, color: buttonInk }}>JOUER</span>}</> : interactive ? <button type="button" className={styles.button} aria-label="Jouer à la roue" aria-busy={spinning} disabled={disabled} onClick={onClick} style={centerStyle}>{buttonLabel}</button>
       : <span className={styles.button} style={centerStyle}>JOUER</span>}
   </div>;
 }

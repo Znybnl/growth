@@ -5,6 +5,18 @@ import { parseCampaignSetupInput } from "./merchant-input.ts";
 import { wheelBackgroundForTemplateSelection, wheelHeadingFontForTemplateSelection, wheelHeadingColorForTemplateSelection, wheelLogoColorForTemplateSelection } from "./campaign-defaults.ts";
 import { contrastRatio, legibleSegmentTextColor } from "./color-contrast.ts";
 import { buildWheelVisualSegments, selectWheelVisualSegments } from "./wheel-segments.ts";
+import { TRAVEL_WHEEL_THEMES } from "./travel-wheel-themes.ts";
+
+for (const theme of TRAVEL_WHEEL_THEMES) {
+  test(`${theme.id}: modèle persistant, fond natif et fond personnalisé`, () => {
+    const form = parseCampaignSetupInput({ gameType: "wheel", rewardRules: {}, accent: {}, presentation: { logo: {}, background: {}, heading: {}, button: {}, wheel: {}, poster: { wheel: {} }, email: {}, layout: { templateId: theme.id } } }, "fixture-merchant");
+    assert.equal(form.presentation.layout.templateId, theme.id);
+    assert.equal(christmasWheelDefaultBackground(theme.id, { color: theme.background }), theme.artwork);
+    assert.equal(christmasWheelDefaultBackground(theme.id, { color: theme.background, imageUrl: "/manual.webp" }), null);
+    assert.equal(christmasWheelDefaultBackground(theme.id, { color: "#abcdef" }), null);
+    assert.equal(christmasWheelPalette(theme.id, form.presentation.wheel).rimColor, theme.rim);
+  });
+}
 
 for (const theme of CHRISTMAS_WHEEL_THEMES) {
   test(`${theme.id}: parsing conservé et couleurs initiales isolées`, () => {

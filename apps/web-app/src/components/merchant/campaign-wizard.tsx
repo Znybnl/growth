@@ -80,6 +80,7 @@ import { uploadMerchantImageFile } from "@/lib/client-merchant-image-upload";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelFontOptions, beautyWheelLogoColor, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme } from "@/lib/christmas-wheel-themes";
+import { TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-themes";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { HALLOWEEN_SCRATCH_TEMPLATE, halloweenScratchTemplate, isHalloweenFixedPalette } from "@/lib/halloween-scratch-template";
 import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
@@ -2458,6 +2459,7 @@ export function CampaignWizard({
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
+                     ...(merchant.industry === "Agences de voyage" ? TRAVEL_WHEEL_THEMES.map(theme => ({ id: theme.id, label: theme.name, text: theme.description })) : []),
                      ...CHRISTMAS_WHEEL_THEMES.map(theme => ({ id: theme.id, label: theme.name, text: theme.description })),
                      { id: "halloween-gold", label: "Halloween doré", text: "Roses noires et dorures, décor et palette fixes" },
                      {
