@@ -20,6 +20,13 @@ const SAFE_LABELS = new Set([
   "Nom", "Statut", "Actions", "Stock", "Illimité", "Brouillon", "Publiée", "Active", "Inactive",
   "Établissement", "Utilisateur", "Abonnement", "Informations de connexion", "Préférences personnelles",
   "Notifications de gains", "Liens marketing", "Prénom", "Nom de famille", "E-mail de connexion",
+  "Toutes", "Actives", "En pause", "Archivées", "Rechercher une campagne", "Filtrer",
+  "Choisissez votre point de départ", "Suggestions", "Mes lots", "Ajouter un lot",
+  "Chance", "Coût de revient", "Actions", "Probabilité", "Conditions", "Paramètres avancés",
+  "Jeu 100 % gagnant", "Durée de validité du gain (jours)", "Délai minimum entre deux participations (jours)",
+  "Aperçu", "Plus", "Modifier l’e-mail de gain", "Choisir dans la bibliothèque", "Importer votre logo",
+  "Secteur d’activité", "Sous-secteur", "Type de jeu", "Aucune campagne", "Voir les résultats",
+  "Vue d’ensemble", "Toutes les campagnes", "Scans et participations par jour", "Conversion",
 ]);
 
 export function maskBetaReplayText(text: string, element?: Element) {
@@ -44,7 +51,20 @@ function compiledStylesheet(raw: string) {
   } catch { return null; }
 }
 
+// Public product illustrations only. Merchant uploads and arbitrary URLs must
+// never be passed to the replay player, even when they use the same domain.
+function publicReplayImage(raw: string) {
+  try {
+    const url = new URL(raw, "https://app.okado.app");
+    if (!["https:", "http:"].includes(url.protocol) ||
+      !(url.hostname === "app.okado.app" || url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname.endsWith(".vercel.app")) ||
+      !/^\/images\/(?:scratch-templates|wheel-templates)\/[\w-]+\.(?:webp|png|jpg|jpeg)$/i.test(url.pathname)) return null;
+    return `${url.origin}${url.pathname}`;
+  } catch { return null; }
+}
+
 export function maskBetaReplayAttribute(name: string, value: string, element?: Element) {
+  if (name === "src" && element?.tagName === "IMG") return publicReplayImage(value) ?? "";
   // Lucide renders product-owned vector icons. Uploaded images, charts and
   // arbitrary SVGs remain blocked. Retain geometry only, never links or text.
   if (element?.closest?.("svg.lucide")) {
@@ -92,6 +112,6 @@ export function betaReplayUrl(raw: string) {
 }
 
 export const BETA_REPLAY_BLOCK_SELECTOR = [
-  ".ph-no-capture", "[data-replay-private]", "img", "picture", "svg:not(.lucide)", "canvas", "iframe", "video", "audio",
+  ".ph-no-capture", "[data-replay-private]", "img:not([src^='/images/scratch-templates/']):not([src^='/images/wheel-templates/'])", "svg:not(.lucide)", "canvas", "iframe", "video", "audio",
   "script", "noscript", "meta", "title", "[contenteditable]",
 ].join(",");

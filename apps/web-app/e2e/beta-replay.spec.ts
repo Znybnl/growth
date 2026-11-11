@@ -119,6 +119,7 @@ for (const choice of ["absent", "rejected", "accepted"] as const) {
     const raw = JSON.stringify(decoded);
     if (choice !== "accepted") expect(state.outbound.join(" ")).not.toContain("private-query");
     expect(raw).toContain("Toutes vos campagnes");
+    expect(raw).toContain("/images/scratch-templates/beauty-noir-or.webp");
     expect(raw).toContain("childNodes"); // A real DOM snapshot was inspected, not just compressed bytes.
     for (const secret of ["client-secret", "private-input", "9876-private-pin", "private-destination", "private-token", "private-title", "private-image", "private-query", "private-hash", "private-private-container", "private-console-secret", "private-network-secret", "private-response-secret", "private-css-secret"]) {
       expect(raw).not.toContain(secret);
@@ -131,6 +132,7 @@ for (const choice of ["absent", "rejected", "accepted"] as const) {
     } else {
       const ordinary = state.packets.find(p => p.event === "campaign_preview_opened");
       expect(ordinary?.properties.distinct_id ?? ordinary?.distinct_id).toBe(state.subject);
+      expect(ordinary?.properties.$session_id).toBe(snapshots[0]?.properties.$session_id);
       await page.getByRole("button", { name: "Déconnexion fictive" }).click();
       await page.getByRole("button", { name: "Événement ordinaire fictif" }).click();
       await expect.poll(() => state.packets.filter(p => p.event === "campaign_preview_opened").length).toBe(2);

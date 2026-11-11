@@ -1,6 +1,7 @@
 "use client";
 
 import posthog from "posthog-js";
+import { betaReplaySessionId } from "@/lib/beta-replay-client";
 import { safeApplicationAnalyticsPage } from "@/lib/analytics-routes";
 import {
   ANALYTICS_CONSENT_EVENT, ANALYTICS_CONSENT_VERSION,
@@ -179,10 +180,12 @@ export function syncAnalyticsConsent() {
         };
         const rootProfile = profileSet(event.$set);
         const eventProfile = profileSet(event.properties.$set);
+        const replaySession = betaReplaySessionId(identity.distinct_id);
         delete event.$set;
         delete event.$set_once;
         event.properties = {
           ...safeAnalyticsProperties(event.properties),
+          ...(replaySession ? { $session_id: replaySession } : {}),
           ...acquisitionContext(),
           source: "client",
           trackingVersion: "v1",

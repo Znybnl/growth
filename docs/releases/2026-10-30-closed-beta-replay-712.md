@@ -18,8 +18,9 @@ Le périmètre comprend l’accueil SaaS `/`, l’onboarding, la liste des campa
 leur création/édition, affiche/e-mail et la bibliothèque de fonds. Les pages de
 jeu publiques et leurs iframes, l’authentification, les participants, Mon compte/
 abonnement, les retraits et l’administration sensible sont exclus. Le replay
-montre les interactions et la structure ; les contenus libres et images restent
-masqués. Il ne permet donc pas une recette pixel à pixel des créations.
+  montre les interactions et la structure ; les contenus libres et images importées
+  restent masqués. Certaines illustrations de templates intégrées à l'application
+  peuvent être affichées. Il ne permet donc pas une recette pixel à pixel des créations.
 
 ## Autorisation et confidentialité
 
@@ -38,10 +39,15 @@ masqués. Il ne permet donc pas une recette pixel à pixel des créations.
   privés supprimés, en conservant seulement le CSS public compilé par Next.js pour
   que les replays gardent leur mise en page. Les classes Tailwind sont filtrées
   individuellement, y compris les dimensions, couleurs et variantes entre crochets.
-  Les icônes Lucide du produit conservent leur géométrie vectorielle. Les autres
+  Les icônes Lucide du produit conservent leur géométrie vectorielle. Les images
+  statiques autorisées se limitent aux répertoires de templates prédéfinis ; les
+  URL d'images importées et leurs paramètres ne sont pas conservés. Les autres
   SVG, médias, images, canvas, iframes, éléments privés et contenus
   éditables bloqués. Ni console, ni corps/en-têtes réseau, ni capture JSON-LD.
   URL sans requête, fragment ou identifiant dynamique.
+- Avec consentement analytics, les événements de l'identité connectée portent
+  l'identifiant du replay autorisé en cours, pour apparaître dans sa chronologie.
+  Aucun événement n'est ajouté lorsque le consentement analytics est absent.
 - Projet **212872 EU** exclusivement. Le contrôle privé du 30 octobre confirme
   le bon token local, l’activation des replays et la rétention configurée **30 jours**.
   Aucun réglage fournisseur ni enregistrement réel modifié pendant les tests.
