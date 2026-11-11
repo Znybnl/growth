@@ -21,6 +21,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Use the official Ubuntu archive on CI runners
+        run: |
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            printf '%s\n' 'https://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt >/dev/null
+          fi
       - run: npx playwright install --with-deps chromium
         working-directory: apps/web-app
       - name: Verify 1280px screens and capture evidence
@@ -63,6 +68,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Use the official Ubuntu archive on CI runners
+        run: |
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            printf '%s\n' 'https://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt >/dev/null
+          fi
       - run: npx playwright install --with-deps chromium
         working-directory: apps/web-app
       - name: Exercise the real SDK with synthetic identities and intercepted requests
@@ -176,6 +186,11 @@ jobs:
           exit 1
       - name: Verify operational logs on the compiled server without analytics consent
         run: npm run smoke:operational-telemetry -w @okado/web-app
+      - name: Use the official Ubuntu archive on CI runners
+        run: |
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            printf '%s\n' 'https://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt >/dev/null
+          fi
       - name: Verify prize library with compiled production CSS
         run: |
           npx playwright install --with-deps chromium
@@ -208,6 +223,11 @@ jobs:
         env:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture
           NEXT_PUBLIC_POSTHOG_ENABLED: "true"
+      - name: Use the official Ubuntu archive on CI runners
+        run: |
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            printf '%s\n' 'https://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt >/dev/null
+          fi
       - name: Install landing browser
         run: npx playwright install --with-deps chromium
       - name: Test production draft exclusion
