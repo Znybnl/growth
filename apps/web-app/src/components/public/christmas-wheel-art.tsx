@@ -73,6 +73,7 @@ export function ChristmasWheelVisual({ templateId, segments, palette, rotation =
   });
   const buttonColor = buttonBackground ?? theme.button;
   const buttonInk = legibleSegmentTextColor(buttonColor, buttonTextColor ?? "#fff8e8");
+  const isTravel = templateId.startsWith("travel-");
   const centerStyle = { "--christmas-button-color": buttonColor, "--christmas-rim-color": rim, color: buttonInk } as CSSProperties;
   return <div className={styles.wheel} data-testid="christmas-wheel">
     <div className={styles.rotor} data-testid="christmas-wheel-rotor" style={{ transform: `rotate(${rotation}deg)`, willChange: spinning ? "transform" : undefined }}>
@@ -93,7 +94,7 @@ export function ChristmasWheelVisual({ templateId, segments, palette, rotation =
           return <g key={segment.id} data-segment-id={segment.id}>
             <path d={`M320 320 L${start.x} ${start.y} A300 300 0 ${angle > 180 ? 1 : 0} 1 ${end.x} ${end.y} Z`} fill={`url(#${id}-sector-${index})`} stroke="#f4dfba" strokeWidth="1.8" />
             <FittedWheelLabel lines={lines} baseFontSize={size} lineHeight={size * .98} initialOffset={-(lines.length - 1) * size * .49}
-              radius={204} buttonRadius={112} outerRadius={300} sectorAngle={angle}
+              radius={204} buttonRadius={isTravel ? 74 : 112} outerRadius={300} sectorAngle={angle}
               x={location.x} y={location.y} fill={legibleSegmentTextColor(colors[index], theme.logo)}
               fontFamily={textFontFamily("dm-sans")} fontWeight="650" textAnchor="middle" dominantBaseline="middle"
               transform={`rotate(${upright} ${location.x} ${location.y})`} />
@@ -115,16 +116,17 @@ export function ChristmasWheelVisual({ templateId, segments, palette, rotation =
       <circle cx="320" cy="320" r="299" fill="none" stroke="#fff2ce" strokeWidth="2" />
       <circle cx="320" cy="320" r="296.5" fill="none" stroke="#805726" strokeOpacity=".44" strokeWidth="1.2" />
       <path d="M77 133A307 307 0 0 1 243 23" fill="none" stroke="#fff9e4" strokeWidth="1.7" strokeLinecap="round" opacity=".9" />
-      <circle cx="320" cy="320" r="111" fill={`url(#${id}-gold)`} stroke="#7a5124" strokeWidth="1" />
-      <circle cx="320" cy="320" r="104.5" fill="#5b391b" />
+      <circle cx="320" cy="320" r={isTravel ? 72 : 111} fill={`url(#${id}-gold)`} stroke="#7a5124" strokeWidth="1" />
+      <circle cx="320" cy="320" r={isTravel ? 67 : 104.5} fill="#5b391b" />
     </svg>
-    <svg viewBox="0 0 64 96" className={styles.pointer} data-testid="christmas-wheel-pointer" aria-hidden="true">
+    <svg viewBox="0 0 64 96" className={`${styles.pointer} ${isTravel ? styles.travelPointer : ""}`} data-testid="christmas-wheel-pointer" aria-hidden="true">
+      {isTravel ? <><path d="M32 3C16 3 5 14 5 30c0 16 13 34 27 58 14-24 27-42 27-58C59 14 48 3 32 3Z" fill={templateId === "travel-roadtrip" ? "#c84922" : "#e5a020"} stroke="#fff4d6" strokeWidth="3" strokeLinejoin="round" /><circle cx="32" cy="28" r="12" fill="#fffaf0" stroke="#d9bb7d" strokeWidth="1" /></> : <>
       <path d="M6 15C6-2 58-2 58 15C58 36 40 68 32 88C24 68 6 36 6 15Z" fill={`url(#${id}-pointer)`} stroke="#ffecc0" strokeWidth="2.4" />
       <path d="M32 5L32 76C23 53 12 29 12 16C12 10 19 6 32 5Z" fill="#fff8d6" opacity=".3" />
       <path d="M12 17C12 7 23 5 32 5" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" opacity=".85" />
-      {templateId.startsWith("travel-") ? <circle cx="32" cy="22" r="11" fill="#fffaf0" stroke="#d9bb7d" strokeWidth="1" /> : null}
+      </>}
     </svg>
-    {templateId.startsWith("travel-") ? <><span className={`${styles.button} ${styles.travelCenter}`} aria-hidden="true" />{interactive ? <button type="button" className={styles.travelCta} aria-label="Jouer à la roue" aria-busy={spinning} disabled={disabled} onClick={onClick} style={{ backgroundColor: buttonColor, color: buttonInk }}>{buttonLabel}</button> : <span className={styles.travelCta} aria-hidden="true" style={{ backgroundColor: buttonColor, color: buttonInk }}>JOUER</span>}</> : interactive ? <button type="button" className={styles.button} aria-label="Jouer à la roue" aria-busy={spinning} disabled={disabled} onClick={onClick} style={centerStyle}>{buttonLabel}</button>
+    {isTravel ? <><span className={`${styles.button} ${styles.travelCenter}`} data-testid="travel-wheel-center" aria-hidden="true" />{interactive ? <button type="button" className={styles.travelCta} aria-label="Jouer à la roue" aria-busy={spinning} disabled={disabled} onClick={onClick} style={{ backgroundColor: buttonColor, color: buttonInk }}>{buttonLabel}</button> : <span className={styles.travelCta} aria-hidden="true" style={{ backgroundColor: buttonColor, color: buttonInk }}>JOUER</span>}</> : interactive ? <button type="button" className={styles.button} aria-label="Jouer à la roue" aria-busy={spinning} disabled={disabled} onClick={onClick} style={centerStyle}>{buttonLabel}</button>
       : <span className={styles.button} style={centerStyle}>JOUER</span>}
   </div>;
 }

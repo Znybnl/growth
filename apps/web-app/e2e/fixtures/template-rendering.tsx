@@ -60,10 +60,10 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
     </MerchantShell>;
   }
   const scratch = templateId.includes("scratch");
-  const businessNames = { beauty: "Maison Botanique", restaurant: "Le bistro", retail: "La petite boutique" };
+  const businessNames = { beauty: "Maison Botanique", restaurant: "Le bistro", retail: "La petite boutique", travel: "Agence Voyage" };
   const companyName = businessNames[business as keyof typeof businessNames] ?? "Établissement de test";
   const backgroundImage = background === "image" ? "/backgrounds/aurora-retail.svg" : background === "studio" ? "/backgrounds/soft-studio.svg" : "";
-  const industry = business === "retail" || mode.includes("-retail") ? "Commerce" : business === "restaurant" ? "Restauration" : "Beauté";
+  const industry = business === "travel" ? "Agences de voyage" : business === "retail" || mode.includes("-retail") ? "Commerce" : business === "restaurant" ? "Restauration" : "Beauté";
   const merchant: Merchant = { id: "template-proof-merchant", companyName,
     logoText: companyName, industry, onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
   const color = ink ?? (scratch ? defaultScratchTextColor(templateId) : wheelHeadingColorForTemplateSelection(templateId, "#ffffff"));

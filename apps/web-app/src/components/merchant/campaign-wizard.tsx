@@ -2441,6 +2441,14 @@ export function CampaignWizard({
                   onSelect={selectBeautyScratchTemplate}
                 />
               ) : null}
+              {draft.gameType === "wheel" && merchant.industry === "Agences de voyage" ? <section aria-labelledby="travel-templates-heading">
+                <h3 id="travel-templates-heading" className="mb-3 text-base font-semibold text-carbon">Templates Voyage</h3>
+                <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3" data-testid="travel-template-options">
+                  {TRAVEL_WHEEL_THEMES.map(theme => <GameTemplateCard key={theme.id} label={theme.name} description={theme.description} selected={draft.presentation.layout.templateId === theme.id} onSelect={() => selectBeautyWheelTemplate(theme.id)}>
+                    <WheelTemplateThumbnail templateId={theme.id} card />
+                  </GameTemplateCard>)}
+                </div>
+              </section> : null}
               <h3 className="text-base font-semibold text-carbon">Autres templates</h3>
               <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3" data-testid="classic-template-options">
                 {(
@@ -2459,7 +2467,6 @@ export function CampaignWizard({
                         { id: "scratch-sunburst", label: "Rayons soleil", text: "Éclatant et visible" },
                       ] as const
                     : [
-                     ...(merchant.industry === "Agences de voyage" ? TRAVEL_WHEEL_THEMES.map(theme => ({ id: theme.id, label: theme.name, text: theme.description })) : []),
                      ...CHRISTMAS_WHEEL_THEMES.map(theme => ({ id: theme.id, label: theme.name, text: theme.description })),
                      { id: "halloween-gold", label: "Halloween doré", text: "Roses noires et dorures, décor et palette fixes" },
                      {
