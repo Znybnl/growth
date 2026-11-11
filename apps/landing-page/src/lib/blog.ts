@@ -131,7 +131,7 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
-    "path": "/blog/jeu-qr-code-salon-coiffure",
+    "path": "/blog/animation-salon-coiffure",
     "draft": true,
     "requiresApproval": true,
     "title": "Animation en salon de coiffure : idées et conseils pour se lancer",
@@ -145,8 +145,8 @@ export const blogPosts: BlogPost[] = [
     "updatedAt": "2026-11-11",
     "reviewedAt": "2026-11-11",
     "readingTime": "4 min de lecture",
-    "image": "/images/blog/animation-institut-beaute.webp",
-    "imageAlt": "Illustration d’une animation dans un établissement de beauté",
+    "image": "/images/blog/animation-salon-coiffure.webp",
+    "imageAlt": "Illustration d’un salon de coiffure avec fauteuil et matériel de coiffage",
     "takeaway": {
       "title": "Préparez un parcours réaliste",
       "text": "Choisissez d’abord un objectif et un créneau que l’équipe peut tenir ; un jeu QR code n’est qu’une option parmi d’autres. Testez ensuite le parcours et précisez les conditions avant diffusion."
@@ -163,50 +163,67 @@ export const blogPosts: BlogPost[] = [
     ],
     "sections": [
       {
-        "title": "Quatre idées d’animation adaptées au salon",
+        "title": "Quelle animation choisir pour votre salon ?",
         "paragraphs": [
-          "Ces scénarios sont des pistes à adapter, pas des résultats observés. Avant de choisir, identifiez l’objectif, le temps disponible, les produits et la personne responsable. Une animation ne garantit ni rendez-vous supplémentaires ni chiffre d’affaires.",
-          "Si vous souhaitez comparer des formats pour d’autres commerces, consultez les [idées d’animations en boutique](/blog/idees-animations-commerciales-boutique). Les [animations pour institut](/blog/animation-commerciale-institut-beaute) traitent des contraintes propres aux soins en cabine."
+          "Partez d’un objectif, puis vérifiez le moment, le matériel et le temps disponibles. Ces scénarios sont des pistes à adapter, pas des résultats observés : une animation ne garantit ni rendez-vous supplémentaires ni hausse du chiffre d’affaires. Pour des formats applicables à d’autres commerces, consultez les [idées d’animations en boutique](/blog/idees-animations-commerciales-boutique)."
         ],
-        "items": [
-          "Conseil de coiffage : montrez un geste d’entretien avec une référence disponible à une personne déjà présente. Prévoyez un créneau de conseil et évitez ce format si les rendez-vous ne laissent aucun temps libre.",
-          "Atelier en petit groupe : présentez un geste simple sur inscription, avec matériel et nombre de places annoncés. Réservez les fauteuils et le temps d’un membre de l’équipe ; reportez si le service habituel en souffre.",
-          "Découverte d’un produit : présentez une gamme ou proposez un échantillon adapté aux références et stocks du salon. Vérifiez les conseils d’usage et la disponibilité avant de l’annoncer.",
-          "Jeu pendant l’attente : proposez une roue ou un ticket mobile si le client dispose d’un moment et souhaite participer. Préparez le support, les conditions et la remise des lots ; ce format n’est pas nécessaire pour les autres idées."
+        "table": {
+          "caption": "Comparer quatre animations pour un salon de coiffure",
+          "headers": [
+            "Animation et objectif",
+            "Moment approprié",
+            "Ressources nécessaires",
+            "Limite principale"
+          ],
+          "rows": [
+            [
+              "Conseil de coiffage : montrer un geste",
+              "Pendant un rendez-vous avec du temps disponible",
+              "Un professionnel, un produit et quelques minutes",
+              "À éviter si les rendez-vous sont trop serrés"
+            ],
+            [
+              "Atelier : apprendre un geste en petit groupe",
+              "Créneau réservé sur inscription",
+              "Fauteuils, matériel et professionnel disponibles",
+              "Nombre de places limité par le planning"
+            ],
+            [
+              "Découverte produit : présenter une gamme",
+              "À l’accueil ou en fin de prestation",
+              "Références en stock et conseil adapté",
+              "Ne pas annoncer un échantillon indisponible"
+            ],
+            [
+              "Jeu : proposer une surprise",
+              "Pendant une attente réellement disponible",
+              "Support, lots et personne chargée du retrait",
+              "À éviter si les gains ne peuvent pas être remis"
+            ]
+          ]
+        }
+      },
+      {
+        "title": "Adaptez le format au planning et aux fauteuils",
+        "paragraphs": [
+          "Exemple fictif : dans un salon de deux professionnels et deux fauteuils occupés toute la journée, réservez cinq minutes de conseil à la fin de certains rendez-vous, seulement si le planning le permet sans retarder le rendez-vous suivant. Gardez la référence présentée disponible ; si aucun créneau ne se libère, reportez l’animation.",
+          "Autre scénario fictif : trois professionnels disposent de quatre fauteuils, dont deux libres après la fermeture. Un atelier sur inscription peut accueillir deux personnes avec un professionnel dédié, sous réserve du matériel et du temps de préparation. Les deux autres fauteuils restent hors atelier ; aucune place supplémentaire n’est promise.",
+          "Si vous préférez un jeu pendant l’attente, demandez à la personne si elle souhaite participer et prévoyez une solution pour celles et ceux qui ne souhaitent pas utiliser leur téléphone. Les [animations pour institut](/blog/animation-commerciale-institut-beaute) abordent les contraintes propres aux soins en cabine."
         ]
       },
       {
-        "title": "Choisissez un moment compatible avec le service",
+        "title": "Si vous choisissez un jeu QR code",
         "paragraphs": [
-          "Proposez le jeu pendant un temps d’attente réellement disponible, après avoir demandé à la personne si elle souhaite participer. Ne présumez pas que chaque cliente ou client veut utiliser son téléphone.",
-          "Exemple fictif : un salon de deux coiffeurs propose une animation sur cinq jours. Une personne présente la carte à l’accueil ; l’autre continue ses rendez-vous. Avant le lancement, l’équipe décide qui répond aux questions et qui vérifie les gains."
-        ]
-      },
-      {
-        "title": "Préparez des lots que le salon peut remettre",
-        "paragraphs": [
-          "Un échantillon de soin compatible avec le stock ou une option courte lors d’un prochain rendez-vous peuvent être des pistes. Indiquez les références, prestations compatibles, dates et éventuelles restrictions ; ne promettez pas une prestation que le planning ne peut pas accueillir.",
-          "Exemple fictif de budget maximal : 10 échantillons à 2 € et 5 accessoires à 4 € représentent 40 € de dotations si tous sont remis, hors temps d’équipe et supports. Les montants sont des hypothèses. Le [guide de choix des lots](/blog/choisir-lots-jeu-qr-code-commerce) détaille les conditions et le coût."
-        ]
-      },
-      {
-        "title": "Testez le parcours avant de poser l’affiche",
-        "paragraphs": [
-          "Avec Okado, configurez une roue ou un ticket, les stocks et conditions, puis testez en prévisualisation. Vérifiez ensuite le QR de diffusion et la lisibilité de l’affiche à la distance réelle. Le [fonctionnement d’Okado](/comment-ca-marche) explique la différence entre prévisualisation et diffusion.",
-          "Prévoyez une phrase simple : « Si vous souhaitez jouer, scannez ce QR code ; les conditions sont indiquées avant la participation. » Adaptez-la à votre jeu réellement configuré."
-        ]
-      },
-      {
-        "title": "Organisez la remise sans improviser",
-        "paragraphs": [
-          "Attribuez à une personne la vérification des dates et conditions, puis la validation du retrait. Distinguez le message de gain de toute proposition de prospection : la CNIL explique les règles applicables aux messages commerciaux. Une demande d’avis reste facultative et le gain ne dépend pas de sa note.",
-          "Pour une loterie publicitaire en France, consultez la DGCCRF et vérifiez les règles propres à votre opération. Le texte et les lots annoncés doivent correspondre à ce que le salon peut offrir."
+          "Une roue ou un ticket sur mobile peut proposer une participation courte pendant une attente appropriée. Avec Okado, configurez le jeu, ses stocks et ses conditions, puis testez en prévisualisation. Vérifiez ensuite le QR de diffusion et la lisibilité de l’affiche à la distance réelle : le [fonctionnement d’Okado](/comment-ca-marche) distingue prévisualisation et diffusion.",
+          "Choisissez des lots disponibles, par exemple un échantillon ou une option courte lors d’un prochain rendez-vous. Précisez références, prestations compatibles, dates et restrictions ; attribuez à une personne la vérification des conditions et la validation du retrait. Ne promettez pas une prestation que le planning ne peut pas accueillir.",
+          "Budget entièrement fictif : 10 échantillons à 2 € et 5 accessoires à 4 € représentent 40 € de dotations si tous sont remis, hors temps d’équipe, supports et autres frais. Le [guide de choix des lots](/blog/choisir-lots-jeu-qr-code-commerce) détaille les conditions et le coût.",
+          "Pour une loterie publicitaire en France, consultez la DGCCRF et vérifiez les règles applicables à votre opération ; les lots et conditions annoncés doivent correspondre à ce que le salon peut offrir. Distinguez les informations de gain de la prospection : la CNIL précise les règles applicables aux messages commerciaux. Une demande d’avis reste facultative et le gain ne dépend pas de sa note."
         ]
       },
       {
         "title": "Faites le bilan sans confondre les résultats",
         "paragraphs": [
-          "Notez séparément les ouvertures, participations, gains et retraits. Un retrait ne prouve pas une réservation supplémentaire. Comparez les dotations effectivement remises et le temps consacré à votre enveloppe, puis recueillez les questions de l’équipe.",
+          "Après un conseil ou un atelier, notez le temps mobilisé et les questions reçues. Pour un jeu, distinguez ouvertures, participations, gains et retraits ; un retrait ne prouve pas une réservation supplémentaire. Comparez les coûts et le temps réellement engagés à votre enveloppe, puis demandez à l’équipe ce qui a été simple ou difficile.",
           "Pour approfondir la mesure, consultez [mesurer une animation](/blog/mesurer-animation-commerciale)."
         ]
       }

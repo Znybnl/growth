@@ -4,7 +4,7 @@
   "audience": "Responsables de salons de coiffure",
   "decision": "create",
   "overlap_analysis": "Guide boutique : formats transversaux ; guide institut : soins en cabine ; guide lots : calcul transversal. Ici : arbitrage coiffure, fauteuils, planning et préparation du jeu.",
-  "outline": "Comparer conseil, atelier, découverte produit et jeu ; choisir le moment ; préparer les lots ; tester le QR ; organiser la remise ; mesurer séparément.",
+  "outline": "Comparer quatre animations ; adapter deux exemples aux fauteuils et au planning ; préparer un jeu QR, ses lots et sa remise si pertinent ; faire le bilan.",
   "cta": "Essai gratuit via le parcours existant",
   "status": "READY_FOR_HUMAN_REVIEW",
   "sources": [
@@ -45,5 +45,5 @@
       "evidence": "Lint et build landing, 5 briefs, audit 43 articles, 4 tests moteur et 4 tests production des brouillons réussis ; aperçu local 390 et 1280 px, liens internes et débordement contrôlés."
     }
   ],
-  "review_notes": "Brouillon non approuvé ; date publishedAt provisoire à remplacer après accord. La relecture éditoriale et juridique reste nécessaire. Les exemples sont fictifs ou hypothétiques ; aucune performance garantie. Lien entrant candidat après publication approuvée : guide animations en boutique ; ne pas créer de lien public vers ce brouillon."
+  "review_notes": "Brouillon non approuvé ; date publishedAt provisoire à remplacer après accord. La relecture éditoriale et juridique reste nécessaire. Les exemples sont fictifs ou hypothétiques ; aucune performance garantie. Lien entrant candidat après publication approuvée : guide animations en boutique ; ne pas créer de lien public vers ce brouillon. Illustration de salon générée pour ce brouillon ; vérifier sa pertinence lors de la relecture."
 }

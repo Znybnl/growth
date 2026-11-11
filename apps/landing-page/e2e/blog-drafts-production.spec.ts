@@ -4,6 +4,9 @@ import { publicContent } from "../src/lib/public-content";
 
 test("production excludes drafts from routes, listing, sitemap and public links", async ({ request }) => {
   const drafts = blogPosts.filter((post) => post.draft);
+  expect(drafts.map((post) => post.path)).toContain("/blog/animation-salon-coiffure");
+  expect(blogPosts.some((post) => post.path === "/blog/jeu-qr-code-salon-coiffure")).toBe(false);
+  expect((await request.get("/blog/jeu-qr-code-salon-coiffure")).status()).toBe(404);
   expect(drafts.length).toBeGreaterThan(0);
   const index = await (await request.get("/blog")).text();
   const sitemap = await (await request.get("/sitemap.xml")).text();
