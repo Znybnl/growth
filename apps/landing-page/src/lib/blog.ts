@@ -131,25 +131,25 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
-    "path": "/blog/jeu-qr-code-salon-coiffure",
-    "draft": true,
+    "path": "/blog/animation-salon-coiffure",
     "requiresApproval": true,
-    "title": "Comment organiser un jeu QR code dans un salon de coiffure ?",
-    "seoTitle": "Jeu QR code en salon de coiffure : mode d’emploi",
-    "description": "Préparez un jeu en salon de coiffure : moment de présentation, lots, budget fictif et retrait sans perturber les rendez-vous.",
+    "publicationApproval": { "approver": "Pierre-Henri BRUNELLE", "date": "2026-11-11" },
+    "title": "Animation en salon de coiffure : idées et conseils pour se lancer",
+    "seoTitle": "Animation salon de coiffure : idées et organisation",
+    "description": "Choisissez une animation pour votre salon de coiffure : idées concrètes, temps d’équipe, exemples de lots et organisation d’un jeu QR code.",
     "eyebrow": "Coiffure",
-    "intro": "Proposez le jeu pendant un temps d’attente réellement disponible, après avoir demandé à la personne si elle souhaite participer. Ne présumez pas que chaque cliente ou client veut utiliser son téléphone.",
-    "answer": "Mettre en place une animation réalisable entre deux rendez-vous. Commencez par définir le parcours, tester le support et préciser les responsabilités de l’équipe.",
+    "intro": "Une animation en salon de coiffure peut prendre la forme d’un conseil, d’un atelier ou d’un jeu. Choisissez un format adapté à vos rendez-vous, au temps de l’équipe et à ce que vos clients souhaitent découvrir.",
+    "answer": "Pour animer un salon de coiffure, choisissez un objectif et un moment disponible : conseil pour découvrir un soin, atelier sur inscription ou jeu court pendant l’attente. Préparez les ressources et les conditions avant de l’annoncer.",
     "author": "L’équipe Okado",
-    "publishedAt": "2026-11-10",
-    "updatedAt": "2026-11-10",
-    "reviewedAt": "2026-11-10",
+    "publishedAt": "2026-11-11",
+    "updatedAt": "2026-11-11",
+    "reviewedAt": "2026-11-11",
     "readingTime": "4 min de lecture",
-    "image": "/images/blog/animation-institut-beaute.webp",
-    "imageAlt": "Illustration d’une animation dans un établissement de beauté",
+    "image": "/images/blog/animation-salon-coiffure.webp",
+    "imageAlt": "Illustration d’un salon de coiffure avec fauteuil et matériel de coiffage",
     "takeaway": {
       "title": "Préparez un parcours réaliste",
-      "text": "Testez le parcours avec votre équipe et précisez les conditions avant toute diffusion."
+      "text": "Choisissez d’abord un objectif et un créneau que l’équipe peut tenir ; un jeu QR code n’est qu’une option parmi d’autres. Testez ensuite le parcours et précisez les conditions avant diffusion."
     },
     "source": [
       {
@@ -163,42 +163,74 @@ export const blogPosts: BlogPost[] = [
     ],
     "sections": [
       {
-        "title": "Choisissez un moment compatible avec le service",
+        "title": "Quelle animation choisir pour votre salon ?",
         "paragraphs": [
-          "Proposez le jeu pendant un temps d’attente réellement disponible, après avoir demandé à la personne si elle souhaite participer. Ne présumez pas que chaque cliente ou client veut utiliser son téléphone.",
-          "Exemple fictif : un salon de deux coiffeurs propose une animation sur cinq jours. Une personne présente la carte à l’accueil ; l’autre continue ses rendez-vous. Avant le lancement, l’équipe décide qui répond aux questions et qui vérifie les gains."
+          "Partez d’un objectif, puis vérifiez le moment, le matériel et le temps disponibles. Ces scénarios sont des pistes à adapter, pas des résultats observés : une animation ne garantit ni rendez-vous supplémentaires ni hausse du chiffre d’affaires. Pour des formats applicables à d’autres commerces, consultez les [idées d’animations en boutique](/blog/idees-animations-commerciales-boutique)."
+        ],
+        "table": {
+          "caption": "Comparer quatre animations pour un salon de coiffure",
+          "headers": [
+            "Animation et objectif",
+            "Moment approprié",
+            "Ressources nécessaires",
+            "Limite principale"
+          ],
+          "rows": [
+            [
+              "Conseil de coiffage : montrer un geste",
+              "Pendant un rendez-vous avec du temps disponible",
+              "Un professionnel, un produit et quelques minutes",
+              "À éviter si les rendez-vous sont trop serrés"
+            ],
+            [
+              "Atelier : apprendre un geste en petit groupe",
+              "Créneau réservé sur inscription",
+              "Fauteuils, matériel et professionnel disponibles",
+              "Nombre de places limité par le planning"
+            ],
+            [
+              "Découverte produit : présenter une gamme",
+              "À l’accueil ou en fin de prestation",
+              "Références en stock et conseil adapté",
+              "Ne pas annoncer un échantillon indisponible"
+            ],
+            [
+              "Jeu : proposer une surprise",
+              "Pendant une attente réellement disponible",
+              "Support, lots et personne chargée du retrait",
+              "À éviter si les gains ne peuvent pas être remis"
+            ]
+          ]
+        }
+      },
+      {
+        "title": "Adaptez le format au planning et aux fauteuils",
+        "paragraphs": [
+          "Exemple fictif : dans un salon de deux professionnels et deux fauteuils occupés toute la journée, réservez cinq minutes de conseil à la fin de certains rendez-vous, seulement si le planning le permet sans retarder le rendez-vous suivant. Gardez la référence présentée disponible ; si aucun créneau ne se libère, reportez l’animation.",
+          "Autre scénario fictif : trois professionnels disposent de quatre fauteuils, dont deux libres après la fermeture. Un atelier sur inscription peut accueillir deux personnes avec un professionnel dédié, sous réserve du matériel et du temps de préparation. Les deux autres fauteuils restent hors atelier ; aucune place supplémentaire n’est promise.",
+          "Si vous préférez un jeu pendant l’attente, proposez la participation sans obligation : les personnes qui ne souhaitent pas utiliser leur téléphone peuvent simplement ne pas jouer. Les [animations pour institut](/blog/animation-commerciale-institut-beaute) abordent les contraintes propres aux soins en cabine."
         ]
       },
       {
-        "title": "Préparez des lots que le salon peut remettre",
+        "title": "Si vous choisissez un jeu QR code",
         "paragraphs": [
-          "Un échantillon de soin compatible avec le stock ou une option courte lors d’un prochain rendez-vous peuvent être des pistes. Indiquez les références, prestations compatibles, dates et éventuelles restrictions ; ne promettez pas une prestation que le planning ne peut pas accueillir.",
-          "Exemple fictif de budget maximal : 10 échantillons à 2 € et 5 accessoires à 4 € représentent 40 € de dotations si tous sont remis, hors temps d’équipe et supports. Les montants sont des hypothèses. Le [guide de choix des lots](/blog/choisir-lots-jeu-qr-code-commerce) détaille les conditions et le coût."
-        ]
-      },
-      {
-        "title": "Testez le parcours avant de poser l’affiche",
-        "paragraphs": [
-          "Avec Okado, configurez une roue ou un ticket, les stocks et conditions, puis testez en prévisualisation. Vérifiez ensuite le QR de diffusion et la lisibilité de l’affiche à la distance réelle. Le [fonctionnement d’Okado](/comment-ca-marche) explique la différence entre prévisualisation et diffusion.",
-          "Prévoyez une phrase simple : « Si vous souhaitez jouer, scannez ce QR code ; les conditions sont indiquées avant la participation. » Adaptez-la à votre jeu réellement configuré."
-        ]
-      },
-      {
-        "title": "Organisez la remise sans improviser",
-        "paragraphs": [
-          "Attribuez à une personne la vérification des dates et conditions, puis la validation du retrait. Distinguez le message de gain de toute proposition de prospection : la CNIL explique les règles applicables aux messages commerciaux. Une demande d’avis reste facultative et le gain ne dépend pas de sa note.",
-          "Pour une loterie publicitaire en France, consultez la DGCCRF et vérifiez les règles propres à votre opération. Le texte et les lots annoncés doivent correspondre à ce que le salon peut offrir."
+          "Une roue ou un ticket sur mobile peut proposer une participation courte pendant une attente appropriée. Avec Okado, configurez le jeu, ses stocks et ses conditions, puis testez en prévisualisation. Vérifiez ensuite le QR de diffusion et la lisibilité de l’affiche à la distance réelle : le [fonctionnement d’Okado](/comment-ca-marche) distingue prévisualisation et diffusion.",
+          "Choisissez des lots disponibles, par exemple un échantillon ou une option courte lors d’un prochain rendez-vous. Précisez références, prestations compatibles, dates et restrictions ; attribuez à une personne la vérification des conditions et la validation du retrait. Ne promettez pas une prestation que le planning ne peut pas accueillir.",
+          "Budget entièrement fictif : 10 échantillons à 2 € et 5 accessoires à 4 € représentent 40 € de dotations si tous sont remis, hors temps d’équipe, supports et autres frais. Le [guide de choix des lots](/blog/choisir-lots-jeu-qr-code-commerce) détaille les conditions et le coût.",
+          "Pour une loterie publicitaire en France, consultez la DGCCRF et vérifiez les règles applicables à votre opération ; les lots et conditions annoncés doivent correspondre à ce que le salon peut offrir. Distinguez les informations de gain de la prospection : la CNIL précise les règles applicables aux messages commerciaux. Une demande d’avis reste facultative et le gain ne dépend pas de sa note."
         ]
       },
       {
         "title": "Faites le bilan sans confondre les résultats",
         "paragraphs": [
-          "Notez séparément les ouvertures, participations, gains et retraits. Un retrait ne prouve pas une réservation supplémentaire. Comparez les dotations effectivement remises et le temps consacré à votre enveloppe, puis recueillez les questions de l’équipe.",
+          "Après un conseil ou un atelier, notez le temps mobilisé et les questions reçues. Pour un jeu, distinguez ouvertures, participations, gains et retraits ; un retrait ne prouve pas une réservation supplémentaire. Comparez les coûts et le temps réellement engagés à votre enveloppe, puis demandez à l’équipe ce qui a été simple ou difficile.",
           "Pour approfondir la mesure, consultez [mesurer une animation](/blog/mesurer-animation-commerciale)."
         ]
       }
     ],
     "related": [
+      "/blog/idees-animations-commerciales-boutique",
+      "/blog/animation-commerciale-institut-beaute",
       "/comment-ca-marche",
       "/blog/choisir-lots-jeu-qr-code-commerce",
       "/blog/mesurer-animation-commerciale"
@@ -1698,7 +1730,7 @@ export const blogPosts: BlogPost[] = [
           "Boutique de décoration : lors d’une arrivée de collection, préparez une démonstration d’association de produits près de l’entrée. Gardez les références présentées disponibles et notez les questions sur leur usage. L’objectif est de faciliter la découverte ; il ne dépend pas nécessairement d’une remise.",
           "Restaurant : sur un déjeuner habituellement calme, proposez un jeu à table avec un dessert identifié. Vérifiez que la cuisine et la salle peuvent honorer les gains pendant le créneau annoncé. Observez les participations et les retraits sans compter chaque couvert comme acquis grâce au jeu.",
           "Institut : après une prestation, présentez une option disponible lors d’un prochain rendez-vous. Précisez les prestations compatibles et la validité. Le retour doit être observé séparément : une invitation remise n’est pas une réservation. Ces trois situations sont des exemples de conception, pas des retours clients documentés.",
-          "Pour approfondir un secteur, consultez les [idées de jeux pour restaurant](/blog/idees-jeux-concours-restaurant) ou les [animations pour institut](/blog/animation-commerciale-institut-beaute). Pour une offre certaine sur le prix, privilégiez les [idées de promotions locales](/blog/idees-promotions-commerce-local). Une opération avec hasard demande aussi de vérifier le cadre des loteries publicitaires indiqué dans les sources françaises.",
+          "Pour approfondir un secteur, consultez les [idées de jeux pour restaurant](/blog/idees-jeux-concours-restaurant), les [animations pour institut](/blog/animation-commerciale-institut-beaute) ou les [animations pour salon de coiffure](/blog/animation-salon-coiffure). Pour une offre certaine sur le prix, privilégiez les [idées de promotions locales](/blog/idees-promotions-commerce-local). Une opération avec hasard demande aussi de vérifier le cadre des loteries publicitaires indiqué dans les sources françaises.",
         ],
       },
       {

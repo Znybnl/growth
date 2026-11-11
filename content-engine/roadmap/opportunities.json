@@ -17,12 +17,13 @@
     "basis": "hypothèses éditoriales ; aucune métrique Google importée"
   },
   {
-    "id": "jeu-qr-code-salon-coiffure",
-    "title": "Jeu QR en salon de coiffure",
-    "intent": "organiser un jeu en salon",
+    "id": "animation-salon-coiffure",
+    "title": "Animation en salon de coiffure",
+    "intent": "choisir et organiser une animation en salon",
     "decision": "créer",
-    "page": "/blog/jeu-qr-code-salon-coiffure",
+    "page": "/blog/animation-salon-coiffure",
     "keywords": [
+      "animation salon de coiffure",
       "jeu qr code pour salon de coiffure",
       "jeu concours salon de coiffure"
     ],
