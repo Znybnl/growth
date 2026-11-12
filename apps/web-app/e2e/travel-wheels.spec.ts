@@ -42,7 +42,10 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
         await expect(scene.locator("h1")).toHaveCSS("padding-top", /\d/);
         expect(await scene.locator("h1").evaluate(element => getComputedStyle(element, "::before").backgroundColor)).toBe("rgb(255, 241, 216)");
         expect(await scene.locator("h1").evaluate(element => getComputedStyle(element, "::before").clipPath)).toContain("polygon");
-        await expect(scene.locator("p[data-testid='christmas-wheel-subtitle']")).toHaveCSS("text-shadow", /rgb\(255, 241, 216\)/);
+        expect(await scene.locator("h1").evaluate(element => getComputedStyle(element, "::before").inset)).toContain("-");
+        const subtitle = scene.locator("p[data-testid='christmas-wheel-subtitle']");
+        await expect(subtitle).toHaveCSS("text-shadow", "none");
+        expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("radial-gradient");
       }
       const wheel = await scene.getByTestId("christmas-wheel").boundingBox();
       const button = await scene.getByTestId("travel-wheel-cta").boundingBox();
