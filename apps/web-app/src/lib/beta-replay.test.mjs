@@ -51,6 +51,9 @@ test("free text, attributes and uploads are masked, while fixed UI labels remain
   assert.equal(maskBetaReplayAttribute("_cssText", "private-css-secret", externalCss), "");
   assert.equal(maskBetaReplayAttribute("_cssText", "private-css-secret"), "");
   assert.equal(maskBetaReplayAttribute("href", "https://private.example/_next/static/private.css"), "");
+  const image = { tagName: "IMG" };
+  assert.equal(maskBetaReplayAttribute("src", "/images/scratch-templates/beauty-noir-or.webp", image), "https://app.okado.app/images/scratch-templates/beauty-noir-or.webp");
+  for (const url of ["https://evil.test/images/scratch-templates/beauty-noir-or.webp", "/uploads/customer.png", "/images/scratch-templates/../../uploads/customer.png"]) assert.equal(maskBetaReplayAttribute("src", url, image), "");
 });
 
 test("Tailwind layout tokens survive independently of rejected private tokens", () => {

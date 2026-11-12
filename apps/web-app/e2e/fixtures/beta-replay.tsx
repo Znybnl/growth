@@ -51,5 +51,7 @@ export function BetaReplayProof() {
     {/* The image itself must never be sent to the replay collector. */}
     {/* eslint-disable-next-line @next/next/no-img-element */}
     <img src="/private-logo.png?token=private-image-token" alt="private-image-description" />
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src="/images/scratch-templates/beauty-noir-or.webp" alt="Illustration" />
   </section></MerchantShell>;
 }

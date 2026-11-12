@@ -13,6 +13,12 @@ let allowedUntil = 0;
 let currentSubject = "";
 let generation = 0;
 
+/** Link consented product events to the currently authorised replay only. */
+export function betaReplaySessionId(subject: unknown): string | undefined {
+  if (typeof document === "undefined" || !recorder || subject !== currentSubject || !mayRecord()) return undefined;
+  try { return recorder.get_session_id(); } catch { return undefined; }
+}
+
 function mayRecord() {
   return allowedUntil > Date.now() && document.visibilityState === "visible" &&
     betaReplayPage(window.location.pathname) !== null;
