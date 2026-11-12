@@ -20,6 +20,24 @@ export function marketingActionEntry(key: string) {
   return entry;
 }
 
+/** Canonicalizes a bare Instagram handle and unambiguous legacy URLs produced from one. */
+export function normalizeInstagramAccountInput(input: string) {
+  const candidate = input.trim();
+  if (!candidate) return "";
+
+  const bareHandle = candidate.match(/^@?([a-zA-Z0-9._]{1,30})\/?$/);
+  if (bareHandle && !/^(www\.)?instagram\.com$/i.test(candidate)) {
+    return `https://www.instagram.com/${bareHandle[1].replace(/^@/, "")}`;
+  }
+
+  const legacyHandleUrl = candidate.match(/^https?:\/\/([a-zA-Z0-9._]{1,30})\/?$/i);
+  if (legacyHandleUrl && (!legacyHandleUrl[1].includes(".") || legacyHandleUrl[1].includes("_"))) {
+    return `https://www.instagram.com/${legacyHandleUrl[1]}`;
+  }
+
+  return candidate;
+}
+
 const platformHosts: Partial<Record<MarketingActionKey, readonly string[]>> = {
   google: ["google.com", "www.google.com", "search.google.com", "maps.google.com", "g.page", "maps.app.goo.gl"],
   instagram: ["instagram.com", "www.instagram.com"],
@@ -29,10 +47,9 @@ const platformHosts: Partial<Record<MarketingActionKey, readonly string[]>> = {
 };
 
 export function normalizeMarketingActionUrl(key: MarketingActionKey, input: string) {
-  let candidate = input.trim();
+  let candidate = key === "instagram" ? normalizeInstagramAccountInput(input) : input.trim();
   if (!candidate || candidate.length > 2048 || /[\u0000-\u0020\u007f\\]/u.test(candidate))
     throw new Error("Saisissez un lien valide pour cette action.");
-  if (key === "instagram" && !/^(www\.)?instagram\.com$/i.test(candidate) && /^@?[a-zA-Z0-9._]{1,30}$/.test(candidate)) candidate = `https://www.instagram.com/${candidate.replace(/^@/, "")}`;
   if (key === "tiktok" && /^@[a-zA-Z0-9._]{1,24}$/.test(candidate)) candidate = `https://www.tiktok.com/${candidate}`;
   if (!/^[a-z][a-z\d+.-]*:/i.test(candidate)) candidate = `https://${candidate}`;
   let url: URL;

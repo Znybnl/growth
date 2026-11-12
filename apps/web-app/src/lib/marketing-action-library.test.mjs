@@ -28,7 +28,7 @@ const library = await import("./marketing-action-library.ts");
 const route = await import("../app/api/merchant/marketing-links/route.ts");
 const admin = await import("../app/api/admin/merchants/[merchantId]/locations/[locationId]/marketing-links/route.ts");
 const { assertCampaignCanPublish } = await import("./campaign-compliance.ts");
-const { parseCampaignSetupInput } = await import("./merchant-input.ts");
+const { parseCampaignSetupInput, parseMerchantOnboardingInput, parseMerchantAccountSettingsInput } = await import("./merchant-input.ts");
 const { getPrizeValidationMessages } = await import("./prize-validation.ts");
 let state;
 beforeEach(() => {
@@ -71,6 +71,19 @@ test("catalogue : 7 services sans réservation, URL réutilisables et destinatio
     ["website", "example.test", "https://example.test/"],
     ["custom", "https://example.test/path?a=b", "https://example.test/path?a=b"],
   ]) assert.equal(library.normalizeMarketingActionUrl(key, input), expected);
+  for (const [input, expected] of [
+    ["halle_gourmande82", "https://www.instagram.com/halle_gourmande82"],
+    ["@halle_gourmande82", "https://www.instagram.com/halle_gourmande82"],
+    ["https://halle_gourmande82/", "https://www.instagram.com/halle_gourmande82"],
+    ["https://instagram.com/halle.gourmande/", "https://instagram.com/halle.gourmande/"],
+  ]) assert.equal(library.normalizeMarketingActionUrl("instagram", input), expected);
+  assert.throws(() => library.normalizeMarketingActionUrl("website", "halle_gourmande82"), /adresse web publique/);
+  assert.equal(library.configuredMarketingUrl({ instagramUrl: "https://halle_gourmande82/" }, "instagram"), "https://www.instagram.com/halle_gourmande82");
+  const accountInput = { email: "owner@example.test", redemptionPin: "0000" };
+  assert.equal(parseMerchantAccountSettingsInput({ ...accountInput, websiteUrl: "halle_gourmande82" }).websiteUrl, "https://halle_gourmande82/");
+  assert.equal(new URL(parseMerchantAccountSettingsInput({ ...accountInput, instagramUrl: "halle_gourmande82" }).instagramUrl).href, "https://www.instagram.com/halle_gourmande82");
+  assert.equal(new URL(parseMerchantAccountSettingsInput({ ...accountInput, instagramUrl: "https://halle_gourmande82/" }).instagramUrl).href, "https://www.instagram.com/halle_gourmande82");
+  assert.equal(new URL(parseMerchantOnboardingInput({ instagramUrl: "@halle_gourmande82" }).instagramUrl).href, "https://www.instagram.com/halle_gourmande82");
   for (const input of ["", "https://google.com", "http://g.page/r/test", "https://google.com.evil.test/maps", "javascript:alert(1)", "https://user:password@g.page/r/test", "https://g.page:444/r/test", "https://g.page/r/te st", "https://localhost", "https://127.0.0.1"]) {
     assert.throws(() => library.normalizeMarketingActionUrl("google", input), input);
   }
@@ -125,6 +138,13 @@ test("les sept destinations utilisent exactement les champs existants de Mon com
     assert.equal((await route.PATCH(request({ locationId: "site-a", key, url }))).status, 200);
     assert.deepEqual(state.writes.at(-1), { site: "site-a", fields: { [column]: new URL(url).toString() } });
   }
+});
+
+test("API Mon compte : répare l'ancien format d'un nom Instagram en URL", async () => {
+  const response = await route.PATCH(request({ locationId: "site-a", key: "instagram", url: "https://halle_gourmande82/" }));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { key: "instagram", url: "https://www.instagram.com/halle_gourmande82" });
+  assert.deepEqual(state.writes, [{ site: "site-a", fields: { instagram_url: "https://www.instagram.com/halle_gourmande82" } }]);
 });
 
 test("assistance admin : rôle obligatoire et relation compte/établissement vérifiée", async () => {

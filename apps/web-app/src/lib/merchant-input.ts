@@ -24,6 +24,7 @@ import {
 } from "@/lib/campaign-defaults";
 import { MAX_POSTER_HEADLINE_LENGTH } from "@/lib/poster-utils";
 import { prizeRuleErrors } from "@/lib/prize-budget";
+import { normalizeInstagramAccountInput } from "@/lib/marketing-action-library";
 import {
   normalizePosterBackgroundMotifStyles,
   normalizePosterTemplateStyles,
@@ -396,7 +397,7 @@ export function parseMerchantOnboardingInput(input: unknown): MerchantOnboarding
     googlePlaceAddress: normalizeString(payload.googlePlaceAddress, 200),
     googlePlaceRating: normalizeOptionalNumber(payload.googlePlaceRating, { min: 0, max: 5 }),
     googlePlaceReviewCount: normalizeOptionalNumber(payload.googlePlaceReviewCount, { min: 0, max: 100000000, integer: true }),
-    instagramUrl: normalizeUrl(payload.instagramUrl),
+    instagramUrl: normalizeUrl(normalizeInstagramAccountInput(typeof payload.instagramUrl === "string" ? payload.instagramUrl : "")),
     facebookUrl: normalizeUrl(payload.facebookUrl),
     tiktokUrl: normalizeUrl(payload.tiktokUrl),
     tripadvisorUrl: normalizeUrl(payload.tripadvisorUrl),
@@ -426,7 +427,7 @@ export function parseMerchantAccountSettingsInput(input: unknown): MerchantAccou
     googlePlaceAddress: normalizeString(payload.googlePlaceAddress, 200),
     googlePlaceRating: normalizeOptionalNumber(payload.googlePlaceRating, { min: 0, max: 5 }),
     googlePlaceReviewCount: normalizeOptionalNumber(payload.googlePlaceReviewCount, { min: 0, max: 100000000, integer: true }),
-    instagramUrl: normalizeUrl(payload.instagramUrl),
+    instagramUrl: normalizeUrl(normalizeInstagramAccountInput(typeof payload.instagramUrl === "string" ? payload.instagramUrl : "")),
     facebookUrl: normalizeUrl(payload.facebookUrl),
     tiktokUrl: normalizeUrl(payload.tiktokUrl),
     tripadvisorUrl: normalizeUrl(payload.tripadvisorUrl),

@@ -4,6 +4,7 @@ import { readAllRows } from "@/lib/paginated-read";
 import { preparePrizeReuseSettings } from "@/lib/reusable-prize-repository";
 import { conversionRate, globalConversion, isMarketingClick, isPendingGain, effectiveRedemptionDate, marketingVolumes } from "@/lib/metric-rules";
 import { participationDates } from "@/lib/participation-metrics";
+import { normalizeInstagramAccountInput } from "@/lib/marketing-action-library";
 import {
   Campaign,
   CampaignAction,
@@ -487,7 +488,7 @@ function toMerchant(row: MerchantRow): Merchant {
     preferredGoals: row.preferred_goals ?? [],
     diffusionSupport: row.diffusion_support ?? [],
     googleReviewUrl: row.google_review_url ?? undefined,
-    instagramUrl: row.instagram_url ?? undefined,
+    instagramUrl: row.instagram_url ? normalizeInstagramAccountInput(row.instagram_url) : undefined,
     facebookUrl: row.facebook_url ?? undefined,
     tiktokUrl: row.tiktok_url ?? undefined,
     tripadvisorUrl: row.tripadvisor_url ?? undefined,
@@ -668,7 +669,7 @@ function toCampaign(
         id: action.id,
         kind: action.kind,
         label: action.label,
-        url: action.url,
+        url: action.kind === "instagram" ? normalizeInstagramAccountInput(action.url) : action.url,
       })),
     rewardRules: {
       rewardExpiryMinutes: row.reward_expiry_minutes,
