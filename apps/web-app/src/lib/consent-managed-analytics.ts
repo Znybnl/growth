@@ -55,6 +55,7 @@ const measuredPages = new Set([
   "/blog/fideliser-clients-agence-voyage",
   "/blog/creer-fiche-google-restaurant",
   "/blog/creer-fiche-google-institut-beaute",
+  "/blog/animation-salon-coiffure",
   "/blog/choisir-lots-jeu-qr-code-commerce",
   "/blog/idees-animations-commerciales-boutique",
   "/blog/animer-point-de-vente-qr-code",

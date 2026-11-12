@@ -4,6 +4,10 @@ import { publicContent } from "../src/lib/public-content";
 
 test("production excludes drafts from routes, listing, sitemap and public links", async ({ request }) => {
   const drafts = blogPosts.filter((post) => post.draft);
+  expect(drafts.map((post) => post.path)).not.toContain("/blog/animation-salon-coiffure");
+  expect(drafts).toHaveLength(2);
+  expect(blogPosts.some((post) => post.path === "/blog/jeu-qr-code-salon-coiffure")).toBe(false);
+  expect((await request.get("/blog/jeu-qr-code-salon-coiffure")).status()).toBe(404);
   expect(drafts.length).toBeGreaterThan(0);
   const index = await (await request.get("/blog")).text();
   const sitemap = await (await request.get("/sitemap.xml")).text();
@@ -44,4 +48,26 @@ test("approved pilot is visible with valid metadata and incoming links", async (
     await page.goto(path);
     await expect(page.locator(`a[href="${slug}"]`)).toHaveCount(1);
   }
+});
+
+
+test("approved hair salon guide has public metadata, incoming link and mobile table", async ({ page, request }) => {
+  const slug = "/blog/animation-salon-coiffure";
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect((await page.goto(slug))?.status()).toBe(200);
+  await expect(page).toHaveTitle("Animation salon de coiffure : idées et organisation");
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", "Choisissez une animation pour votre salon de coiffure : idées concrètes, temps d’équipe, exemples de lots et organisation d’un jeu QR code.");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://www.okado.app${slug}`);
+  await expect(page.locator('meta[property="article:published_time"]')).toHaveAttribute("content", "2026-11-11");
+  await expect(page.getByRole("link", { name: "Essayer Okado gratuitement" })).toHaveAttribute("href", "https://app.okado.app/inscription");
+  const graph = (await page.locator('script[type="application/ld+json"]').allTextContents()).flatMap((v) => JSON.parse(v)["@graph"] ?? []);
+  expect(graph.find((item) => item["@type"] === "BlogPosting")).toMatchObject({ datePublished: "2026-11-11", dateModified: "2026-11-11", headline: "Animation en salon de coiffure : idées et conseils pour se lancer" });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  const table = page.getByRole("region", { name: "Comparer quatre animations pour un salon de coiffure" });
+  await table.focus();
+  await expect(table).toBeFocused();
+  expect(await table.evaluate((el) => el.scrollWidth)).toBeGreaterThan(await table.evaluate((el) => el.clientWidth));
+  expect(await (await request.get("/sitemap.xml")).text()).toContain(`https://www.okado.app${slug}`);
+  await page.goto("/blog/idees-animations-commerciales-boutique");
+  await expect(page.locator(`a[href="${slug}"]`)).toHaveCount(1);
 });

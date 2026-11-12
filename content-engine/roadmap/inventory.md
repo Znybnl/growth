@@ -4,7 +4,7 @@ Généré depuis le registre ; le sujet et l’intention sont des hypothèses d�
 
 | Titre | URL | Sujet / intention probable |
 | --- | --- | --- |
-| Comment organiser un jeu QR code dans un salon de coiffure ? | /blog/jeu-qr-code-salon-coiffure | Coiffure — répondre à « Comment organiser un jeu QR code dans un salon de coiffure ? » |
+| Animation en salon de coiffure : idées et conseils pour se lancer | /blog/animation-salon-coiffure | Coiffure — répondre à « Animation en salon de coiffure : idées et conseils pour se lancer » |
 | Comment proposer un jeu QR code pendant l’attente en magasin ? | /blog/jeu-qr-code-file-attente-commerce | Expérience en magasin — répondre à « Comment proposer un jeu QR code pendant l’attente en magasin ? » |
 | Comment organiser la remise des lots d’un jeu en magasin ? | /blog/organiser-remise-lots-jeu-magasin | Organisation des lots — répondre à « Comment organiser la remise des lots d’un jeu en magasin ? » |
 | Comment choisir les lots d’un jeu QR code pour son commerce ? | /blog/choisir-lots-jeu-qr-code-commerce | Jeu marketing local — répondre à « Comment choisir les lots d’un jeu QR code pour son commerce ? » |

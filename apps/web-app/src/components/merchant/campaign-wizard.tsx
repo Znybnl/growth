@@ -2208,7 +2208,7 @@ export function CampaignWizard({
 
           {step.id === "prizes" ? (
             <div className="mt-7 space-y-5" data-testid="wizard-prizes-step">
-              {!draft.prizes.length ? <section data-testid="wizard-starter-compositions" className="rounded-[14px] border border-[#e8e2ea] bg-white p-4 sm:p-5">
+              {!draft.prizes.length && (prizeCatalog.isLoading || prizeCatalog.error || starterCompositions.length > 0) ? <section data-testid="wizard-starter-compositions" className="rounded-[14px] border border-[#e8e2ea] bg-white p-4 sm:p-5">
                 <h3 className="text-base font-semibold">Choisissez votre point de départ</h3>
                 <p className="mb-4 mt-2 text-sm leading-5 text-[#716b78]">Aucun lot n’est ajouté automatiquement. Vérifiez les offres disponibles chez vous, puis personnalisez-les.</p>
                 {prizeCatalog.isLoading ? <p role="status" className="inline-flex items-center gap-2 text-sm"><Loader2 className="size-4 animate-spin" aria-hidden="true" />Chargement des compositions…</p>

@@ -1,0 +1,9 @@
+# Revue — animation en salon de coiffure
+
+Approbation éditoriale de Pierre-Henri BRUNELLE reçue le 11 novembre 2026. Publication préparée sur la branche pour le 11 novembre uniquement, sans autorisation de fusion ni de déploiement. URL cible : `/blog/animation-salon-coiffure`. L’ancien slug était un brouillon jamais publié ; aucune redirection n’est créée. Vérifier la date effective de mise en ligne avant fusion.
+
+Le guide compare quatre animations adaptées au planning, aux fauteuils et à l’équipe. Deux situations et le budget des lots sont fictifs ; aucun résultat commercial n’est promis. Il se distingue du guide transversal des animations en boutique par les contraintes et exemples propres au salon. Le jeu QR est une option expliquée dans une section distincte.
+
+Sources consultées : [DGCCRF — loteries publicitaires](https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees), [CNIL — prospection électronique](https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel), [Okado — fonctionnement](https://www.okado.app/comment-ca-marche) et [MAPA — animations en salon](https://www.mapa-assurances.fr/coiffeur/animation-salon), le 11 novembre 2026. Les sources officielles et produit étayent les limites juridiques et les fonctions mentionnées ; la comparaison de MAPA sert à examiner des formats sectoriels, sans inférer de classement.
+
+L’illustration de coiffure a été générée pour ce brouillon, sans représenter un client réel. Les exemples et l’illustration ont reçu l’approbation éditoriale du propriétaire ; l’application du cadre juridique dépend de chaque opération. Les deux autres brouillons restent exclus des routes, du catalogue et du sitemap du build de production. La fusion et le déploiement nécessitent une autorisation distincte.

@@ -64,10 +64,24 @@ test("catalogue en échec puis vide : réessai, création manuelle et aucun lot 
   const starter=page.getByTestId("wizard-starter-compositions");
   await expect(starter.getByRole("alert")).toContainText("Impossible de charger");
   fail=false;await starter.getByRole("button",{name:"Réessayer",exact:true}).click();
-  await expect(starter).toContainText("Aucune composition disponible");
+  await expect(starter).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Choisissez votre point de départ" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Trouver des idées de lots" })).toBeVisible();
   await expect(page.getByTestId("wizard-prize-row")).toHaveCount(0);
   await page.getByRole("button",{name:"Créer un lot",exact:true}).click();
   await expect(page.getByRole("dialog",{name:"Créer un lot",exact:true})).toBeVisible();
+});
+
+test("suggestion isolée sans composition : bibliothèque et création manuelle accessibles", async ({ page }) => {
+  await page.route("**/api/prize-suggestions?**", route => route.fulfill({ json: { suggestions: [suggestions[0]] } }));
+  await start(page);
+  await expect(page.getByTestId("wizard-starter-compositions")).toHaveCount(0);
+  await page.getByRole("button", { name: "Trouver des idées de lots" }).click();
+  const dialog = page.getByRole("dialog", { name: "Ajouter des lots" });
+  await expect(dialog).toContainText(suggestions[0].label);
+  await dialog.getByRole("button", { name: /Fermer/ }).first().click();
+  await page.getByRole("button", { name: "Créer un lot", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Créer un lot", exact: true })).toBeVisible();
 });
 
 for (const invalid of [{ suggestions: {} }, { suggestions: [null] }]) {

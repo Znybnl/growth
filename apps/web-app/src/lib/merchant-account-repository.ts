@@ -21,6 +21,7 @@ import { getMerchantBillingSummary } from "@/lib/billing";
 import type { User as SupabaseAuthUser } from "@supabase/supabase-js";
 import Stripe from "stripe";
 import { defaultMerchantLogoText, resolveMerchantLogoText } from "@/lib/merchant-logo-text";
+import { normalizeInstagramAccountInput } from "@/lib/marketing-action-library";
 
 type MerchantRow = {
   id: string;
@@ -355,7 +356,7 @@ function toMerchant(row: MerchantRow): Merchant {
     googlePlaceAddress: row.google_place_address ?? undefined,
     googlePlaceRating: row.google_place_rating ?? undefined,
     googlePlaceReviewCount: row.google_place_review_count ?? undefined,
-    instagramUrl: row.instagram_url ?? undefined,
+    instagramUrl: row.instagram_url ? normalizeInstagramAccountInput(row.instagram_url) : undefined,
     facebookUrl: row.facebook_url ?? undefined,
     tiktokUrl: row.tiktok_url ?? undefined,
     tripadvisorUrl: row.tripadvisor_url ?? undefined,
