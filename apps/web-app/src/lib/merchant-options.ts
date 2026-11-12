@@ -6,6 +6,7 @@ export const INDUSTRY_OPTIONS = [
   "Sport",
   "Services",
   "Hôtellerie",
+  "Agences de voyage",
 ] as const;
 
 export const BEAUTY_INDUSTRY = "Beauté" as const;

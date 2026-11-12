@@ -9,7 +9,7 @@ Utiliser ces termes dans l'interface, les Issues, les critères d'acceptation, l
 | Administrateur plateforme | Pierre-Henri BRUNELLE, unique administrateur de la plateforme et valideur des PR. | Marchand ou personnel du commerce. | Administration de la plateforme. |
 | Marchand | Compte professionnel qui possède et pilote un ou plusieurs établissements. | Client/joueur. | « Le marchand crée un jeu ». |
 | Établissement | Site physique d'un marchand, avec ses informations et ses jeux propres. | Workspace. | « Le Comptoir des Îles · Nanterre ». |
-| Secteur d’activité | Catégorie générale de l’activité d’un établissement, utilisée pour contextualiser les réglages et les suggestions de lots. Elle peut rester non renseignée. | Sous-secteur. | Beauté, Restauration, Services. |
+| Secteur d’activité | Catégorie générale de l’activité d’un établissement, utilisée pour contextualiser les réglages et les suggestions de lots. Elle peut rester non renseignée. | Sous-secteur. | Beauté, Restauration, Services, Agences de voyage. |
 | Sous-secteur | Spécialité facultative du secteur Beauté : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa ou Soins visage & corps. Une ancienne valeur n'est conservée que si référencée. | Secteur d’activité. | Regard — cils & sourcils. |
 | Multi-sites | Fonction qui permet à un marchand de gérer plusieurs établissements. | Workspace. | « Déployer ce jeu sur plusieurs sites ». |
 | Workspace | Conteneur technique d'organisation auquel sont rattachés les marchands, utilisateurs et établissements autorisés. | Établissement. | Un workspace peut contenir plusieurs établissements. |

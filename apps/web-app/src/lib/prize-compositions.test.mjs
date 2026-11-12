@@ -10,7 +10,7 @@ import recipes from "./prize-composition-recipes.json" with { type: "json" };
 import { parsePrizeSuggestionCatalog } from "./prize-suggestion-catalog.ts";
 const catalog = [...beauty, ...additions].map(item => ({ ...item, industrySubsector: item.industrySubsector ?? undefined, isActive: true }));
 const contexts = [
- ...INDUSTRY_OPTIONS.filter(industry => industry !== "Beauté").map(industry => ({ industry })),
+ ...INDUSTRY_OPTIONS.filter(industry => industry !== "Beauté" && industry !== "Agences de voyage").map(industry => ({ industry })),
  ...BEAUTY_SUBSECTOR_OPTIONS.map(industrySubsector => ({ industry: "Beauté", industrySubsector })),
  ...RESTAURANT_TYPE_OPTIONS.map(restaurantType => ({ industry: "Restauration", restaurantType })),
 ];
@@ -45,6 +45,7 @@ for (const context of contexts) test(`recettes complètes et cloisonnées : ${JS
 test("tous les secteurs/types connus, aliases et anciens Beauty",()=>{
  assert.equal(recipes.length,12);
  assert.deepEqual(Object.keys(restaurantCompositionVariants).sort(),[...RESTAURANT_TYPE_OPTIONS].sort());
+ assert.deepEqual(buildPrizeCompositions(catalog,{industry:"Agences de voyage"}),[]);
  for(const industrySubsector of [undefined,"Institut & soins","Ongles & cils","Massage & spa"])
   assert.equal(buildPrizeCompositions(catalog,{industry:"Beauté",industrySubsector}).length,3);
  assert.deepEqual(buildPrizeCompositions(catalog,{industry:"Inconnu"}),[]);
