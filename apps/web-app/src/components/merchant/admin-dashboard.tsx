@@ -27,10 +27,12 @@ export function AdminDashboard({ overview, query = "" }: { overview: SaasAdminOv
         }
       />
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
         <MetricCard label="Comptes" value={overview.totals.accounts} detail="Comptes marchands inscrits" />
         <MetricCard label="Établissements" value={overview.totals.merchants}
-          detail={`${overview.totals.onboardedMerchants} onboarding terminés · ${overview.totals.activeSubscriptions} avec accès actif`} />
+          detail={`${overview.totals.onboardedMerchants} onboarding terminés`} />
+        <MetricCard label="Comptes avec accès actif" value={overview.totals.activeAccounts}
+          detail="Abonnement actif ou essai valide" />
         <MetricCard label="Animations" value={overview.totals.activeCampaigns} detail={`${overview.totals.leads} contacts collectés`} />
         <MetricCard label="Gains à suivre" value={overview.totals.pendingRewards} detail="Gains en attente de retrait" />
       </section>
@@ -99,7 +101,18 @@ export function AdminDashboard({ overview, query = "" }: { overview: SaasAdminOv
                     <p className="mt-1 break-all text-xs text-ash">{user.email}</p>
                     </div>
                   </td>
-                  <td className="px-3 py-4 font-medium">{user.merchantName}</td>
+                  <td className="px-3 py-4">
+                    {user.establishments.every((establishment) => establishment.name !== user.merchantName) ? (
+                      <p className="font-medium">{user.merchantName}</p>
+                    ) : null}
+                    <ul className="mt-1 space-y-1 text-xs text-ash">
+                      {user.establishments.length ? user.establishments.map((establishment) => (
+                        <li key={establishment.id}>
+                          {establishment.name}{establishment.archived ? " · Archivé" : ""}
+                        </li>
+                      )) : <li>Établissement non renseigné</li>}
+                    </ul>
+                  </td>
                   <td className="px-3 py-4 text-ash">{formatDateTime(user.createdAt)}</td>
                   <td className="px-3 py-4 text-ash"><AdminLastSignInCell value={user.lastSignIn} /></td>
                   <td className="px-3 py-4">
@@ -110,7 +123,7 @@ export function AdminDashboard({ overview, query = "" }: { overview: SaasAdminOv
                   <td className="px-3 py-4">
                     {canExtendTrial && user.trialEndDate ? (
                       <AdminTrialExtensionButton
-                        merchantId={user.merchantId}
+                        merchantId={user.billingMerchantId}
                         subscriptionStatus={user.subscriptionStatus}
                         trialEndDate={user.trialEndDate}
                         subscriptionCancelAtPeriodEnd={user.subscriptionCancelAtPeriodEnd}
