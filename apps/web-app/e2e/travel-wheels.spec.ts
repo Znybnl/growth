@@ -30,6 +30,12 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
       await expect(artwork).toHaveJSProperty("complete", true);
       expect(await artwork.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
       await expect(scene.locator("header")).toHaveCSS("border-top-width", "0px");
+      if (theme.id === "travel-tropical") {
+        await expect(scene.locator("h1")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+        await expect(scene.locator("h1")).toHaveCSS("color", `rgb(${parseInt(theme.logo.slice(1, 3), 16)}, ${parseInt(theme.logo.slice(3, 5), 16)}, ${parseInt(theme.logo.slice(5, 7), 16)})`);
+        const blueSegmentLabels = scene.locator("[data-testid='christmas-wheel'] svg text");
+        await expect(blueSegmentLabels.nth(1)).toHaveAttribute("fill", "#ffffff");
+      }
       const wheel = await scene.getByTestId("christmas-wheel").boundingBox();
       const button = await scene.getByRole("button", { name: "Jouer à la roue" }).boundingBox();
       const center = await scene.getByTestId("travel-wheel-center").boundingBox();
