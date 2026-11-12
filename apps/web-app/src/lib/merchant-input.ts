@@ -71,6 +71,9 @@ const TEXT_FONTS = new Set<TextFont>([
 const BUTTON_SIZES = new Set<ButtonSize>(["sm", "md", "lg"]);
 const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
 const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
+  "travel-elegant",
+  "travel-tropical",
+  "travel-roadtrip",
   "scratch-christmas-rose",
   "scratch-halloween-gold",
   "scratch-christmas-natural",

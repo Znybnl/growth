@@ -12,7 +12,7 @@ export function ChristmasTemplateThumbnail({ templateId, card }: { templateId: C
     {card ? <div className={styles.thumbnailCopy} style={{ color: theme.text }}>
       <div className={styles.thumbnailBrand} style={{ color: theme.logo }}>Votre établissement</div>
       <div className={styles.thumbnailTitle} data-testid="template-sample-heading">Jouez &amp;<br />gagnez</div>
-      <div className={styles.thumbnailSubtitle} style={{ color: theme.logo }}>De belles surprises vous attendent pour Noël</div>
+      <div className={styles.thumbnailSubtitle} style={{ color: theme.logo }}>{templateId.startsWith("travel-") ? "De belles surprises pour votre prochain voyage" : "De belles surprises vous attendent pour Noël"}</div>
     </div> : null}
     <div className={card ? styles.thumbnailWheel : "relative mx-auto w-24 pt-2"}>
       <ChristmasWheelVisual templateId={templateId} segments={labels.map((label, index) => ({ id: `sample-${index}`, label, tone: index === 3 ? "lose" as const : "win" as const }))} interactive={false} />

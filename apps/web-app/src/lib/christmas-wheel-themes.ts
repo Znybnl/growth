@@ -1,4 +1,5 @@
 import type { CampaignWheelSettings, GamePageTemplateId } from "@/lib/types";
+import { TRAVEL_WHEEL_THEMES, travelWheelTheme } from "@/lib/travel-wheel-themes";
 
 /** Seasonal styles are available to every sector, independently of Beauty. */
 export const CHRISTMAS_WHEEL_THEMES = [
@@ -7,10 +8,10 @@ export const CHRISTMAS_WHEEL_THEMES = [
   { id: "christmas-traditional", name: "Noël traditionnel", description: "Rouge profond, vert sapin et lumières dorées", primary: "#a90f23", secondary: "#fff1d7", third: "#213d2d", background: "#680510", text: "#f4d68e", logo: "#fff1d7", button: "#8d1524", rim: "#c69b48" },
 ] as const;
 
-export type ChristmasWheelTemplateId = typeof CHRISTMAS_WHEEL_THEMES[number]["id"];
+export type ChristmasWheelTemplateId = typeof CHRISTMAS_WHEEL_THEMES[number]["id"] | typeof TRAVEL_WHEEL_THEMES[number]["id"];
 
 export function christmasWheelTheme(templateId?: GamePageTemplateId) {
-  return CHRISTMAS_WHEEL_THEMES.find(theme => theme.id === templateId);
+  return CHRISTMAS_WHEEL_THEMES.find(theme => theme.id === templateId) ?? travelWheelTheme(templateId);
 }
 
 export function isChristmasWheelTemplate(templateId?: GamePageTemplateId): templateId is ChristmasWheelTemplateId {
@@ -18,7 +19,7 @@ export function isChristmasWheelTemplate(templateId?: GamePageTemplateId): templ
 }
 
 export function christmasWheelArtwork(templateId: ChristmasWheelTemplateId) {
-  return `/images/wheel-templates/${templateId}.webp`;
+  return travelWheelTheme(templateId)?.artwork ?? `/images/wheel-templates/${templateId}.webp`;
 }
 
 /** Resolve native artwork without persisting it as a shared merchant image. */
@@ -35,7 +36,7 @@ export function christmasWheelPalette(templateId: ChristmasWheelTemplateId, curr
 
 /** Sector colors are decorative; they never encode or determine the draw odds. */
 export function christmasWheelSegmentColors(templateId: ChristmasWheelTemplateId, count: number, palette: Pick<CampaignWheelSettings, "loseColor" | "alternateLoseColor" | "winColor">) {
-  const colors = templateId === "christmas-rose"
+  const colors = templateId === "travel-elegant" ? [palette.alternateLoseColor, palette.loseColor] : templateId === "travel-tropical" ? [palette.alternateLoseColor, palette.loseColor, palette.alternateLoseColor, palette.winColor] : templateId === "christmas-rose"
     ? [palette.alternateLoseColor, palette.loseColor, palette.alternateLoseColor, palette.winColor]
     : [palette.alternateLoseColor, palette.loseColor, palette.winColor];
   const result = Array.from({ length: count }, (_, index) => colors[index % colors.length]);

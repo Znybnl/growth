@@ -1,7 +1,9 @@
 import type { BackgroundLibraryAsset } from "@/lib/types";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelArtwork } from "@/lib/christmas-wheel-themes";
+import { TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-themes";
 
 export const builtInBackgroundAssets: BackgroundLibraryAsset[] = [
+  ...TRAVEL_WHEEL_THEMES.map(theme => ({ id: `builtin-wheel-${theme.id}`, label: theme.name, category: "Voyage", imageUrl: theme.artwork, thumbnailUrl: theme.artwork, source: "built-in" as const, width: 941, height: 1672 })),
   {
     id: "builtin-scratch-gift-wrap",
     label: "Vert bouteille & rubans",

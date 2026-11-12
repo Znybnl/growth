@@ -44,6 +44,7 @@ import { HalloweenCampaignPreview } from "./halloween-campaign-preview";
 import { ChristmasCampaignPreview } from "./christmas-campaign-preview";
 import { SeasonalScratchPreview } from "./seasonal-scratch-preview";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme, isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
+import { TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-themes";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate, christmasScratchBackgroundImage } from "@/lib/christmas-scratch-templates";
 import { HALLOWEEN_SCRATCH_TEMPLATE, halloweenScratchTemplate, isHalloweenFixedPalette } from "@/lib/halloween-scratch-template";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
@@ -3111,6 +3112,15 @@ export function CampaignEditor({
                   onSelect={selectBeautyScratchTemplate}
                 />
               ) : null}
+              {form.gameType === "wheel" && merchant.industry === "Agences de voyage" ? <section aria-labelledby="travel-templates-heading" className="mb-5">
+                <h3 id="travel-templates-heading" className="text-base font-semibold text-carbon">Templates Voyage</h3>
+                <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="travel-template-options">
+                  {TRAVEL_WHEEL_THEMES.map(theme => <button key={theme.id} type="button" aria-pressed={form.presentation.layout.templateId === theme.id} onClick={() => selectBeautyWheelTemplate(theme.id)} className={`rounded-[22px] border p-4 text-left transition ${form.presentation.layout.templateId === theme.id ? "border-[#2f6df6] bg-[#eff4ff]" : "border-[#d7e0ed] bg-white hover:border-[#b8c5da]"}`}>
+                    <WheelTemplateThumbnail templateId={theme.id} />
+                    <span className="text-sm font-semibold text-[#111827]">{theme.name}</span><span className="mt-1 block text-xs text-[#526078]">{theme.description}</span>
+                  </button>)}
+                </div>
+              </section> : null}
               <h3 className="text-base font-semibold text-carbon">Autres templates</h3>
               <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="classic-template-options">
                 {(form.gameType === "wheel"
