@@ -79,7 +79,7 @@ import { MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { uploadMerchantImageFile } from "@/lib/client-merchant-image-upload";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelFontOptions, beautyWheelLogoColor, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme } from "@/lib/christmas-wheel-themes";
+import { CHRISTMAS_WHEEL_THEMES, christmasWheelPalette, christmasWheelTheme } from "@/lib/christmas-wheel-themes";
 import { isTravelWheelTemplate, TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-themes";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { HALLOWEEN_SCRATCH_TEMPLATE, halloweenScratchTemplate, isHalloweenFixedPalette } from "@/lib/halloween-scratch-template";
@@ -307,7 +307,12 @@ function createAdminWizardActions(merchant: Merchant): CampaignAction[] {
 }
 
 function createWizardDraft(merchant: Merchant): WizardDraft {
-  const wheel = createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR);
+  const defaultTravelTemplateId = merchant.industry === "Agences de voyage" ? "travel-elegant" : null;
+  const defaultTemplateId = defaultTravelTemplateId ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
+  const defaultTravelTheme = defaultTravelTemplateId ? christmasWheelTheme(defaultTravelTemplateId) : undefined;
+  const wheel = defaultTravelTheme
+    ? christmasWheelPalette(defaultTravelTemplateId!, createDefaultWheelSettings(defaultTravelTheme.primary))
+    : createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR);
 
   return {
     merchantId: merchant.id,
@@ -328,18 +333,18 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
         sizePercent: 100,
         marginBottomPx: DEFAULT_WHEEL_SPACING_PX,
         align: "center",
-        textColor: wheelLogoColorForTemplateSelection(DEFAULT_GAME_PAGE_TEMPLATE_ID, "#1f2937"),
+        textColor: defaultTravelTheme?.logo ?? wheelLogoColorForTemplateSelection(defaultTemplateId, "#1f2937"),
       },
-      background: { mode: "color", color: "#ffffff", imageUrl: "" },
+      background: { mode: "color", color: defaultTravelTheme?.background ?? "#ffffff", imageUrl: "" },
       heading: {
-        textColor: "#1f2937",
+        textColor: defaultTravelTheme?.text ?? "#1f2937",
         fontSizePx: 40,
-        fontFamily: "fredoka",
+        fontFamily: defaultTravelTheme ? "dm-sans" : "fredoka",
         fontWeight: 600,
         align: "center",
       },
       button: {
-        backgroundColor: DEFAULT_COCORICO_PRIMARY_COLOR,
+        backgroundColor: defaultTravelTheme?.button ?? DEFAULT_COCORICO_PRIMARY_COLOR,
         textColor: "#ffffff",
         borderColor: "#f4c14a",
         size: "sm",
@@ -348,7 +353,7 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
       },
       layout: {
         blockSpacingPx: DEFAULT_WHEEL_SPACING_PX,
-        templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
+        templateId: defaultTemplateId,
         wheelSubtitle: "",
         subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
       },

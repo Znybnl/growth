@@ -36,6 +36,7 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
         const subtitle = scene.locator("p[data-testid='christmas-wheel-subtitle']");
         await expect(subtitle).toHaveCSS("text-shadow", "none");
         expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("radial-gradient");
+        expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("226, 248, 255");
         const blueSegmentLabels = scene.locator("[data-testid='christmas-wheel'] svg text");
         await expect(blueSegmentLabels.nth(1)).toHaveAttribute("fill", "#ffffff");
       }
@@ -46,6 +47,10 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
         expect(await scene.locator("h1").evaluate(element => getComputedStyle(element, "::before").backgroundColor)).toBe("rgb(255, 241, 216)");
         expect(await scene.locator("h1").evaluate(element => getComputedStyle(element, "::before").clipPath)).toContain("polygon");
         expect(await scene.locator("h1").evaluate(element => getComputedStyle(element, "::before").inset)).toContain("-");
+        const titleBounds = await scene.locator("h1").boundingBox();
+        const sceneBounds = await scene.boundingBox();
+        expect(titleBounds!.x).toBeGreaterThanOrEqual(sceneBounds!.x);
+        expect(titleBounds!.x + titleBounds!.width).toBeLessThanOrEqual(sceneBounds!.x + sceneBounds!.width);
         const subtitle = scene.locator("p[data-testid='christmas-wheel-subtitle']");
         await expect(subtitle).toHaveCSS("text-shadow", "none");
         expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("radial-gradient");
