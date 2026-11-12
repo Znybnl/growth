@@ -95,7 +95,7 @@ export function ChristmasWheelVisual({ templateId, segments, palette, rotation =
             <path d={`M320 320 L${start.x} ${start.y} A300 300 0 ${angle > 180 ? 1 : 0} 1 ${end.x} ${end.y} Z`} fill={`url(#${id}-sector-${index})`} stroke="#f4dfba" strokeWidth="1.8" />
             <FittedWheelLabel lines={lines} baseFontSize={size} lineHeight={size * .98} initialOffset={-(lines.length - 1) * size * .49}
               radius={204} buttonRadius={isTravel ? 74 : 112} outerRadius={300} sectorAngle={angle}
-              x={location.x} y={location.y} fill={templateId === "travel-tropical" && colors[index] !== palette.alternateLoseColor ? "#ffffff" : legibleSegmentTextColor(colors[index], theme.logo)}
+              x={location.x} y={location.y} fill={templateId === "travel-tropical" && colors[index] !== (palette?.alternateLoseColor ?? theme.secondary) ? "#ffffff" : legibleSegmentTextColor(colors[index], theme.logo)}
               fontFamily={textFontFamily("dm-sans")} fontWeight="650" textAnchor="middle" dominantBaseline="middle"
               transform={`rotate(${upright} ${location.x} ${location.y})`} />
           </g>;
