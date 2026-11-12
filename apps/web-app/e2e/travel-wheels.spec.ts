@@ -45,7 +45,7 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
         await expect(scene.locator("p[data-testid='christmas-wheel-subtitle']")).toHaveCSS("text-shadow", /rgb\(255, 241, 216\)/);
       }
       const wheel = await scene.getByTestId("christmas-wheel").boundingBox();
-      const button = await scene.getByRole("button", { name: "Jouer à la roue" }).boundingBox();
+      const button = await scene.getByTestId("travel-wheel-cta").boundingBox();
       const center = await scene.getByTestId("travel-wheel-center").boundingBox();
       expect(wheel).not.toBeNull(); expect(button).not.toBeNull(); expect(center).not.toBeNull();
       expect(button!.width / wheel!.width).toBeLessThan(0.72);
@@ -54,6 +54,16 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
       await expect(scene.getByTestId("christmas-wheel-pointer").locator("circle")).toHaveCount(1);
       await page.screenshot({ path: info.outputPath(`${theme.id}-${width}.png`), fullPage: true, animations: "disabled" });
     }
+  });
+
+  test(`${theme.name} : le bouton central déclenche l’action Jouer`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`/dev/christmas-wheels?template=${theme.id}&mode=interaction`);
+    const scene = page.getByTestId("christmas-wheel");
+    const center = scene.getByTestId("travel-wheel-center");
+    await expect(center).toBeEnabled();
+    await center.click();
+    await expect(page.getByTestId("action-count")).toHaveText("1");
   });
 }
 

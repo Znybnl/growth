@@ -79,9 +79,11 @@
 [data-travel-template="travel-roadtrip"] .subtitle {
   text-shadow: 0 0 1.2cqw #fff1d8, 0 0 3.5cqw #fff1d8, 0 1px 2px #fff8e8;
 }
-.travelCenter { inset: 39%; background: radial-gradient(circle at 30% 22%, #fff1b0, #d99620 62%, #8a540d); cursor: default; pointer-events: none; }
+.travelCenter { inset: 39%; background: radial-gradient(circle at 30% 22%, #fff1b0, #d99620 62%, #8a540d); cursor: pointer; }
+.travelCenter:disabled { cursor: default; }
+.travelCenter:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
 .travelPointer { width: 13%; height: 17%; left: 43.5%; top: -5%; }
-.travelCta { position: absolute; top: 108%; left: 16%; width: 68%; z-index: 5; min-height: 16cqw; display: flex; align-items: center; justify-content: center; border: 2px solid #fff3d8; border-radius: 999px; box-shadow: 0 3px 8px #25140b66, inset 0 1px 3px #ffffff66; font-family: var(--font-dm-sans), sans-serif; font-size: 5.5cqw; font-weight: 700; cursor: pointer; }
+.travelCta { position: absolute; top: 108%; left: 16%; width: 68%; z-index: 5; min-height: 16cqw; display: flex; align-items: center; justify-content: center; border: 2px solid #fff3d8; border-radius: 999px; box-shadow: 0 3px 8px #25140b66, inset 0 1px 3px #ffffff66; font-family: var(--font-dm-sans), sans-serif; font-size: 7cqw; font-weight: 700; cursor: pointer; }
 .travelCta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .travelCta:disabled { cursor: default; }
 @media (prefers-reduced-motion: reduce) { .rotor { transition-duration: .1s; } }
