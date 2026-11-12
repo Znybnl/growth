@@ -80,7 +80,7 @@ import { uploadMerchantImageFile } from "@/lib/client-merchant-image-upload";
 import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { beautyWheelFontOptions, beautyWheelLogoColor, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelTheme } from "@/lib/christmas-wheel-themes";
-import { TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-themes";
+import { isTravelWheelTemplate, TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-themes";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { HALLOWEEN_SCRATCH_TEMPLATE, halloweenScratchTemplate, isHalloweenFixedPalette } from "@/lib/halloween-scratch-template";
 import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
@@ -2629,14 +2629,14 @@ export function CampaignWizard({
                  <label className="block">
                    <span className="flex flex-wrap items-center gap-2 text-sm font-semibold text-[#182033]">
                      {draft.gameType === "wheel" ? "Couleur principale de la roue" : "Couleur principale du ticket"}
-                     {isHalloweenFixedPalette(draft.presentation.layout.templateId) || (draft.gameType === "scratch" &&
+                     {isHalloweenFixedPalette(draft.presentation.layout.templateId) || (draft.gameType === "wheel" && isTravelWheelTemplate(draft.presentation.layout.templateId)) || (draft.gameType === "scratch" &&
                      scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId)) ? (
                        <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span>
                      ) : null}
                    </span>
                    <input
                      type="color"
-                      disabled={isHalloweenFixedPalette(draft.presentation.layout.templateId) || (draft.gameType === "scratch" && scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId))}
+                      disabled={isHalloweenFixedPalette(draft.presentation.layout.templateId) || (draft.gameType === "wheel" && isTravelWheelTemplate(draft.presentation.layout.templateId)) || (draft.gameType === "scratch" && scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId))}
                      value={draft.presentation.layout.templateId === "halloween-gold" ? "#ecac52" : draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
                      onChange={(event) => {
                        const color = event.target.value;
@@ -2784,11 +2784,13 @@ export function CampaignWizard({
                 </label>
                 ) : null}
                 <label className="block">
-                  <span className="text-sm font-semibold text-[#182033]">
+                  <span className="flex items-center gap-2 text-sm font-semibold text-[#182033]">
                     Couleur principale de la roue
+                    {draft.gameType === "wheel" && isTravelWheelTemplate(draft.presentation.layout.templateId) ? <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span> : null}
                   </span>
                   <input
                     type="color"
+                    disabled={draft.gameType === "wheel" && isTravelWheelTemplate(draft.presentation.layout.templateId)}
                     value={
                       draft.gameType === "wheel"
                         ? draft.presentation.wheel.loseColor
@@ -2817,7 +2819,7 @@ export function CampaignWizard({
                         },
                       }));
                     }}
-                    className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1"
+                    className="mt-3 h-12 w-full rounded-[12px] border border-[#dbe3ed] bg-white p-1 disabled:cursor-not-allowed disabled:opacity-55"
                   />
                  </label>
                  {draft.presentation.layout.templateId === "restaurant-pop" ? (

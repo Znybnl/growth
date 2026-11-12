@@ -9,3 +9,7 @@ export const TRAVEL_WHEEL_THEMES = [
 export function travelWheelTheme(templateId?: GamePageTemplateId) {
   return TRAVEL_WHEEL_THEMES.find((theme) => theme.id === templateId);
 }
+
+export function isTravelWheelTemplate(templateId?: GamePageTemplateId) {
+  return Boolean(travelWheelTheme(templateId));
+}
