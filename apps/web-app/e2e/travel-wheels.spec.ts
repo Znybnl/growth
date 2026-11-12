@@ -33,6 +33,9 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
       if (theme.id === "travel-tropical") {
         await expect(scene.locator("h1")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
         await expect(scene.locator("h1")).toHaveCSS("color", `rgb(${parseInt(theme.logo.slice(1, 3), 16)}, ${parseInt(theme.logo.slice(3, 5), 16)}, ${parseInt(theme.logo.slice(5, 7), 16)})`);
+        const subtitle = scene.locator("p[data-testid='christmas-wheel-subtitle']");
+        await expect(subtitle).toHaveCSS("text-shadow", "none");
+        expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("radial-gradient");
         const blueSegmentLabels = scene.locator("[data-testid='christmas-wheel'] svg text");
         await expect(blueSegmentLabels.nth(1)).toHaveAttribute("fill", "#ffffff");
       }
