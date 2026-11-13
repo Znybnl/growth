@@ -35,6 +35,12 @@ test("tickets Voyage : la taille choisie pour le texte principal est respectée"
         expect(await heading.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
       }
       expect(sizes[1] - sizes[0], `${theme.name} doit répercuter la taille choisie à ${width}px`).toBeGreaterThan(10);
+      await page.goto(url("public", theme.id, { business: "travel" }));
+      const pageSize = await page.evaluate(() => ({ document: document.documentElement.scrollHeight, viewport: window.innerHeight }));
+      expect(pageSize.document, `${theme.name} ne doit pas ajouter de barre de défilement à ${width}px`).toBeLessThanOrEqual(pageSize.viewport + 1);
+      await expect(page.getByText("Découvrez votre cadeau", { exact: true })).toHaveCSS("font-family", /DM Sans/);
+      const ticketBounds = await page.getByTestId("scratch-ticket-surface").boundingBox();
+      expect(ticketBounds!.y + ticketBounds!.height, `${theme.name} doit garder le ticket visible à ${width}px`).toBeLessThanOrEqual(pageSize.viewport + 1);
     }
   }
 });

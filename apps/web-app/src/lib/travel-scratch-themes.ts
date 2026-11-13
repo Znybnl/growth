@@ -29,7 +29,7 @@ export const TRAVEL_SCRATCH_THEMES = [
   },
   {
     id: "travel-scratch-roadtrip",
-    name: "Road trip & aventure",
+    name: "Road trip",
     description: "Terracotta, crème et esprit grand départ.",
     artwork: "/images/templates/travel/roadtrip.webp",
     background: "/images/templates/travel/roadtrip.webp",

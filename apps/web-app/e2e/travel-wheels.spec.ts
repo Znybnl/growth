@@ -37,6 +37,7 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
         const subtitle = scene.locator("p[data-testid='christmas-wheel-subtitle']");
         await expect(subtitle).toHaveCSS("text-shadow", "none");
         expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("radial-gradient");
+        expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("0.68");
         expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("226, 248, 255");
         const blueSegmentLabels = scene.locator("[data-testid='christmas-wheel'] svg text");
         await expect(blueSegmentLabels.nth(1)).toHaveAttribute("fill", "#ffffff");

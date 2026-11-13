@@ -91,6 +91,9 @@
 [data-travel-template="travel-tropical"] .subtitle::before {
   background: radial-gradient(ellipse at center, rgb(226 248 255 / 56%) 0%, rgb(204 239 255 / 34%) 38%, rgb(191 229 255 / 14%) 64%, transparent 86%);
 }
+[data-travel-template="travel-roadtrip"] .subtitle::before {
+  background: radial-gradient(ellipse at center, rgb(255 245 224 / 68%) 0%, rgb(255 245 224 / 46%) 38%, rgb(255 245 224 / 22%) 64%, transparent 86%);
+}
 .travelCenter { inset: 39%; background: radial-gradient(circle at 30% 22%, #fff1b0, #d99620 62%, #8a540d); cursor: pointer; }
 .travelCenter:disabled { cursor: default; }
 .travelCenter:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }

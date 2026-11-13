@@ -1047,7 +1047,7 @@ export function CampaignExperience({
         <WheelOfFortune key={`${campaign.id}-${drawSession?.id ?? "idle"}`} accent={campaign.accent} pageTemplate="halloween-gold" segments={segments} winningSegmentId={winningSegmentId}
           canSpin={stage === "ready"} buttonEnabled={stage === "idle" || stage === "ready"} buttonLabel="JOUER" onButtonClick={() => void openActionAndTrack()}
           autoSpinKey={autoSpinKey} onSpinEnd={() => void handleGameReveal()} />
-      </HalloweenWheelScene> : <div className={`relative z-10 mx-auto flex ${hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isImmersiveScratchTemplate ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate || isImmersiveScratchTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
+      </HalloweenWheelScene> : <div className={`relative z-10 mx-auto flex ${hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isImmersiveScratchTemplate ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isImmersiveScratchTemplate ? "overflow-hidden pb-0" : isBeautyTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
