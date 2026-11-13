@@ -58,6 +58,7 @@ import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
 import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
+import { TravelScratchTemplateGallery } from "@/components/merchant/travel-scratch-template-gallery";
 import { ScratchTemplateThumbnail } from "@/components/merchant/scratch-template-thumbnail";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
@@ -86,7 +87,7 @@ import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { uploadMerchantImageFile } from "@/lib/client-merchant-image-upload";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelLogoColor, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import {
   createCampaignEmailDefaults,
@@ -1980,8 +1981,8 @@ export function CampaignEditor({
       };
     });
   }
-  function selectBeautyScratchTemplate(templateId: BeautyScratchTemplateId) {
-    const theme = beautyScratchTemplate(templateId);
+  function selectBeautyScratchTemplate(templateId: GamePageTemplateId) {
+    const theme = scratchVisualTheme(templateId);
     if (!theme) return;
     captureClientProductEvent("campaign_template_selected", {
       campaignType: "scratch",
@@ -3108,6 +3109,12 @@ export function CampaignEditor({
               ) : null}
               {form.gameType === "scratch" && isBeautyIndustry(merchant.industry) ? (
                 <BeautyScratchTemplateGallery
+                  selectedTemplateId={form.presentation.layout.templateId}
+                  onSelect={selectBeautyScratchTemplate}
+                />
+              ) : null}
+              {form.gameType === "scratch" && merchant.industry === "Agences de voyage" ? (
+                <TravelScratchTemplateGallery
                   selectedTemplateId={form.presentation.layout.templateId}
                   onSelect={selectBeautyScratchTemplate}
                 />

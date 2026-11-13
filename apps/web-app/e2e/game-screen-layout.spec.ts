@@ -35,6 +35,34 @@ test("@visual-1280 jeu roue : le titre reste dégagé du jeu sur grand et petit 
   }
 });
 
+test("@visual-1280 tickets Voyage : fonds, zone à gratter et titres restent lisibles", async ({ page, baseURL }, info) => {
+  await rejectAnalyticsForVisualTests(page.context(), baseURL!);
+  await page.route("**/api/public/campaign/template-proof-campaign*", route => route.fulfill({ json: { campaign: { actions: [] } } }));
+
+  for (const template of ["travel-scratch-elegant", "travel-scratch-tropical", "travel-scratch-roadtrip"]) {
+    for (const viewport of [{ width: 320, height: 740 }, { width: 390, height: 844 }, { width: 1280, height: 720 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto(`/dev/template-rendering-proof?mode=live&template=${template}&business=travel`);
+      await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
+      const surface = page.locator(".okado-public-experience");
+      const background = surface.locator(`img[data-template-art="${template}"]`);
+      const heading = surface.getByRole("heading", { name: /Une surprise/ });
+      const ticket = surface.getByTestId("scratch-ticket-surface");
+      await expect(background).toBeVisible();
+      await expect(ticket.locator("canvas")).toBeVisible();
+      const headingBox = (await heading.boundingBox())!;
+      const ticketBox = (await ticket.boundingBox())!;
+      expect(ticketBox.y).toBeGreaterThanOrEqual(headingBox.y + headingBox.height);
+      if (viewport.width <= 390) expect(headingBox.height).toBeLessThan(110);
+      expect(ticketBox.width).toBeLessThanOrEqual(viewport.width - 20);
+      await assertNoPageOverflow(page);
+      if (viewport.width === 320 || viewport.width === 1280) {
+        await page.screenshot({ path: info.outputPath(`${template}-${viewport.width}.png`), fullPage: true, animations: "disabled" });
+      }
+    }
+  }
+});
+
 test("@visual-1280 ticket : la zone à gratter est alignée sans recouvrir le titre", async ({ page, baseURL }, info) => {
   await rejectAnalyticsForVisualTests(page.context(), baseURL!);
   await page.route("**/api/public/campaign/template-proof-campaign*", route => route.fulfill({ json: { campaign: { actions: [] } } }));

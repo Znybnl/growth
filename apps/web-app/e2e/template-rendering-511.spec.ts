@@ -58,6 +58,15 @@ for (const mode of ["preview", "public", "game-preview"]) {
     await expect(surface).toHaveCSS("background-image", /aurora-retail/);
   });
 
+  test(`${mode} : un fond choisi manuellement reste prioritaire sur les tickets Voyage`, async ({ page }) => {
+    await isolate(page);
+    await page.setViewportSize({ width: 390, height: 850 });
+    const surface = page.locator(mode === "preview" ? ".okado-preview-surface > div" : ".okado-public-experience");
+    await page.goto(url(mode, "travel-scratch-tropical", { background: "image" }));
+    await expect(surface).toHaveCSS("background-image", /aurora-retail/);
+    await expect(page.getByTestId("scratch-ticket-surface")).toBeVisible();
+  });
+
   test(`${mode} : les onze tickets n'affichent plus les phrases sous le grattage`, async ({ page }, info) => {
     await isolate(page);
     await page.setViewportSize({ width: 390, height: 850 });
@@ -67,7 +76,7 @@ for (const mode of ["preview", "public", "game-preview"]) {
       const ticket = page.getByTestId("scratch-ticket-surface");
       await expect(ticket).toBeVisible();
       const ticketWidth = await ticket.evaluate((node) => Number.parseFloat(getComputedStyle(node).width));
-      expect(ticketWidth).toBeLessThanOrEqual(216);
+      expect(ticketWidth).toBeLessThanOrEqual(template.startsWith("travel-scratch-") || template.startsWith("scratch-christmas-") ? 310 : 216);
       await expect(page.getByText(/Le résultat s'affiche automatiquement|Le résultat apparaît dès|Le gain sera disponible selon|Votre gain sera confirmé après/)).toHaveCount(0);
       if (template === "scratch-lilac") {
         await expect(page.getByText("Établissement de test", { exact: true }).first()).toHaveCSS("color", "rgb(33, 11, 50)");
@@ -78,7 +87,7 @@ for (const mode of ["preview", "public", "game-preview"]) {
   });
 }
 
-test("game-preview : les textures d’origine des onze tickets sont réellement peintes dans la couche à gratter", async ({ page }, info) => {
+test("game-preview : les textures d’origine des tickets sont réellement peintes dans la couche à gratter", async ({ page }, info) => {
   await isolate(page);
   await page.setViewportSize({ width: 390, height: 850 });
 

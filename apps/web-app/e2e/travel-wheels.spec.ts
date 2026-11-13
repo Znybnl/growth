@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { TRAVEL_WHEEL_THEMES } from "../src/lib/travel-wheel-themes";
+import { TRAVEL_SCRATCH_THEMES } from "../src/lib/travel-scratch-themes";
 import { rejectAnalyticsForVisualTests, captureVisualAt1280 } from "./helpers/visual-1280";
 import { selectWizardStep } from "./helpers/wizard-step";
 
@@ -101,5 +102,30 @@ test("@visual-1280 section Voyage dédiée dans les deux éditeurs", async ({ pa
       }
     }
     await captureVisualAt1280(page, info, `voyage-${mode}`);
+  }
+});
+
+test("@visual-1280 section Voyage dédiée aux tickets dans les deux éditeurs", async ({ page }, info) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  for (const mode of ["wizard-responsive-edit", "editor-prize-budget"]) {
+    await page.goto(`/dev/template-rendering-proof?mode=${mode}&template=travel-scratch-elegant&business=travel`);
+    if (mode.startsWith("wizard")) await selectWizardStep(page, 2);
+    const section = page.getByTestId("travel-scratch-template-options");
+    await expect(page.getByRole("heading", { name: "Templates Voyage" })).toBeVisible();
+    await expect(section.getByRole("button")).toHaveCount(3);
+    for (const theme of TRAVEL_SCRATCH_THEMES) {
+      const card = section.getByRole("button", { name: new RegExp(theme.name) });
+      await card.click();
+      await expect(card).toHaveAttribute("aria-pressed", "true");
+      await expect(page.getByTestId("classic-template-options").getByRole("button", { name: new RegExp(theme.name) })).toHaveCount(0);
+      if (mode.startsWith("wizard")) {
+        await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
+        const preview = page.getByRole("dialog", { name: "Aperçu du jeu" });
+        await expect(preview).toBeVisible();
+        await page.screenshot({ path: info.outputPath(`ticket-voyage-preview-${theme.id}.png`), animations: "disabled" });
+        await page.keyboard.press("Escape");
+      }
+    }
+    await captureVisualAt1280(page, info, `ticket-voyage-${mode}`);
   }
 });

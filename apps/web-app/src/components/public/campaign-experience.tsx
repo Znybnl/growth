@@ -32,7 +32,7 @@ import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
 import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { scratchVisualTheme, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
@@ -539,7 +539,7 @@ export function CampaignExperience({
   const isScratchCoralTemplate = pageTemplate === "scratch-coral";
   const isScratchLilacTemplate = pageTemplate === "scratch-lilac";
   const isScratchSunburstTemplate = pageTemplate === "scratch-sunburst";
-  const beautyScratchTheme = beautyScratchTemplate(pageTemplate);
+  const templateScratchTheme = scratchVisualTheme(pageTemplate);
   const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(pageTemplate);
   const scratchAccent =
     campaign.gameType === "scratch"
@@ -907,11 +907,11 @@ export function CampaignExperience({
     : null;
   const templateDefaultBackground = scratchTemplateDefaultBackground(pageTemplate, campaign.presentation.background);
   const nativeChristmasScratchBackground = campaign.gameType === "scratch" && (christmasScratchTemplate(pageTemplate) || halloweenScratchTemplate(pageTemplate)) ? templateDefaultBackground : undefined;
-  const nativeBeautyScratchBackground = beautyScratchTheme && !christmasScratchTemplate(pageTemplate) && !halloweenScratchTemplate(pageTemplate) && !hasCustomSelectedBackground
-    ? beautyScratchTheme.background
+  const nativeTemplateScratchBackground = templateScratchTheme && !christmasScratchTemplate(pageTemplate) && !halloweenScratchTemplate(pageTemplate) && !hasCustomSelectedBackground
+    ? templateScratchTheme.background
     : undefined;
   const backgroundStyle =
-    nativeBeautyScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground
+    nativeTemplateScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground
       ? "none"
       : managedBackgroundUrl
         ? "none"
@@ -992,9 +992,9 @@ export function CampaignExperience({
           className="pointer-events-none absolute inset-0 z-0 object-cover"
         />
       ) : null}
-      {nativeBeautyScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground ? (
+      {nativeTemplateScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground ? (
         <Image
-          src={nativeWheelBackgroundUrl ?? nativeChristmasScratchBackground ?? nativeBeautyScratchBackground!}
+          src={nativeWheelBackgroundUrl ?? nativeChristmasScratchBackground ?? nativeTemplateScratchBackground!}
           alt=""
           fill
           priority

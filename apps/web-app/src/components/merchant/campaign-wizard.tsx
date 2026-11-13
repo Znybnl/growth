@@ -50,6 +50,7 @@ import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { useWizardLayout, WizardResponsivePreview } from "@/components/merchant/wizard-responsive-layout";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
 import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
+import { TravelScratchTemplateGallery } from "@/components/merchant/travel-scratch-template-gallery";
 import { ScratchTemplateThumbnail } from "@/components/merchant/scratch-template-thumbnail";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { GameTemplateCard } from "@/components/merchant/game-template-card";
@@ -83,7 +84,7 @@ import { CHRISTMAS_WHEEL_THEMES, christmasWheelPalette, christmasWheelTheme } fr
 import { isTravelWheelTemplate, TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-themes";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { HALLOWEEN_SCRATCH_TEMPLATE, halloweenScratchTemplate, isHalloweenFixedPalette } from "@/lib/halloween-scratch-template";
-import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate } from "@/lib/beauty-scratch-templates";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createAdminWizardMarketingActionDefaults,
@@ -1106,8 +1107,8 @@ export function CampaignWizard({
     });
   }
 
-  function selectBeautyScratchTemplate(templateId: BeautyScratchTemplateId) {
-    const theme = beautyScratchTemplate(templateId);
+  function selectBeautyScratchTemplate(templateId: GamePageTemplateId) {
+    const theme = scratchVisualTheme(templateId);
     if (!theme) return;
     captureClientProductEvent("campaign_template_selected", {
       campaignType: "scratch",
@@ -2442,6 +2443,12 @@ export function CampaignWizard({
               ) : null}
               {draft.gameType === "scratch" && isBeautyIndustry(merchant.industry) ? (
                 <BeautyScratchTemplateGallery
+                  selectedTemplateId={draft.presentation.layout.templateId}
+                  onSelect={selectBeautyScratchTemplate}
+                />
+              ) : null}
+              {draft.gameType === "scratch" && merchant.industry === "Agences de voyage" ? (
+                <TravelScratchTemplateGallery
                   selectedTemplateId={draft.presentation.layout.templateId}
                   onSelect={selectBeautyScratchTemplate}
                 />
