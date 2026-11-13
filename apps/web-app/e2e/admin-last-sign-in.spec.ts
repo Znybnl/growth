@@ -15,9 +15,11 @@ for (const size of [{ width: 1280, height: 720 }, { width: 1280, height: 600 }, 
     await page.goto("/dev/admin-last-sign-in");
     const accounts = page.locator(".okado-metric-card").filter({ has: page.getByText("Comptes", { exact: true }) });
     const establishments = page.locator(".okado-metric-card").filter({ has: page.getByText("Établissements", { exact: true }) });
+    const activeAccounts = page.locator(".okado-metric-card").filter({ has: page.getByText("Comptes avec accès actif", { exact: true }) });
     await expect(accounts.locator(".okado-metric-card__value")).toHaveText("1");
     await expect(establishments.locator(".okado-metric-card__value")).toHaveText("3");
-    await expect(establishments).toContainText("2 onboarding terminés · 2 avec accès actif");
+    await expect(establishments).toContainText("2 onboarding terminés");
+    await expect(activeAccounts.locator(".okado-metric-card__value")).toHaveText("1");
     if (size.width === 1280) await captureVisualAt1280(page, info, "pilotage-account-establishment-kpis", size.height);
     else await page.screenshot({ path: info.outputPath("pilotage-kpis-mobile.png") });
     const table = page.locator(".okado-admin-table");

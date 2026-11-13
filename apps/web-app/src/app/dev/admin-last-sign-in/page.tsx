@@ -8,12 +8,13 @@ export default function Page() {
   const merchant = { id: "demo", companyName: "Institut de démonstration", logoText: "Démo",
     onboardingCompleted: true, createdAt: "2026-10-01T12:00Z" };
   const overview: SaasAdminOverview = {
-    totals: { accounts: 1, merchants: 3, onboardedMerchants: 2, activeSubscriptions: 2, activeCampaigns: 4,
+    totals: { accounts: 1, merchants: 3, onboardedMerchants: 2, activeAccounts: 1, activeCampaigns: 4,
       leads: 18, pendingRewards: 6, lowStockPrizes: 0, failedRewardEmails: 0 },
     users: [
       { status: "available", at: "2026-10-24T23:30:00.000Z" } as const,
       { status: "never" } as const, { status: "unavailable" } as const,
-    ].map((lastSignIn, i) => ({ id: `demo-${i}`, merchantId: "demo", merchantName: merchant.companyName,
+    ].map((lastSignIn, i) => ({ id: `demo-${i}`, merchantId: "demo", billingMerchantId: "demo", merchantName: merchant.companyName,
+      establishments: [{ id: "demo", name: merchant.companyName, archived: false }],
       firstName: "Camille", lastName: `Démonstration ${i + 1}`, email: `camille.demonstration.${i}@example.test`,
       createdAt: merchant.createdAt, lastSignIn, onboardingCompleted: i !== 1,
       subscriptionStatus: null, stripeSubscriptionId: null, trialEndDate: null, subscriptionCurrentPeriodEnd: null,

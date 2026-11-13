@@ -26,7 +26,8 @@ function fixture() {
       site("a2", "a", { onboarding_completed: true, trial_end_date: "2999-01-01" }),
       site("b1", "b"), site("technical", "technical"), site("inactive", "inactive")],
     merchant_users: [user("alice", "a1"), user("co-owner", "a2"), user("bob", "a1"), user("inactive", "inactive")],
-    merchant_workspaces: ["a", "b", "technical", "inactive", "empty"].map(id => ({ id, name: id, created_at: "2026-01-01" })),
+    merchant_workspaces: ["a", "b", "technical", "inactive", "empty"].map(id => ({ id, name: id, created_at: "2026-01-01",
+      ...(id === "a" ? { stripe_subscription_status: "active" } : {}) })),
     merchant_workspace_memberships: [membership("1", "a", "alice"), membership("2", "a", "co-owner"),
       membership("3", "b", "bob"), membership("4", "technical", "alice", "admin"),
       membership("5", "inactive", "inactive", "owner", "inactive"), membership("6", "empty", "alice"),
@@ -69,7 +70,11 @@ test("registered accounts are deduplicated across sites/owners, independent of a
   assert.equal(result.totals.accounts, 2);
   assert.equal(result.totals.merchants, 5);
   assert.equal(result.totals.onboardedMerchants, 2);
-  assert.equal(result.totals.activeSubscriptions, 2);
+  assert.equal(result.totals.activeAccounts, 1);
+  const accountOwner = result.users.find(user => user.email === "alice@example.test");
+  assert.equal(accountOwner.establishments.map(site => site.id).join(","), "a1,a2");
+  assert.equal(accountOwner.billingMerchantId, "a1");
+  assert.equal((await repo.getSaasAdminOverview("a2")).users.length, 3);
   assert.equal(result.totals.activeCampaigns, 1);
   assert.equal(result.totals.leads, 51);
   assert.equal(result.totals.pendingRewards, 8);

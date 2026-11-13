@@ -39,8 +39,11 @@ technique sans propriétaire inscrit n'est pas un compte marchand inscrit.
 
 Le KPI « Établissements » compte tous les établissements enregistrés, en
 conservant le périmètre historique, y compris les établissements archivés.
-Les nombres d'onboarding terminés et d'établissements avec accès actif sont
-affichés en complément de ce KPI ; la règle d'accès existante ne change pas.
+L'accès commercial (abonnement actif ou essai valide) est porté par le compte
+marchand / workspace et ne se compte qu'une fois par compte, quel que soit son
+nombre d'établissements. Le nombre d'établissements dont l'onboarding est
+terminé reste affiché séparément ; aucun droit ni donnée de facturation n'est
+modifié par le tableau de Pilotage.
 Les totaux restent globaux lorsque l'annuaire des utilisateurs est filtré.
 
 ### Dernière connexion dans Pilotage — #411
@@ -175,7 +178,7 @@ Un même indicateur utilise la même source et la même formule à périmètre �
 - La date de retrait effective vient de redeemed_at. Pour l'historique où elle manque, seule la dernière preuve de retrait postérieure à la création du gain et à sa dernière réinitialisation est utilisable, jamais une date estimée. Les cas non datables restent dans le total mais sont signalés/exclus des répartitions par période. Une réinitialisation annule le retrait courant ; le prochain retrait possède sa nouvelle date.
 - Les graphiques couvrent des jours calendaires UTC complets ; les synthèses gardent leurs périodes locales closes et leur contenu figé. Aucun e-mail historique n'est rejoué.
 - Stock faible : stock fini et initial positif, restant strictement positif et au plus max(1, ceil(initial × 20 %)). Stock nul = épuisé, catégorie distincte ; illimité = aucune alerte de seuil. Les alertes opérationnelles portent sur les jeux actifs. Ces états n'interviennent jamais dans la consommation ou les participations.
-- Pilotage compte les établissements ayant un abonnement actif ou un essai valide, cohérent avec l'état présenté dans les lignes. Un essai applicatif n'exige pas Stripe. L'unité établissement est explicite, sans modification de droits ou facturation.
+- Pilotage compte les comptes marchands ayant un abonnement actif ou un essai valide, une seule fois par workspace, cohérent avec l'état présenté dans les lignes. Un essai applicatif n'exige pas Stripe. Le total des établissements reste un KPI séparé ; la colonne Commerce liste tous les établissements du compte, y compris archivés, en les signalant. Cette présentation ne modifie aucun droit ou donnée de facturation.
 - Les totaux ne dépendent pas d'une page REST ni des filtres de recherche/pagination des contacts. L'interface distingue contacts collectés, participations, gains et personnes uniques.
 
 - Décision propriétaire du 13 octobre 2026 (#496) : une **participation** est une partie effectivement commencée, distincte du scan et du contact. Elle est comptée une fois par session, que le joueur gagne ou perde, fournisse ou non ses coordonnées. Pour la roue, le tirage préparé au clic Jouer démarre immédiatement ; pour le ticket, seule la première action de grattage compte, pas sa préparation. Le formulaire et ses reprises n'ajoutent pas de partie. Les prévisualisations sont exclues.

@@ -16,6 +16,7 @@ type MerchantRow = {
   id: string;
   workspace_id: string;
   company_name: string;
+  location_status?: string | null;
   onboarding_completed: boolean;
   stripe_subscription_status: string | null;
   stripe_subscription_id: string | null;
@@ -34,13 +35,25 @@ type MerchantUserRow = {
   created_at: string;
 };
 
-type WorkspaceRow = { id: string; name: string; created_at: string };
+type WorkspaceRow = {
+  id: string;
+  name: string;
+  created_at: string;
+  stripe_subscription_id?: string | null;
+  stripe_subscription_status?: string | null;
+  subscription_current_period_end?: string | null;
+  subscription_cancel_at_period_end?: boolean | null;
+};
 type MembershipRow = { workspace_id: string; merchant_user_id: string; role: string; status: string };
+
+export type SaasAdminEstablishment = { id: string; name: string; archived: boolean };
 
 export type SaasAdminUserRow = {
   id: string;
   merchantId: string;
+  billingMerchantId: string;
   merchantName: string;
+  establishments: SaasAdminEstablishment[];
   firstName: string;
   lastName: string;
   email: string;
@@ -65,7 +78,7 @@ export type SaasAdminOverview = {
     /** Historical name: rows in merchants represent establishments. */
     merchants: number;
     onboardedMerchants: number;
-    activeSubscriptions: number;
+    activeAccounts: number;
     activeCampaigns: number;
     leads: number;
     pendingRewards: number;
@@ -84,13 +97,13 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
     : readAdminLastSignIns(supabase, (result.data as MerchantUserRow[] ?? []).map((user) => user.id)));
   const [merchantResult, userResult, campaignResult, metricResult, lastSignIns, membershipResult, workspaceResult] =
     await Promise.all([
-      readAllRows((offset,end) => supabase.from("merchants").select("id, workspace_id, company_name, onboarding_completed, stripe_subscription_status, stripe_subscription_id, trial_end_date, subscription_current_period_end, subscription_cancel_at_period_end, created_at", { count: "exact" }).order("id").range(offset,end)),
+      readAllRows((offset,end) => supabase.from("merchants").select("id, workspace_id, company_name, location_status, onboarding_completed, stripe_subscription_status, stripe_subscription_id, trial_end_date, subscription_current_period_end, subscription_cancel_at_period_end, created_at", { count: "exact" }).order("id").range(offset,end)),
       userRead,
       readAllRows((offset,end) => supabase.from("campaigns").select("id, merchant_id, is_active", { count: "exact" }).order("id").range(offset,end)),
       readAllRows((offset,end) => supabase.rpc("get_platform_operational_metrics", {}, { count: "exact" }).order("merchant_id").range(offset,end)),
       lastSignInRead,
       readAllRows((offset,end) => supabase.from("merchant_workspace_memberships").select("id, workspace_id, merchant_user_id, role, status", { count: "exact" }).order("id").range(offset,end)),
-      readAllRows((offset,end) => supabase.from("merchant_workspaces").select("id, name, created_at", { count: "exact" }).order("id").range(offset,end)),
+      readAllRows((offset,end) => supabase.from("merchant_workspaces").select("id, name, created_at, stripe_subscription_id, stripe_subscription_status, subscription_current_period_end, subscription_cancel_at_period_end", { count: "exact" }).order("id").range(offset,end)),
     ]);
 
   const error = [
@@ -107,6 +120,8 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
   const users = (userResult.data ?? []) as MerchantUserRow[];
   const accounts = buildAffiliateAccountDirectory(merchants, users,
     (membershipResult.data ?? []) as MembershipRow[], (workspaceResult.data ?? []) as WorkspaceRow[]);
+  const workspaceById = new Map(((workspaceResult.data ?? []) as WorkspaceRow[]).map((workspace) => [workspace.id, workspace]));
+  const accountByWorkspace = new Map(accounts.map((account) => [account.workspaceId, account]));
   const campaigns = campaignResult.data ?? [];
   const metrics = (metricResult.data ?? []) as Array<{ merchant_id: string; contacts: number; pending_rewards: number; low_stock: number; exhausted_stock: number; failed_emails: number }>;
 
@@ -127,26 +142,45 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
   const lowStockPrizes = metrics.reduce((n,m) => n + Number(m.low_stock), 0);
   const failedRewardEmails = metrics.reduce((n,m) => n + Number(m.failed_emails), 0);
   const merchantsById = new Map(merchants.map((merchant) => [merchant.id, merchant]));
+  const establishmentsByWorkspace = new Map<string, SaasAdminEstablishment[]>();
+  for (const merchant of merchants) {
+    const establishments = establishmentsByWorkspace.get(merchant.workspace_id) ?? [];
+    establishments.push({
+      id: merchant.id,
+      name: merchant.company_name || "Établissement sans nom",
+      archived: merchant.location_status === "archived",
+    });
+    establishmentsByWorkspace.set(merchant.workspace_id, establishments);
+  }
+  for (const establishments of establishmentsByWorkspace.values()) {
+    establishments.sort((left, right) => left.name.localeCompare(right.name, "fr"));
+  }
   const normalizedQuery = query.trim().toLowerCase();
   const rows = users
     .map((user) => {
       const merchant = merchantsById.get(user.merchant_id);
+      const workspaceId = merchant?.workspace_id;
+      const workspace = workspaceId ? workspaceById.get(workspaceId) : undefined;
+      const account = workspaceId ? accountByWorkspace.get(workspaceId) : undefined;
+      const billingMerchant = (account ? merchantsById.get(account.merchantId) : undefined) ?? merchant;
       const merchantCampaigns = campaignsByMerchant.get(user.merchant_id) ?? [];
       return {
         id: user.id,
         merchantId: user.merchant_id,
-        merchantName: merchant?.company_name ?? "Commerce introuvable",
+        billingMerchantId: billingMerchant?.id ?? user.merchant_id,
+        merchantName: workspace?.name ?? merchant?.company_name ?? "Commerce introuvable",
+        establishments: workspaceId ? (establishmentsByWorkspace.get(workspaceId) ?? []) : [],
         firstName: user.first_name,
         lastName: user.last_name,
         email: user.email,
         createdAt: user.created_at,
         lastSignIn: lastSignIns.get(user.id) ?? { status: "unavailable" },
         onboardingCompleted: merchant?.onboarding_completed ?? false,
-        subscriptionStatus: merchant?.stripe_subscription_status ?? null,
-        stripeSubscriptionId: merchant?.stripe_subscription_id ?? null,
-        trialEndDate: merchant?.trial_end_date ?? null,
-        subscriptionCurrentPeriodEnd: merchant?.subscription_current_period_end ?? null,
-        subscriptionCancelAtPeriodEnd: merchant?.subscription_cancel_at_period_end ?? false,
+        subscriptionStatus: workspace?.stripe_subscription_status ?? billingMerchant?.stripe_subscription_status ?? null,
+        stripeSubscriptionId: workspace?.stripe_subscription_id ?? billingMerchant?.stripe_subscription_id ?? null,
+        trialEndDate: billingMerchant?.trial_end_date ?? null,
+        subscriptionCurrentPeriodEnd: workspace?.subscription_current_period_end ?? billingMerchant?.subscription_current_period_end ?? null,
+        subscriptionCancelAtPeriodEnd: workspace?.subscription_cancel_at_period_end ?? billingMerchant?.subscription_cancel_at_period_end ?? false,
         campaignCount: merchantCampaigns.length,
         leadCount: leadCounts.get(user.merchant_id) ?? 0,
         lowStockCount: lowStockCounts.get(user.merchant_id) ?? 0,
@@ -156,7 +190,7 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
     })
     .filter((row) => {
       if (!normalizedQuery) return true;
-      return `${row.merchantName} ${row.firstName} ${row.lastName} ${row.email}`
+      return `${row.merchantName} ${row.establishments.map((establishment) => establishment.name).join(" ")} ${row.firstName} ${row.lastName} ${row.email}`
         .toLowerCase()
         .includes(normalizedQuery);
     })
@@ -167,9 +201,14 @@ export async function getSaasAdminOverview(query = ""): Promise<SaasAdminOvervie
       accounts: accounts.length,
       merchants: merchants.length,
       onboardedMerchants: merchants.filter((merchant) => merchant.onboarding_completed).length,
-      activeSubscriptions: merchants.filter((merchant) =>
-        activeSubscriptionOrTrial(merchant.stripe_subscription_status, merchant.trial_end_date),
-      ).length,
+      activeAccounts: accounts.filter((account) => {
+        const workspace = workspaceById.get(account.workspaceId);
+        const accountMerchant = merchantsById.get(account.merchantId);
+        return activeSubscriptionOrTrial(
+          workspace?.stripe_subscription_status ?? accountMerchant?.stripe_subscription_status ?? null,
+          accountMerchant?.trial_end_date ?? null,
+        );
+      }).length,
       activeCampaigns: campaigns.filter((campaign) => campaign.is_active).length,
       leads: metrics.reduce((n,m) => n + Number(m.contacts), 0),
       pendingRewards,
