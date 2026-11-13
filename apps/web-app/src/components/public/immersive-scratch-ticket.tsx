@@ -568,7 +568,7 @@ export function ImmersiveScratchTicket({
           ) : null}
           <h2
             className={`${travelTheme ? "mx-auto w-full max-w-none" : (beautyTheme && !christmasTheme && !halloweenTheme) || isConfetti || isRetroScratch ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
-            style={{ color: ink, fontSize: travelTheme ? `clamp(22px, ${Math.min(headingFontSizePx ?? 40, 34) / 3.9}cqw, 28px)` : seasonalTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: isRetroScratch ? Math.max(700, headingFontWeight) : headingFontWeight, letterSpacing: isRetroScratch ? "-0.025em" : undefined, whiteSpace: seasonalTheme ? "pre-line" : undefined,
+            style={{ color: ink, fontSize: travelTheme ? headingFontSize : seasonalTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: isRetroScratch ? Math.max(700, headingFontWeight) : headingFontWeight, letterSpacing: isRetroScratch ? "-0.025em" : undefined, whiteSpace: seasonalTheme ? "pre-line" : undefined,
               ...(halloweenTheme ? { backgroundImage: "linear-gradient(175deg,#fff0c7 0%,#f4b351 40%,#bc7024 70%,#ffdc94 100%)", backgroundClip: "text", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 0 6px #d982213d)" } : {}) }}
           >
             {displayHeadline}
