@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { selectWizardStep } from "./helpers/wizard-step";
 import { BEAUTY_SCRATCH_TEMPLATES, IMMERSIVE_SCRATCH_TEMPLATE_IDS } from "../src/lib/beauty-scratch-templates";
 import { TRAVEL_SCRATCH_THEMES } from "../src/lib/travel-scratch-themes";
+import { TRAVEL_WHEEL_THEMES } from "../src/lib/travel-wheel-themes";
 import { resolveScratchTemplateTextColor } from "../src/lib/campaign-defaults";
 
 async function isolate(page: Page) {
@@ -42,6 +43,35 @@ test("tickets Voyage : la taille choisie pour le texte principal est respectée"
       const ticketBounds = await page.getByTestId("scratch-ticket-surface").boundingBox();
       expect(ticketBounds!.y + ticketBounds!.height, `${theme.name} doit garder le ticket visible à ${width}px`).toBeLessThanOrEqual(pageSize.viewport + 1);
     }
+  }
+});
+
+test("tickets Voyage : le sous-titre reprend la typographie et le halo des roues", async ({ page }, info) => {
+  await isolate(page);
+  await page.setViewportSize({ width: 390, height: 850 });
+  for (const [wheel, scratch] of TRAVEL_WHEEL_THEMES.map((wheel) => [wheel, TRAVEL_SCRATCH_THEMES.find((theme) => theme.id === `travel-scratch-${wheel.id.replace("travel-", "")}`)!] as const)) {
+    await page.goto(url("public", wheel.id, { business: "travel", secondary: "Un sous-titre de démonstration" }));
+    const wheelSubtitle = page.getByTestId("christmas-wheel-subtitle");
+    await expect(wheelSubtitle).toBeVisible();
+    if (wheel.id === "travel-roadtrip") await page.screenshot({ path: info.outputPath("roadtrip-wheel-subtitle.png"), fullPage: true });
+    const wheelTypography = await wheelSubtitle.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return [style.fontFamily, style.fontSize, style.fontWeight, style.lineHeight, style.letterSpacing, style.textTransform, style.whiteSpace];
+    });
+
+    await page.goto(url("public", scratch.id, { business: "travel" }));
+    const scratchSubtitle = page.getByTestId("travel-scratch-subtitle");
+    await expect(scratchSubtitle).toBeVisible();
+    await page.screenshot({ path: info.outputPath(`${scratch.id}-subtitle.png`), fullPage: true });
+    const scratchTypography = await scratchSubtitle.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return [style.fontFamily, style.fontSize, style.fontWeight, style.lineHeight, style.letterSpacing, style.textTransform, style.whiteSpace];
+    });
+    expect(scratchTypography, `${scratch.name} doit reprendre la typographie de la roue`).toEqual(wheelTypography);
+    const halo = await scratchSubtitle.evaluate((element) => getComputedStyle(element, "::before").backgroundImage);
+    expect(halo).toContain("radial-gradient");
+    if (wheel.id === "travel-roadtrip") expect(halo).toContain("0.68");
+    if (wheel.id === "travel-tropical") expect(halo).toContain("0.56");
   }
 });
 

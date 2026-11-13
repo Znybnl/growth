@@ -94,6 +94,22 @@
 [data-travel-template="travel-roadtrip"] .subtitle::before {
   background: radial-gradient(ellipse at center, rgb(255 245 224 / 68%) 0%, rgb(255 245 224 / 46%) 38%, rgb(255 245 224 / 22%) 64%, transparent 86%);
 }
+.travelScratchSubtitle {
+  position: relative; isolation: isolate; width: 64%; max-width: none; margin-inline: auto;
+  margin-bottom: 0; font-family: var(--font-dm-sans), sans-serif; font-size: clamp(14.08px, 4.4vw, 26.4px);
+  font-weight: 600; line-height: 1.25; white-space: pre-line; overflow-wrap: anywhere; text-wrap: balance;
+}
+.travelScratchSubtitle::before {
+  content: ""; position: absolute; z-index: -1; left: 50%; top: 50%; width: 175%; height: 260%;
+  transform: translate(-50%, -50%); pointer-events: none;
+  background: radial-gradient(ellipse at center, rgb(255 248 230 / 52%) 0%, rgb(255 248 230 / 34%) 38%, rgb(255 248 230 / 14%) 64%, transparent 86%);
+}
+.travelScratchSubtitle[data-travel-template="travel-scratch-roadtrip"]::before {
+  background: radial-gradient(ellipse at center, rgb(255 245 224 / 68%) 0%, rgb(255 245 224 / 46%) 38%, rgb(255 245 224 / 22%) 64%, transparent 86%);
+}
+.travelScratchSubtitle[data-travel-template="travel-scratch-tropical"]::before {
+  background: radial-gradient(ellipse at center, rgb(226 248 255 / 56%) 0%, rgb(204 239 255 / 34%) 38%, rgb(191 229 255 / 14%) 64%, transparent 86%);
+}
 .travelCenter { inset: 39%; background: radial-gradient(circle at 30% 22%, #fff1b0, #d99620 62%, #8a540d); cursor: pointer; }
 .travelCenter:disabled { cursor: default; }
 .travelCenter:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }

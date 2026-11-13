@@ -15,6 +15,7 @@ import { scratchVisualTheme, type ImmersiveScratchTemplateId } from "@/lib/beaut
 import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { travelScratchTheme } from "@/lib/travel-scratch-themes";
+import travelWheelStyles from "./christmas-wheel.module.css";
 import { BRUSH_CLIP_PATH, SCALLOPED_TICKET_CLIP_PATH, SMOOTH_FESTIVE_BRUSH_CLIP_PATH } from "@/lib/scratch-surface-shapes";
 
 type ScratchTemplateId = ImmersiveScratchTemplateId;
@@ -576,8 +577,10 @@ export function ImmersiveScratchTicket({
           {halloweenTheme ? <Image src="/images/templates/halloween-gold/wordmark-v3.webp" alt="Spécial Halloween" width={900} height={196} className="mx-auto mt-4 h-auto w-[82%]" /> : null}
           {secondaryText?.trim() ? (
             <p
-              className={`mx-auto ${travelTheme ? "font-dm-sans" : ""} ${isRetroScratch ? "max-w-[280px] normal-case leading-[1.2] tracking-normal" : christmasTheme ? "max-w-[92%] normal-case leading-[1.2] tracking-normal" : "max-w-[280px] uppercase leading-[1.55] tracking-[0.08em]"} ${headingAlignmentClass}`}
-              style={{ color: withAlpha(isLilac ? logoTextColor || ink : ink, "d9"), fontSize: christmasTheme ? "clamp(12px, 6cqw, 18px)" : "clamp(10px, 4cqw, 14px)", marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
+              data-testid={travelTheme ? "travel-scratch-subtitle" : undefined}
+              data-travel-template={travelTheme?.id}
+              className={`${travelTheme ? travelWheelStyles.travelScratchSubtitle : `mx-auto ${isRetroScratch ? "max-w-[280px] normal-case leading-[1.2] tracking-normal" : christmasTheme ? "max-w-[92%] normal-case leading-[1.2] tracking-normal" : "max-w-[280px] uppercase leading-[1.55] tracking-[0.08em]"}`} ${headingAlignmentClass}`}
+              style={{ color: withAlpha(isLilac ? logoTextColor || ink : ink, "d9"), fontSize: travelTheme ? "clamp(14.08px, 4.4vw, 26.4px)" : christmasTheme ? "clamp(12px, 6cqw, 18px)" : "clamp(10px, 4cqw, 14px)", marginTop: `${Math.max(0, subtitleSpacingPx)}px` }}
             >
               {secondaryText.trim()}
             </p>
