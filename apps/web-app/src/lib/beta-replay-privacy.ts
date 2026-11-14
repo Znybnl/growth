@@ -27,6 +27,14 @@ const SAFE_LABELS = new Set([
   "Aperçu", "Plus", "Modifier l’e-mail de gain", "Choisir dans la bibliothèque", "Importer votre logo",
   "Secteur d’activité", "Sous-secteur", "Type de jeu", "Aucune campagne", "Voir les résultats",
   "Vue d’ensemble", "Toutes les campagnes", "Scans et participations par jour", "Conversion",
+  "Le type de jeu.", "Le texte affiché à vos clients.", "Donnez à la campagne votre signature.",
+  "Configurez vos récompenses et leurs probabilités.", "Composez les actions proposées avant le jeu.",
+  "Choisissez les récompenses et définissez les chances de les gagner.", "Trouver des idées de lots", "Créer un lot",
+  "Répartition des chances", "Les chances restantes sont calculées comme des participations perdantes.",
+  "Aucun lot n’est ajouté automatiquement. Vérifiez les offres disponibles chez vous, puis personnalisez-les.",
+  "Quels avantages souhaitez-vous faire gagner ?", "Commencez avec une composition suggérée ou créez vos propres lots.",
+  "Créer rapidement", "Choisissez une composition prête à personnaliser.", "Explorer les suggestions",
+  "Découvrez des lots adaptés à votre activité.", "Créer mes lots", "Ajoutez vos propres récompenses.",
 ]);
 
 export function maskBetaReplayText(text: string, element?: Element) {
@@ -112,6 +120,6 @@ export function betaReplayUrl(raw: string) {
 }
 
 export const BETA_REPLAY_BLOCK_SELECTOR = [
-  ".ph-no-capture", "[data-replay-private]", "img:not([src^='/images/scratch-templates/']):not([src^='/images/wheel-templates/'])", "svg:not(.lucide)", "canvas", "iframe", "video", "audio",
+  ".ph-no-capture", "[data-replay-private]", "img:not([src^='/images/scratch-templates/']):not([src^='/images/wheel-templates/'])", "svg:not(.lucide)", "canvas", "video", "audio",
   "script", "noscript", "meta", "title", "[contenteditable]",
 ].join(",");

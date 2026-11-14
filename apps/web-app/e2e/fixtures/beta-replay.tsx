@@ -45,6 +45,7 @@ export function BetaReplayProof() {
     <p>Interactions : {clicks}</p><p>client-secret@example.test</p>
     <input aria-label="Saisie sensible" defaultValue="private-input@example.test" />
     <input aria-label="PIN" type="password" defaultValue="9876-private-pin" />
+    <iframe title="Prévisualisation fictive" sandbox="allow-same-origin" srcDoc={'<!doctype html><html><body><h1>Configurez vos récompenses et leurs probabilités.</h1><p>iframe-private-person@example.test</p><input type="password" value="iframe-password-secret" /></body></html>'} />
     <a href="https://example.test/private-destination?token=private-token" title="private-title">Lien privé</a>
     <div data-replay-private>private-private-container</div>
     <div style={{ "--private-label": "private-css-secret", width: 12 } as CSSProperties}>Texte privé</div>

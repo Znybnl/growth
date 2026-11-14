@@ -119,6 +119,9 @@ for (const choice of ["absent", "rejected", "accepted"] as const) {
     const raw = JSON.stringify(decoded);
     if (choice !== "accepted") expect(state.outbound.join(" ")).not.toContain("private-query");
     expect(raw).toContain("Toutes vos campagnes");
+    expect(raw).toContain("Configurez vos récompenses et leurs probabilités.");
+    expect(raw).not.toContain("iframe-private-person@example.test");
+    expect(raw).not.toContain("iframe-password-secret");
     expect(raw).toContain("/images/scratch-templates/beauty-noir-or.webp");
     expect(raw).toContain("childNodes"); // A real DOM snapshot was inspected, not just compressed bytes.
     for (const secret of ["client-secret", "private-input", "9876-private-pin", "private-destination", "private-token", "private-title", "private-image", "private-query", "private-hash", "private-private-container", "private-console-secret", "private-network-secret", "private-response-secret", "private-css-secret"]) {

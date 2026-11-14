@@ -40,6 +40,7 @@ test("public games, authentication, personal data and admin are excluded; URLs r
 
 test("free text, attributes and uploads are masked, while fixed UI labels remain readable", () => {
   assert.equal(maskBetaReplayText("Continuer"), "Continuer");
+  for (const description of ["Le type de jeu.", "Le texte affiché à vos clients.", "Donnez à la campagne votre signature.", "Configurez vos récompenses et leurs probabilités.", "Composez les actions proposées avant le jeu."]) assert.equal(maskBetaReplayText(description), description);
   assert.equal(maskBetaReplayText("person@example.test"), "*******************");
   for (const name of ["href", "src", "id", "title", "aria-label", "data-private", "value"]) assert.equal(maskBetaReplayAttribute(name, "secret@example.test"), "");
   assert.equal(maskBetaReplayAttribute("style", "background: url(secret)"), "");
