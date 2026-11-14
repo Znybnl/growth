@@ -49,7 +49,8 @@ abonnement, les retraits et l’administration sensible sont exclus. Le replay
   SVG, médias, images, canvas, éléments privés et contenus
   éditables bloqués. Ni console, ni corps/en-têtes réseau, ni capture JSON-LD.
   URL sans requête, fragment ou identifiant dynamique.
-- Les iframes de brouillon et d'aperçu de l'e-mail peuvent être enregistrées dans un écran autorisé ;
+- Les iframes de brouillon, d'aperçu de l'e-mail et de prévisualisation marchande
+  du jeu sur la route standard peuvent être enregistrées dans un écran autorisé ;
   les mêmes filtres de texte, saisie et attributs s'appliquent à leur contenu.
   Les iframes tierces ne sont pas accessibles au recorder et leur contenu peut
   rester vide. Le contenu libre et les données sensibles restent masqués.

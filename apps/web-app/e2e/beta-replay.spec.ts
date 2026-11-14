@@ -162,6 +162,23 @@ test("noneligible or public phase never loads the recorder", async ({ page }) =>
   expect(state.packets).toEqual([]);
 });
 
+test("merchant game preview is recorded while participant information remains hidden", async ({ page }) => {
+  const state = await setup(page);
+  await page.route("**/campaign/replay-fixture/preview-embed?preview=1", route => route.fulfill({
+    contentType: "text/html",
+    body: '<!doctype html><html><body><h1>Modifier l’e-mail de gain</h1><p data-replay-private>Durée de validité du gain (jours)</p><p>participant-game@example.test</p><input type="password" value="game-password-secret" /></body></html>',
+  }));
+  await open(page);
+  await waitForSnapshots(page, state);
+  await page.getByRole("button", { name: "Ouvrir aperçu jeu fictif" }).click();
+  await expect(page.frameLocator('iframe[title="Prévisualisation mobile du jeu"]').getByText("Modifier l’e-mail de gain")).toBeVisible();
+  await expect.poll(() => JSON.stringify(unpack(state.packets.filter(p => p.event === "$snapshot"))).includes("Modifier l’e-mail de gain")).toBe(true);
+  const raw = JSON.stringify(unpack(state.packets.filter(p => p.event === "$snapshot")));
+  expect(raw).not.toContain("participant-game@example.test");
+  expect(raw).not.toContain("game-password-secret");
+  expect(raw).not.toContain("Durée de validité du gain (jours)");
+});
+
 test("signout and public navigation stop an active replay", async ({ page }) => {
   const state = await setup(page);
   await open(page);

@@ -10,6 +10,7 @@ import { MetricCard, PageHeader } from "@/components/ui/workspace";
 import type { Merchant } from "@/lib/types";
 import { DraftPreviewViewport } from "@/components/merchant/draft-preview-viewport";
 import { RewardEmailPreviewFrame } from "@/components/merchant/reward-email-preview-frame";
+import { CampaignPreviewDialog } from "@/components/merchant/campaign-preview-dialog";
 
 const merchant: Merchant = { id: "merchant-fixture", companyName: "private-company-secret", logoText: "private-logo-secret", createdAt: "2026-10-30T00:00:00Z" };
 
@@ -17,6 +18,7 @@ export function BetaReplayProof() {
   const [subject, setSubject] = useState("merchant-fixture:user-fixture");
   const [mounted, setMounted] = useState(false);
   const [clicks, setClicks] = useState(0);
+  const [gamePreviewOpen, setGamePreviewOpen] = useState(false);
   return <MerchantShell merchant={merchant}
     user={{ id: "user-fixture", merchantId: merchant.id, role: "owner", firstName: "private-first-secret", lastName: "private-last-secret", email: "beta-fixture@example.test", password: "", createdAt: merchant.createdAt }}
     locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
@@ -36,6 +38,8 @@ export function BetaReplayProof() {
       setMounted(true);
     }}>Ouvrir la session fictive</button>
     <button onClick={() => setClicks(clicks + 1)}>Ajouter</button>
+    <button onClick={() => setGamePreviewOpen(true)}>Ouvrir aperçu jeu fictif</button>
+    {gamePreviewOpen && <CampaignPreviewDialog open campaignId="replay-fixture" onClose={() => setGamePreviewOpen(false)} />}
     <button onClick={() => captureClientProductEvent("campaign_preview_opened")}>Événement ordinaire fictif</button>
     <button onClick={() => {
       console.warn("private-console-secret");
