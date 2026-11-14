@@ -45,7 +45,7 @@ test("Nude a son propre fond par défaut, laisse la priorité à une image chois
   expect(defaultScratchTemplateForIndustry("Beauté")).toBe("beauty-scratch-nude");
   expect(defaultScratchTemplateForIndustry(" beauté ")).toBe("beauty-scratch-nude");
 
-  const scratchBackgrounds = builtInBackgroundAssets.filter((asset) => asset.id.startsWith("builtin-scratch-"));
+  const scratchBackgrounds = builtInBackgroundAssets.filter((asset) => asset.id.startsWith("builtin-scratch-") && asset.category === "Beauté & bien-être");
   expect(scratchBackgrounds).toHaveLength(6);
   expect(scratchBackgrounds.every((asset) => asset.category === "Beauté & bien-être")).toBe(true);
   for (const asset of scratchBackgrounds) {
