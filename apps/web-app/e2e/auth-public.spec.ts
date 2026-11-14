@@ -30,6 +30,36 @@ test.describe("Parcours public d'authentification", () => {
     await expect(page.getByText("Identifiants invalides.", { exact: true })).toBeVisible();
   });
 
+  test("la connexion conserve les données et l'option de session lors de l'affichage du mot de passe", async ({ page }) => {
+    let submitted: Record<string, unknown> | undefined;
+    await page.route("**/api/auth/signin", route => { submitted = route.request().postDataJSON(); return route.fulfill({ status: 401, json: { error: "Identifiants invalides." } }); });
+    await page.goto("/connexion");
+    await page.getByLabel("Adresse e-mail").fill("test@example.com");
+    const password = page.getByLabel("Mot de passe", { exact: true });
+    await password.fill("secret-de-test");
+    await page.getByRole("button", { name: "Afficher le mot de passe" }).click();
+    await expect(password).toHaveAttribute("type", "text");
+    await page.getByRole("button", { name: "Masquer le mot de passe" }).click();
+    await expect(password).toHaveAttribute("type", "password");
+    await page.getByRole("checkbox", { name: "Se souvenir de moi" }).uncheck();
+    await page.getByRole("button", { name: "Se connecter", exact: true }).click();
+    await expect(page.getByText("Identifiants invalides.")).toBeVisible();
+    expect(submitted).toMatchObject({ email: "test@example.com", password: "secret-de-test", remember: false });
+  });
+
+  test("connexion et inscription partagent l'alignement du logo et de la carte", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/inscription");
+    const brand = await page.getByTestId("auth-brand").boundingBox();
+    const card = await page.getByTestId("auth-card").boundingBox();
+    await page.goto("/connexion");
+    const loginBrand = await page.getByTestId("auth-brand").boundingBox();
+    const loginCard = await page.getByTestId("auth-card").boundingBox();
+    expect(loginBrand).toMatchObject({ x: brand!.x, y: brand!.y, width: brand!.width });
+    expect(loginCard).toMatchObject({ x: card!.x, y: card!.y, width: card!.width });
+    await expect(page.getByText("Résultats fictifs, à titre illustratif.")).toBeVisible();
+  });
+
   test("la page d'inscription bloque une inscription sans acceptation des conditions", async ({ page }) => {
     let signupRequests = 0;
     await page.route("**/api/auth/signup", route => { signupRequests++; return route.fulfill({ status: 400, json: { error: "Ne doit pas être envoyé" } }); });

@@ -1,13 +1,15 @@
 import Image from "next/image";
 import { Check, ScanLine } from "lucide-react";
 
-const benefits = [
+const signupBenefits = [
   "Créez un jeu à votre image",
   "Faites jouer vos clients en quelques secondes",
   "Suivez participations, gains et retraits",
 ];
 
-export function SignupProductPanel() {
+export function SignupProductPanel({ mode = "signup" }: { mode?: "signup" | "signin" }) {
+  const isSignin = mode === "signin";
+  const benefits = isSignin ? ["Retrouvez vos campagnes actives.", "Suivez les participations et les gains.", "Gérez les retraits de cadeaux."] : signupBenefits;
   return (
     <aside className="relative hidden min-h-screen overflow-hidden bg-[#431a4c] px-8 py-10 text-white lg:flex lg:items-start lg:justify-center xl:px-12" aria-label="Découvrez Okado">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_28%,rgba(164,96,174,.46),transparent_58%),linear-gradient(150deg,#64206f,#381342)]" />
@@ -19,8 +21,9 @@ export function SignupProductPanel() {
             <ScanLine className="h-7 w-7 sm:h-9 sm:w-9" />
           </div>
         </div>
-        <h2 data-testid="auth-promo-copy" className="mt-6 max-w-[540px] text-balance text-[clamp(1.7rem,2.5vw,2.3rem)] font-semibold leading-[1.12] tracking-tight">Créez des animations qui donnent envie de revenir.</h2>
-        <p className="mt-4 max-w-[510px] text-sm leading-6 text-white/90">Personnalisez votre roue ou votre ticket à gratter, faites jouer vos clients via QR code et suivez les gains depuis votre espace marchand.</p>
+        {isSignin ? <p className="mt-2 text-xs text-white/85">Résultats fictifs, à titre illustratif.</p> : null}
+        <h2 data-testid="auth-promo-copy" className="mt-6 max-w-[540px] text-balance text-[clamp(1.7rem,2.5vw,2.3rem)] font-semibold leading-[1.12] tracking-tight">{isSignin ? "Retrouvez vos jeux et vos résultats." : "Créez des animations qui donnent envie de revenir."}</h2>
+        <p className="mt-4 max-w-[510px] text-sm leading-6 text-white/90">{isSignin ? "Gérez vos campagnes, suivez les participations et validez les cadeaux remis à vos clients." : "Personnalisez votre roue ou votre ticket à gratter, faites jouer vos clients via QR code et suivez les gains depuis votre espace marchand."}</p>
         <ul className="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-3 text-left text-[14px] font-semibold leading-5 text-white">
           {benefits.map(benefit => <li key={benefit} className="flex max-w-[190px] items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />{benefit}</li>)}
         </ul>

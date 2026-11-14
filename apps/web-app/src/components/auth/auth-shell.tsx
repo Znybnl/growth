@@ -23,19 +23,19 @@ export function AuthShell({
   flatContent = false,
   children,
 }: AuthShellProps) {
-  if (eyebrow === "Inscription marchand") {
+  if (eyebrow === "Inscription marchand" || eyebrow === "Connexion marchand") {
     return <div className="okado-auth-shell min-h-screen overflow-x-hidden bg-linen-canvas">
       <div className="grid min-h-screen lg:grid-cols-[48%_52%]">
         <section className="flex justify-center bg-linen-canvas px-5 py-5 sm:px-8 lg:px-8 lg:py-5">
-          <div className="flex w-full max-w-[480px] flex-col justify-center">
-            <div className="mb-4 flex items-center gap-3">
+          <div className="flex w-full max-w-[480px] flex-col lg:pt-3">
+            <div data-testid="auth-brand" className="mb-4 flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-[12px] text-white shadow-sm" style={{ background: "var(--gradient-hero-blue-fade)" }}><Star className="h-5 w-5 fill-white text-white" aria-hidden="true" /></div>
               <div><p className="text-2xl font-semibold tracking-[-0.04em] text-aubergine">{APP_NAME_CAPITALIZED}</p><p className="text-sm text-ash">Espace professionnel</p></div>
             </div>
-            <div className="w-full rounded-2xl bg-white px-5 shadow-[0_8px_36px_rgba(67,26,76,.07)] ring-1 ring-[#ece3ef] sm:px-6">{children}</div>
+            <div data-testid="auth-card" className="w-full rounded-2xl bg-white px-5 shadow-[0_8px_36px_rgba(67,26,76,.07)] ring-1 ring-[#ece3ef] sm:px-6">{children}</div>
           </div>
         </section>
-        <SignupProductPanel />
+        <SignupProductPanel mode={eyebrow === "Connexion marchand" ? "signin" : "signup"} />
       </div>
     </div>;
   }
