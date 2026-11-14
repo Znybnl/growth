@@ -1,6 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 import { selectWizardStep } from "./helpers/wizard-step";
 import { BEAUTY_SCRATCH_TEMPLATES, IMMERSIVE_SCRATCH_TEMPLATE_IDS } from "../src/lib/beauty-scratch-templates";
+import { TRAVEL_SCRATCH_THEMES } from "../src/lib/travel-scratch-themes";
+import { TRAVEL_WHEEL_THEMES } from "../src/lib/travel-wheel-themes";
 import { resolveScratchTemplateTextColor } from "../src/lib/campaign-defaults";
 
 async function isolate(page: Page) {
@@ -15,6 +17,63 @@ test("Cadeau lilas corrige le bleu hérité sans modifier une couleur propre ni 
   expect(resolveScratchTemplateTextColor("#003cb4", "scratch-lilac")).toBe("#210b32");
   expect(resolveScratchTemplateTextColor("#123456", "scratch-lilac")).toBe("#123456");
   expect(resolveScratchTemplateTextColor("#003cb4", "scratch-coral")).toBe("#003cb4");
+});
+
+test("tickets Voyage : la taille choisie pour le texte principal est respectée", async ({ page }) => {
+  await isolate(page);
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    for (const theme of TRAVEL_SCRATCH_THEMES) {
+      const sizes: number[] = [];
+      for (const headingSize of [34, 52]) {
+        await page.goto(url("public", theme.id, { business: "travel", headingSize: String(headingSize) }));
+        const heading = page.locator("h2").filter({ hasText: "Une surprise" }).first();
+        await expect(heading).toBeVisible();
+        sizes.push(await heading.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize)));
+        const bounds = await heading.boundingBox();
+        expect(bounds!.x).toBeGreaterThanOrEqual(0);
+        expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+        expect(await heading.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+      }
+      expect(sizes[1] - sizes[0], `${theme.name} doit répercuter la taille choisie à ${width}px`).toBeGreaterThan(10);
+      await page.goto(url("public", theme.id, { business: "travel" }));
+      const pageSize = await page.evaluate(() => ({ document: document.documentElement.scrollHeight, viewport: window.innerHeight }));
+      expect(pageSize.document, `${theme.name} ne doit pas ajouter de barre de défilement à ${width}px`).toBeLessThanOrEqual(pageSize.viewport + 1);
+      await expect(page.getByText("Découvrez votre cadeau", { exact: true })).toHaveCSS("font-family", /DM Sans/);
+      const ticketBounds = await page.getByTestId("scratch-ticket-surface").boundingBox();
+      expect(ticketBounds!.y + ticketBounds!.height, `${theme.name} doit garder le ticket visible à ${width}px`).toBeLessThanOrEqual(pageSize.viewport + 1);
+    }
+  }
+});
+
+test("tickets Voyage : le sous-titre reprend la typographie et le halo des roues", async ({ page }, info) => {
+  await isolate(page);
+  await page.setViewportSize({ width: 390, height: 850 });
+  for (const [wheel, scratch] of TRAVEL_WHEEL_THEMES.map((wheel) => [wheel, TRAVEL_SCRATCH_THEMES.find((theme) => theme.id === `travel-scratch-${wheel.id.replace("travel-", "")}`)!] as const)) {
+    await page.goto(url("public", wheel.id, { business: "travel", secondary: "Un sous-titre de démonstration" }));
+    const wheelSubtitle = page.getByTestId("christmas-wheel-subtitle");
+    await expect(wheelSubtitle).toBeVisible();
+    if (wheel.id === "travel-roadtrip") await page.screenshot({ path: info.outputPath("roadtrip-wheel-subtitle.png"), fullPage: true });
+    const wheelTypography = await wheelSubtitle.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return [style.fontFamily, style.fontSize, style.fontWeight, style.lineHeight, style.letterSpacing, style.textTransform, style.whiteSpace];
+    });
+
+    await page.goto(url("public", scratch.id, { business: "travel" }));
+    const scratchSubtitle = page.getByTestId("travel-scratch-subtitle");
+    await expect(scratchSubtitle).toBeVisible();
+    await page.screenshot({ path: info.outputPath(`${scratch.id}-subtitle.png`), fullPage: true });
+    const scratchTypography = await scratchSubtitle.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return [style.fontFamily, style.fontSize, style.fontWeight, style.lineHeight, style.letterSpacing, style.textTransform, style.whiteSpace];
+    });
+    expect(scratchTypography, `${scratch.name} doit reprendre la typographie de la roue`).toEqual(wheelTypography);
+    const halo = await scratchSubtitle.evaluate((element) => getComputedStyle(element, "::before").backgroundImage);
+    if (wheel.id === "travel-elegant") expect(halo).toBe("none");
+    else expect(halo).toContain("radial-gradient");
+    if (wheel.id === "travel-roadtrip") expect(halo).toContain("0.68");
+    if (wheel.id === "travel-tropical") expect(halo).toContain("0.56");
+  }
 });
 
 for (const width of [320, 390, 1280]) {
@@ -58,6 +117,15 @@ for (const mode of ["preview", "public", "game-preview"]) {
     await expect(surface).toHaveCSS("background-image", /aurora-retail/);
   });
 
+  test(`${mode} : un fond choisi manuellement reste prioritaire sur les tickets Voyage`, async ({ page }) => {
+    await isolate(page);
+    await page.setViewportSize({ width: 390, height: 850 });
+    const surface = page.locator(mode === "preview" ? ".okado-preview-surface > div" : ".okado-public-experience");
+    await page.goto(url(mode, "travel-scratch-tropical", { background: "image" }));
+    await expect(surface).toHaveCSS("background-image", /aurora-retail/);
+    await expect(page.getByTestId("scratch-ticket-surface")).toBeVisible();
+  });
+
   test(`${mode} : les onze tickets n'affichent plus les phrases sous le grattage`, async ({ page }, info) => {
     await isolate(page);
     await page.setViewportSize({ width: 390, height: 850 });
@@ -67,7 +135,7 @@ for (const mode of ["preview", "public", "game-preview"]) {
       const ticket = page.getByTestId("scratch-ticket-surface");
       await expect(ticket).toBeVisible();
       const ticketWidth = await ticket.evaluate((node) => Number.parseFloat(getComputedStyle(node).width));
-      expect(ticketWidth).toBeLessThanOrEqual(216);
+      expect(ticketWidth).toBeLessThanOrEqual(template.startsWith("travel-scratch-") || template.startsWith("scratch-christmas-") ? 310 : 216);
       await expect(page.getByText(/Le résultat s'affiche automatiquement|Le résultat apparaît dès|Le gain sera disponible selon|Votre gain sera confirmé après/)).toHaveCount(0);
       if (template === "scratch-lilac") {
         await expect(page.getByText("Établissement de test", { exact: true }).first()).toHaveCSS("color", "rgb(33, 11, 50)");
@@ -78,7 +146,7 @@ for (const mode of ["preview", "public", "game-preview"]) {
   });
 }
 
-test("game-preview : les textures d’origine des onze tickets sont réellement peintes dans la couche à gratter", async ({ page }, info) => {
+test("game-preview : les textures d’origine des tickets sont réellement peintes dans la couche à gratter", async ({ page }, info) => {
   await isolate(page);
   await page.setViewportSize({ width: 390, height: 850 });
 
