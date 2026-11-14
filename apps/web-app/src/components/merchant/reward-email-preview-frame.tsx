@@ -29,6 +29,7 @@ export function RewardEmailPreviewFrame({ html }: { html: string }) {
 
   return (
     <iframe
+      data-replay-preview
       ref={frame}
       title="Aperçu de l’e-mail de gain"
       sandbox="allow-same-origin"

@@ -1573,7 +1573,7 @@ export function CampaignExperience({
                 </div>
               ) : null}
               <p className="mt-3 break-words text-xs leading-5 text-[#61687a]">
-                Code de retrait : <span className="font-semibold">{redemptionCode}</span>
+                Code de retrait : <span className="font-semibold" data-replay-private>{redemptionCode}</span>
               </p>
             </div>
           ) : null}

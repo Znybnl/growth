@@ -88,6 +88,8 @@ for (const choice of ["absent", "rejected", "accepted"] as const) {
     }
     const before = (await page.context().cookies()).find(c => c.name === "okado_analytics_consent")?.value;
     await open(page);
+    await expect(page.frameLocator('iframe[title^="Aperçu du brouillon"]').getByText("Répartition des chances")).toBeVisible();
+    await expect(page.frameLocator('iframe[title="Aperçu de l’e-mail de gain"]').getByText("Choisissez votre point de départ")).toBeVisible();
     await waitForSnapshots(page, state);
     await page.getByRole("button", { name: "Simuler une requête privée" }).click();
     await page.getByRole("button", { name: "Événement ordinaire fictif" }).click();
@@ -119,7 +121,19 @@ for (const choice of ["absent", "rejected", "accepted"] as const) {
     const raw = JSON.stringify(decoded);
     if (choice !== "accepted") expect(state.outbound.join(" ")).not.toContain("private-query");
     expect(raw).toContain("Toutes vos campagnes");
+    expect(raw).toContain("Configurez vos récompenses et leurs probabilités.");
+    expect(raw).toContain("color:#abcdef");
+    expect(raw).not.toContain("iframe-private-person@example.test");
+    expect(raw).not.toContain("iframe-password-secret");
+    expect(raw).not.toContain("client-frame-secret@example.test");
+    expect(raw).not.toContain("Le type de jeu.");
+    expect(raw).toContain("Répartition des chances");
+    expect(raw).toContain("Choisissez votre point de départ");
+    expect(raw).not.toContain("draft-private-person@example.test");
+    expect(raw).not.toContain("email-private-person@example.test");
+    expect(raw).not.toContain("private-optimized-client.png");
     expect(raw).toContain("/images/scratch-templates/beauty-noir-or.webp");
+    expect(raw.split("/images/scratch-templates/beauty-noir-or.webp").length - 1).toBeGreaterThanOrEqual(2);
     expect(raw).toContain("childNodes"); // A real DOM snapshot was inspected, not just compressed bytes.
     for (const secret of ["client-secret", "private-input", "9876-private-pin", "private-destination", "private-token", "private-title", "private-image", "private-query", "private-hash", "private-private-container", "private-console-secret", "private-network-secret", "private-response-secret", "private-css-secret"]) {
       expect(raw).not.toContain(secret);
@@ -146,6 +160,23 @@ test("noneligible or public phase never loads the recorder", async ({ page }) =>
   await expect.poll(() => state.checks).toBeGreaterThan(0);
   expect(state.requests).toEqual([]);
   expect(state.packets).toEqual([]);
+});
+
+test("merchant game preview is recorded while participant information remains hidden", async ({ page }) => {
+  const state = await setup(page);
+  await page.route("**/campaign/replay-fixture/preview-embed?preview=1", route => route.fulfill({
+    contentType: "text/html",
+    body: '<!doctype html><html><body><h1>Modifier l’e-mail de gain</h1><p data-replay-private>Durée de validité du gain (jours)</p><p>participant-game@example.test</p><input type="password" value="game-password-secret" /></body></html>',
+  }));
+  await open(page);
+  await waitForSnapshots(page, state);
+  await page.getByRole("button", { name: "Ouvrir aperçu jeu fictif" }).click();
+  await expect(page.frameLocator('iframe[title="Prévisualisation mobile du jeu"]').getByText("Modifier l’e-mail de gain")).toBeVisible();
+  await expect.poll(() => JSON.stringify(unpack(state.packets.filter(p => p.event === "$snapshot"))).includes("Modifier l’e-mail de gain")).toBe(true);
+  const raw = JSON.stringify(unpack(state.packets.filter(p => p.event === "$snapshot")));
+  expect(raw).not.toContain("participant-game@example.test");
+  expect(raw).not.toContain("game-password-secret");
+  expect(raw).not.toContain("Durée de validité du gain (jours)");
 });
 
 test("signout and public navigation stop an active replay", async ({ page }) => {

@@ -8,6 +8,9 @@ import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { MerchantShell } from "@/components/merchant/merchant-shell";
 import { MetricCard, PageHeader } from "@/components/ui/workspace";
 import type { Merchant } from "@/lib/types";
+import { DraftPreviewViewport } from "@/components/merchant/draft-preview-viewport";
+import { RewardEmailPreviewFrame } from "@/components/merchant/reward-email-preview-frame";
+import { CampaignPreviewDialog } from "@/components/merchant/campaign-preview-dialog";
 
 const merchant: Merchant = { id: "merchant-fixture", companyName: "private-company-secret", logoText: "private-logo-secret", createdAt: "2026-10-30T00:00:00Z" };
 
@@ -15,6 +18,7 @@ export function BetaReplayProof() {
   const [subject, setSubject] = useState("merchant-fixture:user-fixture");
   const [mounted, setMounted] = useState(false);
   const [clicks, setClicks] = useState(0);
+  const [gamePreviewOpen, setGamePreviewOpen] = useState(false);
   return <MerchantShell merchant={merchant}
     user={{ id: "user-fixture", merchantId: merchant.id, role: "owner", firstName: "private-first-secret", lastName: "private-last-secret", email: "beta-fixture@example.test", password: "", createdAt: merchant.createdAt }}
     locations={[{ merchant, role: "owner" }]} activeLocationId={merchant.id} isSaasAdmin={false}>
@@ -34,6 +38,8 @@ export function BetaReplayProof() {
       setMounted(true);
     }}>Ouvrir la session fictive</button>
     <button onClick={() => setClicks(clicks + 1)}>Ajouter</button>
+    <button onClick={() => setGamePreviewOpen(true)}>Ouvrir aperçu jeu fictif</button>
+    {gamePreviewOpen && <CampaignPreviewDialog open campaignId="replay-fixture" onClose={() => setGamePreviewOpen(false)} />}
     <button onClick={() => captureClientProductEvent("campaign_preview_opened")}>Événement ordinaire fictif</button>
     <button onClick={() => {
       console.warn("private-console-secret");
@@ -45,6 +51,10 @@ export function BetaReplayProof() {
     <p>Interactions : {clicks}</p><p>client-secret@example.test</p>
     <input aria-label="Saisie sensible" defaultValue="private-input@example.test" />
     <input aria-label="PIN" type="password" defaultValue="9876-private-pin" />
+    <iframe data-replay-preview title="Prévisualisation fictive" sandbox="allow-same-origin" srcDoc={'<!doctype html><html><body><h1 style="color:#abcdef">Configurez vos récompenses et leurs probabilités.</h1><p>iframe-private-person@example.test</p><input type="password" value="iframe-password-secret" /></body></html>'} />
+    <iframe title="Données client fictives" sandbox="allow-same-origin" srcDoc={'<!doctype html><html><body><p>client-frame-secret@example.test</p><p>Le type de jeu.</p></body></html>'} />
+    {mounted && <><DraftPreviewViewport><p>Répartition des chances</p><p>draft-private-person@example.test</p></DraftPreviewViewport>
+    <RewardEmailPreviewFrame html={'<p>Choisissez votre point de départ</p><p>email-private-person@example.test</p>'} /></>}
     <a href="https://example.test/private-destination?token=private-token" title="private-title">Lien privé</a>
     <div data-replay-private>private-private-container</div>
     <div style={{ "--private-label": "private-css-secret", width: 12 } as CSSProperties}>Texte privé</div>
@@ -53,5 +63,9 @@ export function BetaReplayProof() {
     <img src="/private-logo.png?token=private-image-token" alt="private-image-description" />
     {/* eslint-disable-next-line @next/next/no-img-element */}
     <img src="/images/scratch-templates/beauty-noir-or.webp" alt="Illustration" />
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src="/_next/image?url=%2Fimages%2Fscratch-templates%2Fbeauty-noir-or.webp&w=640&q=75" alt="Illustration optimisée" />
+    {/* eslint-disable-next-line @next/next/no-img-element */}
+    <img src="/_next/image?url=%2Fuploads%2Fprivate-optimized-client.png&w=640&q=75" alt="Client privé" />
   </section></MerchantShell>;
 }

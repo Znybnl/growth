@@ -34,6 +34,7 @@ export function DraftPreviewViewport({ children, fullWindow = false }: { childre
 
   return <>
     <iframe
+      data-replay-preview
       ref={frameRef}
       title={`Aperçu du brouillon — ${GAME_PREVIEW_VIEWPORT.width} × ${GAME_PREVIEW_VIEWPORT.height} px`}
       srcDoc={DOCUMENT}
