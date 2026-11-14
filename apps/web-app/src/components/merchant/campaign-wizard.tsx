@@ -365,9 +365,9 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     rewardRules: {
       rewardExpiryMinutes: 20,
       purchaseRequired: false,
-      availableAfterHours: 24,
+      availableAfterHours: merchant.industry === "Agences de voyage" ? 0 : 24,
       availabilityDurationDays: isBeautyIndustry(merchant.industry) ? 60 : 30,
-      participationIntervalDays: isBeautyIndustry(merchant.industry) ? 7 : 1,
+      participationIntervalDays: 7,
       isWinningEveryTime: false,
     },
     prizes: [],
@@ -2366,18 +2366,18 @@ export function CampaignWizard({
                   <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-[#716b78] transition-transform group-open:rotate-180" aria-hidden="true" />
                 </summary>
                 <div className="space-y-5 border-t border-[#eee8f0] p-4">
-                  <div className="relative">
-                    <div className="flex items-center gap-2">
-                      <label className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-[#242126]">
-                        <input type="checkbox" checked={draft.rewardRules.isWinningEveryTime}
+                  <div className="relative flex items-start gap-3">
+                    <input id="wizard-winning-game" type="checkbox" checked={draft.rewardRules.isWinningEveryTime}
                           aria-describedby="wizard-winning-game-rule"
                           onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, isWinningEveryTime: event.target.checked } })}
-                          className="h-4 w-4 accent-aubergine" />
-                        Jeu 100 % gagnant
-                      </label>
-                      <WinningGameInfo />
+                          className="mt-1 h-4 w-4 shrink-0 accent-aubergine" />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <label htmlFor="wizard-winning-game" className="cursor-pointer text-sm font-semibold text-[#242126]">Jeu 100 % gagnant</label>
+                        <WinningGameInfo />
+                      </div>
+                      <p id="wizard-winning-game-rule" className="text-xs leading-5 text-[#716b78]">À la publication, les chances doivent totaliser 100 % et au moins un lot doit avoir un stock illimité.</p>
                     </div>
-                    <p id="wizard-winning-game-rule" className="ml-7 mt-1 text-xs leading-5 text-[#716b78]">À la publication, les chances doivent totaliser 100 % et au moins un lot doit avoir un stock illimité.</p>
                   </div>
                   <label className="flex cursor-pointer items-start gap-3 text-sm text-[#242126]">
                     <input type="checkbox" checked={draft.rewardRules.availableAfterHours > 0}
