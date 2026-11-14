@@ -23,6 +23,38 @@ async function openLibrary(page: Page, width = 1280, height = 720) {
   return page.getByRole("dialog", { name: "Ajouter des lots", exact: true });
 }
 
+test("une agence de voyage ne voit pas les suggestions d’hôtellerie reçues par erreur", async ({ page }) => {
+  const hotel = { ...suggestions[0], id: "hotel-only", industry: "Hôtellerie", label: "SÉJOUR HÔTEL" };
+  const travel = { ...suggestions[1], id: "travel-only", industry: "Agences de voyage", label: "AVANTAGE VOYAGE" };
+  let hotelOnly = true;
+  await page.route("**/api/prize-suggestions?**", route => route.fulfill({ json: { suggestions: hotelOnly ? [hotel] : [hotel, travel] } }));
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-edit&business=travel");
+  await selectWizardStep(page, 3);
+  await page.getByRole("button", { name: "Trouver des idées de lots", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Ajouter des lots" });
+  await expect(dialog.getByText("Aucune suggestion pour cette activité", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("SÉJOUR HÔTEL", { exact: true })).toHaveCount(0);
+  hotelOnly = false;
+  await page.reload();
+  await selectWizardStep(page, 3);
+  await page.getByRole("button", { name: "Trouver des idées de lots", exact: true }).click();
+  await expect(dialog.getByText("AVANTAGE VOYAGE", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("SÉJOUR HÔTEL", { exact: true })).toHaveCount(0);
+});
+
+test("éditeur classique : les suggestions Voyage ne mélangent pas l’hôtellerie", async ({ page }) => {
+  const hotel = { ...suggestions[0], id: "hotel-only", industry: "Hôtellerie", label: "SÉJOUR HÔTEL" };
+  const travel = { ...suggestions[1], id: "travel-only", industry: "Agences de voyage", label: "AVANTAGE VOYAGE" };
+  await page.route("**/api/prize-suggestions?**", route => route.fulfill({ json: { suggestions: [hotel, travel] } }));
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("/dev/template-rendering-proof?mode=editor-prize-budget&business=travel");
+  await page.getByRole("button", { name: "Suggérer des lots", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByText("AVANTAGE VOYAGE", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("SÉJOUR HÔTEL", { exact: true })).toHaveCount(0);
+});
+
 test("bibliothèque et éditeur restent utilisables en faible hauteur", async ({ page }, info) => {
   await page.route("**/api/prize-suggestions?**", (route) => route.fulfill({ json: { suggestions } }));
   for (const [width, height] of [[320, 568], [390, 740], [740, 390]]) {

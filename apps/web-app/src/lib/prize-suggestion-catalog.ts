@@ -1,5 +1,16 @@
 import type { PrizeSuggestion } from "@/lib/types";
 
+function industryKey(industry: string) {
+  const key = industry.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return key === "restaurant" ? "restauration" : key;
+}
+
+/** A response for a different establishment must never populate this catalog. */
+export function filterCatalogForIndustry(suggestions: PrizeSuggestion[], industry: string) {
+  const expected = industryKey(industry);
+  return expected ? suggestions.filter((item) => industryKey(item.industry) === expected) : [];
+}
+
 /** Validate the network boundary before either library or recipes render it.
  * A malformed response is an error, not a genuine empty activity catalog. */
 export function parsePrizeSuggestionCatalog(payload: unknown): PrizeSuggestion[] {
