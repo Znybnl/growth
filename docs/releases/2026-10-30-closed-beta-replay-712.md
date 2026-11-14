@@ -39,13 +39,17 @@ abonnement, les retraits et l’administration sensible sont exclus. Le replay
   privés supprimés, en conservant seulement le CSS public compilé par Next.js pour
   que les replays gardent leur mise en page. Les classes Tailwind sont filtrées
   individuellement, y compris les dimensions, couleurs et variantes entre crochets.
+  Les styles en ligne ne conservent que des valeurs de présentation bornées,
+  notamment couleurs, alignement et échelle, sans URL ni variables CSS.
   Les icônes Lucide du produit conservent leur géométrie vectorielle. Les images
   statiques autorisées se limitent aux répertoires de templates prédéfinis ; les
+  images optimisées Next.js issues de ces répertoires sont ramenées à leur URL
+  publique sans paramètres. Les autres images optimisées restent masquées ; les
   URL d'images importées et leurs paramètres ne sont pas conservés. Les autres
   SVG, médias, images, canvas, éléments privés et contenus
   éditables bloqués. Ni console, ni corps/en-têtes réseau, ni capture JSON-LD.
   URL sans requête, fragment ou identifiant dynamique.
-- Les iframes de même origine peuvent être enregistrées dans un écran autorisé ;
+- Les iframes de brouillon et d'aperçu de l'e-mail peuvent être enregistrées dans un écran autorisé ;
   les mêmes filtres de texte, saisie et attributs s'appliquent à leur contenu.
   Les iframes tierces ne sont pas accessibles au recorder et leur contenu peut
   rester vide. Le contenu libre et les données sensibles restent masqués.
