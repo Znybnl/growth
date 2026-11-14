@@ -622,9 +622,9 @@ function createDefaultState(merchant: Merchant): EditorState {
     rewardRules: {
       rewardExpiryMinutes: 20,
       purchaseRequired: false,
-      availableAfterHours: 24,
+      availableAfterHours: merchant.industry === "Agences de voyage" ? 0 : 24,
       availabilityDurationDays: 30,
-      participationIntervalDays: 1,
+      participationIntervalDays: 7,
       isWinningEveryTime: false,
     },
     prizes: [],

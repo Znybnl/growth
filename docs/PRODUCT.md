@@ -45,9 +45,11 @@ modifié. Voir [implémentation et vérifications](releases/2026-11-08-mobile-ca
 
 ## Règles initiales et lisibilité des lots du wizard — #740
 
-Les nouvelles campagnes Beauté créées via le wizard commencent avec 60 jours
-de validité du gain et 7 jours entre deux participations. Les autres secteurs
-conservent 30 jours et 1 jour. Les campagnes existantes ou dupliquées conservent
+Les nouvelles campagnes commencent avec 7 jours entre deux participations.
+Pour les agences de voyage, le gain est utilisable dès le jour du jeu ; pour
+les autres secteurs, il est disponible à partir du lendemain par défaut. Dans
+le wizard, la validité initiale est de 60 jours pour la Beauté et de 30 jours
+pour les autres secteurs. Les campagnes existantes ou dupliquées conservent
 leurs règles enregistrées, y compris les anciennes valeurs par défaut.
 Le wizard masque le budget estimé ; les coûts des lots et les calculs existants
 restent disponibles. L’explication détaillée du mode 100 % gagnant est accessible
