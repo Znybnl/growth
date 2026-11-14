@@ -5,6 +5,7 @@ import { TRAVEL_WHEEL_THEMES } from "../src/lib/travel-wheel-themes";
 import { TRAVEL_SCRATCH_THEMES } from "../src/lib/travel-scratch-themes";
 import { rejectAnalyticsForVisualTests, captureVisualAt1280 } from "./helpers/visual-1280";
 import { selectWizardStep } from "./helpers/wizard-step";
+import { wheelHeadingFontForTemplateSelection } from "../src/lib/campaign-defaults";
 
 test.beforeEach(async ({ page, context, baseURL }) => {
   await rejectAnalyticsForVisualTests(context, baseURL!);
@@ -20,6 +21,38 @@ test("fonds Voyage présents dans le package Vercel", async ({ request }) => {
     expect(response.headers()["content-type"]).toContain("image/webp");
   }
 });
+
+test("ticket Voyage : le contenu reste accessible sur petit écran sans barre visible", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 500 });
+  await page.goto("/dev/template-rendering-proof?mode=public&business=travel&template=travel-scratch-tropical");
+  await expect(page.locator("[data-travel-scratch]")).toBeVisible();
+  await expect(page.locator("html")).toHaveCSS("scrollbar-width", "none");
+  const scratch = await page.locator("[data-travel-scratch] canvas").first().boundingBox();
+  expect(scratch).not.toBeNull();
+  expect(scratch!.y + scratch!.height).toBeLessThanOrEqual(500);
+});
+
+for (const theme of TRAVEL_SCRATCH_THEMES) {
+  test(`${theme.name} : police et logo cohérents entre roue et ticket`, async ({ page }, info) => {
+    const wheelId = theme.id.replace("travel-scratch-", "travel-") as (typeof TRAVEL_WHEEL_THEMES)[number]["id"];
+    expect(theme.font).toBe(wheelHeadingFontForTemplateSelection(wheelId, "poppins"));
+    await page.setViewportSize({ width: 390, height: 844 });
+    const measurements = [];
+    for (const template of [wheelId, theme.id]) {
+      await page.goto(`/dev/template-rendering-proof?mode=public&business=travel&template=${template}&font=playfair`);
+      const title = page.locator(template.includes("scratch") ? "h2" : "h1").filter({ hasText: "Une surprise" }).first();
+      await expect(title).toBeVisible();
+      const brand = page.locator("[data-travel-template] header p").first();
+      await expect(brand).toBeVisible();
+      measurements.push({ font: await title.evaluate(el => getComputedStyle(el).fontFamily), brandFont: await brand.evaluate(el => getComputedStyle(el).fontFamily), brandSize: await brand.evaluate(el => getComputedStyle(el).fontSize) });
+      if (template.includes("scratch")) {
+        await expect(page.locator("html")).toHaveCSS("scrollbar-width", "none");
+        await page.screenshot({ path: info.outputPath(`${template}-public.png`), fullPage: true, animations: "disabled" });
+      }
+    }
+    expect(measurements[1]).toEqual(measurements[0]);
+  });
+}
 
 for (const theme of TRAVEL_WHEEL_THEMES) {
   test(`${theme.name} : fond et proportions en mobile`, async ({ page }, info) => {

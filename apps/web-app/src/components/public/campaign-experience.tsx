@@ -1227,6 +1227,7 @@ export function CampaignExperience({
                 headingTextColor={headingTextColor}
                 logoTextColor={logoTextColor}
                 headingFontClass={headingFontClass}
+                headingFontFamily={campaign.presentation.heading.fontFamily}
                 headingFontSize={headingFontSize}
                 headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}
                 headingAlignmentClass={headingAlignmentClass}

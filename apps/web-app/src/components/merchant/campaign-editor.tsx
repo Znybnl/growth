@@ -1217,6 +1217,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 headingTextColor={previewHeadingTextColor}
                 logoTextColor={preview.logoTextColor}
                 headingFontClass={preview.headingFontClass}
+                headingFontFamily={preview.headingFontFamily}
+                headingFontSizePx={preview.headingFontSizePx}
                 headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), {
                   minRatio: 0.82,
                   maxRatio: 1.08,

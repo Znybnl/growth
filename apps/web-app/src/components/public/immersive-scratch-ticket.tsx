@@ -15,6 +15,8 @@ import { scratchVisualTheme, type ImmersiveScratchTemplateId } from "@/lib/beaut
 import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { travelScratchTheme } from "@/lib/travel-scratch-themes";
+import { textFontFamily } from "@/lib/format";
+import type { TextFont } from "@/lib/types";
 import { TravelGameHeader } from "./christmas-wheel-art";
 import { BRUSH_CLIP_PATH, SCALLOPED_TICKET_CLIP_PATH, SMOOTH_FESTIVE_BRUSH_CLIP_PATH } from "@/lib/scratch-surface-shapes";
 
@@ -40,6 +42,7 @@ type ImmersiveScratchTicketProps = {
   headingTextColor?: string;
   logoTextColor?: string;
   headingFontClass?: string;
+  headingFontFamily?: TextFont;
   headingFontSize?: string;
   headingFontSizePx?: number;
   headingFontWeight?: number;
@@ -211,6 +214,7 @@ export function ImmersiveScratchTicket({
   headingTextColor,
   logoTextColor,
   headingFontClass,
+  headingFontFamily,
   headingFontWeight = 600,
   headingAlignmentClass = "text-center",
   logoAlignmentClass = "justify-center",
@@ -519,7 +523,7 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = `flex flex-col pb-8 ${seasonalTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[52px]"} ${beautyTheme
+  const rootClass = `flex flex-col pb-8 ${travelTheme ? "pt-[9.2cqw]" : seasonalTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[52px]"} ${beautyTheme
     ? "bg-transparent px-6"
     : isVault || isConfetti
     ? "bg-transparent px-5"
@@ -534,6 +538,7 @@ export function ImmersiveScratchTicket({
   return (
     <div
       className={`mx-auto flex w-full flex-1 flex-col ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}
+      data-travel-scratch={travelTheme ? "true" : undefined}
       style={{ containerType: "inline-size" }}
     >
       <div
@@ -541,7 +546,7 @@ export function ImmersiveScratchTicket({
         style={{ minHeight: seasonalTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
       >
         <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`} data-travel-template={travelTheme?.id.replace("travel-scratch-", "travel-")} style={travelTheme ? { width: "min(100vw, 600px)", left: "50%", transform: "translateX(-50%)", containerType: "inline-size" } : undefined}>
-          {travelTheme ? <TravelGameHeader scratch logoMode={logoMode} logoText={logoText || "Votre commerce"} logoUrl={logoUrl} logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor || ink} logoAlign={logoAlignmentClass === "justify-start" ? "left" : logoAlignmentClass === "justify-end" ? "right" : "center"} logoBottomSpacingPx={logoBottomSpacingPx} title={displayHeadline} titleColor={ink} titleFontSizePx={headingFontSizePx ?? 40} titleFontFamily="inherit" titleFontWeight={headingFontWeight} titleAlign={headingAlignmentClass === "text-left" ? "left" : headingAlignmentClass === "text-right" ? "right" : "center"} secondaryText={secondaryText || ""} subtitleSpacingPx={subtitleSpacingPx} /> : <>
+          {travelTheme ? <TravelGameHeader scratch logoMode={logoMode} logoText={logoText || "Votre commerce"} logoUrl={logoUrl} logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor || ink} logoAlign={logoAlignmentClass === "justify-start" ? "left" : logoAlignmentClass === "justify-end" ? "right" : "center"} logoBottomSpacingPx={logoBottomSpacingPx} title={displayHeadline} titleColor={ink} titleFontSizePx={headingFontSizePx ?? 40} titleFontFamily={textFontFamily(headingFontFamily ?? travelTheme.font)} titleFontWeight={headingFontWeight} titleAlign={headingAlignmentClass === "text-left" ? "left" : headingAlignmentClass === "text-right" ? "right" : "center"} secondaryText={secondaryText || ""} subtitleSpacingPx={subtitleSpacingPx} /> : <>
           {logoMode !== "none" ? (
             <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
               {issue724ScratchStyle && logoMode === "text" ? (
