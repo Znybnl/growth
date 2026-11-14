@@ -110,7 +110,7 @@ test("catalogue Voyage : migration rejouable sans modification des autres lots",
   const migration=sql("migrations/20261114120000_travel_prize_suggestions_792.sql");
   await db.exec(migration);await db.exec(migration);
   const rows=(await db.query("select label, industry, industry_subsector, is_active from public.prize_suggestions where id like 'ps-792-%' order by sort_order")).rows;
-  assert.deepEqual(rows.map(row=>row.label),["GOODIE","TOTE BAG","SURPRISE"]);
+  assert.deepEqual(rows.map(row=>row.label),["GOODIE","TOTE BAG","SURPRISE","ÉTIQUETTE À BAGAGE","PROTÈGE-PASSEPORT","TROUSSE DE VOYAGE","CARNET DE VOYAGE"]);
   assert.ok(rows.every(row=>row.industry==="Agences de voyage" && row.industry_subsector===null && row.is_active));
   assert.deepEqual((await db.query("select * from public.prize_suggestions where id not like 'ps-792-%' order by id")).rows,before);
   assert.deepEqual((await db.query("select * from public.prizes")).rows,[{id:"existing",label:"Lot existant"}]);
