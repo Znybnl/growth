@@ -15,6 +15,7 @@ import { beautyWheelTheme, isBeautyIndustry } from "@/lib/beauty-wheel-themes";
 import { christmasWheelTheme, christmasWheelPalette, isChristmasWheelTemplate } from "@/lib/christmas-wheel-themes";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate, christmasScratchDefaultBackground } from "@/lib/christmas-scratch-templates";
 import { BEAUTY_SCRATCH_TEMPLATES, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL, beautyScratchTemplate } from "@/lib/beauty-scratch-templates";
+import { travelScratchTheme } from "@/lib/travel-scratch-themes";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
 export const DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
@@ -94,6 +95,7 @@ export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplat
 
 /** Only used to initialize a new scratch design; saved choices remain unchanged. */
 export function defaultScratchTemplateForIndustry(industry?: string | null): GamePageTemplateId {
+  if (industry === "Agences de voyage") return "travel-scratch-elegant";
   return isBeautyIndustry(industry) ? "beauty-scratch-nude" : CLASSIC_NUDE_SCRATCH_TEMPLATE_ID;
 }
 
@@ -102,6 +104,8 @@ export function scratchTemplateDefaultPrimaryColor(templateId?: GamePageTemplate
   if (halloween) return halloween.scratch.base;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas.scratch.base;
+  const travel = travelScratchTheme(templateId);
+  if (travel) return travel.scratch.base;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#b99a6a";
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.scratch.base;
@@ -395,6 +399,8 @@ export function scratchTemplatePrimaryColor(
   if (halloween) return halloween.scratch.base;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas.scratch.base;
+  const travel = travelScratchTheme(templateId);
+  if (travel) return travel.scratch.base;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#b99a6a";
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.scratch.base;
@@ -505,6 +511,8 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
   if (halloween) return halloween.text;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas.text;
+  const travel = travelScratchTheme(templateId);
+  if (travel) return travel.text;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return "#49372c";
   const beautyTemplate = beautyScratchTemplate(templateId);
   if (beautyTemplate) return beautyTemplate.text;
@@ -546,6 +554,8 @@ export function defaultScratchTemplateFont(templateId?: GamePageTemplateId) {
   if (halloweenScratchTemplate(templateId)) return "bodoni" as const;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas.font;
+  const travel = travelScratchTheme(templateId);
+  if (travel) return travel.font;
   switch (templateId) {
     case CLASSIC_NUDE_SCRATCH_TEMPLATE_ID:
       return "playfair" as const;
@@ -568,6 +578,8 @@ export function scratchTemplateDefaultBackground(
   if (christmas) {
     return christmasScratchDefaultBackground(templateId, background);
   }
+  const travel = travelScratchTheme(templateId);
+  if (travel) return background.mode === "image" && background.imageUrl?.trim() ? undefined : travel.artwork;
   if (templateId !== CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return undefined;
   if (background.mode === "image" && background.imageUrl?.trim()) return undefined;
   return NUDE_SCRATCH_TEMPLATE_BACKGROUND_URL;
@@ -579,6 +591,7 @@ export function scratchTemplateUsesFixedPrimaryColor(templateId?: GamePageTempla
     christmasScratchTemplate(templateId) ||
     templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID ||
       beautyScratchTemplate(templateId) ||
+      travelScratchTheme(templateId) ||
       templateId === "scratch-confetti",
   );
 }
@@ -589,6 +602,7 @@ export function scratchTemplateUsesFixedPrimaryColor(templateId?: GamePageTempla
  * so the editor never exposes a control that has no visual effect.
  */
 export function scratchTemplateUsesTicketTextColor(templateId?: GamePageTemplateId) {
+  if (travelScratchTheme(templateId)) return false;
   switch (templateId) {
     case "scratch-vault":
     case "scratch-confetti":

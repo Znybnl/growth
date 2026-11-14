@@ -58,6 +58,7 @@ import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
 import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
+import { TravelScratchTemplateGallery } from "@/components/merchant/travel-scratch-template-gallery";
 import { ScratchTemplateThumbnail } from "@/components/merchant/scratch-template-thumbnail";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
@@ -86,8 +87,9 @@ import { postCampaignSetup } from "@/lib/campaign-setup-request";
 import { MERCHANT_IMAGE_ACCEPT } from "@/lib/merchant-image-upload";
 import { uploadMerchantImageFile } from "@/lib/client-merchant-image-upload";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelLogoColor, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, type BeautyScratchTemplateId, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
+import { travelScratchTheme } from "@/lib/travel-scratch-themes";
 import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
@@ -1216,6 +1218,8 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
                 headingTextColor={previewHeadingTextColor}
                 logoTextColor={preview.logoTextColor}
                 headingFontClass={preview.headingFontClass}
+                headingFontFamily={preview.headingFontFamily}
+                headingFontSizePx={preview.headingFontSizePx}
                 headingFontSize={fluidType(scalePreviewValue(preview.headingFontSizePx), {
                   minRatio: 0.82,
                   maxRatio: 1.08,
@@ -1726,7 +1730,7 @@ export function buildCampaignLivePreviewModel(
       headingTextColor:
       templateId === "cosmic-orbit" || isCocoricoWheelTemplate(templateId)
         ? "#f8fbff"
-        : form.gameType === "scratch" &&
+        : form.gameType === "scratch" && !templateId.startsWith("travel-scratch-") &&
             form.presentation.heading.textColor.toLowerCase() === "#1f2937"
           ? previewAccent.ink
           : form.gameType === "scratch"
@@ -1836,6 +1840,7 @@ export function CampaignEditor({
   const router = useRouter();
   const { confirmNoMarketingAction, noMarketingActionDialog } = useNoMarketingActionConfirmation();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
+  const headingSizeManuallyEdited = useRef(false);
   const [lastSavedFormSnapshot, setLastSavedFormSnapshot] = useState(() =>
     JSON.stringify(toEditorState(merchant, initialCampaign)),
   );
@@ -1980,8 +1985,8 @@ export function CampaignEditor({
       };
     });
   }
-  function selectBeautyScratchTemplate(templateId: BeautyScratchTemplateId) {
-    const theme = beautyScratchTemplate(templateId);
+  function selectBeautyScratchTemplate(templateId: GamePageTemplateId) {
+    const theme = scratchVisualTheme(templateId);
     if (!theme) return;
     captureClientProductEvent("campaign_template_selected", {
       campaignType: "scratch",
@@ -2027,10 +2032,11 @@ export function CampaignEditor({
             ...current.presentation.heading,
             fontFamily: remembered?.headingFontFamily ?? theme.font,
             textColor: remembered?.headingTextColor ?? theme.text,
+            fontSizePx: travelScratchTheme(templateId) && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX ? 40 : current.presentation.heading.fontSizePx,
           },
           logo: {
             ...current.presentation.logo,
-            textColor: remembered?.logoTextColor ?? theme.text,
+            textColor: remembered?.logoTextColor ?? travelScratchTheme(templateId)?.logo ?? theme.text,
             marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
           },
         },
@@ -2458,9 +2464,9 @@ export function CampaignEditor({
                 ? scratchFontFamily
                 : current.presentation.heading.fontFamily,
             fontSizePx:
-              gameType === "scratch" && current.presentation.heading.fontSizePx === 40
+              gameType === "scratch" && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && !travelScratchTheme(scratchTemplateId) && current.presentation.heading.fontSizePx === 40
                 ? DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
-                : gameType === "wheel" && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
+                : gameType === "wheel" && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
                   ? 40
                   : current.presentation.heading.fontSizePx,
           },
@@ -2468,7 +2474,7 @@ export function CampaignEditor({
             ...current.presentation.logo,
             textColor:
               gameType === "scratch"
-                ? targetStyle?.logoTextColor ?? scratchTextColor
+                ? targetStyle?.logoTextColor ?? travelScratchTheme(scratchTemplateId)?.logo ?? scratchTextColor
                 : targetStyle?.logoTextColor ?? wheelLogoColorForTemplateSelection(targetTemplateId, "#1b2842"),
           },
           layout: {
@@ -3112,6 +3118,12 @@ export function CampaignEditor({
                   onSelect={selectBeautyScratchTemplate}
                 />
               ) : null}
+              {form.gameType === "scratch" && merchant.industry === "Agences de voyage" ? (
+                <TravelScratchTemplateGallery
+                  selectedTemplateId={form.presentation.layout.templateId}
+                  onSelect={selectBeautyScratchTemplate}
+                />
+              ) : null}
               {form.gameType === "wheel" && merchant.industry === "Agences de voyage" ? <section aria-labelledby="travel-templates-heading" className="mb-5">
                 <h3 id="travel-templates-heading" className="text-base font-semibold text-carbon">Templates Voyage</h3>
                 <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="travel-template-options">
@@ -3644,7 +3656,7 @@ export function CampaignEditor({
                       type="number"
                       min={18}
                       max={72}
-                      value={form.presentation.heading.fontSizePx}
+                      value={form.presentation.heading.fontSizePx} onInput={() => { headingSizeManuallyEdited.current = true; }}
                       onChange={(event) =>
                         setForm((current) => ({
                           ...current,
@@ -3708,7 +3720,7 @@ export function CampaignEditor({
                     type="number"
                     min={18}
                     max={72}
-                    value={form.presentation.heading.fontSizePx}
+                    value={form.presentation.heading.fontSizePx} onInput={() => { headingSizeManuallyEdited.current = true; }}
                     onChange={(event) =>
                       setForm((current) => ({
                         ...current,
@@ -4291,7 +4303,7 @@ export function CampaignEditor({
                   type="number"
                   min={18}
                   max={72}
-                  value={form.presentation.heading.fontSizePx}
+                  value={form.presentation.heading.fontSizePx} onInput={() => { headingSizeManuallyEdited.current = true; }}
                   onChange={(event) =>
                     setForm((current) => ({
                       ...current,

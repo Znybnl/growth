@@ -1,6 +1,7 @@
 import type { GamePageTemplateId, TextFont } from "@/lib/types";
 import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
+import { travelScratchTheme } from "@/lib/travel-scratch-themes";
 
 const christmasRoseScratch = christmasScratchTemplate("scratch-christmas-rose")!;
 
@@ -131,6 +132,9 @@ export const IMMERSIVE_SCRATCH_TEMPLATE_IDS = [
   "beauty-scratch-noir-or",
   "beauty-scratch-lilas",
   "beauty-scratch-corail",
+  "travel-scratch-elegant",
+  "travel-scratch-tropical",
+  "travel-scratch-roadtrip",
 ] as const satisfies readonly GamePageTemplateId[];
 
 /** Retired from new template pickers; existing campaigns may still render them. */
@@ -170,6 +174,8 @@ export function scratchVisualTheme(templateId?: string | null): ScratchVisualThe
   if (halloween) return halloween;
   const christmas = christmasScratchTemplate(templateId);
   if (christmas) return christmas;
+  const travel = travelScratchTheme(templateId);
+  if (travel) return travel;
   if (templateId === CLASSIC_NUDE_SCRATCH_TEMPLATE_ID) return CLASSIC_NUDE_SCRATCH_THEME;
   return beautyScratchTemplate(templateId);
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Sparkles } from "lucide-react";
+import { Compass, Palmtree, Plane, Sparkles } from "lucide-react";
 
 import { BrandMark } from "@/components/brand-mark";
 import {
@@ -14,6 +14,10 @@ import {
 import { scratchVisualTheme, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
+import { travelScratchTheme } from "@/lib/travel-scratch-themes";
+import { textFontFamily } from "@/lib/format";
+import type { TextFont } from "@/lib/types";
+import { TravelGameHeader } from "./christmas-wheel-art";
 import { BRUSH_CLIP_PATH, SCALLOPED_TICKET_CLIP_PATH, SMOOTH_FESTIVE_BRUSH_CLIP_PATH } from "@/lib/scratch-surface-shapes";
 
 type ScratchTemplateId = ImmersiveScratchTemplateId;
@@ -38,6 +42,7 @@ type ImmersiveScratchTicketProps = {
   headingTextColor?: string;
   logoTextColor?: string;
   headingFontClass?: string;
+  headingFontFamily?: TextFont;
   headingFontSize?: string;
   headingFontSizePx?: number;
   headingFontWeight?: number;
@@ -209,6 +214,7 @@ export function ImmersiveScratchTicket({
   headingTextColor,
   logoTextColor,
   headingFontClass,
+  headingFontFamily,
   headingFontWeight = 600,
   headingAlignmentClass = "text-center",
   logoAlignmentClass = "justify-center",
@@ -234,6 +240,12 @@ export function ImmersiveScratchTicket({
   const isLilac = template === "scratch-lilac";
   const isSunburst = template === "scratch-sunburst";
   const beautyTheme = scratchVisualTheme(template);
+  const travelTheme = travelScratchTheme(template);
+  const TravelIcon = travelTheme?.id === "travel-scratch-tropical"
+    ? Palmtree
+    : travelTheme?.id === "travel-scratch-roadtrip"
+      ? Compass
+      : Plane;
   const christmasTheme = christmasScratchTemplate(template);
   const halloweenTheme = halloweenScratchTemplate(template);
   const seasonalTheme = christmasTheme || halloweenTheme;
@@ -252,7 +264,7 @@ export function ImmersiveScratchTicket({
   const isRetroScratch = christmasTheme?.id === "scratch-christmas-retro";
   const issue724ScratchStyle = christmasTheme ? ISSUE_724_SCRATCH_STYLES[christmasTheme.id] : undefined;
   const isIssue724IllustratedScratch = Boolean(issue724ScratchStyle);
-  const canvasWidth = isFestiveBrushScratch ? 666 : scratchShape === "brush" ? 700 : isDecorativeTicket ? 660 : CANVAS_WIDTH;
+  const canvasWidth = isFestiveBrushScratch ? 666 : scratchShape === "brush" ? 700 : isDecorativeTicket || travelTheme ? 660 : CANVAS_WIDTH;
   const canvasHeight = CANVAS_HEIGHT;
   const configuredPrimary = accent.signal;
   const primary = scratchTemplatePrimaryColor(configuredPrimary, template);
@@ -295,7 +307,9 @@ export function ImmersiveScratchTicket({
   const coverColor = scratchFinish?.base ?? (isVault ? "#171d38" : isConfetti ? "#71364a" : primary);
   const coverHighlight = scratchFinish?.highlight ?? (isSunburst ? blendWithWhite(coverColor, 0.2) : blendWithWhite(coverColor, 0.34));
 
-  const surfaceClass = beautyTheme
+  const surfaceClass = travelTheme
+    ? "mx-auto aspect-[1.55/1] w-[86%] max-w-[310px] rounded-[16px]"
+    : beautyTheme
     ? isFestiveBrushScratch
       ? "mx-auto aspect-[1.55/1] w-[92%] max-w-[320px]"
       : scratchShape === "brush"
@@ -310,6 +324,8 @@ export function ImmersiveScratchTicket({
     ? "border-2 border-[#b52a29] bg-[#b52a29] shadow-[0_12px_28px_rgba(90,25,18,.25)]"
     : scratchShape === "brush"
       ? "drop-shadow-[0_12px_18px_rgba(73,47,25,.2)]"
+      : travelTheme
+        ? "border-2 ring-1 ring-white/80"
     : beautyTheme?.id === "beauty-scratch-noir-or"
     ? "border-2 border-[#f0d798] ring-1 ring-[#9b7134]/75"
     : beautyTheme?.id === "beauty-scratch-lilas"
@@ -507,7 +523,7 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = `flex flex-col pb-8 ${seasonalTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[52px]"} ${beautyTheme
+  const rootClass = `flex flex-col ${travelTheme ? "pb-0" : "pb-8"} ${travelTheme ? "pt-[9.2cqw]" : seasonalTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[52px]"} ${travelTheme ? "bg-transparent px-0" : beautyTheme
     ? "bg-transparent px-6"
     : isVault || isConfetti
     ? "bg-transparent px-5"
@@ -521,14 +537,16 @@ export function ImmersiveScratchTicket({
 
   return (
     <div
-      className={`mx-auto flex w-full flex-1 flex-col ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}
+      className={`mx-auto flex w-full flex-1 flex-col ${travelTheme ? "max-w-[600px]" : fitContainer ? "max-w-full" : "max-w-[370px]"}`}
+      data-travel-scratch={travelTheme ? "true" : undefined}
       style={{ containerType: "inline-size" }}
     >
       <div
-        className={`relative isolate flex-1 overflow-hidden ${rootClass}`}
-        style={{ minHeight: seasonalTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
+        className={`relative isolate flex-1 ${travelTheme ? "overflow-visible" : "overflow-hidden"} ${rootClass}`}
+        style={{ minHeight: travelTheme ? undefined : seasonalTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
       >
-        <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`}>
+        <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`} data-travel-template={travelTheme?.id.replace("travel-scratch-", "travel-")} style={travelTheme ? { width: "100%", containerType: "inline-size" } : undefined}>
+          {travelTheme ? <TravelGameHeader scratch logoMode={logoMode} logoText={logoText || "Votre commerce"} logoUrl={logoUrl} logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor || ink} logoAlign={logoAlignmentClass === "justify-start" ? "left" : logoAlignmentClass === "justify-end" ? "right" : "center"} logoBottomSpacingPx={logoBottomSpacingPx} title={displayHeadline} titleColor={ink} titleFontSizePx={headingFontSizePx ?? 40} titleFontFamily={textFontFamily(headingFontFamily ?? travelTheme.font)} titleFontWeight={headingFontWeight} titleAlign={headingAlignmentClass === "text-left" ? "left" : headingAlignmentClass === "text-right" ? "right" : "center"} secondaryText={secondaryText || ""} subtitleSpacingPx={subtitleSpacingPx} /> : <>
           {logoMode !== "none" ? (
             <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
               {issue724ScratchStyle && logoMode === "text" ? (
@@ -556,8 +574,8 @@ export function ImmersiveScratchTicket({
             </div>
           ) : null}
           <h2
-            className={`${(beautyTheme && !christmasTheme && !halloweenTheme) || isConfetti || isRetroScratch ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
-            style={{ color: ink, fontSize: seasonalTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: isRetroScratch ? Math.max(700, headingFontWeight) : headingFontWeight, letterSpacing: isRetroScratch ? "-0.025em" : undefined, whiteSpace: seasonalTheme ? "pre-line" : undefined,
+            className={`${travelTheme ? "mx-auto w-full max-w-none" : (beautyTheme && !christmasTheme && !halloweenTheme) || isConfetti || isRetroScratch ? "mx-auto max-w-[11ch]" : ""} text-2xl leading-[1.04] ${resolvedHeadingFontClass}`}
+            style={{ color: ink, fontSize: travelTheme ? headingFontSize : seasonalTheme ? `${(headingFontSizePx ?? 46) / 3.9}cqw` : headingFontSize, fontWeight: isRetroScratch ? Math.max(700, headingFontWeight) : headingFontWeight, letterSpacing: isRetroScratch ? "-0.025em" : undefined, whiteSpace: seasonalTheme ? "pre-line" : undefined,
               ...(halloweenTheme ? { backgroundImage: "linear-gradient(175deg,#fff0c7 0%,#f4b351 40%,#bc7024 70%,#ffdc94 100%)", backgroundClip: "text", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", filter: "drop-shadow(0 0 6px #d982213d)" } : {}) }}
           >
             {displayHeadline}
@@ -570,12 +588,12 @@ export function ImmersiveScratchTicket({
             >
               {secondaryText.trim()}
             </p>
-          ) : null}
+          ) : null}</>}
         </div>
 
         <div
           className={`relative z-10 flex flex-1 ${isIssue724IllustratedScratch ? "items-start" : "items-center"} ${scratchShape ? "justify-start" : "justify-center"}`}
-          style={{ paddingTop: `${Math.max(0, textToScratchSpacingPx)}px`, paddingBottom: fitContainer ? "16cqw" : "clamp(32px, 8svh, 72px)" }}
+          style={{ paddingTop: `${Math.max(0, textToScratchSpacingPx)}px`, paddingBottom: travelTheme ? "clamp(12px, 4svh, 32px)" : fitContainer ? "16cqw" : "clamp(32px, 8svh, 72px)" }}
         >
         <div
           data-testid="scratch-ticket-surface"
@@ -583,6 +601,7 @@ export function ImmersiveScratchTicket({
           className={`relative shrink-0 overflow-hidden ${surfaceClass} ${beautyTheme ? `${surfaceRimClass} shadow-[0_14px_34px_rgba(55,42,30,.18)]` : "rounded-[26px] shadow-[0_18px_40px_rgba(55,42,30,.16)]"}`}
           style={{
             ...(scratchClipPath ? { clipPath: scratchClipPath } : {}),
+            ...(travelTheme ? { borderColor: travelTheme.scratch.edge, backgroundColor: travelTheme.scratch.reveal, boxShadow: `0 14px 34px ${withAlpha(travelTheme.scratch.base, "38")}` } : {}),
             ...(issue724ScratchStyle?.scratchRotationDeg ? { transform: `rotate(${issue724ScratchStyle.scratchRotationDeg}deg)`, transformOrigin: "center" } : {}),
             ...(issue724ScratchStyle && !isRetroScratch ? { backgroundColor: issue724ScratchStyle.revealBackground } : {}),
           }}
@@ -649,6 +668,12 @@ export function ImmersiveScratchTicket({
               {!isVault && isLilac ? <GiftIllustration color={illustrationColor} /> : null}
               {!beautyTheme && !isVault && !isLilac && !isCoral && !isSunburst ? <GiftIllustration color={illustrationColor} /> : null}
               {isSunburst ? <ScratchMark color={illustrationColor} /> : null}
+              {travelTheme ? (
+                <span className="relative flex flex-col items-center gap-1.5 text-center" style={{ color: travelTheme.text }}>
+                  <TravelIcon aria-hidden="true" className="h-7 w-7 opacity-90" strokeWidth={1.8} />
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em]">Grattez pour découvrir</span>
+                </span>
+              ) : null}
             </div>
           ) : null}
           {hasTouched ? (
