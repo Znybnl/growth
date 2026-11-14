@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Merchant, PrizeSuggestion } from "@/lib/types";
-import { parsePrizeSuggestionCatalog } from "@/lib/prize-suggestion-catalog";
+import { filterCatalogForIndustry, parsePrizeSuggestionCatalog } from "@/lib/prize-suggestion-catalog";
 
 export function usePrizeSuggestionCatalog(merchant: Pick<Merchant, "id" | "industry" | "industrySubsector">) {
   const industry = merchant.industry?.trim() ?? "";
@@ -18,7 +18,7 @@ export function usePrizeSuggestionCatalog(merchant: Pick<Merchant, "id" | "indus
     fetch(`/api/prize-suggestions?${query}`, { cache: "no-store", signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error("Suggestions indisponibles");
-        return parsePrizeSuggestionCatalog(await response.json());
+        return filterCatalogForIndustry(parsePrizeSuggestionCatalog(await response.json()), industry);
       })
       .then((suggestions) => {
         if (!controller.signal.aborted) setResult({ scope, suggestions, error: null });
