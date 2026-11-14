@@ -12,6 +12,8 @@ node_modules
 *.webp
 # Keep the non-redeemable QR used by the merchant reward-email previews.
 !apps/web-app/public/email-demo-qr.png
+# Illustration of the registration page.
+!apps/web-app/public/images/auth/inscription-jeu.webp
 # Assets used by the public marketing website must be included in deployments.
 !apps/landing-page/public/images/*.png
 !apps/landing-page/public/images/*.webp

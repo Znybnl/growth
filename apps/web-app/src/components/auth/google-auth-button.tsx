@@ -6,11 +6,13 @@ import { captureClientProductEvent } from "@/lib/client-product-analytics";
 type GoogleAuthButtonProps = {
   mode: "signin" | "signup";
   nextPath?: string;
+  onBeforeStart?: () => boolean;
 };
 
 export function GoogleAuthButton({
   mode,
   nextPath = "/",
+  onBeforeStart,
 }: GoogleAuthButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,9 +21,10 @@ export function GoogleAuthButton({
   );
 
   async function handleClick() {
+    if (onBeforeStart && !onBeforeStart()) return;
     if (!isConfigured) {
       setError(
-        "Google Auth n'est pas configuré : ajoutez NEXT_PUBLIC_SUPABASE_ANON_KEY dans .env.local.",
+        mode === "signup" ? "L’inscription Google est momentanément indisponible. Veuillez réessayer." : "Google Auth n'est pas configuré : ajoutez NEXT_PUBLIC_SUPABASE_ANON_KEY dans .env.local.",
       );
       return;
     }

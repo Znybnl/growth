@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import {
@@ -44,6 +45,16 @@ export function SignUpForm() {
   const [referralCode] = useState(readReferralCodeFromBrowser);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof typeof form, string>>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  function checkTerms() {
+    if (accept) return true;
+    setError("Vous devez accepter les conditions pour continuer.");
+    document.getElementById("signup-terms")?.focus();
+    return false;
+  }
 
   useEffect(() => {
     const ref = new URLSearchParams(window.location.search).get("ref")?.trim();
@@ -55,17 +66,31 @@ export function SignUpForm() {
 
   function updateField(key: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [key]: value }));
+    setFieldErrors((current) => ({ ...current, [key]: undefined }));
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isLoading) return;
     setError(null);
+    const errors: Partial<Record<keyof typeof form, string>> = {};
+    if (!form.firstName.trim()) errors.firstName = "Renseignez votre prénom.";
+    if (!form.lastName.trim()) errors.lastName = "Renseignez votre nom.";
+    if (!form.email.trim() || (document.getElementById("signup-email") as HTMLInputElement | null)?.validity.typeMismatch) errors.email = "Saisissez une adresse e-mail valide.";
+    if (!form.password) errors.password = "Renseignez votre mot de passe.";
+    if (!form.confirmPassword) errors.confirmPassword = "Confirmez votre mot de passe.";
+    else if (form.password && form.password !== form.confirmPassword) errors.confirmPassword = "Les mots de passe ne correspondent pas.";
+    setFieldErrors(errors);
+    const firstInvalid = Object.keys(errors)[0];
+    if (firstInvalid) {
+      document.getElementById(`signup-${firstInvalid}`)?.focus();
+      return;
+    }
+    if (!checkTerms()) return;
     setIsLoading(true);
     captureClientProductEvent("signup_started", { method: "email" });
 
     try {
-      if (!accept) throw new Error("Vous devez accepter les conditions pour continuer.");
-
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,31 +108,38 @@ export function SignUpForm() {
         user?: { id?: string; merchantId?: string; email?: string };
       };
 
-      if (!response.ok) throw new Error(payload.error ?? "Inscription impossible.");
+      if (!response.ok) {
+        const knownErrors: Record<string, string> = {
+          "Un compte existe deja avec cette adresse e-mail.": "Un compte existe déjà avec cette adresse e-mail.",
+          "Adresse e-mail invalide.": "Saisissez une adresse e-mail valide.",
+          "Les mots de passe ne correspondent pas.": "Les mots de passe ne correspondent pas.",
+        };
+        throw new Error(response.status === 429 ? "Trop de tentatives. Veuillez réessayer plus tard." : knownErrors[payload.error ?? ""] ?? "Une erreur est survenue. Veuillez réessayer.");
+      }
       if (payload.user?.merchantId && payload.user.id) {
         identifyMerchantForAnalytics(payload.user.merchantId, payload.user.id, payload.merchant?.id, payload.user.email);
       }
       window.location.assign("/onboarding");
     } catch (submitError) {
       captureClientProductEvent("signup_failed", { method: "email" });
-      setError(submitError instanceof Error ? submitError.message : "Inscription impossible.");
+      setError(submitError instanceof TypeError ? "Une erreur est survenue. Veuillez réessayer." : submitError instanceof Error ? submitError.message : "Inscription impossible.");
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <form className="mx-auto flex max-w-[620px] flex-col justify-center px-1 py-6 sm:px-6" onSubmit={handleSubmit}>
+    <form className="mx-auto flex w-full max-w-[480px] flex-col justify-center py-6" onSubmit={handleSubmit} noValidate>
       <div>
         <p className="okado-label">Créer un compte</p>
         <h1 className="okado-page-title mt-3">Ouvrez votre espace marchand</h1>
         <p className="mt-4 text-sm leading-8 text-ash">
-          30 jours d’essai gratuit, sans carte bancaire. Créez votre premier jeu avant diffusion.
+          30 jours d’essai gratuit, sans carte bancaire. Créez votre premier jeu en quelques étapes.
         </p>
       </div>
 
       <div className="mt-8">
-        <GoogleAuthButton mode="signup" nextPath="/onboarding" />
+        <GoogleAuthButton mode="signup" nextPath="/onboarding" onBeforeStart={checkTerms} />
       </div>
 
       {referralCode ? (
@@ -118,7 +150,7 @@ export function SignUpForm() {
 
       <div className="mt-8 flex items-center gap-4">
         <div className="h-px flex-1 bg-fog" />
-        <span className="text-sm text-fog">ou continuez avec le formulaire</span>
+        <span className="text-sm text-[#66596b]">ou continuez avec le formulaire</span>
         <div className="h-px flex-1 bg-fog" />
       </div>
 
@@ -126,61 +158,82 @@ export function SignUpForm() {
         <label className="text-sm">
           <FieldLabel>Prénom</FieldLabel>
           <input
+            id="signup-firstName"
+            autoComplete="given-name"
+            aria-invalid={Boolean(fieldErrors.firstName)} aria-describedby={fieldErrors.firstName ? "signup-firstName-error" : undefined}
             value={form.firstName}
             onChange={(event) => updateField("firstName", event.target.value)}
             placeholder="Camille"
             className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
+          {fieldErrors.firstName ? <span id="signup-firstName-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.firstName}</span> : null}
         </label>
         <label className="text-sm">
           <FieldLabel>Nom</FieldLabel>
           <input
+            id="signup-lastName"
+            autoComplete="family-name"
+            aria-invalid={Boolean(fieldErrors.lastName)} aria-describedby={fieldErrors.lastName ? "signup-lastName-error" : undefined}
             value={form.lastName}
             onChange={(event) => updateField("lastName", event.target.value)}
             placeholder="Martin"
             className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
+          {fieldErrors.lastName ? <span id="signup-lastName-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.lastName}</span> : null}
         </label>
         <label className="text-sm md:col-span-2">
           <FieldLabel>E-mail professionnel</FieldLabel>
           <input
             type="email"
+            id="signup-email"
+            autoComplete="email"
+            aria-invalid={Boolean(fieldErrors.email)} aria-describedby={fieldErrors.email ? "signup-email-error" : undefined}
             value={form.email}
             onChange={(event) => updateField("email", event.target.value)}
             placeholder="camille@maisonsora.fr"
             className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
+          {fieldErrors.email ? <span id="signup-email-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.email}</span> : null}
         </label>
         <label className="text-sm">
           <FieldLabel>Mot de passe</FieldLabel>
-          <input
-            type="password"
+          <span className="relative block"><input
+            id="signup-password"
+            aria-invalid={Boolean(fieldErrors.password)} aria-describedby={fieldErrors.password ? "signup-password-error" : undefined}
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
             value={form.password}
             onChange={(event) => updateField("password", event.target.value)}
             placeholder="••••••••••"
-            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 pr-12 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
-          />
+          /><button type="button" aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-ash focus-visible:outline-2 focus-visible:outline-aubergine">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></span>
+          {fieldErrors.password ? <span id="signup-password-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.password}</span> : null}
         </label>
         <label className="text-sm">
           <FieldLabel>Confirmer le mot de passe</FieldLabel>
-          <input
-            type="password"
+          <span className="relative block"><input
+            id="signup-confirmPassword"
+            aria-invalid={Boolean(fieldErrors.confirmPassword)} aria-describedby={fieldErrors.confirmPassword ? "signup-confirmPassword-error" : undefined}
+            type={showConfirmation ? "text" : "password"}
+            autoComplete="new-password"
             value={form.confirmPassword}
             onChange={(event) => updateField("confirmPassword", event.target.value)}
             placeholder="••••••••••"
-            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 pr-12 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
-          />
+          /><button type="button" aria-label={showConfirmation ? "Masquer la confirmation du mot de passe" : "Afficher la confirmation du mot de passe"} aria-pressed={showConfirmation} onClick={() => setShowConfirmation(!showConfirmation)} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-ash focus-visible:outline-2 focus-visible:outline-aubergine">{showConfirmation ? <EyeOff size={18} /> : <Eye size={18} />}</button></span>
+          {fieldErrors.confirmPassword ? <span id="signup-confirmPassword-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.confirmPassword}</span> : null}
         </label>
       </div>
 
       <div className="mt-6 rounded-[8px] border border-border bg-linen-canvas px-4 py-4 text-sm leading-7 text-ash">
         <label className="flex items-start gap-3">
           <input
+            id="signup-terms"
             type="checkbox"
             className="mt-1"
             checked={accept}
@@ -194,7 +247,7 @@ export function SignUpForm() {
       </div>
 
       {error ? (
-        <div className="mt-4 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">
+        <div role="alert" className="mt-4 rounded-[8px] border border-coral-alert/30 bg-coral-alert/10 px-4 py-3 text-sm text-coral-alert">
           {error}
         </div>
       ) : null}

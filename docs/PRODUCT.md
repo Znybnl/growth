@@ -1,5 +1,15 @@
 # Produit — Okado
 
+## Inscription marchand — #795
+
+La page d’inscription présente le jeu, la diffusion et le suivi dans un panneau
+illustratif sur ordinateur ; les résultats affichés sont fictifs. Le formulaire
+reste prioritaire sur mobile. Depuis cette page, les boutons d’inscription e-mail
+et Google demandent la case des conditions. Cette vérification est actuellement
+limitée à l’interface : les API existantes ne vérifient ni ne conservent la preuve
+de l’acceptation, notamment lors d’une création via la connexion Google. Voir
+l’issue #795 avant de considérer ce point comme garanti côté serveur.
+
 ## Mon compte sur mobile — #766
 
 La barre d'onglets et d'enregistrement est compacte ; les noms complets des

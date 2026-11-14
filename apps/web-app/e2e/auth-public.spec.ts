@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 test.describe("Parcours public d'authentification", () => {
   test("la page de connexion est accessible", async ({ page }) => {
@@ -48,4 +50,102 @@ test.describe("Parcours public d'authentification", () => {
     await expect(page.getByText("Vous devez accepter les conditions pour continuer.")).toBeVisible();
     expect(signupRequests).toBe(0);
   });
+
+  test("l’inscription Google demande l’acceptation des conditions", async ({ page }) => {
+    await page.goto("/inscription");
+    await page.getByRole("button", { name: "S'inscrire avec Google" }).click();
+    await expect(page.getByText("Vous devez accepter les conditions pour continuer.")).toBeVisible();
+    await expect(page.getByRole("checkbox")).toBeFocused();
+    await expect(page).toHaveURL(/\/inscription/);
+  });
+
+  test("Google démarre le parcours existant après acceptation", async ({ page }) => {
+    test.skip(!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, "Configuration Google non fournie au serveur de test");
+    let startUrl = "";
+    await page.route("**/api/auth/google/start**", route => { startUrl = route.request().url(); return route.fulfill({status:200,body:"Redirection simulée"}); });
+    await page.goto("/inscription");
+    await page.getByRole("checkbox").check();
+    await page.getByRole("button", { name: "S'inscrire avec Google" }).click();
+    await expect.poll(() => startUrl).toContain("/api/auth/google/start");
+    expect(new URL(startUrl).searchParams.get("next")).toBe("/onboarding");
+  });
+
+  test("les mots de passe non concordants sont signalés sans appel réseau", async ({ page }) => {
+    let calls = 0;
+    await page.route("**/api/auth/signup", route => { calls++; return route.abort(); });
+    await page.goto("/inscription");
+    await page.getByPlaceholder("Camille", { exact: true }).fill("Camille");
+    await page.getByPlaceholder("Martin").fill("Martin");
+    await page.getByPlaceholder("camille@maisonsora.fr").fill("camille@example.com");
+    const passwords = page.getByPlaceholder("••••••••••");
+    await passwords.nth(0).fill("Motdepasse123!");
+    await passwords.nth(1).fill("Motdepasse456!");
+    await page.getByRole("checkbox").check();
+    await page.getByRole("button", { name: "Créer mon compte" }).click();
+    await expect(page.getByText("Les mots de passe ne correspondent pas.")).toBeVisible();
+    await expect(passwords.nth(1)).toBeFocused();
+    expect(calls).toBe(0);
+    await page.getByRole("button", { name: "Afficher le mot de passe", exact: true }).click();
+    await expect(passwords.nth(0)).toHaveAttribute("type", "text");
+  });
+
+  test("les champs manquants sont signalés et le premier reçoit le focus", async ({ page }) => {
+    await page.goto("/inscription");
+    await page.getByRole("button", { name: "Créer mon compte" }).click();
+    await expect(page.getByText("Renseignez votre prénom.")).toBeVisible();
+    await expect(page.getByPlaceholder("Camille", {exact:true})).toBeFocused();
+    await expect(page.getByText("Saisissez une adresse e-mail valide.")).toBeVisible();
+  });
+
+  test("l’inscription email conserve les données et masque les erreurs techniques", async ({ page }) => {
+    let calls = 0;
+    await page.route("**/api/auth/signup", async route => { calls++; await route.fulfill({status:400,json:{error:"internal database detail"}}); });
+    await page.goto("/inscription");
+    await page.getByPlaceholder("Camille", {exact:true}).fill("Camille");
+    await page.getByPlaceholder("Martin", {exact:true}).fill("Martin");
+    await page.getByPlaceholder("camille@maisonsora.fr").fill("camille@example.com");
+    await page.getByPlaceholder("••••••••••").nth(0).fill("Motdepasse123!");
+    await page.getByPlaceholder("••••••••••").nth(1).fill("Motdepasse123!");
+    await page.getByRole("checkbox").check();
+    await page.getByRole("button", { name: "Créer mon compte" }).click();
+    await expect(page.getByText("Une erreur est survenue. Veuillez réessayer.")).toBeVisible();
+    await expect(page.getByText("internal database detail")).toHaveCount(0);
+    await expect(page.getByPlaceholder("Camille", {exact:true})).toHaveValue("Camille");
+    expect(calls).toBe(1);
+  });
+
+  test("l’inscription email envoie les informations et ouvre l’onboarding", async ({ page }) => {
+    let submitted: Record<string, unknown> | undefined;
+    await page.route("**/api/auth/signup", route => { submitted = route.request().postDataJSON(); return route.fulfill({status:201,json:{}}); });
+    await page.route("**/onboarding", route => route.fulfill({status:200,contentType:"text/html",body:"<p>Onboarding simulé</p>"}));
+    await page.goto("/inscription");
+    await page.getByPlaceholder("Camille", {exact:true}).fill("Camille");
+    await page.getByPlaceholder("Martin", {exact:true}).fill("Martin");
+    await page.getByPlaceholder("camille@maisonsora.fr").fill("camille@example.com");
+    await page.getByPlaceholder("••••••••••").nth(0).fill("Motdepasse123!");
+    await page.getByPlaceholder("••••••••••").nth(1).fill("Motdepasse123!");
+    await page.getByRole("checkbox").check();
+    await page.getByRole("button", {name:"Créer mon compte"}).click();
+    await expect(page).toHaveURL(/\/onboarding/);
+    expect(submitted).toMatchObject({firstName:"Camille",lastName:"Martin",email:"camille@example.com"});
+  });
+
+  for (const viewport of [{width:320,height:568},{width:390,height:844},{width:768,height:720},{width:1280,height:720}]) {
+    test(`inscription responsive ${viewport.width} × ${viewport.height}`, async ({ page }, info) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/inscription");
+      await expect(page.getByRole("heading", { name: "Ouvrez votre espace marchand" })).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
+      if (viewport.width < 1024) await expect(page.getByRole("complementary", {name:"Découvrez Okado"})).toBeHidden();
+      else {
+        await expect(page.getByRole("complementary", {name:"Découvrez Okado"})).toBeVisible();
+        await expect(page.getByText("Visuels et résultats fictifs, à titre illustratif.")).toBeVisible();
+        expect(readFileSync(resolve(__dirname, "../../../.vercelignore"), "utf8")).toContain("!apps/web-app/public/images/auth/inscription-jeu.webp");
+        const image = page.locator('img[src*="inscription-jeu"]');
+        await expect(image).toHaveJSProperty("complete", true);
+        expect(await image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
+      }
+      await page.screenshot({path:info.outputPath(`inscription-${viewport.width}.png`),fullPage:true,animations:"disabled"});
+    });
+  }
 });
