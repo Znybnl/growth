@@ -254,7 +254,7 @@ export function buildCampaignLivePreviewModel(form: CampaignSetupInput, merchant
     headingAlignmentClass,
     headingFontClass: headingFontClassFor(form),
     headingFontFamily: form.presentation.heading.fontFamily,
-    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : isCocoricoWheelTemplate(templateId) ? "#ffffff" : form.gameType === "scratch" ? resolveScratchTemplateTextColor(form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor, templateId) : form.presentation.heading.textColor,
+    headingTextColor: templateId === "cosmic-orbit" ? "#f8fbff" : isCocoricoWheelTemplate(templateId) ? "#ffffff" : form.gameType === "scratch" ? resolveScratchTemplateTextColor(!templateId.startsWith("travel-scratch-") && form.presentation.heading.textColor.toLowerCase() === "#1f2937" ? previewAccent.ink : form.presentation.heading.textColor, templateId) : form.presentation.heading.textColor,
     headingFontSizePx: form.presentation.heading.fontSizePx,
     headingFontWeight: isCocoricoWheelTemplate(templateId)
       ? 900

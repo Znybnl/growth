@@ -95,6 +95,7 @@ export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplat
 
 /** Only used to initialize a new scratch design; saved choices remain unchanged. */
 export function defaultScratchTemplateForIndustry(industry?: string | null): GamePageTemplateId {
+  if (industry === "Agences de voyage") return "travel-scratch-elegant";
   return isBeautyIndustry(industry) ? "beauty-scratch-nude" : CLASSIC_NUDE_SCRATCH_TEMPLATE_ID;
 }
 

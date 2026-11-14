@@ -23,7 +23,7 @@ export const TRAVEL_SCRATCH_THEMES = [
     sampleHeadline: "Cap sur les vacances",
     sampleSubline: "Une belle surprise vous attend",
     scratch: { base: "#087e83", highlight: "#40c8bc", edge: "#fff4d6", reveal: "#e7f8f2", textureOpacity: 0.2 },
-    text: "#064e59",
+    text: "#065360",
     font: "poppins",
     fontClass: "font-poppins",
   },

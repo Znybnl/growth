@@ -37,7 +37,7 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
         const subtitle = scene.locator("p[data-testid='christmas-wheel-subtitle']");
         await expect(subtitle).toHaveCSS("text-shadow", "none");
         expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("radial-gradient");
-        expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("0.68");
+        expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("0.56");
         expect(await subtitle.evaluate(element => getComputedStyle(element, "::before").backgroundImage)).toContain("226, 248, 255");
         const blueSegmentLabels = scene.locator("[data-testid='christmas-wheel'] svg text");
         await expect(blueSegmentLabels.nth(1)).toHaveAttribute("fill", "#ffffff");
@@ -128,5 +128,45 @@ test("@visual-1280 section Voyage dédiée aux tickets dans les deux éditeurs",
       }
     }
     await captureVisualAt1280(page, info, `ticket-voyage-${mode}`);
+  }
+});
+
+test("Voyage : le ticket élégant est sélectionné par défaut pour une nouvelle campagne", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-create&business=travel");
+  await page.getByTestId("wizard-game-choices").getByRole("button", { name: /Ticket à gratter/ }).click();
+  await page.getByRole("button", { name: "Continuer", exact: true }).click();
+  await page.getByPlaceholder("Ex. La roue gourmande de juin").fill("Voyage de découverte");
+  await page.getByRole("button", { name: "Continuer", exact: true }).click();
+  await expect(page.getByTestId("travel-scratch-template-options").getByRole("button", { name: /Voyage élégant/ })).toHaveAttribute("aria-pressed", "true");
+});
+
+for (const game of ["wheel", "scratch"] as const) {
+  test(`Tropical ${game} : la couleur du titre est initialisée et personnalisable`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    const initial = game === "wheel" ? "classic" : "travel-scratch-elegant";
+    await page.goto(`/dev/template-rendering-proof?mode=wizard-responsive-edit&template=${initial}&business=travel`);
+    await selectWizardStep(page, 2);
+    const gallery = page.getByTestId(game === "wheel" ? "travel-template-options" : "travel-scratch-template-options");
+    await gallery.getByRole("button", { name: /Vacances tropicales/ }).click();
+    const advanced = page.getByText("Paramètres avancés", { exact: false }).first();
+    await advanced.click();
+    const input = page.getByLabel("Couleur du texte principal");
+    await expect(input).toHaveValue("#065360");
+    const title = page.getByTestId("wizard-phone-preview").frameLocator("iframe").locator(game === "wheel" ? "h1" : "h2").first();
+    await expect(title).toHaveCSS("color", "rgb(6, 83, 96)");
+    await input.fill("#b45283");
+    await expect(title).toHaveCSS("color", "rgb(180, 82, 131)");
+  });
+}
+
+test("Tropical : la couleur personnalisée est conservée en aperçu et sur la page de jeu", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const template of ["travel-tropical", "travel-scratch-tropical"]) {
+    for (const mode of ["preview", "public", "game-preview"]) {
+      await page.goto(`/dev/template-rendering-proof?mode=${mode}&template=${template}&business=travel&ink=%23b45283`);
+      const title = page.locator(template.includes("scratch") ? "h2" : "h1").filter({ hasText: "Une surprise" }).first();
+      await expect(title).toHaveCSS("color", "rgb(180, 82, 131)");
+    }
   }
 });

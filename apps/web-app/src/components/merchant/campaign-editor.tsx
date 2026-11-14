@@ -1727,7 +1727,7 @@ export function buildCampaignLivePreviewModel(
       headingTextColor:
       templateId === "cosmic-orbit" || isCocoricoWheelTemplate(templateId)
         ? "#f8fbff"
-        : form.gameType === "scratch" &&
+        : form.gameType === "scratch" && !templateId.startsWith("travel-scratch-") &&
             form.presentation.heading.textColor.toLowerCase() === "#1f2937"
           ? previewAccent.ink
           : form.gameType === "scratch"

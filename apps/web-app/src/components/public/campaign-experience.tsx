@@ -555,7 +555,7 @@ export function CampaignExperience({
   const headingTextColor =
     isCosmicTemplate || isCocoricoTemplate
       ? "#f8fbff"
-      : campaign.gameType === "scratch" &&
+      : campaign.gameType === "scratch" && !pageTemplate.startsWith("travel-scratch-") &&
           campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
         ? resolveScratchTemplateTextColor(scratchAccent.ink, pageTemplate)
       : campaign.gameType === "scratch"
