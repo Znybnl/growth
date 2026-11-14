@@ -7,8 +7,17 @@ import { INDUSTRY_OPTIONS, BEAUTY_SUBSECTOR_OPTIONS, RESTAURANT_TYPE_OPTIONS } f
 import beauty from "./beauty-catalog-466.fixture.json" with { type: "json" };
 import additions from "./prize-catalog-623.fixture.json" with { type: "json" };
 import recipes from "./prize-composition-recipes.json" with { type: "json" };
-import { parsePrizeSuggestionCatalog } from "./prize-suggestion-catalog.ts";
+import { filterCatalogForIndustry, parsePrizeSuggestionCatalog } from "./prize-suggestion-catalog.ts";
 const catalog = [...beauty, ...additions].map(item => ({ ...item, industrySubsector: item.industrySubsector ?? undefined, isActive: true }));
+test("catalogue : chaque secteur conserve ses suggestions, y compris les alias restaurant", () => {
+ const hotel = catalog.find(item => item.industry === "Hôtellerie");
+ const travel = { ...hotel, id: "travel-custom", industry: "Agences de voyage" };
+ const restaurant = { ...hotel, id: "restaurant-legacy", industry: "Restaurant" };
+ assert.deepEqual(filterCatalogForIndustry([hotel, travel, restaurant], "Agences de voyage"), [travel]);
+ assert.deepEqual(filterCatalogForIndustry([hotel, travel], "Hôtellerie"), [hotel]);
+ assert.deepEqual(filterCatalogForIndustry([hotel, restaurant], "Restauration"), [restaurant]);
+ assert.deepEqual(filterCatalogForIndustry([hotel], "Agences de voyage"), []);
+});
 const contexts = [
  ...INDUSTRY_OPTIONS.filter(industry => industry !== "Beauté" && industry !== "Agences de voyage").map(industry => ({ industry })),
  ...BEAUTY_SUBSECTOR_OPTIONS.map(industrySubsector => ({ industry: "Beauté", industrySubsector })),
