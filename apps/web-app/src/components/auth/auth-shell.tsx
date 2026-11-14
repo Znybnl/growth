@@ -26,9 +26,9 @@ export function AuthShell({
   if (eyebrow === "Inscription marchand") {
     return <div className="okado-auth-shell min-h-screen overflow-x-hidden bg-linen-canvas">
       <div className="grid min-h-screen lg:grid-cols-[48%_52%]">
-        <section className="flex justify-center bg-linen-canvas px-5 py-7 sm:px-8 lg:px-8 lg:py-8">
+        <section className="flex justify-center bg-linen-canvas px-5 py-5 sm:px-8 lg:px-8 lg:py-5">
           <div className="flex w-full max-w-[480px] flex-col justify-center">
-            <div className="mb-6 flex items-center gap-3">
+            <div className="mb-4 flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-[12px] text-white shadow-sm" style={{ background: "var(--gradient-hero-blue-fade)" }}><Star className="h-5 w-5 fill-white text-white" aria-hidden="true" /></div>
               <div><p className="text-2xl font-semibold tracking-[-0.04em] text-aubergine">{APP_NAME_CAPITALIZED}</p><p className="text-sm text-ash">Espace professionnel</p></div>
             </div>
@@ -102,13 +102,13 @@ export function AuthShell({
         </section>
 
         <section
-          className="relative hidden min-h-screen overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center"
+          className="relative hidden min-h-screen overflow-hidden lg:flex lg:flex-col lg:items-center lg:justify-center lg:gap-6 lg:py-10"
           style={{ background: "var(--color-deep-plum)" }}
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_18%,rgba(255,255,255,0.22),transparent_34%),linear-gradient(135deg,transparent_0%,rgba(97,31,105,0.28)_100%)]" />
 
-          <div className="relative flex w-full max-w-[760px] flex-1 items-center justify-center px-10 sm:px-14">
-            <div className="relative h-[390px] w-full max-w-[560px]">
+          <div className="relative flex w-full max-w-[760px] items-center justify-center px-10 sm:px-14">
+            <div data-testid="auth-promo-art" className="relative h-[410px] w-full max-w-[560px]">
               <div className="absolute inset-x-[5%] top-[4%] rounded-[16px] border border-white/30 bg-white/95 p-5 shadow-[0_28px_80px_rgba(72,26,84,0.22)]">
                 <div className="flex items-center justify-between border-b border-fog pb-4">
                   <div>
@@ -154,7 +154,7 @@ export function AuthShell({
             </div>
           </div>
 
-          <div className="relative w-full max-w-[620px] px-14 pb-16 text-center text-white">
+          <div data-testid="auth-promo-copy" className="relative w-full max-w-[620px] px-14 text-center text-white">
             <p className="text-[30px] font-semibold leading-tight tracking-[-0.03em]">{visualCopy.title}</p>
             <p className="mx-auto mt-4 max-w-[480px] text-base leading-7 text-white/75">{visualCopy.body}</p>
             <ul className="mx-auto mt-6 grid max-w-[480px] gap-2 text-left text-sm text-white/78">

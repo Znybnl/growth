@@ -148,4 +148,28 @@ test.describe("Parcours public d'authentification", () => {
       await page.screenshot({path:info.outputPath(`inscription-${viewport.width}.png`),fullPage:true,animations:"disabled"});
     });
   }
+
+  for (const viewport of [{width:390,height:844},{width:1024,height:768},{width:1366,height:768},{width:1440,height:900}]) {
+    for (const route of ["inscription", "connexion"]) {
+      test(`contraste et mise en page ${route} ${viewport.width} × ${viewport.height}`, async ({page}, info) => {
+        await page.setViewportSize(viewport);
+        await page.goto(`/${route}`);
+        const field = route === "inscription" ? page.getByPlaceholder("Camille", {exact:true}) : page.getByPlaceholder("Email", {exact:true});
+        await expect(field).toHaveCSS("height", "46px");
+        await expect(field).toHaveCSS("border-top-color", "rgb(203, 197, 207)");
+        expect(await field.evaluate(element => getComputedStyle(element, "::placeholder").color)).toBe("rgb(118, 112, 125)");
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
+        if (viewport.width >= 1024) {
+          const art = await page.getByTestId("auth-promo-art").boundingBox();
+          const copy = await page.getByTestId("auth-promo-copy").boundingBox();
+          expect(copy!.y).toBeGreaterThanOrEqual(art!.y + art!.height + 20);
+        }
+        if (route === "inscription" && viewport.width === 1440) {
+          const button = await page.getByRole("button", {name:"Créer mon compte"}).boundingBox();
+          expect(button!.y + button!.height).toBeLessThanOrEqual(viewport.height);
+        }
+        await page.screenshot({path:info.outputPath(`${route}-${viewport.width}x${viewport.height}.png`),fullPage:true,animations:"disabled"});
+      });
+    }
+  }
 });

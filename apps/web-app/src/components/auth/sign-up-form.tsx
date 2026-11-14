@@ -26,7 +26,7 @@ function readReferralCodeFromBrowser() {
 
 function FieldLabel({ children }: { children: string }) {
   return (
-    <span className="mb-2 block text-charcoal">
+    <span className="mb-1 block text-[#423748]">
       {children}
       <span className="ml-1 text-coral-alert">*</span>
     </span>
@@ -129,16 +129,16 @@ export function SignUpForm() {
   }
 
   return (
-    <form className="mx-auto flex w-full max-w-[480px] flex-col justify-center py-6" onSubmit={handleSubmit} noValidate>
+    <form className="okado-auth-credentials mx-auto flex w-full max-w-[480px] flex-col justify-center py-4" onSubmit={handleSubmit} noValidate>
       <div>
         <p className="okado-label">Créer un compte</p>
-        <h1 className="okado-page-title mt-3">Ouvrez votre espace marchand</h1>
-        <p className="mt-4 text-sm leading-8 text-ash">
+        <h1 className="okado-page-title mt-2 !text-[30px] !leading-[1.12]">Ouvrez votre espace marchand</h1>
+        <p className="mt-2 text-sm leading-6 text-[#554b59]">
           30 jours d’essai gratuit, sans carte bancaire. Créez votre premier jeu en quelques étapes.
         </p>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-4">
         <GoogleAuthButton mode="signup" nextPath="/onboarding" onBeforeStart={checkTerms} />
       </div>
 
@@ -148,13 +148,13 @@ export function SignUpForm() {
         </div>
       ) : null}
 
-      <div className="mt-8 flex items-center gap-4">
+      <div className="mt-4 flex items-center gap-4">
         <div className="h-px flex-1 bg-fog" />
         <span className="text-sm text-[#66596b]">ou continuez avec le formulaire</span>
         <div className="h-px flex-1 bg-fog" />
       </div>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
         <label className="text-sm">
           <FieldLabel>Prénom</FieldLabel>
           <input
@@ -164,7 +164,7 @@ export function SignUpForm() {
             value={form.firstName}
             onChange={(event) => updateField("firstName", event.target.value)}
             placeholder="Camille"
-            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="h-[46px] w-full rounded-[12px] border border-[#cbc5cf] bg-white px-4 text-carbon outline-none transition placeholder:text-[#76707d] focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
           {fieldErrors.firstName ? <span id="signup-firstName-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.firstName}</span> : null}
@@ -178,7 +178,7 @@ export function SignUpForm() {
             value={form.lastName}
             onChange={(event) => updateField("lastName", event.target.value)}
             placeholder="Martin"
-            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="h-[46px] w-full rounded-[12px] border border-[#cbc5cf] bg-white px-4 text-carbon outline-none transition placeholder:text-[#76707d] focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
           {fieldErrors.lastName ? <span id="signup-lastName-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.lastName}</span> : null}
@@ -193,7 +193,7 @@ export function SignUpForm() {
             value={form.email}
             onChange={(event) => updateField("email", event.target.value)}
             placeholder="camille@maisonsora.fr"
-            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="h-[46px] w-full rounded-[12px] border border-[#cbc5cf] bg-white px-4 text-carbon outline-none transition placeholder:text-[#76707d] focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
           {fieldErrors.email ? <span id="signup-email-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.email}</span> : null}
@@ -208,7 +208,7 @@ export function SignUpForm() {
             value={form.password}
             onChange={(event) => updateField("password", event.target.value)}
             placeholder="••••••••••"
-            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 pr-12 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="h-[46px] w-full rounded-[12px] border border-[#cbc5cf] bg-white px-4 pr-12 text-carbon outline-none transition placeholder:text-[#76707d] focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           /><button type="button" aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-ash focus-visible:outline-2 focus-visible:outline-aubergine">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></span>
           {fieldErrors.password ? <span id="signup-password-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.password}</span> : null}
@@ -223,14 +223,14 @@ export function SignUpForm() {
             value={form.confirmPassword}
             onChange={(event) => updateField("confirmPassword", event.target.value)}
             placeholder="••••••••••"
-            className="w-full rounded-[12px] border border-fog bg-white px-4 py-4 pr-12 text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="h-[46px] w-full rounded-[12px] border border-[#cbc5cf] bg-white px-4 pr-12 text-carbon outline-none transition placeholder:text-[#76707d] focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           /><button type="button" aria-label={showConfirmation ? "Masquer la confirmation du mot de passe" : "Afficher la confirmation du mot de passe"} aria-pressed={showConfirmation} onClick={() => setShowConfirmation(!showConfirmation)} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-ash focus-visible:outline-2 focus-visible:outline-aubergine">{showConfirmation ? <EyeOff size={18} /> : <Eye size={18} />}</button></span>
           {fieldErrors.confirmPassword ? <span id="signup-confirmPassword-error" role="alert" className="mt-1 block text-xs text-coral-alert">{fieldErrors.confirmPassword}</span> : null}
         </label>
       </div>
 
-      <div className="mt-6 rounded-[8px] border border-border bg-linen-canvas px-4 py-4 text-sm leading-7 text-ash">
+      <div className="mt-4 rounded-[8px] border border-[#d8d0dc] bg-linen-canvas px-4 py-3 text-sm leading-6 text-[#554b59]">
         <label className="flex items-start gap-3">
           <input
             id="signup-terms"
@@ -243,7 +243,7 @@ export function SignUpForm() {
             J’accepte les <a href="https://www.okado.app/cgv" target="_blank" rel="noreferrer" className="underline">conditions générales de vente et d’abonnement</a>.
           </span>
         </label>
-        <p className="mt-3 text-xs">Consultez notre <a href="https://www.okado.app/confidentialite" target="_blank" rel="noreferrer" className="underline">politique de confidentialité</a>. Cette acceptation ne constitue pas un consentement à la prospection commerciale.</p>
+        <p className="mt-2 text-xs leading-5">Consultez notre <a href="https://www.okado.app/confidentialite" target="_blank" rel="noreferrer" className="underline">politique de confidentialité</a>. Cette acceptation ne constitue pas un consentement à la prospection commerciale.</p>
       </div>
 
       {error ? (
@@ -252,7 +252,7 @@ export function SignUpForm() {
         </div>
       ) : null}
 
-      <div className="mt-8 flex flex-col gap-3">
+      <div className="mt-4 flex flex-col gap-3">
         <button
           type="submit"
           disabled={isLoading}
