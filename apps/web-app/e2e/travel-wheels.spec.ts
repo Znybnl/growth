@@ -57,6 +57,23 @@ for (const theme of TRAVEL_SCRATCH_THEMES) {
     }
     expect(measurements[1]).toEqual(measurements[0]);
   });
+
+  test(`${theme.name} : scène jusqu’à 600 px et logo image identiques`, async ({ page }, info) => {
+    const wheelId = theme.id.replace("travel-scratch-", "travel-");
+    await page.setViewportSize({width:1280,height:900});
+    const widths: number[] = [];
+    for (const template of [wheelId, theme.id]) {
+      await page.goto(`/dev/template-rendering-proof?mode=public&business=travel&template=${template}&logo=image`);
+      const scene = template.includes("scratch") ? page.locator("[data-travel-scratch]") : page.getByTestId("christmas-wheel-scene");
+      await expect(scene).toBeVisible();
+      widths.push((await scene.boundingBox())!.width);
+      const logo = page.locator("[data-travel-template] header img").first();
+      await expect(logo).toBeVisible();
+      expect(await logo.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+      await page.screenshot({ path:info.outputPath(`${template}-1280-logo.png`), fullPage:true, animations:"disabled" });
+    }
+    expect(widths).toEqual([600,600]);
+  });
 }
 
 for (const theme of TRAVEL_WHEEL_THEMES) {
@@ -205,6 +222,8 @@ test("Voyage : le ticket élégant est sélectionné par défaut pour une nouvel
   await page.getByPlaceholder("Ex. La roue gourmande de juin").fill("Voyage de découverte");
   await page.getByRole("button", { name: "Continuer", exact: true }).click();
   await expect(page.getByTestId("travel-scratch-template-options").getByRole("button", { name: /Voyage élégant/ })).toHaveAttribute("aria-pressed", "true");
+  await page.getByText("Paramètres avancés", { exact: false }).first().click();
+  await expect(page.getByLabel("Taille de la police").first()).toHaveValue("40");
 });
 
 test("Road trip : les couleurs initiales du titre et du logo correspondent à la roue", async ({ page }) => {
@@ -215,6 +234,30 @@ test("Road trip : les couleurs initiales du titre et du logo correspondent à la
   await page.getByText("Paramètres avancés", { exact: false }).first().click();
   await expect(page.getByLabel("Couleur du texte principal")).toHaveValue("#a63718");
   await expect(page.getByLabel("Couleur du logo et sous-titre")).toHaveValue("#082d4a");
+});
+
+test("une campagne existante conserve sa taille de titre en changeant de template Voyage", async ({ page }) => {
+  await page.setViewportSize({width:1280,height:900});
+  await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-edit&template=travel-scratch-elegant&business=travel&headingSize=46");
+  await selectWizardStep(page, 2);
+  await page.getByTestId("travel-scratch-template-options").getByRole("button", {name:/Road trip/}).click();
+  await page.getByText("Paramètres avancés", {exact:false}).first().click();
+  await expect(page.getByLabel("Taille de la police").first()).toHaveValue("46");
+});
+
+test("une taille de titre choisie pendant la création reste inchangée en changeant de jeu", async ({ page }) => {
+  await page.setViewportSize({width:1280,height:900});
+  await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-create&business=travel");
+  await page.getByRole("button", {name:"Continuer",exact:true}).click();
+  await page.getByPlaceholder("Ex. La roue gourmande de juin").fill("Voyage de découverte");
+  await page.getByRole("button", {name:"Continuer",exact:true}).click();
+  await page.getByText("Paramètres avancés", {exact:false}).first().click();
+  await page.getByLabel("Taille de la police").first().fill("46");
+  await selectWizardStep(page, 0);
+  await page.getByTestId("wizard-game-choices").getByRole("button", {name:/Ticket à gratter/}).click();
+  await selectWizardStep(page, 2);
+  if (!(await page.getByLabel("Taille de la police").first().isVisible())) await page.getByText("Paramètres avancés", {exact:false}).first().click();
+  await expect(page.getByLabel("Taille de la police").first()).toHaveValue("46");
 });
 
 for (const game of ["wheel", "scratch"] as const) {

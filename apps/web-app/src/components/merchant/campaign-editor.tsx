@@ -1840,6 +1840,7 @@ export function CampaignEditor({
   const router = useRouter();
   const { confirmNoMarketingAction, noMarketingActionDialog } = useNoMarketingActionConfirmation();
   const [form, setForm] = useState<EditorState>(toEditorState(merchant, initialCampaign));
+  const headingSizeManuallyEdited = useRef(false);
   const [lastSavedFormSnapshot, setLastSavedFormSnapshot] = useState(() =>
     JSON.stringify(toEditorState(merchant, initialCampaign)),
   );
@@ -2031,6 +2032,7 @@ export function CampaignEditor({
             ...current.presentation.heading,
             fontFamily: remembered?.headingFontFamily ?? theme.font,
             textColor: remembered?.headingTextColor ?? theme.text,
+            fontSizePx: travelScratchTheme(templateId) && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX ? 40 : current.presentation.heading.fontSizePx,
           },
           logo: {
             ...current.presentation.logo,
@@ -2462,9 +2464,9 @@ export function CampaignEditor({
                 ? scratchFontFamily
                 : current.presentation.heading.fontFamily,
             fontSizePx:
-              gameType === "scratch" && current.presentation.heading.fontSizePx === 40
+              gameType === "scratch" && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && !travelScratchTheme(scratchTemplateId) && current.presentation.heading.fontSizePx === 40
                 ? DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
-                : gameType === "wheel" && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
+                : gameType === "wheel" && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
                   ? 40
                   : current.presentation.heading.fontSizePx,
           },
@@ -3654,7 +3656,7 @@ export function CampaignEditor({
                       type="number"
                       min={18}
                       max={72}
-                      value={form.presentation.heading.fontSizePx}
+                      value={form.presentation.heading.fontSizePx} onInput={() => { headingSizeManuallyEdited.current = true; }}
                       onChange={(event) =>
                         setForm((current) => ({
                           ...current,
@@ -3718,7 +3720,7 @@ export function CampaignEditor({
                     type="number"
                     min={18}
                     max={72}
-                    value={form.presentation.heading.fontSizePx}
+                    value={form.presentation.heading.fontSizePx} onInput={() => { headingSizeManuallyEdited.current = true; }}
                     onChange={(event) =>
                       setForm((current) => ({
                         ...current,
@@ -4301,7 +4303,7 @@ export function CampaignEditor({
                   type="number"
                   min={18}
                   max={72}
-                  value={form.presentation.heading.fontSizePx}
+                  value={form.presentation.heading.fontSizePx} onInput={() => { headingSizeManuallyEdited.current = true; }}
                   onChange={(event) =>
                     setForm((current) => ({
                       ...current,

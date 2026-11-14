@@ -523,7 +523,7 @@ export function ImmersiveScratchTicket({
     };
   }
 
-  const rootClass = `flex flex-col pb-8 ${travelTheme ? "pt-[9.2cqw]" : seasonalTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[52px]"} ${beautyTheme
+  const rootClass = `flex flex-col ${travelTheme ? "pb-0" : "pb-8"} ${travelTheme ? "pt-[9.2cqw]" : seasonalTheme ? "pt-10" : fitContainer ? "pt-2" : "pt-[52px]"} ${travelTheme ? "bg-transparent px-0" : beautyTheme
     ? "bg-transparent px-6"
     : isVault || isConfetti
     ? "bg-transparent px-5"
@@ -537,7 +537,7 @@ export function ImmersiveScratchTicket({
 
   return (
     <div
-      className={`mx-auto flex w-full flex-1 flex-col ${fitContainer ? "max-w-full" : "max-w-[370px]"}`}
+      className={`mx-auto flex w-full flex-1 flex-col ${travelTheme ? "max-w-[600px]" : fitContainer ? "max-w-full" : "max-w-[370px]"}`}
       data-travel-scratch={travelTheme ? "true" : undefined}
       style={{ containerType: "inline-size" }}
     >
@@ -545,7 +545,7 @@ export function ImmersiveScratchTicket({
         className={`relative isolate flex-1 ${travelTheme ? "overflow-visible" : "overflow-hidden"} ${rootClass}`}
         style={{ minHeight: travelTheme ? undefined : seasonalTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
       >
-        <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`} data-travel-template={travelTheme?.id.replace("travel-scratch-", "travel-")} style={travelTheme ? { width: "min(100vw, 600px)", left: "50%", transform: "translateX(-50%)", containerType: "inline-size" } : undefined}>
+        <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`} data-travel-template={travelTheme?.id.replace("travel-scratch-", "travel-")} style={travelTheme ? { width: "100%", containerType: "inline-size" } : undefined}>
           {travelTheme ? <TravelGameHeader scratch logoMode={logoMode} logoText={logoText || "Votre commerce"} logoUrl={logoUrl} logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor || ink} logoAlign={logoAlignmentClass === "justify-start" ? "left" : logoAlignmentClass === "justify-end" ? "right" : "center"} logoBottomSpacingPx={logoBottomSpacingPx} title={displayHeadline} titleColor={ink} titleFontSizePx={headingFontSizePx ?? 40} titleFontFamily={textFontFamily(headingFontFamily ?? travelTheme.font)} titleFontWeight={headingFontWeight} titleAlign={headingAlignmentClass === "text-left" ? "left" : headingAlignmentClass === "text-right" ? "right" : "center"} secondaryText={secondaryText || ""} subtitleSpacingPx={subtitleSpacingPx} /> : <>
           {logoMode !== "none" ? (
             <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
@@ -593,7 +593,7 @@ export function ImmersiveScratchTicket({
 
         <div
           className={`relative z-10 flex flex-1 ${isIssue724IllustratedScratch ? "items-start" : "items-center"} ${scratchShape ? "justify-start" : "justify-center"}`}
-          style={{ paddingTop: `${Math.max(0, textToScratchSpacingPx)}px`, paddingBottom: fitContainer ? "16cqw" : "clamp(32px, 8svh, 72px)" }}
+          style={{ paddingTop: `${Math.max(0, textToScratchSpacingPx)}px`, paddingBottom: travelTheme ? "clamp(12px, 4svh, 32px)" : fitContainer ? "16cqw" : "clamp(32px, 8svh, 72px)" }}
         >
         <div
           data-testid="scratch-ticket-surface"

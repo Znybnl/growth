@@ -339,7 +339,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       });
   const previewHeadingTextColor = isCosmicTemplate || isCocoricoTemplate ? "#ffffff" : (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937") ? "#f8fbff" : preview.gamePageTemplateId === "scratch-lilac" ? resolveScratchTemplateTextColor(preview.headingTextColor, preview.gamePageTemplateId) : preview.headingTextColor;
   const previewFrameClass = mobileViewport
-    ? `relative isolate flex min-h-screen w-full flex-col px-4 ${isImmersiveScratchTemplate ? preview.gamePageTemplateId.startsWith("travel-scratch-") ? "pt-0 pb-0" : "pt-0 pb-8" : isBeautyTemplate ? "pt-8 pb-8" : "pt-12 pb-0"}`
+    ? `relative isolate flex min-h-screen w-full flex-col ${preview.gamePageTemplateId.startsWith("travel-scratch-") ? "px-0" : "px-4"} ${isImmersiveScratchTemplate ? preview.gamePageTemplateId.startsWith("travel-scratch-") ? "pt-0 pb-0" : "pt-0 pb-8" : isBeautyTemplate ? "pt-8 pb-8" : "pt-12 pb-0"}`
     : `${compact ? "relative isolate h-full min-h-0 max-w-none rounded-[30px] px-3 pb-5 pt-7" : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8"} ${beautyScratchTheme ? "flex flex-col" : ""}`;
   const previewWrapperClass = compact ? "h-full" : flushTop ? "" : "mt-6";
   const wheelPreviewHeight = compact ? "330px" : "470px";

@@ -875,6 +875,7 @@ export function CampaignWizard({
   const { confirmNoMarketingAction, noMarketingActionDialog } = useNoMarketingActionConfirmation();
   const [marketingLinks, setMarketingLinks] = useState(merchant);
   const isEditing = Boolean(initialCampaign);
+  const headingSizeManuallyEdited = useRef(false);
   const creationTracked = useRef(false);
   useEffect(() => {
     if (!isEditing && !adminSaveEndpoint && !creationTracked.current
@@ -1156,6 +1157,7 @@ export function CampaignWizard({
             ...current.presentation.heading,
             fontFamily: remembered?.headingFontFamily ?? theme.font,
             textColor: remembered?.headingTextColor ?? theme.text,
+            fontSizePx: travelScratchTheme(templateId) && !isEditing && !savedCampaignId && !headingSizeManuallyEdited.current && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX ? 40 : current.presentation.heading.fontSizePx,
           },
           logo: {
             ...current.presentation.logo,
@@ -2039,9 +2041,9 @@ export function CampaignWizard({
                                   ? scratchFontFamily
                                   : current.presentation.heading.fontFamily,
                               fontSizePx:
-                                option.value === "scratch" && current.presentation.heading.fontSizePx === 40
+                                option.value === "scratch" && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && !travelScratchTheme(scratchTemplateId) && current.presentation.heading.fontSizePx === 40
                                   ? DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
-                                  : option.value === "wheel" && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
+                                  : option.value === "wheel" && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
                                     ? 40
                                     : current.presentation.heading.fontSizePx,
                             },
@@ -2761,6 +2763,7 @@ export function CampaignWizard({
                      }
                      className="mt-3 w-full cursor-pointer accent-aubergine"
                      aria-label="Taille de la police"
+                     onInput={() => { headingSizeManuallyEdited.current = true; }}
                    />
                  </label>
                </div>
@@ -2938,6 +2941,7 @@ export function CampaignWizard({
                       }
                      className="w-full cursor-pointer accent-aubergine"
                       aria-label="Taille de la police"
+                      onInput={() => { headingSizeManuallyEdited.current = true; }}
                     />
                   </label>
                 </div>
