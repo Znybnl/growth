@@ -89,6 +89,7 @@ import { uploadMerchantImageFile } from "@/lib/client-merchant-image-upload";
 import { beautyWheelBackground, beautyWheelFontOptions, beautyWheelLogoColor, beautyWheelTheme, isBeautyIndustry, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
 import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
+import { travelScratchTheme } from "@/lib/travel-scratch-themes";
 import {
   createCampaignEmailDefaults,
   normalizeCampaignEmailSettings,
@@ -2033,7 +2034,7 @@ export function CampaignEditor({
           },
           logo: {
             ...current.presentation.logo,
-            textColor: remembered?.logoTextColor ?? theme.text,
+            textColor: remembered?.logoTextColor ?? travelScratchTheme(templateId)?.logo ?? theme.text,
             marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
           },
         },
@@ -2471,7 +2472,7 @@ export function CampaignEditor({
             ...current.presentation.logo,
             textColor:
               gameType === "scratch"
-                ? targetStyle?.logoTextColor ?? scratchTextColor
+                ? targetStyle?.logoTextColor ?? travelScratchTheme(scratchTemplateId)?.logo ?? scratchTextColor
                 : targetStyle?.logoTextColor ?? wheelLogoColorForTemplateSelection(targetTemplateId, "#1b2842"),
           },
           layout: {

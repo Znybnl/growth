@@ -339,7 +339,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
       });
   const previewHeadingTextColor = isCosmicTemplate || isCocoricoTemplate ? "#ffffff" : (preview.gamePageTemplateId === "scratch-vault" && preview.headingTextColor.toLowerCase() === "#1f2937") ? "#f8fbff" : preview.gamePageTemplateId === "scratch-lilac" ? resolveScratchTemplateTextColor(preview.headingTextColor, preview.gamePageTemplateId) : preview.headingTextColor;
   const previewFrameClass = mobileViewport
-    ? `relative isolate flex min-h-screen w-full flex-col px-4 ${isImmersiveScratchTemplate ? "pt-0 pb-8" : isBeautyTemplate ? "pt-8 pb-8" : "pt-12 pb-0"}`
+    ? `relative isolate flex min-h-screen w-full flex-col px-4 ${isImmersiveScratchTemplate ? preview.gamePageTemplateId.startsWith("travel-scratch-") ? "pt-0 pb-0" : "pt-0 pb-8" : isBeautyTemplate ? "pt-8 pb-8" : "pt-12 pb-0"}`
     : `${compact ? "relative isolate h-full min-h-0 max-w-none rounded-[30px] px-3 pb-5 pt-7" : "relative isolate min-h-[600px] max-w-[450px] rounded-[38px] px-4 pb-6 pt-8"} ${beautyScratchTheme ? "flex flex-col" : ""}`;
   const previewWrapperClass = compact ? "h-full" : flushTop ? "" : "mt-6";
   const wheelPreviewHeight = compact ? "330px" : "470px";
@@ -361,7 +361,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
 
   return (
     <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>
-      <div className={`mx-auto w-full ${(isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} ${mobileViewport ? "" : "border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)]"} ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, position: "relative", backgroundImage: useBeautyScratchThemeBackground ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
+      <div className={`mx-auto w-full ${preview.gamePageTemplateId.startsWith("travel-scratch-") || (isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} ${mobileViewport ? "" : "border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)]"} ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, position: "relative", backgroundImage: useBeautyScratchThemeBackground ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
         {nativeBackgroundImageUrl ? (
           <Image
             src={nativeBackgroundImageUrl}

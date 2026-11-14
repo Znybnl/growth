@@ -2029,10 +2029,3 @@ button:disabled,
 .okado-preview-surface[data-template-id="cocorico-duo-wheel"] > div > div:has(> .okado-cocorico-wheel) {
   margin-inline: 0 !important;
 }
-/* Preserve scrolling on short screens while hiding the browser scrollbar on Voyage tickets. */
-html:has([data-travel-scratch]) {
-  scrollbar-width: none;
-}
-html:has([data-travel-scratch])::-webkit-scrollbar {
-  display: none;
-}

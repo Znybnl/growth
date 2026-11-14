@@ -85,6 +85,7 @@ import { isTravelWheelTemplate, TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-t
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { HALLOWEEN_SCRATCH_TEMPLATE, halloweenScratchTemplate, isHalloweenFixedPalette } from "@/lib/halloween-scratch-template";
 import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate } from "@/lib/beauty-scratch-templates";
+import { travelScratchTheme } from "@/lib/travel-scratch-themes";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createAdminWizardMarketingActionDefaults,
@@ -1158,7 +1159,7 @@ export function CampaignWizard({
           },
           logo: {
             ...current.presentation.logo,
-            textColor: remembered?.logoTextColor ?? theme.text,
+            textColor: remembered?.logoTextColor ?? travelScratchTheme(templateId)?.logo ?? theme.text,
             marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
           },
         },
@@ -2048,7 +2049,7 @@ export function CampaignWizard({
                               ...current.presentation.logo,
                               textColor:
                                 option.value === "scratch"
-                                  ? targetStyle?.logoTextColor ?? scratchTextColor
+                                  ? targetStyle?.logoTextColor ?? travelScratchTheme(scratchTemplateId)?.logo ?? scratchTextColor
                                   : targetStyle?.logoTextColor ?? wheelLogoColorForTemplateSelection(targetTemplateId, "#1b2842"),
                             },
                             layout: {

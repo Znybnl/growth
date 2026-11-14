@@ -542,8 +542,8 @@ export function ImmersiveScratchTicket({
       style={{ containerType: "inline-size" }}
     >
       <div
-        className={`relative isolate flex-1 overflow-hidden ${rootClass}`}
-        style={{ minHeight: seasonalTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
+        className={`relative isolate flex-1 ${travelTheme ? "overflow-visible" : "overflow-hidden"} ${rootClass}`}
+        style={{ minHeight: travelTheme ? undefined : seasonalTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
       >
         <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`} data-travel-template={travelTheme?.id.replace("travel-scratch-", "travel-")} style={travelTheme ? { width: "min(100vw, 600px)", left: "50%", transform: "translateX(-50%)", containerType: "inline-size" } : undefined}>
           {travelTheme ? <TravelGameHeader scratch logoMode={logoMode} logoText={logoText || "Votre commerce"} logoUrl={logoUrl} logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor || ink} logoAlign={logoAlignmentClass === "justify-start" ? "left" : logoAlignmentClass === "justify-end" ? "right" : "center"} logoBottomSpacingPx={logoBottomSpacingPx} title={displayHeadline} titleColor={ink} titleFontSizePx={headingFontSizePx ?? 40} titleFontFamily={textFontFamily(headingFontFamily ?? travelTheme.font)} titleFontWeight={headingFontWeight} titleAlign={headingAlignmentClass === "text-left" ? "left" : headingAlignmentClass === "text-right" ? "right" : "center"} secondaryText={secondaryText || ""} subtitleSpacingPx={subtitleSpacingPx} /> : <>

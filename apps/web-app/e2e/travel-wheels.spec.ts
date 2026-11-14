@@ -22,20 +22,25 @@ test("fonds Voyage présents dans le package Vercel", async ({ request }) => {
   }
 });
 
-test("ticket Voyage : le contenu reste accessible sur petit écran sans barre visible", async ({ page }) => {
+test("ticket Voyage : pas de débordement artificiel sur petit écran", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 500 });
-  await page.goto("/dev/template-rendering-proof?mode=public&business=travel&template=travel-scratch-tropical");
-  await expect(page.locator("[data-travel-scratch]")).toBeVisible();
-  await expect(page.locator("html")).toHaveCSS("scrollbar-width", "none");
-  const scratch = await page.locator("[data-travel-scratch] canvas").first().boundingBox();
-  expect(scratch).not.toBeNull();
-  expect(scratch!.y + scratch!.height).toBeLessThanOrEqual(500);
+  for (const mode of ["public", "game-preview"]) {
+    await page.goto(`/dev/template-rendering-proof?mode=${mode}&business=travel&template=travel-scratch-tropical`);
+    await expect(page.locator("[data-travel-scratch]")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(500);
+    const scratch = await page.locator("[data-travel-scratch] canvas").first().boundingBox();
+    expect(scratch).not.toBeNull();
+    expect(scratch!.y + scratch!.height).toBeLessThanOrEqual(500);
+  }
 });
 
 for (const theme of TRAVEL_SCRATCH_THEMES) {
   test(`${theme.name} : police et logo cohérents entre roue et ticket`, async ({ page }, info) => {
     const wheelId = theme.id.replace("travel-scratch-", "travel-") as (typeof TRAVEL_WHEEL_THEMES)[number]["id"];
     expect(theme.font).toBe(wheelHeadingFontForTemplateSelection(wheelId, "poppins"));
+    const wheelTheme = TRAVEL_WHEEL_THEMES.find(item => item.id === wheelId)!;
+    expect(theme.text).toBe(wheelTheme.text);
+    expect(theme.logo).toBe(wheelTheme.logo);
     await page.setViewportSize({ width: 390, height: 844 });
     const measurements = [];
     for (const template of [wheelId, theme.id]) {
@@ -46,7 +51,7 @@ for (const theme of TRAVEL_SCRATCH_THEMES) {
       await expect(brand).toBeVisible();
       measurements.push({ font: await title.evaluate(el => getComputedStyle(el).fontFamily), brandFont: await brand.evaluate(el => getComputedStyle(el).fontFamily), brandSize: await brand.evaluate(el => getComputedStyle(el).fontSize) });
       if (template.includes("scratch")) {
-        await expect(page.locator("html")).toHaveCSS("scrollbar-width", "none");
+        expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(844);
         await page.screenshot({ path: info.outputPath(`${template}-public.png`), fullPage: true, animations: "disabled" });
       }
     }
@@ -139,6 +144,31 @@ test("@visual-1280 section Voyage dédiée dans les deux éditeurs", async ({ pa
   }
 });
 
+test("ticket Voyage : un contenu long peut défiler jusqu’à la zone à gratter", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 500 });
+  const title = encodeURIComponent("Une très belle surprise pour votre prochain voyage\nDécouvrez toutes les destinations\nPréparez votre prochaine aventure");
+  await page.goto(`/dev/template-rendering-proof?mode=public&business=travel&template=travel-scratch-tropical&headingSize=72&headline=${title}`);
+  const scratch = page.getByTestId("scratch-ticket-surface");
+  await expect(scratch).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeGreaterThan(500);
+  await scratch.scrollIntoViewIfNeeded();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  const bounds = await scratch.boundingBox();
+  expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(500);
+});
+
+test("aperçu intégré Voyage : un titre long ne coupe pas la zone à gratter", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  const title = encodeURIComponent("Une très belle surprise pour votre prochain voyage\nDécouvrez toutes les destinations\nPréparez votre prochaine aventure");
+  await page.goto(`/dev/template-rendering-proof?mode=wizard-responsive-edit&business=travel&template=travel-scratch-tropical&headingSize=72&headline=${title}`);
+  await selectWizardStep(page, 2);
+  await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
+  const preview = page.getByRole("dialog", { name: "Aperçu du jeu" }).frameLocator("iframe");
+  const scratch = preview.getByTestId("scratch-ticket-surface");
+  await scratch.scrollIntoViewIfNeeded();
+  await expect(scratch).toBeInViewport({ ratio: 0.99 });
+});
+
 test("@visual-1280 section Voyage dédiée aux tickets dans les deux éditeurs", async ({ page }, info) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   for (const mode of ["wizard-responsive-edit", "editor-prize-budget"]) {
@@ -156,6 +186,9 @@ test("@visual-1280 section Voyage dédiée aux tickets dans les deux éditeurs",
         await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
         const preview = page.getByRole("dialog", { name: "Aperçu du jeu" });
         await expect(preview).toBeVisible();
+        const frame = await preview.locator("iframe").elementHandle();
+        const previewFrame = await frame!.contentFrame();
+        expect(await previewFrame!.evaluate(() => document.documentElement.scrollHeight - document.documentElement.clientHeight)).toBeLessThanOrEqual(1);
         await page.screenshot({ path: info.outputPath(`ticket-voyage-preview-${theme.id}.png`), animations: "disabled" });
         await page.keyboard.press("Escape");
       }
@@ -172,6 +205,16 @@ test("Voyage : le ticket élégant est sélectionné par défaut pour une nouvel
   await page.getByPlaceholder("Ex. La roue gourmande de juin").fill("Voyage de découverte");
   await page.getByRole("button", { name: "Continuer", exact: true }).click();
   await expect(page.getByTestId("travel-scratch-template-options").getByRole("button", { name: /Voyage élégant/ })).toHaveAttribute("aria-pressed", "true");
+});
+
+test("Road trip : les couleurs initiales du titre et du logo correspondent à la roue", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-edit&template=travel-scratch-elegant&business=travel");
+  await selectWizardStep(page, 2);
+  await page.getByTestId("travel-scratch-template-options").getByRole("button", { name: /Road trip/ }).click();
+  await page.getByText("Paramètres avancés", { exact: false }).first().click();
+  await expect(page.getByLabel("Couleur du texte principal")).toHaveValue("#a63718");
+  await expect(page.getByLabel("Couleur du logo et sous-titre")).toHaveValue("#082d4a");
 });
 
 for (const game of ["wheel", "scratch"] as const) {

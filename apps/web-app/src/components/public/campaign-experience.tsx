@@ -541,6 +541,7 @@ export function CampaignExperience({
   const isScratchSunburstTemplate = pageTemplate === "scratch-sunburst";
   const templateScratchTheme = scratchVisualTheme(pageTemplate);
   const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(pageTemplate);
+  const isTravelScratch = campaign.gameType === "scratch" && pageTemplate.startsWith("travel-scratch-");
   const scratchAccent =
     campaign.gameType === "scratch"
       ? resolveScratchAccent(campaign.accent, pageTemplate)
@@ -971,7 +972,7 @@ export function CampaignExperience({
 
   return (
     <div
-      className={`okado-public-experience relative min-h-screen overflow-hidden ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
+      className={`okado-public-experience relative min-h-screen ${isTravelScratch ? "flex flex-col overflow-x-hidden" : "overflow-hidden"} ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
       data-template-id={pageTemplate}
       style={{
         backgroundColor: isHalloweenTemplate ? "#050403" : pageBackgroundColor,
@@ -1047,7 +1048,7 @@ export function CampaignExperience({
         <WheelOfFortune key={`${campaign.id}-${drawSession?.id ?? "idle"}`} accent={campaign.accent} pageTemplate="halloween-gold" segments={segments} winningSegmentId={winningSegmentId}
           canSpin={stage === "ready"} buttonEnabled={stage === "idle" || stage === "ready"} buttonLabel="JOUER" onButtonClick={() => void openActionAndTrack()}
           autoSpinKey={autoSpinKey} onSpinEnd={() => void handleGameReveal()} />
-      </HalloweenWheelScene> : <div className={`relative z-10 mx-auto flex ${hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isImmersiveScratchTemplate ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isImmersiveScratchTemplate ? "overflow-hidden pb-0" : isBeautyTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
+      </HalloweenWheelScene> : <div className={`relative z-10 mx-auto flex ${isTravelScratch ? "flex-1" : hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isImmersiveScratchTemplate ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isTravelScratch ? "overflow-visible pb-0" : isImmersiveScratchTemplate ? "overflow-hidden pb-0" : isBeautyTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
@@ -1206,7 +1207,7 @@ export function CampaignExperience({
           </div>
         ) : (
           <div
-            className={isImmersiveScratchTemplate ? "mt-0 flex min-h-0 flex-1 flex-col" : ""}
+            className={isTravelScratch ? "mt-0 flex flex-1 flex-col" : isImmersiveScratchTemplate ? "mt-0 flex min-h-0 flex-1 flex-col" : ""}
             style={isImmersiveScratchTemplate ? undefined : { marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)}px` }}
           >
             {isImmersiveScratchTemplate ? (
