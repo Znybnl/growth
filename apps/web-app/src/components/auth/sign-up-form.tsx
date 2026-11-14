@@ -240,10 +240,9 @@ export function SignUpForm() {
             onChange={(event) => setAccept(event.target.checked)}
           />
           <span>
-            J’accepte les <a href="https://www.okado.app/cgv" target="_blank" rel="noreferrer" className="underline">conditions générales de vente et d’abonnement</a>.
+            J’accepte les <a href="https://www.okado.app/cgv" target="_blank" rel="noreferrer" className="underline">conditions générales de vente</a>.
           </span>
         </label>
-        <p className="mt-2 text-xs leading-5">Consultez notre <a href="https://www.okado.app/confidentialite" target="_blank" rel="noreferrer" className="underline">politique de confidentialité</a>. Cette acceptation ne constitue pas un consentement à la prospection commerciale.</p>
       </div>
 
       {error ? (

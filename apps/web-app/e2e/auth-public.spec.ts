@@ -35,8 +35,8 @@ test.describe("Parcours public d'authentification", () => {
     await page.route("**/api/auth/signup", route => { signupRequests++; return route.fulfill({ status: 400, json: { error: "Ne doit pas être envoyé" } }); });
     await page.goto("/inscription");
     await expect(page.getByRole("checkbox")).not.toBeChecked();
-    await expect(page.getByRole("link", { name: "conditions générales de vente et d’abonnement" })).toHaveAttribute("href", "https://www.okado.app/cgv");
-    await expect(page.getByRole("link", { name: "politique de confidentialité" })).toHaveAttribute("href", "https://www.okado.app/confidentialite");
+    await expect(page.getByRole("link", { name: "conditions générales de vente", exact: true })).toHaveAttribute("href", "https://www.okado.app/cgv");
+    await expect(page.getByText("Cette acceptation ne constitue pas un consentement", {exact:false})).toHaveCount(0);
     await expect(page.getByText("je souhaite recevoir les conseils", { exact: false })).toHaveCount(0);
 
     await page.locator('input[placeholder="Camille"]').fill("Camille");
@@ -139,7 +139,8 @@ test.describe("Parcours public d'authentification", () => {
       if (viewport.width < 1024) await expect(page.getByRole("complementary", {name:"Découvrez Okado"})).toBeHidden();
       else {
         await expect(page.getByRole("complementary", {name:"Découvrez Okado"})).toBeVisible();
-        await expect(page.getByText("Visuels et résultats fictifs, à titre illustratif.")).toBeVisible();
+        await expect(page.getByText("Visuels et résultats fictifs, à titre illustratif.")).toHaveCount(0);
+        await expect(page.getByText("QR code illustratif")).toHaveCount(0);
         expect(readFileSync(resolve(__dirname, "../../../.vercelignore"), "utf8")).toContain("!apps/web-app/public/images/auth/inscription-jeu.webp");
         const image = page.locator('img[src*="inscription-jeu"]');
         await expect(image).toHaveJSProperty("complete", true);
@@ -155,6 +156,9 @@ test.describe("Parcours public d'authentification", () => {
         await page.setViewportSize(viewport);
         await page.goto(`/${route}`);
         const field = route === "inscription" ? page.getByPlaceholder("Camille", {exact:true}) : page.getByPlaceholder("Email", {exact:true});
+        const google = page.getByRole("button", {name: route === "inscription" ? "S'inscrire avec Google" : "Continuer avec Google"});
+        await expect(google).toHaveCSS("border-top-color", "rgb(169, 158, 175)");
+        await expect(google.locator("svg path")).toHaveCount(4);
         await expect(field).toHaveCSS("height", "46px");
         await expect(field).toHaveCSS("border-top-color", "rgb(203, 197, 207)");
         expect(await field.evaluate(element => getComputedStyle(element, "::placeholder").color)).toBe("rgb(118, 112, 125)");
