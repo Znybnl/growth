@@ -99,3 +99,21 @@ test("migration additive/idempotente, RLS et rollback sans mutation des jeux",as
   assert.deepEqual((await db.query("select id from public.prize_suggestions where id like 'ps-623-%'")).rows,[{id:"ps-623-auto-extra"}]);
  }finally{await db.close();}
 });
+
+test("catalogue Voyage : migration rejouable sans modification des autres lots",async()=>{
+ const db=new PGlite(), sql=name=>readFileSync(new URL("../../../../supabase/"+name,import.meta.url),"utf8");
+ try{
+  await db.exec("create role anon;create role authenticated;");
+  await db.exec(sql("migrations/20260715_prize_suggestions.sql"));
+  await db.exec("alter table public.prize_suggestions add column industry_subsector text; create table public.prizes(id text primary key, label text); insert into public.prizes values ('existing','Lot existant'); insert into public.prize_suggestions(id,industry,label,probability) values ('custom','Agences de voyage','Suggestion personnalisée',12);");
+  const before=(await db.query("select * from public.prize_suggestions order by id")).rows;
+  const migration=sql("migrations/20261114120000_travel_prize_suggestions_792.sql");
+  await db.exec(migration);await db.exec(migration);
+  const rows=(await db.query("select label, industry, industry_subsector, is_active from public.prize_suggestions where id like 'ps-792-%' order by sort_order")).rows;
+  assert.deepEqual(rows.map(row=>row.label),["GOODIE","TOTE BAG","SURPRISE","ÉTIQUETTE À BAGAGE","PROTÈGE-PASSEPORT","TROUSSE DE VOYAGE","CARNET DE VOYAGE"]);
+  assert.ok(rows.every(row=>row.industry==="Agences de voyage" && row.industry_subsector===null && row.is_active));
+  assert.deepEqual((await db.query("select * from public.prize_suggestions where id not like 'ps-792-%' order by id")).rows,before);
+  assert.deepEqual((await db.query("select * from public.prizes")).rows,[{id:"existing",label:"Lot existant"}]);
+  await db.exec("set role anon;");await assert.rejects(db.query("select * from public.prize_suggestions"),/permission denied/);
+ }finally{await db.close();}
+});
