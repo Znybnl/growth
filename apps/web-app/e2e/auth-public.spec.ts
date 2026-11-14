@@ -197,6 +197,16 @@ test.describe("Parcours public d'authentification", () => {
           const art = await page.getByTestId("auth-promo-art").boundingBox();
           const copy = await page.getByTestId("auth-promo-copy").boundingBox();
           expect(copy!.y).toBeGreaterThanOrEqual(art!.y + art!.height + 20);
+          if (viewport.width === 1440) {
+            const panel = page.getByRole("complementary", {name:"Découvrez Okado"});
+            const benefits = panel.locator("li");
+            await expect(benefits).toHaveCount(3);
+            await expect(benefits.first()).toHaveCSS("font-size", "14px");
+            const first = await benefits.first().boundingBox();
+            const last = await benefits.last().boundingBox();
+            expect(first!.y).toBe(last!.y);
+            expect(last!.y + last!.height).toBeLessThanOrEqual(viewport.height);
+          }
         }
         if (route === "inscription" && viewport.width === 1440) {
           const button = await page.getByRole("button", {name:"Créer mon compte"}).boundingBox();
