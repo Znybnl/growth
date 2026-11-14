@@ -12,6 +12,21 @@ import styles from "./christmas-wheel.module.css";
 
 const unit = (px: number) => `${px / 3.9}cqw`;
 
+export function TravelGameHeader({ logoMode, logoText, logoUrl, logoWidthPx, logoTextSizePx, logoTextColor, logoAlign, logoBottomSpacingPx, title, titleColor, titleFontSizePx, titleFontFamily, titleFontWeight, titleAlign, secondaryText, subtitleSpacingPx, scratch = false }: {
+  logoMode: LogoMode; logoText: string; logoUrl?: string; logoWidthPx: number; logoTextSizePx: number; logoTextColor: string; logoAlign: TextAlign; logoBottomSpacingPx: number;
+  title: string; titleColor: string; titleFontSizePx: number; titleFontFamily: string; titleFontWeight: number; titleAlign: TextAlign; secondaryText: string; subtitleSpacingPx: number; scratch?: boolean;
+}) {
+  const Heading = scratch ? "h2" : "h1";
+  return <>
+    {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign, color: logoTextColor }}>
+      {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} />
+        : logoMode === "text" ? <p className={styles.brandText} style={{ fontSize: unit(logoTextSizePx) }}>{logoText}</p> : null}
+    </header> : null}
+    <Heading className={styles.title} style={{ color: titleColor, fontSize: unit(titleFontSizePx), fontFamily: titleFontFamily, fontWeight: titleFontWeight, textAlign: titleAlign }}>{title}</Heading>
+    {secondaryText.trim() ? <p className={styles.subtitle} data-testid={scratch ? "travel-scratch-subtitle" : "christmas-wheel-subtitle"} style={{ color: logoTextColor, marginTop: unit(subtitleSpacingPx) }}>{secondaryText.trim()}</p> : null}
+  </>;
+}
+
 export function ChristmasWheelScene({ templateId, background, logoMode = "text", logoText, logoUrl,
   logoWidthPx, logoTextSizePx, logoTextColor, logoAlign, logoBottomSpacingPx, title,
   titleColor, titleFontSizePx, titleFontFamily, titleFontWeight, titleAlign, secondaryText,
@@ -28,12 +43,13 @@ export function ChristmasWheelScene({ templateId, background, logoMode = "text",
   return <section className={`${styles.scene} ${publicPage ? styles.public : ""}`} data-testid="christmas-wheel-scene" data-travel-template={templateId.startsWith("travel-") ? templateId : undefined} style={{ position: "relative", backgroundColor: renderBackgroundArt ? background.color : "transparent", color: logoTextColor }}>
     {artwork ? <Image src={artwork} alt="" fill sizes="(max-width: 600px) 100vw, 600px" loading="eager" className={styles.art} data-template-art={background.imageUrl ? undefined : templateId} unoptimized={Boolean(background.imageUrl)} /> : null}
     <div className={styles.content}>
+      {templateId.startsWith("travel-") ? <TravelGameHeader {...{ logoMode, logoText, logoUrl, logoWidthPx, logoTextSizePx, logoTextColor, logoAlign, logoBottomSpacingPx, title, titleColor, titleFontSizePx, titleFontFamily, titleFontWeight, titleAlign, secondaryText, subtitleSpacingPx }} /> : <>
       {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign }}>
         {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} />
           : logoMode === "text" ? <><p className={styles.brandText} style={{ fontSize: unit(logoTextSizePx) }}>{logoText}</p><span className={styles.rule} style={{ marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} aria-hidden="true" /></> : null}
       </header> : null}
       <h1 className={`${styles.title} ${gildedTitle ? styles.goldTitle : ""}`} style={{ color: titleColor, fontSize: unit(titleFontSizePx), fontFamily: titleFontFamily, fontWeight: titleFontWeight, textAlign: titleAlign }}>{title}</h1>
-      {secondaryText.trim() ? <p className={styles.subtitle} data-testid="christmas-wheel-subtitle" style={{ marginTop: unit(subtitleSpacingPx) }}>{secondaryText}</p> : null}
+      {secondaryText.trim() ? <p className={styles.subtitle} data-testid="christmas-wheel-subtitle" style={{ marginTop: unit(subtitleSpacingPx) }}>{secondaryText}</p> : null}</>}
       <div className={styles.wheelSlot} style={{ marginTop: unit(Math.max(24, blockSpacingPx)) }}>
         {blockSpacingPx >= 40 ? <div className={styles.festiveRule} aria-hidden="true"><span /><svg viewBox="0 0 16 16"><path d="m8 0 2 5 6 3-6 2-2 6-2-6-6-2 6-3Z" fill="currentColor" /></svg><span /></div> : null}
         {children}

@@ -69,7 +69,8 @@ test("tickets Voyage : le sous-titre reprend la typographie et le halo des roues
     });
     expect(scratchTypography, `${scratch.name} doit reprendre la typographie de la roue`).toEqual(wheelTypography);
     const halo = await scratchSubtitle.evaluate((element) => getComputedStyle(element, "::before").backgroundImage);
-    expect(halo).toContain("radial-gradient");
+    if (wheel.id === "travel-elegant") expect(halo).toBe("none");
+    else expect(halo).toContain("radial-gradient");
     if (wheel.id === "travel-roadtrip") expect(halo).toContain("0.68");
     if (wheel.id === "travel-tropical") expect(halo).toContain("0.56");
   }
