@@ -193,6 +193,9 @@ est explicite ; aucun chargement de catalogue ne remplace les lots du brouillon.
 Les suggestions individuelles, Mes lots et création manuelle restent disponibles,
 y compris si le catalogue est vide ou en erreur. Les recettes standard par
 secteur/sous-secteur/type sont documentées dans la [matrice #623](releases/2026-10-23-sector-prize-compositions-623.md).
+Les suggestions affichées doivent correspondre au secteur de l’établissement :
+une agence de voyages ne reçoit pas le catalogue Hôtellerie. Les alias
+Restaurant et Restauration restent regroupés ; Mes lots conserve son historique.
 Le bloc « Choisissez votre point de départ » est masqué quand le catalogue est chargé sans composition disponible ; ses états de chargement et d’erreur restent visibles (#781).
 
 Bibliothèque de lots — #609 phase 3 : « Trouver des idées de lots » propose
