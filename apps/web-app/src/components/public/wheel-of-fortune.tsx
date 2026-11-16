@@ -747,7 +747,9 @@ export function WheelOfFortune({
             width: isBeautyPop ? "35%" : isRosePowderTemplate ? "30%" : undefined,
             background: isBeautyPop ? beautyPopCenterFinish(hasSpun ? "#7f8a9d" : visibleCenterBackground) : hasBeautyFinish ? beautyCenterFinish(isRosePowderTemplate ? "#fffdfc" : buttonEnabled && !hasSpun ? visibleCenterBackground : "#7f8a9d") :
               buttonEnabled && !hasSpun
-                ? isRoseInstitutTemplate || isBeautyTemplate || isClassicTemplate || isRestaurantPopTemplate
+                ? isRestaurantPopTemplate
+                  ? centerButtonBackground
+                  : isRoseInstitutTemplate || isBeautyTemplate || isClassicTemplate
                   ? visibleCenterBackground
                   : `linear-gradient(180deg, ${visibleCenterBackground}, ${visibleCenterGradientEnd})`
                 : "linear-gradient(180deg, #aeb8c7, #7f8a9d)",
