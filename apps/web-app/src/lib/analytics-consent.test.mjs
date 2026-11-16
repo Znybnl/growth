@@ -158,7 +158,9 @@ for (const app of ["web-app", "landing-page"]) {
         : app === "web-app" && path === "/redeem/secret" ? "/redeem/[code]" : "/other";
       assert.equal(client.safeAnalyticsPage(path), expected);
       window.location.pathname = path;
-      assert.equal(config.before_send({ event: "$pageview", properties: {} }).properties.page, expected);
+      const pageEvent = config.before_send({ event: "$pageview", properties: {} });
+      if (app === "web-app" && path.startsWith("/campaign/")) assert.equal(pageEvent, null);
+      else assert.equal(pageEvent.properties.page, expected);
     }
     window.location.pathname = "/inscription";
     window.location.search = "?utm_source=google&utm_medium=cpc&utm_campaign=launch_2026&email=private%40example.test#secret";
@@ -436,4 +438,7 @@ test("clics jeu et action marketing : événements minimisés et soumis au conse
     environment: "local",
   });
   assert.doesNotMatch(JSON.stringify(state.events), /email|actionUrl|actionLabel|sessionId/);
+  window.location.pathname = "/campaign/private-id";
+  assert.equal(analytics.captureClientProductEvent("game_start_clicked", properties), false);
+  assert.equal(state.events.length, 2, "aucun événement de mesure client émis sur le jeu, même avec accord");
 });

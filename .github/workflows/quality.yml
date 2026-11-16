@@ -66,7 +66,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
         working-directory: apps/web-app
       - name: Exercise the real SDK with synthetic identities and intercepted requests
-        run: npx playwright test e2e/analytics-identity.spec.ts e2e/analytics-consent.spec.ts e2e/onboarding-tracking.spec.ts e2e/cookie-menu-placement.spec.ts e2e/analytics-coverage.spec.ts e2e/beta-replay.spec.ts --project=chromium
+        run: npx playwright test e2e/analytics-identity.spec.ts e2e/analytics-consent.spec.ts e2e/onboarding-tracking.spec.ts e2e/cookie-menu-placement.spec.ts e2e/analytics-coverage.spec.ts e2e/beta-replay.spec.ts e2e/game-cookie-free.spec.ts --project=chromium
         working-directory: apps/web-app
         env:
           NEXT_PUBLIC_POSTHOG_KEY: phc_consent_fixture

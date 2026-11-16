@@ -4,6 +4,7 @@ import posthog from "posthog-js";
 import { hasAnalyticsConsent } from "@/lib/analytics-consent";
 import { syncAnalyticsConsent } from "@/lib/consent-managed-analytics";
 import { merchantAnalyticsDistinctId } from "@/lib/analytics-identity";
+import { isPublicGamePage } from "@/lib/cookie-preferences-visibility";
 
 import {
   analyticsEnvironment,
@@ -22,7 +23,7 @@ export function captureClientProductEvent(
   properties?: ProductAnalyticsProperties,
 ) {
   try {
-    if (!posthogKey || !posthogEnabled || !hasAnalyticsConsent()) return false;
+    if (!posthogKey || !posthogEnabled || isPublicGamePage(window.location.pathname) || !hasAnalyticsConsent()) return false;
     syncAnalyticsConsent();
     posthog.capture(event, {
       ...sanitizeAnalyticsProperties(properties),
@@ -38,7 +39,7 @@ export function captureClientProductEvent(
 }
 
 export function identifyMerchantForAnalytics(accountMerchantId: string, userId: string, activeMerchantId = accountMerchantId, email?: string) {
-  if (!posthogKey || !posthogEnabled || !hasAnalyticsConsent() || !accountMerchantId || !userId) {
+  if (!posthogKey || !posthogEnabled || typeof window === "undefined" || isPublicGamePage(window.location.pathname) || !hasAnalyticsConsent() || !accountMerchantId || !userId) {
     return;
   }
 
