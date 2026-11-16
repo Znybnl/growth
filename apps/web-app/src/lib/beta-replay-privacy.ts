@@ -27,9 +27,23 @@ const SAFE_LABELS = new Set([
   "Aperçu", "Plus", "Modifier l’e-mail de gain", "Choisir dans la bibliothèque", "Importer votre logo",
   "Secteur d’activité", "Sous-secteur", "Type de jeu", "Aucune campagne", "Voir les résultats",
   "Vue d’ensemble", "Toutes les campagnes", "Scans et participations par jour", "Conversion",
+  "Le type de jeu.", "Le texte affiché à vos clients.", "Donnez à la campagne votre signature.",
+  "Configurez vos récompenses et leurs probabilités.", "Composez les actions proposées avant le jeu.",
+  "Choisissez les récompenses et définissez les chances de les gagner.", "Trouver des idées de lots", "Créer un lot",
+  "Répartition des chances", "Les chances restantes sont calculées comme des participations perdantes.",
+  "Aucun lot n’est ajouté automatiquement. Vérifiez les offres disponibles chez vous, puis personnalisez-les.",
+  "Quels avantages souhaitez-vous faire gagner ?", "Commencez avec une composition suggérée ou créez vos propres lots.",
+  "Créer rapidement", "Choisissez une composition prête à personnaliser.", "Explorer les suggestions",
+  "Découvrez des lots adaptés à votre activité.", "Créer mes lots", "Ajoutez vos propres récompenses.",
 ]);
 
 export function maskBetaReplayText(text: string, element?: Element) {
+  // rrweb can visit an iframe document separately from its blocked parent.
+  // Do not let a fixed-label match reveal text in an unapproved frame.
+  try {
+    const frame = element?.ownerDocument?.defaultView?.frameElement;
+    if (frame && !frame.hasAttribute("data-replay-preview")) return text.replace(/\S/g, "*");
+  } catch { return text.replace(/\S/g, "*"); }
   // Aggregate KPI values are useful for diagnosing the screen. This exception
   // never applies to arbitrary numbers (PIN, phone, redemption code, etc.).
   const aggregateMetric = element?.closest(".okado-metric-card__value") && /^[\d\s.,%€+−-]+$/.test(text);
@@ -55,10 +69,18 @@ function compiledStylesheet(raw: string) {
 // never be passed to the replay player, even when they use the same domain.
 function publicReplayImage(raw: string) {
   try {
-    const url = new URL(raw, "https://app.okado.app");
+    let url = new URL(raw, "https://app.okado.app");
+    // Next/Image wraps a public asset in /_next/image?url=... . Never retain
+    // the wrapper or its query: validate the underlying asset independently.
+    if (url.pathname === "/_next/image") {
+      if (!(url.hostname === "app.okado.app" || url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname.endsWith(".vercel.app"))) return null;
+      const source = url.searchParams.get("url");
+      if (!source || !source.startsWith("/images/")) return null;
+      url = new URL(source, url.origin);
+    }
     if (!["https:", "http:"].includes(url.protocol) ||
       !(url.hostname === "app.okado.app" || url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname.endsWith(".vercel.app")) ||
-      !/^\/images\/(?:scratch-templates|wheel-templates)\/[\w-]+\.(?:webp|png|jpg|jpeg)$/i.test(url.pathname)) return null;
+      !/^\/images\/(?:(?:scratch-templates|wheel-templates)\/[\w-]+|templates\/[\w-]+\/[\w-]+)\.(?:webp|png|jpg|jpeg)$/i.test(url.pathname)) return null;
     return `${url.origin}${url.pathname}`;
   } catch { return null; }
 }
@@ -90,9 +112,16 @@ export function maskBetaReplayAttribute(name: string, value: string, element?: E
   if (name === "data-state" && /^(?:open|closed|active|inactive|checked|unchecked|on|off)$/.test(value)) return value;
   if (name === "data-orientation" && /^(?:horizontal|vertical)$/.test(value)) return value;
   if (name === "style") {
-    // CSS variables/content can contain text or URLs too. Keep numeric layout only.
+    // CSS variables/content can contain text or URLs. Keep a small set of
+    // numeric layout and finite presentation values only.
     return value.split(";").filter(declaration => {
       const [property, cssValue, extra] = declaration.split(":").map(part => part.trim());
+      if (!extra && /^(?:color|background-color|border-color|fill|stroke)$/.test(property)) {
+        return (cssValue?.length ?? 0) <= 40 && /^(?:#[\da-f]{3,8}|transparent|currentColor|rgba?\(\s*[\d.,%\s]+\))$/i.test(cssValue ?? "");
+      }
+      if (!extra && property === "text-align") return /^(?:left|right|center|start|end|justify)$/.test(cssValue ?? "");
+      if (!extra && property === "font-weight") return /^(?:normal|bold|[1-9]00)$/.test(cssValue ?? "");
+      if (!extra && property === "transform") return (cssValue?.length ?? 0) <= 16 && /^scale\(\s*(?:0(?:\.\d+)?|1(?:\.0+)?)\s*\)$/.test(cssValue ?? "");
       return !extra && /^(?:(?:min-|max-)?(?:width|height)|(?:padding|margin)(?:-(?:top|right|bottom|left))?|top|right|bottom|left|(?:row-|column-)?gap|opacity|z-index|border-radius)$/.test(property) &&
         /^(?:auto|none|-?\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%)?)(?:\s+(?:auto|-?\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%)?))*$/.test(cssValue ?? "");
     }).join(";");
@@ -112,6 +141,6 @@ export function betaReplayUrl(raw: string) {
 }
 
 export const BETA_REPLAY_BLOCK_SELECTOR = [
-  ".ph-no-capture", "[data-replay-private]", "img:not([src^='/images/scratch-templates/']):not([src^='/images/wheel-templates/'])", "svg:not(.lucide)", "canvas", "iframe", "video", "audio",
+  ".ph-no-capture", "[data-replay-private]", "iframe:not([data-replay-preview])", "img:not([src^='/images/scratch-templates/']):not([src^='/images/wheel-templates/']):not([src^='/images/templates/']):not([src^='/_next/image?'])", "svg:not(.lucide)", "canvas", "video", "audio",
   "script", "noscript", "meta", "title", "[contenteditable]",
 ].join(",");

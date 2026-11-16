@@ -73,7 +73,7 @@ async function RecentContactRows({ contacts, campaignIds }: Props) {
           </div>
           {recentLeads.map((lead) => (
             <div key={lead.id} className={`okado-table-row ${grid} py-4 text-sm`}>
-              <div className="min-w-0">
+              <div className="min-w-0" data-replay-private>
                 <p className="truncate font-semibold text-carbon">{lead.firstName}</p>
                 <p className="truncate text-ash">{lead.email}</p>
               </div>
@@ -89,7 +89,7 @@ async function RecentContactRows({ contacts, campaignIds }: Props) {
         {recentLeads.map((lead) => (
           <article key={lead.id} className="okado-mobile-table-row">
             <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
+              <div className="min-w-0" data-replay-private>
                 <p className="truncate font-semibold text-carbon">{lead.firstName}</p>
                 <p className="truncate text-sm text-ash">{lead.email}</p>
               </div>

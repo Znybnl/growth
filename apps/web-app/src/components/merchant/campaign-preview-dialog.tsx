@@ -106,6 +106,7 @@ function PreviewSession({
             </div>
           ) : null}
           <iframe
+            data-replay-preview={previewPath ? undefined : ""}
             key={frameKey}
             title="Prévisualisation mobile du jeu"
             src={previewPath ?? PREVIEW_PATH(campaignId)}

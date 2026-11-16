@@ -55,9 +55,11 @@ modifié. Voir [implémentation et vérifications](releases/2026-11-08-mobile-ca
 
 ## Règles initiales et lisibilité des lots du wizard — #740
 
-Les nouvelles campagnes Beauté créées via le wizard commencent avec 60 jours
-de validité du gain et 7 jours entre deux participations. Les autres secteurs
-conservent 30 jours et 1 jour. Les campagnes existantes ou dupliquées conservent
+Les nouvelles campagnes commencent avec 7 jours entre deux participations.
+Pour les agences de voyage, le gain est utilisable dès le jour du jeu ; pour
+les autres secteurs, il est disponible à partir du lendemain par défaut. Dans
+le wizard, la validité initiale est de 60 jours pour la Beauté et de 30 jours
+pour les autres secteurs. Les campagnes existantes ou dupliquées conservent
 leurs règles enregistrées, y compris les anciennes valeurs par défaut.
 Le wizard masque le budget estimé ; les coûts des lots et les calculs existants
 restent disponibles. L’explication détaillée du mode 100 % gagnant est accessible
@@ -203,6 +205,9 @@ est explicite ; aucun chargement de catalogue ne remplace les lots du brouillon.
 Les suggestions individuelles, Mes lots et création manuelle restent disponibles,
 y compris si le catalogue est vide ou en erreur. Les recettes standard par
 secteur/sous-secteur/type sont documentées dans la [matrice #623](releases/2026-10-23-sector-prize-compositions-623.md).
+Les suggestions affichées doivent correspondre au secteur de l’établissement :
+une agence de voyages ne reçoit pas le catalogue Hôtellerie. Les alias
+Restaurant et Restauration restent regroupés ; Mes lots conserve son historique.
 Le bloc « Choisissez votre point de départ » est masqué quand le catalogue est chargé sans composition disponible ; ses états de chargement et d’erreur restent visibles (#781).
 
 Bibliothèque de lots — #609 phase 3 : « Trouver des idées de lots » propose

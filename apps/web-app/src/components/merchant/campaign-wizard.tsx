@@ -50,6 +50,7 @@ import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { useWizardLayout, WizardResponsivePreview } from "@/components/merchant/wizard-responsive-layout";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
 import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
+import { TravelScratchTemplateGallery } from "@/components/merchant/travel-scratch-template-gallery";
 import { ScratchTemplateThumbnail } from "@/components/merchant/scratch-template-thumbnail";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { GameTemplateCard } from "@/components/merchant/game-template-card";
@@ -83,7 +84,8 @@ import { CHRISTMAS_WHEEL_THEMES, christmasWheelPalette, christmasWheelTheme } fr
 import { isTravelWheelTemplate, TRAVEL_WHEEL_THEMES } from "@/lib/travel-wheel-themes";
 import { CHRISTMAS_SCRATCH_TEMPLATES, christmasScratchTemplate } from "@/lib/christmas-scratch-templates";
 import { HALLOWEEN_SCRATCH_TEMPLATE, halloweenScratchTemplate, isHalloweenFixedPalette } from "@/lib/halloween-scratch-template";
-import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate, type BeautyScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { beautyScratchTemplate, scratchVisualTheme, isHiddenScratchTemplate, isImmersiveScratchTemplate } from "@/lib/beauty-scratch-templates";
+import { travelScratchTheme } from "@/lib/travel-scratch-themes";
 import { createPosterSettingsDefaults, normalizePosterSettings } from "@/lib/poster-utils";
 import {
   createAdminWizardMarketingActionDefaults,
@@ -365,9 +367,9 @@ function createWizardDraft(merchant: Merchant): WizardDraft {
     rewardRules: {
       rewardExpiryMinutes: 20,
       purchaseRequired: false,
-      availableAfterHours: 24,
+      availableAfterHours: merchant.industry === "Agences de voyage" ? 0 : 24,
       availabilityDurationDays: isBeautyIndustry(merchant.industry) ? 60 : 30,
-      participationIntervalDays: isBeautyIndustry(merchant.industry) ? 7 : 1,
+      participationIntervalDays: 7,
       isWinningEveryTime: false,
     },
     prizes: [],
@@ -873,6 +875,7 @@ export function CampaignWizard({
   const { confirmNoMarketingAction, noMarketingActionDialog } = useNoMarketingActionConfirmation();
   const [marketingLinks, setMarketingLinks] = useState(merchant);
   const isEditing = Boolean(initialCampaign);
+  const headingSizeManuallyEdited = useRef(false);
   const creationTracked = useRef(false);
   useEffect(() => {
     if (!isEditing && !adminSaveEndpoint && !creationTracked.current
@@ -1106,8 +1109,8 @@ export function CampaignWizard({
     });
   }
 
-  function selectBeautyScratchTemplate(templateId: BeautyScratchTemplateId) {
-    const theme = beautyScratchTemplate(templateId);
+  function selectBeautyScratchTemplate(templateId: GamePageTemplateId) {
+    const theme = scratchVisualTheme(templateId);
     if (!theme) return;
     captureClientProductEvent("campaign_template_selected", {
       campaignType: "scratch",
@@ -1154,10 +1157,11 @@ export function CampaignWizard({
             ...current.presentation.heading,
             fontFamily: remembered?.headingFontFamily ?? theme.font,
             textColor: remembered?.headingTextColor ?? theme.text,
+            fontSizePx: travelScratchTheme(templateId) && !isEditing && !savedCampaignId && !headingSizeManuallyEdited.current && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX ? 40 : current.presentation.heading.fontSizePx,
           },
           logo: {
             ...current.presentation.logo,
-            textColor: remembered?.logoTextColor ?? theme.text,
+            textColor: remembered?.logoTextColor ?? travelScratchTheme(templateId)?.logo ?? theme.text,
             marginBottomPx: wheelLogoGapForTemplateSelection(templateId, previousId, current.presentation.logo.marginBottomPx, remembered?.logoBottomSpacingPx),
           },
         },
@@ -2037,9 +2041,9 @@ export function CampaignWizard({
                                   ? scratchFontFamily
                                   : current.presentation.heading.fontFamily,
                               fontSizePx:
-                                option.value === "scratch" && current.presentation.heading.fontSizePx === 40
+                                option.value === "scratch" && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && !travelScratchTheme(scratchTemplateId) && current.presentation.heading.fontSizePx === 40
                                   ? DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
-                                  : option.value === "wheel" && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
+                                  : option.value === "wheel" && !initialCampaign && !savedCampaignId && !headingSizeManuallyEdited.current && current.presentation.heading.fontSizePx === DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX
                                     ? 40
                                     : current.presentation.heading.fontSizePx,
                             },
@@ -2047,7 +2051,7 @@ export function CampaignWizard({
                               ...current.presentation.logo,
                               textColor:
                                 option.value === "scratch"
-                                  ? targetStyle?.logoTextColor ?? scratchTextColor
+                                  ? targetStyle?.logoTextColor ?? travelScratchTheme(scratchTemplateId)?.logo ?? scratchTextColor
                                   : targetStyle?.logoTextColor ?? wheelLogoColorForTemplateSelection(targetTemplateId, "#1b2842"),
                             },
                             layout: {
@@ -2366,18 +2370,18 @@ export function CampaignWizard({
                   <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-[#716b78] transition-transform group-open:rotate-180" aria-hidden="true" />
                 </summary>
                 <div className="space-y-5 border-t border-[#eee8f0] p-4">
-                  <div className="relative">
-                    <div className="flex items-center gap-2">
-                      <label className="flex cursor-pointer items-center gap-3 text-sm font-semibold text-[#242126]">
-                        <input type="checkbox" checked={draft.rewardRules.isWinningEveryTime}
+                  <div className="relative flex items-start gap-3">
+                    <input id="wizard-winning-game" type="checkbox" checked={draft.rewardRules.isWinningEveryTime}
                           aria-describedby="wizard-winning-game-rule"
                           onChange={(event) => patchDraft({ rewardRules: { ...draft.rewardRules, isWinningEveryTime: event.target.checked } })}
-                          className="h-4 w-4 accent-aubergine" />
-                        Jeu 100 % gagnant
-                      </label>
-                      <WinningGameInfo />
+                          className="mt-1 h-4 w-4 shrink-0 accent-aubergine" />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <label htmlFor="wizard-winning-game" className="cursor-pointer text-sm font-semibold text-[#242126]">Jeu 100 % gagnant</label>
+                        <WinningGameInfo />
+                      </div>
+                      <p id="wizard-winning-game-rule" className="text-xs leading-5 text-[#716b78]">À la publication, les chances doivent totaliser 100 % et au moins un lot doit avoir un stock illimité.</p>
                     </div>
-                    <p id="wizard-winning-game-rule" className="ml-7 mt-1 text-xs leading-5 text-[#716b78]">À la publication, les chances doivent totaliser 100 % et au moins un lot doit avoir un stock illimité.</p>
                   </div>
                   <label className="flex cursor-pointer items-start gap-3 text-sm text-[#242126]">
                     <input type="checkbox" checked={draft.rewardRules.availableAfterHours > 0}
@@ -2442,6 +2446,12 @@ export function CampaignWizard({
               ) : null}
               {draft.gameType === "scratch" && isBeautyIndustry(merchant.industry) ? (
                 <BeautyScratchTemplateGallery
+                  selectedTemplateId={draft.presentation.layout.templateId}
+                  onSelect={selectBeautyScratchTemplate}
+                />
+              ) : null}
+              {draft.gameType === "scratch" && merchant.industry === "Agences de voyage" ? (
+                <TravelScratchTemplateGallery
                   selectedTemplateId={draft.presentation.layout.templateId}
                   onSelect={selectBeautyScratchTemplate}
                 />
@@ -2753,6 +2763,7 @@ export function CampaignWizard({
                      }
                      className="mt-3 w-full cursor-pointer accent-aubergine"
                      aria-label="Taille de la police"
+                     onInput={() => { headingSizeManuallyEdited.current = true; }}
                    />
                  </label>
                </div>
@@ -2930,6 +2941,7 @@ export function CampaignWizard({
                       }
                      className="w-full cursor-pointer accent-aubergine"
                       aria-label="Taille de la police"
+                      onInput={() => { headingSizeManuallyEdited.current = true; }}
                     />
                   </label>
                 </div>

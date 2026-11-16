@@ -94,7 +94,7 @@ test('erreur SQL de clic : indisponibilité sans détail privé dans le message 
   await assert.rejects(()=>repo.recordEventInSupabase('c','social_clicked',undefined,{actionId:'action',eventId:'click'}),
     error=>error.status===503 && !/private|secret/.test(error.message));
 });
-test('vrai Pilotage : essais applicatifs inclus, unité établissement, aucun appel Stripe',async()=>{
+test('vrai Pilotage : essais applicatifs inclus, accès compté au niveau du compte, aucun appel Stripe',async()=>{
   const merchants=[{id:'m',workspace_id:'w',stripe_subscription_status:null,trial_end_date:new Date(Date.now()+86400000).toISOString()},
     {id:'subscribed',workspace_id:'w',stripe_subscription_status:'active',trial_end_date:null},
     {id:'expired',workspace_id:'w',stripe_subscription_status:null,trial_end_date:new Date(Date.now()-86400000).toISOString()}];
@@ -109,7 +109,7 @@ test('vrai Pilotage : essais applicatifs inclus, unité établissement, aucun ap
   });
   const result=await repo.getSaasAdminOverview();
   assert.equal(result.totals.accounts,1);assert.equal(result.totals.merchants,3);
-  assert.equal(result.totals.activeSubscriptions,2);assert.equal(result.totals.pendingRewards,5);
+  assert.equal(result.totals.activeAccounts,1);assert.equal(result.totals.pendingRewards,5);
   assert.equal(result.totals.leads,1203);assert.equal(result.totals.lowStockPrizes,0);
   assert.equal(result.users[0].lastSignIn.status,'available');
   assert.equal(result.users[0].lastSignIn.at,'2026-10-24T23:30:00.000Z');

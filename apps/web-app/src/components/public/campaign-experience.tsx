@@ -32,7 +32,7 @@ import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { BeautyWheelDecorations } from "@/components/public/beauty-wheel-decorations";
 import { BeautyLogoRule } from "@/components/public/beauty-wheel-finishes";
 import { beautyWheelBackground, beautyWheelDefaultBackground, isBeautyWheelTemplate } from "@/lib/beauty-wheel-themes";
-import { beautyScratchTemplate, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
+import { scratchVisualTheme, isImmersiveScratchTemplate as isImmersiveScratchPageTemplate, type ImmersiveScratchTemplateId } from "@/lib/beauty-scratch-templates";
 import { RosePowderDecor } from "@/components/public/rose-powder-decor";
 import { fluidType } from "@/lib/responsive";
 import { textFontClass, textFontFamily, wheelSubtitleFontFamily } from "@/lib/format";
@@ -539,8 +539,9 @@ export function CampaignExperience({
   const isScratchCoralTemplate = pageTemplate === "scratch-coral";
   const isScratchLilacTemplate = pageTemplate === "scratch-lilac";
   const isScratchSunburstTemplate = pageTemplate === "scratch-sunburst";
-  const beautyScratchTheme = beautyScratchTemplate(pageTemplate);
+  const templateScratchTheme = scratchVisualTheme(pageTemplate);
   const isImmersiveScratchTemplate = isImmersiveScratchPageTemplate(pageTemplate);
+  const isTravelScratch = campaign.gameType === "scratch" && pageTemplate.startsWith("travel-scratch-");
   const scratchAccent =
     campaign.gameType === "scratch"
       ? resolveScratchAccent(campaign.accent, pageTemplate)
@@ -555,7 +556,7 @@ export function CampaignExperience({
   const headingTextColor =
     isCosmicTemplate || isCocoricoTemplate
       ? "#f8fbff"
-      : campaign.gameType === "scratch" &&
+      : campaign.gameType === "scratch" && !pageTemplate.startsWith("travel-scratch-") &&
           campaign.presentation.heading.textColor.toLowerCase() === "#1f2937"
         ? resolveScratchTemplateTextColor(scratchAccent.ink, pageTemplate)
       : campaign.gameType === "scratch"
@@ -907,11 +908,11 @@ export function CampaignExperience({
     : null;
   const templateDefaultBackground = scratchTemplateDefaultBackground(pageTemplate, campaign.presentation.background);
   const nativeChristmasScratchBackground = campaign.gameType === "scratch" && (christmasScratchTemplate(pageTemplate) || halloweenScratchTemplate(pageTemplate)) ? templateDefaultBackground : undefined;
-  const nativeBeautyScratchBackground = beautyScratchTheme && !christmasScratchTemplate(pageTemplate) && !halloweenScratchTemplate(pageTemplate) && !hasCustomSelectedBackground
-    ? beautyScratchTheme.background
+  const nativeTemplateScratchBackground = templateScratchTheme && !christmasScratchTemplate(pageTemplate) && !halloweenScratchTemplate(pageTemplate) && !hasCustomSelectedBackground
+    ? templateScratchTheme.background
     : undefined;
   const backgroundStyle =
-    nativeBeautyScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground
+    nativeTemplateScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground
       ? "none"
       : managedBackgroundUrl
         ? "none"
@@ -971,7 +972,7 @@ export function CampaignExperience({
 
   return (
     <div
-      className={`okado-public-experience relative min-h-screen overflow-hidden ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
+      className={`okado-public-experience relative min-h-screen ${isTravelScratch ? "flex flex-col overflow-x-hidden" : "overflow-hidden"} ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
       data-template-id={pageTemplate}
       style={{
         backgroundColor: isHalloweenTemplate ? "#050403" : pageBackgroundColor,
@@ -992,9 +993,9 @@ export function CampaignExperience({
           className="pointer-events-none absolute inset-0 z-0 object-cover"
         />
       ) : null}
-      {nativeBeautyScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground ? (
+      {nativeTemplateScratchBackground || nativeWheelBackgroundUrl || nativeChristmasScratchBackground ? (
         <Image
-          src={nativeWheelBackgroundUrl ?? nativeChristmasScratchBackground ?? nativeBeautyScratchBackground!}
+          src={nativeWheelBackgroundUrl ?? nativeChristmasScratchBackground ?? nativeTemplateScratchBackground!}
           alt=""
           fill
           priority
@@ -1047,7 +1048,7 @@ export function CampaignExperience({
         <WheelOfFortune key={`${campaign.id}-${drawSession?.id ?? "idle"}`} accent={campaign.accent} pageTemplate="halloween-gold" segments={segments} winningSegmentId={winningSegmentId}
           canSpin={stage === "ready"} buttonEnabled={stage === "idle" || stage === "ready"} buttonLabel="JOUER" onButtonClick={() => void openActionAndTrack()}
           autoSpinKey={autoSpinKey} onSpinEnd={() => void handleGameReveal()} />
-      </HalloweenWheelScene> : <div className={`relative z-10 mx-auto flex ${hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isImmersiveScratchTemplate ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isBeautyTemplate || isImmersiveScratchTemplate ? "overflow-visible pb-8" : hasFlexibleWheelLayout ? "overflow-visible pb-16" : "overflow-hidden pb-0"} px-4 sm:px-6 ${pageTopPaddingClass}`}>
+      </HalloweenWheelScene> : <div className={`relative z-10 mx-auto flex ${isTravelScratch ? "flex-1" : hasFlexibleWheelLayout ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isImmersiveScratchTemplate ? isPreview ? "min-h-[calc(100dvh-44px)]" : "min-h-dvh" : isPreview ? "h-[calc(100dvh-44px)] min-h-[560px]" : "h-screen"} w-full flex-col ${isTravelScratch ? "overflow-visible pb-0 px-0" : isImmersiveScratchTemplate ? "overflow-hidden pb-0 px-4 sm:px-6" : isBeautyTemplate ? "overflow-visible pb-8 px-4 sm:px-6" : hasFlexibleWheelLayout ? "overflow-visible pb-16 px-4 sm:px-6" : "overflow-hidden pb-0 px-4 sm:px-6"} ${pageTopPaddingClass}`}>
         {!isImmersiveScratchTemplate && ((campaign.logoMode === "image" && campaign.logoUrl) ||
         campaign.logoMode === "text" ||
         campaign.gameType === "scratch") ? (
@@ -1206,7 +1207,7 @@ export function CampaignExperience({
           </div>
         ) : (
           <div
-            className={isImmersiveScratchTemplate ? "mt-0 flex min-h-0 flex-1 flex-col" : ""}
+            className={isTravelScratch ? "mt-0 flex flex-1 flex-col" : isImmersiveScratchTemplate ? "mt-0 flex min-h-0 flex-1 flex-col" : ""}
             style={isImmersiveScratchTemplate ? undefined : { marginTop: `${clampCampaignSpacingPx(campaign.presentation.layout.blockSpacingPx)}px` }}
           >
             {isImmersiveScratchTemplate ? (
@@ -1227,6 +1228,7 @@ export function CampaignExperience({
                 headingTextColor={headingTextColor}
                 logoTextColor={logoTextColor}
                 headingFontClass={headingFontClass}
+                headingFontFamily={campaign.presentation.heading.fontFamily}
                 headingFontSize={headingFontSize}
                 headingFontWeight={campaign.presentation.heading.fontWeight ?? 600}
                 headingAlignmentClass={headingAlignmentClass}
@@ -1571,7 +1573,7 @@ export function CampaignExperience({
                 </div>
               ) : null}
               <p className="mt-3 break-words text-xs leading-5 text-[#61687a]">
-                Code de retrait : <span className="font-semibold">{redemptionCode}</span>
+                Code de retrait : <span className="font-semibold" data-replay-private>{redemptionCode}</span>
               </p>
             </div>
           ) : null}

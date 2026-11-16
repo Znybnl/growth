@@ -40,10 +40,16 @@ test("public games, authentication, personal data and admin are excluded; URLs r
 
 test("free text, attributes and uploads are masked, while fixed UI labels remain readable", () => {
   assert.equal(maskBetaReplayText("Continuer"), "Continuer");
+  for (const description of ["Le type de jeu.", "Le texte affiché à vos clients.", "Donnez à la campagne votre signature.", "Configurez vos récompenses et leurs probabilités.", "Composez les actions proposées avant le jeu."]) assert.equal(maskBetaReplayText(description), description);
   assert.equal(maskBetaReplayText("person@example.test"), "*******************");
+  const inFrame = approved => ({ ownerDocument: { defaultView: { frameElement: { hasAttribute: () => approved } } }, closest: () => null });
+  assert.equal(maskBetaReplayText("Continuer", inFrame(false)), "*********");
+  assert.equal(maskBetaReplayText("Continuer", inFrame(true)), "Continuer");
   for (const name of ["href", "src", "id", "title", "aria-label", "data-private", "value"]) assert.equal(maskBetaReplayAttribute(name, "secret@example.test"), "");
   assert.equal(maskBetaReplayAttribute("style", "background: url(secret)"), "");
   assert.equal(maskBetaReplayAttribute("style", "padding: 12px"), "padding: 12px");
+  assert.equal(maskBetaReplayAttribute("style", "color:#abcdef; background-color:rgba(1, 2, 3, 0.5);text-align:center;font-weight:700;transform:scale(0.5);background-image:url(private)"), "color:#abcdef; background-color:rgba(1, 2, 3, 0.5);text-align:center;font-weight:700;transform:scale(0.5)");
+  assert.equal(maskBetaReplayAttribute("style", "color:var(--private);transform:scale(var(--private));background-color:url(private)"), "");
   assert.equal(maskBetaReplayAttribute("style", "--private-name: private-css-secret;content:'private-css-secret';width:10px"), "width:10px");
   const css = { tagName: "LINK", getAttribute: name => name === "rel" ? "stylesheet" : "/_next/static/chunks/%5Broot-of-the-server%5D__0ry6g9mr6y4s7._.css?cache=1" };
   assert.equal(maskBetaReplayAttribute("_cssText", ".p-8 {padding: 2rem}", css), ".p-8 {padding: 2rem}");
@@ -53,6 +59,9 @@ test("free text, attributes and uploads are masked, while fixed UI labels remain
   assert.equal(maskBetaReplayAttribute("href", "https://private.example/_next/static/private.css"), "");
   const image = { tagName: "IMG" };
   assert.equal(maskBetaReplayAttribute("src", "/images/scratch-templates/beauty-noir-or.webp", image), "https://app.okado.app/images/scratch-templates/beauty-noir-or.webp");
+  assert.equal(maskBetaReplayAttribute("src", "/_next/image?url=%2Fimages%2Fscratch-templates%2Fbeauty-noir-or.webp&w=640&q=75", image), "https://app.okado.app/images/scratch-templates/beauty-noir-or.webp");
+  assert.equal(maskBetaReplayAttribute("src", "/_next/image?url=%2Fimages%2Ftemplates%2Ftravel%2Felegant.webp&w=640&q=75", image), "https://app.okado.app/images/templates/travel/elegant.webp");
+  for (const url of ["/_next/image?url=%2Fuploads%2Fclient.png", "/_next/image?url=https%3A%2F%2Fevil.test%2Fimages%2Fscratch-templates%2Fx.webp", "/_next/image?url=%2Fimages%2F..%2Fuploads%2Fclient.png", "https://evil.test/_next/image?url=%2Fimages%2Fscratch-templates%2Fx.webp"]) assert.equal(maskBetaReplayAttribute("src", url, image), "");
   for (const url of ["https://evil.test/images/scratch-templates/beauty-noir-or.webp", "/uploads/customer.png", "/images/scratch-templates/../../uploads/customer.png"]) assert.equal(maskBetaReplayAttribute("src", url, image), "");
 });
 

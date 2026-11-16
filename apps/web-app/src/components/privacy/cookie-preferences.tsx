@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { ANALYTICS_CONSENT_EVENT, readAnalyticsConsent } from "@/lib/analytics-consent";
-import { isAnalyticsConfigured, setAnalyticsChoice } from "@/lib/consent-managed-analytics";
+import { isAnalyticsConfigured, setAnalyticsChoice, syncAnalyticsConsent } from "@/lib/consent-managed-analytics";
 import { isPublicGamePage } from "@/lib/cookie-preferences-visibility";
 import { OPEN_COOKIE_PREFERENCES } from "@/lib/cookie-preferences-control";
 import type { AnalyticsChoice } from "@/lib/analytics-consent";
@@ -42,6 +42,8 @@ export function CookiePreferences({ alignment = "left" }: { alignment?: "left" |
     if (visible && launcherRef.current) document.getElementById("okado-cookie-title")?.focus();
   }, [visible]);
 
+  useEffect(() => { syncAnalyticsConsent(); }, [pathname]);
+
   if (!isAnalyticsConfigured) return null;
 
   const isGamePage = isPublicGamePage(pathname);
@@ -64,9 +66,10 @@ export function CookiePreferences({ alignment = "left" }: { alignment?: "left" |
   const buttonStyle = "min-h-11 flex-1 rounded-lg border border-[#6c00f6] bg-white px-4 py-2 text-sm font-semibold text-[#6c00f6] hover:bg-[#f5f0ff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6c00f6]";
   return (
     <>
-      {currentChoice === "accepted" && <Analytics beforeSend={(event) => {
+      {!isGamePage && currentChoice === "accepted" && <Analytics beforeSend={(event) => {
         if (readAnalyticsConsent()?.choice !== "accepted") return null;
         const url = new URL(event.url);
+        if (isPublicGamePage(url.pathname)) return null;
         // No query, fragment or dynamic game/redemption identifier in metrics.
         const section = url.pathname.split("/")[1];
         const path = ["campaign", "redeem", "api", "auth"].includes(section) ? "/" + section : url.pathname;
@@ -82,7 +85,7 @@ export function CookiePreferences({ alignment = "left" }: { alignment?: "left" |
           Gérer les cookies
         </button>
       )}
-      {visible && (
+      {!isGamePage && visible && (
         <section id="okado-cookie-preferences" aria-labelledby="okado-cookie-title"
           className={`fixed inset-x-3 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-[100] mx-auto max-h-[75dvh] max-w-xl overflow-y-auto rounded-2xl border border-[#dbe3ef] bg-white p-5 text-[#0f172b] shadow-xl sm:inset-x-auto sm:left-4 sm:right-4 ${alignment === "right" ? "sm:ml-auto sm:mr-0" : "sm:mx-0"}`}>
           <h2 id="okado-cookie-title" tabIndex={-1} className="text-lg font-bold">Votre choix de mesure d’audience</h2>
