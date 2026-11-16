@@ -7,7 +7,7 @@ import vm from "node:vm";
 const source = readFileSync(new URL("./check-dependency-exceptions.mjs", import.meta.url), "utf8")
   .replace(/^import .*;\r?$/gm, "");
 const clean = { vulnerabilities: {}, metadata: { vulnerabilities: { total: 0 } } };
-function run({ audit = clean, status = 0, web = "16.4.2", landing = "16.4.2", eslint = "16.4.2", raw, includeDevelopment = false, platform = "linux" } = {}) {
+function run({ audit = clean, status = 0, web = "16.4.6", landing = "16.4.6", eslint = "16.4.6", raw, includeDevelopment = false, platform = "linux" } = {}) {
   const output = [];
   let code = 0;
   class Exit extends Error {}
@@ -32,7 +32,7 @@ function run({ audit = clean, status = 0, web = "16.4.2", landing = "16.4.2", es
 
 test("audit propre et Next/ESLint corrigés sur les deux applications", () => {
   assert.equal(run().code, 0);
-  assert.match(run().output, /16\.4\.2.*deux applications/);
+  assert.match(run().output, /16\.4\.6.*deux applications/);
 });
 
 test("audit complet autorise uniquement lavis faible shadcn documente", () => {
