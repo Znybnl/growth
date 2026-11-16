@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { captureClientProductEvent, identifyMerchantForAnalytics } from "@/lib/client-product-analytics";
@@ -14,6 +15,7 @@ export function SignInForm() {
     { method: "google", errorType: "callback_failed" });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -65,48 +67,56 @@ export function SignInForm() {
   }
 
   return (
-    <form className="flex flex-col bg-transparent px-1 py-2 sm:bg-white sm:px-6 sm:py-6" onSubmit={handleSubmit}>
+    <form className="okado-auth-credentials flex flex-col py-4" onSubmit={handleSubmit}>
       <div>
         <h1 className="okado-page-title">Bienvenue</h1>
-        <p className="mt-4 text-base leading-7 text-ash">
-          Retrouvez vos jeux, vos participations et vos performances depuis votre espace marchand.
+        <p className="mt-2 text-base leading-6 text-[#554b59]">
+          Retrouvez vos jeux, vos participations et vos résultats depuis votre espace marchand.
         </p>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-4">
         <GoogleAuthButton mode="signin" nextPath="/" />
       </div>
 
-      <div className="mt-8 flex items-center gap-4">
+      <div className="mt-4 flex items-center gap-4">
         <div className="h-px flex-1 bg-fog" />
-        <span className="text-sm text-fog">ou continuez par email</span>
+        <span className="text-sm text-[#66596b]">ou continuez par email</span>
         <div className="h-px flex-1 bg-fog" />
       </div>
 
-      <div className="mt-8 space-y-4">
+      <div className="mt-4 space-y-3">
         <label className="block text-sm">
-          <span className="sr-only">Email</span>
+          <span className="mb-1 block font-medium text-[#423748]">Adresse e-mail</span>
           <input
             type="email"
+            autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="Email"
-            className="h-14 w-full rounded-[12px] border border-fog bg-white px-4 text-base text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="h-[46px] w-full rounded-[12px] border border-[#cbc5cf] bg-white px-4 text-base text-carbon outline-none transition placeholder:text-[#76707d] focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
         </label>
 
-        <label className="block text-sm">
-          <span className="sr-only">Mot de passe</span>
+        <div className="block text-sm">
+          <label htmlFor="signin-password" className="mb-1 block font-medium text-[#423748]">Mot de passe</label>
+          <div className="relative">
           <input
-            type="password"
+            id="signin-password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Mot de passe"
-            className="h-14 w-full rounded-[12px] border border-fog bg-white px-4 text-base text-carbon outline-none transition placeholder:text-fog focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
+            className="h-[46px] w-full rounded-[12px] border border-[#cbc5cf] bg-white pl-4 pr-12 text-base text-carbon outline-none transition placeholder:text-[#76707d] focus:border-aubergine focus:shadow-[0_0_0_3px_rgba(97,31,105,0.16)]"
             required
           />
-        </label>
+          <button type="button" aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"} aria-pressed={showPassword} onClick={() => setShowPassword((visible) => !visible)} className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-[#554b59] hover:text-aubergine focus-visible:outline-2 focus-visible:outline-aubergine">
+            {showPassword ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
+          </button>
+          </div>
+        </div>
       </div>
 
       <div className="mt-5 flex items-center justify-between gap-4 text-sm">
@@ -119,9 +129,6 @@ export function SignInForm() {
           />
           <span>Se souvenir de moi</span>
         </label>
-        <Link href="/inscription" className="okado-link font-medium">
-          Créer un compte
-        </Link>
       </div>
 
       {error || authError ? (
@@ -137,6 +144,7 @@ export function SignInForm() {
       >
         {isLoading ? "Connexion…" : "Se connecter"}
       </button>
+      <p className="mt-4 text-center text-sm text-[#554b59]">Vous découvrez Okado ? {" "}<Link href="/inscription" className="okado-link font-medium">Créer un compte gratuitement</Link></p>
     </form>
   );
 }

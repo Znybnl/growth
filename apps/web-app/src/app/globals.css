@@ -1137,6 +1137,13 @@ select {
   outline: none;
 }
 
+.okado-auth-shell .okado-auth-credentials input:not([type="checkbox"]):not([type="color"]) {
+  border-color: #cbc5cf !important;
+}
+.okado-auth-shell .okado-auth-credentials input:not([type="checkbox"]):not([type="color"]):focus {
+  border-color: var(--color-aubergine) !important;
+}
+
 .okado-public-redemption {
   background: var(--color-soft-white) !important;
   color: var(--color-carbon) !important;
