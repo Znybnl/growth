@@ -5,7 +5,11 @@ import { APPLICATION_ANALYTICS_PAGES, safeApplicationAnalyticsPage } from "./ana
 
 function pages(directory, parts = []) {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
-    if (entry.isDirectory()) return !parts.length && entry.name === "dev" ? [] : pages(new URL(`${entry.name}/`, directory), [...parts, entry.name]);
+    if (entry.isDirectory()) {
+      // Both fixture families explicitly return 404 outside development.
+      if ((!parts.length && entry.name === "dev") || (parts.length === 1 && parts[0] === "campaign" && entry.name === "dev-cookie-proof")) return [];
+      return pages(new URL(`${entry.name}/`, directory), [...parts, entry.name]);
+    }
     return entry.name === "page.tsx" ? ["/" + parts.filter(part => !part.startsWith("(")).join("/")] : [];
   });
 }

@@ -235,6 +235,17 @@ filtrés sur `environment = production` et les propriétés `source`/`trackingVe
 
 ### Consentement préalable — #508
 
+Depuis la décision #800 du 16 novembre 2026, les pages `/campaign/…`, y compris
+leurs aperçus, ne présentent aucun bandeau de cookies et ne lancent pas la mesure
+client PostHog ou Vercel, même après un accord donné ailleurs. Les événements
+client du parcours joueur, notamment `game_start_clicked` et
+`marketing_action_clicked`, ne sont donc plus envoyés depuis ces pages. Les
+événements métier serveur et les cookies techniques de scan et de limitation des
+participations restent en place provisoirement. La préférence de consentement
+existante est conservée et la mesure reprend sur les autres pages autorisées ;
+le stockage d'identité PostHog existant est supprimé à l'entrée du jeu et une
+nouvelle identité anonyme peut être créée au retour sur une page mesurée.
+
 Les deux applications utilisent le même protocole de préférence versionnée
 (`okado_analytics_consent`, choix et date, version `2026-10-15`). Le cookie est
 partagé sur `okado.app` uniquement sur ses domaines réels ; en local et sur une

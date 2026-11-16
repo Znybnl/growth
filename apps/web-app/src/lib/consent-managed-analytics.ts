@@ -2,6 +2,7 @@
 
 import posthog from "posthog-js";
 import { betaReplaySessionId } from "@/lib/beta-replay-client";
+import { isPublicGamePage } from "@/lib/cookie-preferences-visibility";
 import { safeApplicationAnalyticsPage } from "@/lib/analytics-routes";
 import {
   ANALYTICS_CONSENT_EVENT, ANALYTICS_CONSENT_VERSION,
@@ -124,6 +125,14 @@ export function safeAnalyticsProperties(properties: Record<string, unknown>) {
 
 export function syncAnalyticsConsent() {
   if (!isAnalyticsConfigured) return;
+  if (isPublicGamePage(window.location.pathname)) {
+    if (initialized && active) posthog.set_config({ disable_persistence: true, persistence: "memory" });
+    active = false;
+    // Keep the consent preference and game safeguards, but remove this
+    // project's existing analytics storage when entering the game.
+    clearAnalyticsStorage();
+    return;
+  }
   if (!hasAnalyticsConsent()) {
     if (initialized && active) {
       posthog.opt_out_capturing();
@@ -162,7 +171,7 @@ export function syncAnalyticsConsent() {
         environment: process.env.NEXT_PUBLIC_VERCEL_ENV || "local",
       },
       before_send: (event) => {
-        if (!event || !hasAnalyticsConsent()) return null;
+        if (!event || isPublicGamePage(window.location.pathname) || !hasAnalyticsConsent()) return null;
         const consent = readAnalyticsConsent()!;
         // The SDK also attaches person properties at the payload root on
         // identification, not only inside properties. They can contain the

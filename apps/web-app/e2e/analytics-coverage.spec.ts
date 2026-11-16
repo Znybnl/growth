@@ -42,12 +42,13 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("every page family has a safe SDK pageview; no dynamic ID, query or fragment is transmitted", async ({ page, baseURL }) => {
+test("measured page families have safe SDK pageviews; game previews are excluded", async ({ page, baseURL }) => {
   await consent(page, baseURL!);
   await page.goto("/dev/tracking-coverage");
   await expect.poll(() => events(page, "$pageview").length).toBeGreaterThan(0);
   await expect.poll(() => events(page, "campaign_wizard_step_viewed").length).toBeGreaterThan(0);
   for (const template of APPLICATION_ANALYTICS_PAGES) {
+    if (template.startsWith("/campaign/")) continue;
     const before = events(page, "$pageview").length;
     const path = template.replace(/\[(id|code)\]/g, "private-entity@example.test");
     await page.evaluate(path => window.history.pushState({}, "", path + "?email=private-email@example.test&previewToken=private-token#private-fragment"), path);
@@ -56,8 +57,10 @@ test("every page family has a safe SDK pageview; no dynamic ID, query or fragmen
   }
   const payloads = JSON.stringify(events(page, "$pageview"));
   expect(payloads).not.toMatch(/private-entity|private-email|private-token|private-fragment/);
+  const beforeGame = events(page, "$pageview").length;
   await page.evaluate(() => window.history.pushState({}, "", "/campaign/private-id?preview=1&previewToken=private-token"));
-  await expect.poll(() => events(page, "$pageview").at(-1)!.properties.pageMode).toBe("preview");
+  await page.waitForTimeout(1200);
+  expect(events(page, "$pageview")).toHaveLength(beforeGame);
 });
 
 test("step tracking waits for consent, ignores render/focus and measures only the current step after acceptance", async ({ page }) => {

@@ -213,6 +213,12 @@ Un même indicateur utilise la même source et la même formule à périmètre �
 
 ## Données, consentement et conservation
 
+- Pages de jeu participant — décision propriétaire du 16 novembre 2026 (#800) :
+  aucun bandeau ni commande de cookies ne doit gêner l'accès au jeu. Les cookies
+  de mesure ne sont pas créés sur ces pages. Les cookies techniques de comptage
+  des scans et de limitation des participations sont maintenus provisoirement
+  jusqu'à leur remplacement ; les préférences de mesure du marchand sont conservées.
+
 - Les données strictement nécessaires à l'exécution du jeu ou à l'envoi d'un gain peuvent être demandées lorsque cette exécution le justifie. L'information présentée au joueur doit expliquer cette finalité.
 - Le consentement à la prospection marketing est une case distincte, décochée par défaut, spécifique et révocable. Il ne conditionne ni la participation au jeu ni la réception ou le retrait d'un gain.
 - Une case obligatoire peut recueillir l'acceptation des règles du jeu et l'information relative au traitement nécessaire à la participation ; elle ne doit pas être libellée comme un consentement marketing.
