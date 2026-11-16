@@ -93,6 +93,11 @@ export function defaultWheelBlockSpacingForTemplate(templateId?: GamePageTemplat
     : DEFAULT_WHEEL_SPACING_PX;
 }
 
+/** Only used for new campaigns; never applied when loading a saved campaign. */
+export function defaultBeautyWheelThemeForIndustry(industry?: string | null) {
+  return isBeautyIndustry(industry) ? beautyWheelTheme("beauty-nude")! : undefined;
+}
+
 /** Only used to initialize a new scratch design; saved choices remain unchanged. */
 export function defaultScratchTemplateForIndustry(industry?: string | null): GamePageTemplateId {
   if (industry === "Agences de voyage") return "travel-scratch-elegant";
