@@ -3,7 +3,7 @@ import test from "node:test";
 import { registerHooks } from "node:module";
 import { betaReplayPolicy } from "./beta-replay-policy.ts";
 import { BETA_REPLAY_LEASE_MS, BETA_REPLAY_VERSION, betaReplayPage, validBetaReplayLease } from "./beta-replay-contract.ts";
-import { betaReplayUrl, maskBetaReplayText, maskBetaReplayAttribute } from "./beta-replay-privacy.ts";
+import { betaReplayUrl, maskBetaReplayInput, maskBetaReplayText, maskBetaReplayAttribute } from "./beta-replay-privacy.ts";
 
 const now = Date.parse("2026-11-10T12:00:00Z");
 const user = { id: "user-fixture", merchantId: "merchant-fixture", createdAt: "2026-10-30T22:59:59.999Z" };
@@ -38,14 +38,22 @@ test("public games, authentication, personal data and admin are excluded; URLs r
   assert.equal(betaReplayUrl("https://app.okado.app/redeem/private"), "https://app.okado.app/redacted");
 });
 
-test("free text, attributes and uploads are masked, while fixed UI labels remain readable", () => {
+test("ordinary text is visible while explicitly marked participant data stays masked", () => {
   assert.equal(maskBetaReplayText("Continuer"), "Continuer");
-  for (const description of ["Le type de jeu.", "Le texte affiché à vos clients.", "Donnez à la campagne votre signature.", "Configurez vos récompenses et leurs probabilités.", "Composez les actions proposées avant le jeu."]) assert.equal(maskBetaReplayText(description), description);
-  assert.equal(maskBetaReplayText("person@example.test"), "*******************");
+  for (const description of ["Le type de jeu.", "Le texte affiché à vos clients.", "Donnez à la campagne votre signature.", "Configurez vos récompenses et leurs probabilités.", "Composez les actions proposées avant le jeu.", "person@example.test", "Appelez le 06 12 34 56 78", "https://example.test/promo"]) assert.equal(maskBetaReplayText(description), description);
   const inFrame = approved => ({ ownerDocument: { defaultView: { frameElement: { hasAttribute: () => approved } } }, closest: () => null });
   assert.equal(maskBetaReplayText("Continuer", inFrame(false)), "*********");
   assert.equal(maskBetaReplayText("Continuer", inFrame(true)), "Continuer");
-  for (const name of ["href", "src", "id", "title", "aria-label", "data-private", "value"]) assert.equal(maskBetaReplayAttribute(name, "secret@example.test"), "");
+  for (const name of ["href", "src", "id", "data-private", "value"]) assert.equal(maskBetaReplayAttribute(name, "secret@example.test"), "");
+  for (const name of ["title", "aria-label", "placeholder"]) assert.equal(maskBetaReplayAttribute(name, "Titre visible"), "Titre visible");
+  const privateAttr = { closest: selector => selector === "[data-replay-private], .ph-no-capture" ? {} : null };
+  assert.equal(maskBetaReplayText("Nom participant", privateAttr), "*** ***********");
+  assert.equal(maskBetaReplayAttribute("aria-label", "Nom participant", privateAttr), "Nom participant");
+  assert.equal(maskBetaReplayAttribute("placeholder", "E-mail", privateAttr), "E-mail");
+  const input = (tagName, type, privateField = false) => ({ tagName, getAttribute: name => name === "type" ? type : null, closest: selector => privateField && selector === "[data-replay-private], .ph-no-capture" ? {} : null });
+  assert.equal(maskBetaReplayInput("non-secret value", input("INPUT", "text")), "non-secret value");
+  assert.equal(maskBetaReplayInput("participant@example.test", input("INPUT", "email", true)), "************************");
+  assert.equal(maskBetaReplayInput("password-secret", input("INPUT", "password")), "***************");
   assert.equal(maskBetaReplayAttribute("style", "background: url(secret)"), "");
   assert.equal(maskBetaReplayAttribute("style", "padding: 12px"), "padding: 12px");
   assert.equal(maskBetaReplayAttribute("style", "color:#abcdef; background-color:rgba(1, 2, 3, 0.5);text-align:center;font-weight:700;transform:scale(0.5);background-image:url(private)"), "color:#abcdef; background-color:rgba(1, 2, 3, 0.5);text-align:center;font-weight:700;transform:scale(0.5)");
@@ -72,16 +80,16 @@ test("Tailwind layout tokens survive independently of rejected private tokens", 
   assert.equal(maskBetaReplayAttribute("data-state", "open"), "open");
   assert.equal(maskBetaReplayAttribute("data-state", "private-state"), "");
   assert.equal(maskBetaReplayAttribute("data-orientation", "vertical"), "vertical");
-  for (const label of ["Okado", "Navigation", "Pilotez vos campagnes", "Campagnes actives", "Stocks et retraits"]) assert.equal(maskBetaReplayText(label), label);
-  assert.equal(maskBetaReplayText("1234"), "****");
-  const metric = { closest: selector => selector === ".okado-metric-card__value" ? {} : null };
-  assert.equal(maskBetaReplayText("25 %", metric), "25 %");
-  assert.equal(maskBetaReplayText("private@example.test", metric), "********************");
+  for (const [name, value] of [["data-layout", "wide"], ["data-layout", "compact"], ["data-inline-preview", "true"], ["data-inline-preview", "false"], ["data-step-index", "4"], ["data-promo-variant", "inspired"], ["data-slot", "button"], ["data-align", "right"], ["data-added", "true"], ["data-recommended", "false"], ["data-travel-template", "travel-roadtrip"]]) assert.equal(maskBetaReplayAttribute(name, value), value);
+  for (const [name, value] of [["data-layout", "wide@example.test"], ["data-inline-preview", "secret"], ["data-step-index", "secret"], ["data-travel-template", "private@example.test"]]) assert.equal(maskBetaReplayAttribute(name, value), "");
   const icon = { closest: () => ({}) };
   assert.equal(maskBetaReplayAttribute("d", "M 2 4 L 8 12", icon), "M 2 4 L 8 12");
   assert.equal(maskBetaReplayAttribute("stroke", "currentColor", icon), "currentColor");
   assert.equal(maskBetaReplayAttribute("d", "private-vector-secret", icon), "");
   assert.equal(maskBetaReplayAttribute("d", "M 2 4 L 8 12"), "");
+  const previewSvgPath = { closest: selector => selector === "svg" || selector === "[data-replay-visible]" ? {} : null };
+  assert.equal(maskBetaReplayAttribute("d", "M 2 4 L 8 12", previewSvgPath), "M 2 4 L 8 12");
+  assert.equal(maskBetaReplayAttribute("stroke", "#123456", previewSvgPath), "#123456");
 });
 
 // Real route handler, with auth as the only test double; no database or customer data.

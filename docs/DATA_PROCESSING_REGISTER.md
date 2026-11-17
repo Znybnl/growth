@@ -114,8 +114,15 @@ entièrement validée tant que ces pièces restent manquantes.
 
 Le propriétaire confirme le 30 octobre 2026 une autorisation contractuelle validée
 avec le juridique pour les comptes SaaS de bêta fermée actuels et futurs. Replay
-PostHog 212872 EU, rétention configurée vérifiée à 30 jours ; données saisies et
-contenus libres masqués, aucun joueur enregistré. Cette confirmation ne remplace
+PostHog 212872 EU, rétention configurée vérifiée à 30 jours ; aucun joueur ni
+écran de données de participant n'est enregistré. Seuls les mots de passe et le
+nom, prénom et e-mail des participants sont masqués, via des marqueurs précis
+`data-replay-private`. Les autres textes, champs, téléphones et URL sont visibles.
+Le contenu de configuration de campagne, ses sous-titres/descriptions/lots et
+les aperçus marchands explicitement balisés sont visibles afin de diagnostiquer
+leur rendu.
+Les illustrations vectorielles et canvas de ces aperçus sont conservés ; les médias
+importés et les canvas hors aperçu restent bloqués. Cette confirmation ne remplace
 pas les pièces contractuelles détenues par le propriétaire. Les choix cookies de
 mesure d’audience restent distincts. Le passage en mode public désactive la capture
 bêta ; aucun accord public n’est déduit d’une inscription ou d’une date.

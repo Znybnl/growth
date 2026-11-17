@@ -17,6 +17,7 @@ export function HalloweenCampaignPreview({
     <div
       className={`okado-preview-surface overflow-hidden rounded-[30px] ${compact ? styles.compactPreview : ""}`}
       data-template-id="halloween-gold"
+      data-replay-visible
     >
       <HalloweenWheelScene
         logoMode={preview.logoMode}

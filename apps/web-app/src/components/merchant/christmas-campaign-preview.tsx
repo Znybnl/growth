@@ -10,7 +10,7 @@ import styles from "@/components/public/christmas-wheel.module.css";
 /** Shared by both editors: same scene and scale as the actual public game. */
 export function ChristmasCampaignPreview({ preview, publicPage = false }: { preview: CampaignEditorPreviewModel; publicPage?: boolean }) {
   if (!isChristmasWheelTemplate(preview.gamePageTemplateId)) return null;
-  return <div className={`okado-preview-surface ${styles.surface}`} data-template-id={preview.gamePageTemplateId}>
+  return <div className={`okado-preview-surface ${styles.surface}`} data-template-id={preview.gamePageTemplateId} data-replay-visible>
     <ChristmasWheelScene templateId={preview.gamePageTemplateId}
       background={{ color: preview.backgroundStyle.backgroundColor, imageUrl: preview.selectedBackgroundImageUrl }}
       logoMode={preview.logoMode} logoText={preview.logoText} logoUrl={preview.logoUrl} logoWidthPx={preview.logoWidthPx}

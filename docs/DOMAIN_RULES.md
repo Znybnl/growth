@@ -271,6 +271,13 @@ une date de création ni une préférence du navigateur. Passer en phase `public
 avant l’ouverture publique arrête ce dispositif pour tous les comptes.
 Cette exception ne modifie pas le consentement de la mesure d’audience ci-dessus,
 ne concerne pas les joueurs et ne vaut pas preuve individuelle d’accord.
+Dans les pages SaaS enregistrées, tout le contenu est visible, y compris les
+libellés, descriptions, lots, valeurs de champs non sensibles, téléphones et URL.
+Seuls les mots de passe et le nom, prénom et e-mail des participants sont masqués ;
+les valeurs participantes doivent être balisées précisément avec
+`data-replay-private`, sans masquer leur conteneur ni les informations voisines.
+Les images importées et canvas hors aperçu restent exclus. Aucun écran de joueur
+n'est enregistré.
 [Périmètre, masquage, activation et retour arrière](releases/2026-10-30-closed-beta-replay-712.md).
 
 ## Relance d’expiration du gain — #304
