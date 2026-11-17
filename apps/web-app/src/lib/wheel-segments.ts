@@ -36,10 +36,10 @@ export function rosePowderVisualSegments(segments: WheelVisualSegment[], winning
   return selectWheelVisualSegments(segments, winningSegmentId, 8);
 }
 
-/** Signature uses eight slices below nine prizes, preserving every possible result. */
+/** Signature uses eight slices below eight distinct outcomes, including loss. */
 export function signatureVisualSegments(segments: WheelVisualSegment[], winningSegmentId: string): WheelVisualSegment[] {
-  const prizes = new Set(segments.filter((segment) => segment.tone === "win").map((segment) => segment.id.replace(/-visual-\d+$/, "")));
-  return selectWheelVisualSegments(segments, winningSegmentId, prizes.size < 9 ? 8 : 10);
+  const outcomes = new Set(segments.map((segment) => segment.id.replace(/-visual-\d+$/, "")));
+  return selectWheelVisualSegments(segments, winningSegmentId, outcomes.size < 8 ? 8 : 10);
 }
 
 type WheelPrizeInput = {

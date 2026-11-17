@@ -11,7 +11,7 @@ const prizes = [
 ];
 const baseId = segment => segment.id.replace(/-visual-\d+$/, "");
 
-test("Signature conserve chaque résultat, y compris perdu, autour du seuil de neuf lots", () => {
+test("Signature adapte ses segments au nombre de résultats, perte comprise", () => {
   for (const count of [1, 7, 8, 9, 10, 12]) for (const total of [50, 100]) {
     const source = buildWheelVisualSegments(Array.from({ length: count }, (_, index) => ({
       id: `prize-${index}`, label: `Lot ${index}`, probability: total / count,
@@ -19,7 +19,7 @@ test("Signature conserve chaque résultat, y compris perdu, autour du seuil de n
     const distinct = new Set(source.map(baseId));
     for (const winner of source) {
       const visible = signatureVisualSegments(source, winner.id);
-      assert.equal(visible.length, Math.max(count < 9 ? 8 : 10, distinct.size));
+      assert.equal(visible.length, Math.max(distinct.size < 8 ? 8 : 10, distinct.size));
       assert.deepEqual(new Set(visible.map(baseId)), distinct);
       assert.ok(visible.some(segment => segment.id === winner.id));
     }
