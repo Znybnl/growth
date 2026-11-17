@@ -13,7 +13,7 @@ import { dynamicWheelLightSegmentColor } from "@/lib/campaign-defaults";
 import { legibleSegmentTextColor } from "@/lib/color-contrast";
 import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
-import { rosePowderVisualSegments, selectWheelVisualSegments } from "@/lib/wheel-segments";
+import { rosePowderVisualSegments, selectWheelVisualSegments, signatureVisualSegments } from "@/lib/wheel-segments";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
 import { enforceMinimumWheelPrizeLabelFontSize } from "@/lib/wheel-labels";
 import { FittedWheelLabel } from "@/components/public/fitted-wheel-label";
@@ -281,17 +281,9 @@ export function WheelOfFortune({
       : isRoseInstitutTemplate
         ? selectWheelVisualSegments(segments, winningSegmentId, 8)
         : isRestaurantPopTemplate
-          ? selectWheelVisualSegments(segments, winningSegmentId, 10)
+          ? signatureVisualSegments(segments, winningSegmentId)
           : segments;
-  const winningVisualIndex = baseVisualSegments.findIndex(
-    (segment) => segment.id === winningSegmentId,
-  );
-  const visualSegments =
-    isRestaurantPopTemplate && winningVisualIndex === -1
-      ? [segments.find((segment) => segment.id === winningSegmentId) ?? baseVisualSegments[0], ...baseVisualSegments]
-          .filter(Boolean)
-          .slice(0, 10)
-      : baseVisualSegments;
+  const visualSegments = baseVisualSegments;
   const segmentAngle = 360 / visualSegments.length;
   const targetIndex = Math.max(
     0,

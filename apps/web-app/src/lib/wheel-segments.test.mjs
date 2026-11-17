@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildWheelVisualSegments, selectWheelVisualSegments, rosePowderVisualSegments } from "./wheel-segments.ts";
+import { buildWheelVisualSegments, selectWheelVisualSegments, rosePowderVisualSegments, signatureVisualSegments } from "./wheel-segments.ts";
 
 const prizes = [
   { id: "discount15", label: "-15% PRESTATION", probability: 15 },
@@ -10,6 +10,21 @@ const prizes = [
   { id: "headspa", label: "un soin headspa INTITION", probability: 5 },
 ];
 const baseId = segment => segment.id.replace(/-visual-\d+$/, "");
+
+test("Signature adapte ses segments au nombre de résultats, perte comprise", () => {
+  for (const count of [1, 7, 8, 9, 10, 12]) for (const total of [50, 100]) {
+    const source = buildWheelVisualSegments(Array.from({ length: count }, (_, index) => ({
+      id: `prize-${index}`, label: `Lot ${index}`, probability: total / count,
+    })));
+    const distinct = new Set(source.map(baseId));
+    for (const winner of source) {
+      const visible = signatureVisualSegments(source, winner.id);
+      assert.equal(visible.length, Math.max(distinct.size < 8 ? 8 : 10, distinct.size));
+      assert.deepEqual(new Set(visible.map(baseId)), distinct);
+      assert.ok(visible.some(segment => segment.id === winner.id));
+    }
+  }
+});
 
 test("cas headspa : les cinq lots et la perte sont visibles au repos, sans mutation", () => {
   const source = buildWheelVisualSegments(prizes);
