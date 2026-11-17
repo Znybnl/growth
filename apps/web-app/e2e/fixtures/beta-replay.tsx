@@ -19,6 +19,13 @@ export function BetaReplayProof() {
   const [mounted, setMounted] = useState(false);
   const [clicks, setClicks] = useState(0);
   const [gamePreviewOpen, setGamePreviewOpen] = useState(false);
+  const [wizardLayout, setWizardLayout] = useState<"wide" | "compact">("wide");
+  useEffect(() => {
+    const updateWizardLayout = () => setWizardLayout(window.innerWidth >= 1024 ? "wide" : "compact");
+    updateWizardLayout();
+    window.addEventListener("resize", updateWizardLayout);
+    return () => window.removeEventListener("resize", updateWizardLayout);
+  }, []);
   useEffect(() => {
     for (const canvas of document.querySelectorAll<HTMLCanvasElement>("canvas")) {
       const context = canvas.getContext("2d");
@@ -39,6 +46,13 @@ export function BetaReplayProof() {
       <MetricCard label="Taux de consommation" value="25 %" />
     </section>
     <h1>Toutes vos campagnes</h1>
+    <section data-layout={wizardLayout} data-inline-preview={wizardLayout === "wide" ? "true" : "false"} className="okado-wizard" aria-label="Wizard fictif">
+      <div className="wizard-layout grid gap-4">
+        <aside className="wizard-progress rounded-xl border p-4">Le menu du wizard</aside>
+        <main className="wizard-form rounded-xl border p-4">Sous-titre et description fictifs</main>
+        <aside className="wizard-live-preview rounded-xl border p-4">Preview live fictive</aside>
+      </div>
+    </section>
     {mounted && <BetaReplayBoundary subject={subject} />}
     {mounted && <MerchantAnalyticsIdentity accountMerchantId={subject.split(":")[0]} userId={subject.split(":")[1]} activeMerchantId={subject.split(":")[0]} email="beta-fixture@example.test" />}
     <button onClick={() => {
@@ -56,17 +70,17 @@ export function BetaReplayProof() {
     <button onClick={() => setSubject("merchant-other:user-other")}>Changer de compte fictif</button>
     <button onClick={stopBetaReplayForSignOut}>Déconnexion fictive</button>
     <button onClick={() => { window.history.replaceState(null, "", "/campaign/public-id"); setMounted(false); }}>Page de jeu fictive</button>
-    <p>Interactions : {clicks}</p><p>client-secret@example.test</p>
-    <input aria-label="Saisie sensible" defaultValue="private-input@example.test" />
+    <p>Interactions : {clicks}</p><p data-replay-private>Prénom participant fictif</p><p data-replay-private>participant@example.test</p>
+    <input aria-label="Champ libre" defaultValue="private-input@example.test" />
     <input aria-label="PIN" type="password" defaultValue="9876-private-pin" />
-    <div data-replay-visible><p>Sous-titre visible de campagne fictive.</p><p>Contact privé : contact-fixture@example.test</p><p>Téléphone : +33 6 12 34 56 78</p><svg viewBox="0 0 20 20"><path d="M 1 2 L 18 19" stroke="#123456" /></svg><canvas className="replay-safe-canvas" width={20} height={20} aria-label="Illustration du ticket prévisualisé" /><span data-replay-private>Nom du participant fictif</span></div>
+    <div data-replay-visible><p>Sous-titre visible de campagne fictive.</p><p>Contact : contact-fixture@example.test</p><p>Téléphone : +33 6 12 34 56 78</p><svg viewBox="0 0 20 20"><path d="M 1 2 L 18 19" stroke="#123456" /></svg><canvas className="replay-safe-canvas" width={20} height={20} aria-label="Illustration du ticket prévisualisé" /><span data-replay-private>Nom du participant fictif</span></div>
     <canvas className="replay-blocked-canvas" width={20} height={20} aria-label="Canvas privé hors prévisualisation" />
-    <iframe data-replay-preview title="Prévisualisation fictive" sandbox="allow-same-origin" srcDoc={'<!doctype html><html><body><h1 style="color:#abcdef">Description libre affichée dans l’aperçu du jeu.</h1><p>Contact : iframe-private-person@example.test</p><input type="password" value="iframe-password-secret" /></body></html>'} />
+    <iframe data-replay-preview title="Prévisualisation fictive" sandbox="allow-same-origin" srcDoc={'<!doctype html><html><body><h1 style="color:#abcdef">Description libre affichée dans l’aperçu du jeu.</h1><p>Contact : contact@merchant.example.test</p><p data-replay-private>Prénom participant iframe</p><p data-replay-private>iframe-private-person@example.test</p><input type="password" value="iframe-password-secret" /></body></html>'} />
     <iframe title="Données client fictives" sandbox="allow-same-origin" srcDoc={'<!doctype html><html><body><p>client-frame-secret@example.test</p><p>Le type de jeu.</p></body></html>'} />
-    {mounted && <><DraftPreviewViewport><p>Description du lot visible dans la prévisualisation.</p><p>Contact : draft-private-person@example.test</p></DraftPreviewViewport>
-    <RewardEmailPreviewFrame html={'<p>Votre invitation vous attend dans cette prévisualisation.</p><p>Contact : email-private-person@example.test</p>'} /></>}
+    {mounted && <><DraftPreviewViewport><p>Description du lot visible dans la prévisualisation.</p><p data-replay-private>draft-private-person@example.test</p></DraftPreviewViewport>
+    <RewardEmailPreviewFrame html={'<p>Votre invitation vous attend dans cette prévisualisation.</p><p data-replay-private>email-private-person@example.test</p>'} /></>}
     <a href="https://example.test/private-destination?token=private-token" title="private-title">Lien privé</a>
-    <div data-replay-private>private-private-container</div>
+    <div data-replay-private><span>private-private-container</span></div>
     <div style={{ "--private-label": "private-css-secret", width: 12 } as CSSProperties}>Texte privé</div>
     {/* The image itself must never be sent to the replay collector. */}
     {/* eslint-disable-next-line @next/next/no-img-element */}

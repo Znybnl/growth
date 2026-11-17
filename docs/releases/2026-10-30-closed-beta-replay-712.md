@@ -18,10 +18,12 @@ Le périmètre comprend l’accueil SaaS `/`, l’onboarding, la liste des campa
 leur création/édition, affiche/e-mail et la bibliothèque de fonds. Les pages de
 jeu publiques hors prévisualisation, l’authentification, les participants, Mon compte/
 abonnement, les retraits et l’administration sensible sont exclus. Le replay montre
-les interactions, la structure et le contenu de configuration explicitement balisé :
-sous-titres, descriptions, lots et prévisualisations marchandes. Aucun écran de
-joueur ou de données participants n’est enregistré. Les champs de saisie, blocs
-privés, e-mails, téléphones et URL saisies en texte restent masqués. Les images
+les interactions, la structure et le contenu de configuration : sous-titres,
+descriptions, lots et prévisualisations marchandes. Aucun écran de joueur n’est
+enregistré. Seuls les mots de passe et le nom, prénom et e-mail des participants
+sont masqués ; les autres textes et valeurs de saisie, y compris téléphones et
+URL, sont visibles. Les éléments participants sont balisés précisément avec
+`data-replay-private`, sans masquer leurs conteneurs ni les éléments voisins. Les images
 importées et canvas hors aperçu restent bloqués ; les illustrations de templates
 intégrées, vecteurs et canvas des aperçus autorisés peuvent être affichés.
 
@@ -37,10 +39,12 @@ intégrées, vecteurs et canvas des aperçus autorisés peuvent être affichés.
   sans profil ou e-mail ajouté, avec l’identifiant pseudonyme stable compte/utilisateur.
   Aucun événement produit ordinaire dans cette instance ; aucun accord cookies
   fabriqué ni modification de l’analytics existant.
-- Saisies masquées ; les libellés UI fixes, valeurs numériques des cartes KPI
-  agrégées et zones de configuration/prévisualisation explicitement balisées sont
-  visibles. Les textes visibles sont filtrés pour masquer les e-mails, téléphones
-  et URL ; un bloc `[data-replay-private]` masque toujours son sous-arbre. Les attributs
+- Les mots de passe sont masqués automatiquement ; les noms, prénoms et e-mails
+  des participants sont balisés précisément. Les autres textes et valeurs de
+  saisie sont visibles, sans filtrage générique des e-mails, téléphones ou URL.
+  Les attributs de présentation du wizard, dont `data-layout` et
+  `data-inline-preview`, sont conservés par une liste de valeurs autorisées afin
+  de restaurer le menu latéral et la preview live. Les attributs
   privés sont supprimés ; seul le CSS public compilé par Next.js est conservé pour
   que les replays gardent leur mise en page. Les classes Tailwind sont filtrées
   individuellement, y compris les dimensions, couleurs et variantes entre crochets.
