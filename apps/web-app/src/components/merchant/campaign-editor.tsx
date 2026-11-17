@@ -113,6 +113,7 @@ import {
   campaignSubtitleForGameTypeChange,
   DEFAULT_GAME_PAGE_TEMPLATE_ID,
   DEFAULT_COCORICO_PRIMARY_COLOR,
+  DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR,
   DEFAULT_ROSE_INSTITUT_TEXT_COLOR,
   DEFAULT_ROSE_INSTITUT_HEADING_FONT_FAMILY,
   DEFAULT_WHEEL_HEADING_FONT_SIZE_PX,
@@ -2536,9 +2537,11 @@ export function CampaignEditor({
             ...current.presentation.wheel,
             loseColor: nextColor,
             alternateLoseColor:
-              current.presentation.layout.templateId === "classic" || current.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(current.presentation.layout.templateId)
-                ? current.presentation.wheel.alternateLoseColor
-                : deriveLighterHex(nextColor),
+              current.presentation.layout.templateId === "rose-institut"
+                ? DEFAULT_ROSE_INSTITUT_SECONDARY_COLOR
+                : current.presentation.layout.templateId === "classic" || current.presentation.layout.templateId === "cocorico-duo-wheel" || isBeautyWheelTemplate(current.presentation.layout.templateId)
+                  ? current.presentation.wheel.alternateLoseColor
+                  : deriveLighterHex(nextColor),
             rimColor: isBeautyWheelTemplate(current.presentation.layout.templateId) ? nextColor : deriveLighterHex(nextColor),
           },
         },
