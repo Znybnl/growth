@@ -1,5 +1,16 @@
 # Architecture — Okado
 
+## Formulaire de contact marchand — #813
+
+La page authentifiée `/contact` envoie objet et message à une route serveur.
+Après vérification de la session, de l'origine et d'une limite par utilisateur
+dans le mécanisme Supabase existant, cette route transmet un e-mail texte via
+Resend à `contact@okado.app`. L'expéditeur utilise la configuration serveur
+Okado ; `Reply-To` est l'adresse du compte authentifié. La requête porte un
+identifiant d'envoi réutilisé lors d'une reprise pour éviter les doublons chez
+le fournisseur. Aucun historique de demandes ni contenu de message n'est
+enregistré dans la base de l'application.
+
 ## Mesures opérationnelles — #710
 
 Le fournisseur OpenTelemetry installé au démarrage observe les spans HTTP

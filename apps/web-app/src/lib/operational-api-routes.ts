@@ -47,6 +47,7 @@ export const OPERATIONAL_API_ROUTES = [
   "/api/internal/reward-reminders",
   "/api/merchant/cashier/lookup",
   "/api/merchant/cashier/redeem",
+  "/api/merchant/contact",
   "/api/merchant/email-alerts",
   "/api/merchant/gain-notifications",
   "/api/merchant/gain-notifications/account",

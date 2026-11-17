@@ -139,6 +139,8 @@ jobs:
         run: npm run test:poster-composition -w @okado/web-app
       - name: Test merchant gain notifications and RLS
         run: npm run test:gain-notifications -w @okado/web-app
+      - name: Test merchant contact delivery and reply address
+        run: npm run test:contact -w @okado/web-app
       - name: Test Resend webhook signatures and storage errors
         run: npm run test:resend-webhook -w @okado/web-app
       - name: Test Beauty suggestion catalog and migration

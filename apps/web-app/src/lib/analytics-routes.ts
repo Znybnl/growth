@@ -3,7 +3,7 @@ export const APPLICATION_ANALYTICS_PAGES = [
   "/", "/connexion", "/inscription", "/connexion/google/callback", "/onboarding", "/merchant",
   "/campaigns", "/campaigns/new", "/campaigns/new/guided",
   "/campaigns/[id]/edit", "/campaigns/[id]/edit/guided", "/campaigns/[id]/poster", "/campaigns/[id]/email",
-  "/data", "/account", "/locations", "/backgrounds", "/affiliates", "/caisse", "/support",
+  "/data", "/account", "/contact", "/locations", "/backgrounds", "/affiliates", "/caisse", "/support",
   "/admin", "/admin/campaigns", "/admin/campaigns/new", "/admin/campaigns/[id]/edit", "/admin/campaigns/[id]/poster", "/admin/prize-suggestions",
   "/campaign/[id]", "/campaign/[id]/preview-embed", "/redeem/[code]",
 ] as const;

@@ -1,5 +1,14 @@
 # Produit — Okado
 
+## Aide et contact des utilisateurs marchands — #813
+
+Un utilisateur marchand connecté peut ouvrir « Aide et contact » depuis le menu
+de l'application, sur ordinateur ou mobile. Il renseigne un objet et un message
+pour signaler une anomalie, proposer une évolution ou demander de l'aide ; aucune
+catégorie ni pièce jointe n'est demandée. La demande est envoyée à
+`contact@okado.app` avec l'adresse du compte dans `Reply-To`. Le site public
+conserve ses liens e-mail existants et n'a pas de formulaire de contact.
+
 ## Inscription marchand — #795
 
 La page d’inscription présente le jeu, la diffusion et le suivi dans un panneau
