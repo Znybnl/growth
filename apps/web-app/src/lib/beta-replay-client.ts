@@ -60,7 +60,9 @@ function getRecorder(subject: string): Promise<PostHog> {
         maskAllInputs: true, maskTextSelector: "*", maskTextFn: maskBetaReplayText,
         maskAttributeFn: maskBetaReplayAttribute, blockSelector: BETA_REPLAY_BLOCK_SELECTOR,
         recordCrossOriginIframes: false, recordHeaders: false, recordBody: false,
-        captureCanvas: { recordCanvas: false }, captureJsonLd: false,
+        // Merchant live previews include scratch-ticket canvases. The replay
+        // contract blocks canvases outside explicitly marked preview surfaces.
+        captureCanvas: { recordCanvas: true }, captureJsonLd: false,
         maskCapturedNetworkRequestFn: request => {
           // The SDK also calls this hook with only { name } for the replay page URL.
           // Dropping that call drops rrweb's viewport metadata before the full snapshot.

@@ -77,11 +77,21 @@ test("Tailwind layout tokens survive independently of rejected private tokens", 
   const metric = { closest: selector => selector === ".okado-metric-card__value" ? {} : null };
   assert.equal(maskBetaReplayText("25 %", metric), "25 %");
   assert.equal(maskBetaReplayText("private@example.test", metric), "********************");
+  const visible = { closest: selector => selector === "[data-replay-visible], .okado-preview-surface" ? {} : null };
+  assert.equal(maskBetaReplayText("Description visible dans l’aperçu", visible), "Description visible dans l’aperçu");
+  assert.equal(maskBetaReplayText("Contact: private@example.test", visible), "Contact: ********************");
+  assert.equal(maskBetaReplayText("Appelez le 06 12 34 56 78", visible), "Appelez le ** ** ** ** **");
+  assert.equal(maskBetaReplayText("Campagne du 2026-11-17", visible), "Campagne du 2026-11-17");
+  const privateVisible = { closest: selector => selector === "[data-replay-private], .ph-no-capture" ? {} : selector === "[data-replay-visible], .okado-preview-surface" ? {} : null };
+  assert.equal(maskBetaReplayText("Contenu participant", privateVisible), "******* ***********");
   const icon = { closest: () => ({}) };
   assert.equal(maskBetaReplayAttribute("d", "M 2 4 L 8 12", icon), "M 2 4 L 8 12");
   assert.equal(maskBetaReplayAttribute("stroke", "currentColor", icon), "currentColor");
   assert.equal(maskBetaReplayAttribute("d", "private-vector-secret", icon), "");
   assert.equal(maskBetaReplayAttribute("d", "M 2 4 L 8 12"), "");
+  const previewSvgPath = { closest: selector => selector === "svg" || selector === "[data-replay-visible]" ? {} : null };
+  assert.equal(maskBetaReplayAttribute("d", "M 2 4 L 8 12", previewSvgPath), "M 2 4 L 8 12");
+  assert.equal(maskBetaReplayAttribute("stroke", "#123456", previewSvgPath), "#123456");
 });
 
 // Real route handler, with auth as the only test double; no database or customer data.

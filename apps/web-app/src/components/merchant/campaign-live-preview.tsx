@@ -360,7 +360,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   }
 
   return (
-    <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId}>
+    <div className={`okado-preview-surface ${previewWrapperClass}`} data-template-id={preview.gamePageTemplateId} data-replay-visible>
       <div className={`mx-auto w-full ${preview.gamePageTemplateId.startsWith("travel-scratch-") || (isRosePowderTemplate || isRoseInstitutTemplate) && compact ? "overflow-x-hidden overflow-y-auto" : "overflow-hidden"} ${mobileViewport ? "" : "border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)]"} ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`} style={{ ...preview.backgroundStyle, position: "relative", backgroundImage: useBeautyScratchThemeBackground ? "none" : preview.backgroundStyle.backgroundImage, backgroundRepeat: "no-repeat", ...(compact ? { containerType: "inline-size" } : {}) }}>
         {nativeBackgroundImageUrl ? (
           <Image

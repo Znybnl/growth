@@ -39,15 +39,33 @@ const SAFE_LABELS = new Set([
 
 export function maskBetaReplayText(text: string, element?: Element) {
   // rrweb can visit an iframe document separately from its blocked parent.
-  // Do not let a fixed-label match reveal text in an unapproved frame.
+  // An approved preview frame may show its rendered content, but private nodes
+  // and recognizable personal data remain masked inside it.
+  let frame: Element | null | undefined;
   try {
-    const frame = element?.ownerDocument?.defaultView?.frameElement;
+    frame = element?.ownerDocument?.defaultView?.frameElement;
     if (frame && !frame.hasAttribute("data-replay-preview")) return text.replace(/\S/g, "*");
   } catch { return text.replace(/\S/g, "*"); }
+  if (element?.closest?.("[data-replay-private], .ph-no-capture")) return text.replace(/\S/g, "*");
+  const visibleRegion = element?.closest?.("[data-replay-visible], .okado-preview-surface");
   // Aggregate KPI values are useful for diagnosing the screen. This exception
   // never applies to arbitrary numbers (PIN, phone, redemption code, etc.).
   const aggregateMetric = element?.closest(".okado-metric-card__value") && /^[\d\s.,%€+−-]+$/.test(text);
-  return SAFE_LABELS.has(text.trim()) || aggregateMetric ? text : text.replace(/\S/g, "*");
+  if (!visibleRegion && !frame?.hasAttribute("data-replay-preview") && !SAFE_LABELS.has(text.trim()) && !aggregateMetric) {
+    return text.replace(/\S/g, "*");
+  }
+  return maskIdentifiableReplayText(text);
+}
+
+function maskIdentifiableReplayText(text: string) {
+  return text
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, match => "*".repeat(match.length))
+    .replace(/\bhttps?:\/\/[^\s<>"']+/gi, match => "*".repeat(match.length))
+    .replace(/(?<![\p{L}\p{N}])\+?\d(?:[\d ().-]{5,}\d)(?![\p{L}\p{N}])/gu, match => {
+      // Dates are useful campaign copy, not telephone numbers.
+      if (/^\d{4}[-.]\d{2}[-.]\d{2}$/.test(match.trim())) return match;
+      return match.replace(/\d/g, "*");
+    });
 }
 
 function compiledStylesheet(raw: string) {
@@ -85,11 +103,49 @@ function publicReplayImage(raw: string) {
   } catch { return null; }
 }
 
+function sanitizedReplayPreviewDocument(raw: string) {
+  try {
+    const document = new DOMParser().parseFromString(raw, "text/html");
+    document.querySelectorAll("script, iframe, object, embed, form, style, video, audio, meta, title, base, [contenteditable], link[rel='import']")
+      .forEach(node => node.remove());
+    // The parent frame has already been explicitly approved as a preview.
+    // Mark its parsed body while filtering vector geometry and private text.
+    document.body.setAttribute("data-replay-visible", "");
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node: Node | null;
+    while ((node = walker.nextNode())) {
+      const parent = node.parentElement;
+      if (parent) {
+        const text = node.nodeValue ?? "";
+        node.nodeValue = parent.closest("textarea, select, option")
+          ? text.replace(/\S/g, "*")
+          : maskBetaReplayText(text, parent);
+      }
+    }
+    for (const element of [...document.body.querySelectorAll("*"), document.body]) {
+      for (const attribute of [...element.attributes]) {
+        const safe = maskBetaReplayAttribute(attribute.name, attribute.value, element);
+        if (safe) element.setAttribute(attribute.name, safe);
+        else element.removeAttribute(attribute.name);
+      }
+    }
+    return `<!doctype html>${document.documentElement.outerHTML}`;
+  } catch {
+    // Fail closed if the browser cannot parse the preview document.
+    return "";
+  }
+}
+
 export function maskBetaReplayAttribute(name: string, value: string, element?: Element) {
   if (name === "src" && element?.tagName === "IMG") return publicReplayImage(value) ?? "";
+  if (name === "srcdoc") {
+    return element?.tagName === "IFRAME" && element.hasAttribute("data-replay-preview")
+      ? sanitizedReplayPreviewDocument(value) : "";
+  }
   // Lucide renders product-owned vector icons. Uploaded images, charts and
-  // arbitrary SVGs remain blocked. Retain geometry only, never links or text.
-  if (element?.closest?.("svg.lucide")) {
+  // arbitrary SVGs remain blocked. Explicit preview artwork retains geometry,
+  // never links, identifiers, stylesheets or unfiltered text.
+  if (element?.closest?.("svg.lucide") || (element?.closest?.("svg") && element.closest("[data-replay-visible]"))) {
     if (["d", "points", "viewBox", "viewbox"].includes(name) && /^[\d\s.,+eEMmLlHhVvCcSsQqTtAaZz-]+$/.test(value)) return value;
     if (["x", "y", "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", "stroke-width"].includes(name) && /^\d+(?:\.\d+)?$/.test(value)) return value;
     if (["stroke", "fill"].includes(name) && /^(?:none|currentColor|#[\da-f]{3,8})$/i.test(value)) return value;
@@ -141,6 +197,6 @@ export function betaReplayUrl(raw: string) {
 }
 
 export const BETA_REPLAY_BLOCK_SELECTOR = [
-  ".ph-no-capture", "[data-replay-private]", "iframe:not([data-replay-preview])", "img:not([src^='/images/scratch-templates/']):not([src^='/images/wheel-templates/']):not([src^='/images/templates/']):not([src^='/_next/image?'])", "svg:not(.lucide)", "canvas", "video", "audio",
+  ".ph-no-capture", "[data-replay-private]", "iframe:not([data-replay-preview])", "img:not([src^='/images/scratch-templates/']):not([src^='/images/wheel-templates/']):not([src^='/images/templates/']):not([src^='/_next/image?'])", "svg:not(.lucide):not([data-replay-visible] svg)", "canvas:not([data-replay-visible] canvas)", "video", "audio",
   "script", "noscript", "meta", "title", "[contenteditable]",
 ].join(",");

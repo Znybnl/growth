@@ -271,6 +271,12 @@ une date de création ni une préférence du navigateur. Passer en phase `public
 avant l’ouverture publique arrête ce dispositif pour tous les comptes.
 Cette exception ne modifie pas le consentement de la mesure d’audience ci-dessus,
 ne concerne pas les joueurs et ne vaut pas preuve individuelle d’accord.
+Dans les pages de configuration de campagne, les libellés, descriptions, lots
+et aperçus explicitement balisés sont visibles pour diagnostiquer leur rendu,
+y compris leurs canvas de jeu.
+Les champs de saisie, données de participants, blocs privés, e-mails, téléphones
+et URL saisies comme texte restent masqués ; les images importées et canvas hors
+aperçu restent exclus. Aucun écran de joueur n'est enregistré.
 [Périmètre, masquage, activation et retour arrière](releases/2026-10-30-closed-beta-replay-712.md).
 
 ## Relance d’expiration du gain — #304

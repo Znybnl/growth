@@ -88,8 +88,8 @@ for (const choice of ["absent", "rejected", "accepted"] as const) {
     }
     const before = (await page.context().cookies()).find(c => c.name === "okado_analytics_consent")?.value;
     await open(page);
-    await expect(page.frameLocator('iframe[title^="Aperçu du brouillon"]').getByText("Répartition des chances")).toBeVisible();
-    await expect(page.frameLocator('iframe[title="Aperçu de l’e-mail de gain"]').getByText("Choisissez votre point de départ")).toBeVisible();
+    await expect(page.frameLocator('iframe[title^="Aperçu du brouillon"]').getByText("Description du lot visible dans la prévisualisation.")).toBeVisible();
+    await expect(page.frameLocator('iframe[title="Aperçu de l’e-mail de gain"]').getByText("Votre invitation vous attend dans cette prévisualisation.")).toBeVisible();
     await waitForSnapshots(page, state);
     await page.getByRole("button", { name: "Simuler une requête privée" }).click();
     await page.getByRole("button", { name: "Événement ordinaire fictif" }).click();
@@ -119,16 +119,44 @@ for (const choice of ["absent", "rejected", "accepted"] as const) {
     await test.info().attach("synthetic-snapshots", { body: JSON.stringify(decoded), contentType: "application/json" });
     expect(snapshots.every(p => p.properties.distinct_id === state.subject)).toBe(true);
     const raw = JSON.stringify(decoded);
+    const canvasNodeIds = new Set<number>();
+    const safeCanvasNodeIds = new Set<number>();
+    const blockedCanvasNodeIds = new Set<number>();
+    const canvasMutationIds: number[] = [];
+    const inspectCanvas = (value: unknown) => {
+      if (Array.isArray(value)) { value.forEach(inspectCanvas); return; }
+      if (!value || typeof value !== "object") return;
+      const node = value as Record<string, unknown>;
+      if (node.tagName === "canvas" && typeof node.id === "number") {
+        canvasNodeIds.add(node.id);
+        const attributes = node.attributes as Record<string, unknown> | undefined;
+        if (attributes?.class === "replay-safe-canvas") safeCanvasNodeIds.add(node.id);
+        if (attributes?.class === "replay-blocked-canvas") blockedCanvasNodeIds.add(node.id);
+      }
+      const data = node.data as Record<string, unknown> | undefined;
+      if (node.type === 3 && data?.source === 9 && typeof data.id === "number") canvasMutationIds.push(data.id);
+      Object.values(node).forEach(inspectCanvas);
+    };
+    inspectCanvas(decoded);
+    expect(canvasNodeIds.size).toBe(2);
+    expect(safeCanvasNodeIds.size).toBe(1);
+    expect(blockedCanvasNodeIds.size).toBe(1);
+    expect(canvasMutationIds.length).toBeGreaterThan(0);
+    expect(canvasMutationIds.every(id => safeCanvasNodeIds.has(id))).toBe(true);
     if (choice !== "accepted") expect(state.outbound.join(" ")).not.toContain("private-query");
     expect(raw).toContain("Toutes vos campagnes");
-    expect(raw).toContain("Configurez vos récompenses et leurs probabilités.");
+    expect(raw).toContain("Description libre affichée dans l’aperçu du jeu.");
+    expect(raw).toContain("Sous-titre visible de campagne fictive.");
+    expect(raw).not.toContain("Nom du participant fictif");
     expect(raw).toContain("color:#abcdef");
     expect(raw).not.toContain("iframe-private-person@example.test");
+    expect(raw).not.toContain("contact-fixture@example.test");
+    expect(raw).not.toContain("+33 6 12 34 56 78");
     expect(raw).not.toContain("iframe-password-secret");
     expect(raw).not.toContain("client-frame-secret@example.test");
     expect(raw).not.toContain("Le type de jeu.");
-    expect(raw).toContain("Répartition des chances");
-    expect(raw).toContain("Choisissez votre point de départ");
+    expect(raw).toContain("Description du lot visible dans la prévisualisation.");
+    expect(raw).toContain("Votre invitation vous attend dans cette prévisualisation.");
     expect(raw).not.toContain("draft-private-person@example.test");
     expect(raw).not.toContain("email-private-person@example.test");
     expect(raw).not.toContain("private-optimized-client.png");
@@ -166,13 +194,13 @@ test("merchant game preview is recorded while participant information remains hi
   const state = await setup(page);
   await page.route("**/campaign/replay-fixture/preview-embed?preview=1", route => route.fulfill({
     contentType: "text/html",
-    body: '<!doctype html><html><body><h1>Modifier l’e-mail de gain</h1><p data-replay-private>Durée de validité du gain (jours)</p><p>participant-game@example.test</p><input type="password" value="game-password-secret" /></body></html>',
+    body: '<!doctype html><html><body><h1>La meilleure surprise de la semaine.</h1><p data-replay-private>Durée de validité du gain (jours)</p><p>participant-game@example.test</p><input type="password" value="game-password-secret" /></body></html>',
   }));
   await open(page);
   await waitForSnapshots(page, state);
   await page.getByRole("button", { name: "Ouvrir aperçu jeu fictif" }).click();
-  await expect(page.frameLocator('iframe[title="Prévisualisation mobile du jeu"]').getByText("Modifier l’e-mail de gain")).toBeVisible();
-  await expect.poll(() => JSON.stringify(unpack(state.packets.filter(p => p.event === "$snapshot"))).includes("Modifier l’e-mail de gain")).toBe(true);
+  await expect(page.frameLocator('iframe[title="Prévisualisation mobile du jeu"]').getByText("La meilleure surprise de la semaine.")).toBeVisible();
+  await expect.poll(() => JSON.stringify(unpack(state.packets.filter(p => p.event === "$snapshot"))).includes("La meilleure surprise de la semaine.")).toBe(true);
   const raw = JSON.stringify(unpack(state.packets.filter(p => p.event === "$snapshot")));
   expect(raw).not.toContain("participant-game@example.test");
   expect(raw).not.toContain("game-password-secret");
@@ -300,6 +328,7 @@ for (const size of [{ width: 1280, height: 720 }, { width: 1280, height: 600 }, 
     const replay = player.frameLocator("iframe");
     await expect(replay.locator("aside")).toBeVisible();
     await expect(replay.getByRole("heading", { name: "Pilotez vos campagnes" })).toBeVisible();
+    await expect(replay.frameLocator("iframe").first().getByText("Description libre affichée dans l’aperçu du jeu.")).toBeVisible();
     await expect(replay.locator("aside nav").first()).toContainText("Campagnes");
     await expect(replay.locator("aside nav svg").first()).toBeVisible();
     await expect(replay.locator(".okado-metric-card__value").first()).toHaveText("12");

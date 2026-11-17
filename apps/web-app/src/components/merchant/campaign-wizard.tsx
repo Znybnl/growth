@@ -478,7 +478,7 @@ function createWizardPrizeId() {
 
 export function WizardPhoneFrame({ children }: { children: ReactNode }) {
   return (
-    <div data-testid="wizard-phone-preview" style={WIZARD_PHONE_SIZE} className="okado-preview-surface relative mx-auto box-border rounded-[40px] border-[5px] border-[#172033] bg-[#172033] p-[7px] shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
+    <div data-testid="wizard-phone-preview" data-replay-visible style={WIZARD_PHONE_SIZE} className="okado-preview-surface relative mx-auto box-border rounded-[40px] border-[5px] border-[#172033] bg-[#172033] p-[7px] shadow-[0_24px_54px_rgba(18,24,39,0.2)]">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-2 z-20 h-1.5 w-14 -translate-x-1/2 rounded-full bg-[#6d7890]/70"
@@ -1774,7 +1774,7 @@ export function CampaignWizard({
       </section>
 
       <div className="wizard-layout grid items-start gap-5">
-        <aside className="wizard-progress okado-card min-w-0 p-3">
+        <aside className="wizard-progress okado-card min-w-0 p-3" data-replay-visible>
           <p className="wizard-progress-label px-3 text-[10px] uppercase tracking-[0.22em] text-[#8993a6]">
             Progression
           </p>
@@ -1819,7 +1819,7 @@ export function CampaignWizard({
           </nav>}
         </aside>
 
-        <main className="wizard-form okado-card min-w-0 p-4 sm:p-5" data-testid="wizard-form">
+        <main className="wizard-form okado-card min-w-0 p-4 sm:p-5" data-testid="wizard-form" data-replay-visible>
           <div className="flex items-start justify-between gap-4 border-b border-[#edf0f4] pb-5">
             <div>
               <p className="wizard-step-kicker text-xs font-semibold uppercase tracking-[0.2em] text-aubergine">

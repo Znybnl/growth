@@ -974,6 +974,7 @@ export function CampaignExperience({
     <div
       className={`okado-public-experience relative min-h-screen ${isTravelScratch ? "flex flex-col overflow-x-hidden" : "overflow-hidden"} ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
       data-template-id={pageTemplate}
+      data-replay-visible={isPreview ? "" : undefined}
       style={{
         backgroundColor: isHalloweenTemplate ? "#050403" : pageBackgroundColor,
         backgroundImage: isHalloweenTemplate ? "none" : backgroundStyle,

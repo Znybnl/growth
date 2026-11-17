@@ -1009,7 +1009,7 @@ export const CampaignLivePreview = memo(function CampaignLivePreview({
   }
 
   return (
-    <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`} data-template-id={preview.gamePageTemplateId}>
+    <div className={`okado-preview-surface ${flushTop ? "" : "mt-6"}`} data-template-id={preview.gamePageTemplateId} data-replay-visible>
       <div
         className={`mx-auto w-full overflow-hidden border border-[#ced7e6] shadow-[0_30px_70px_rgba(18,24,39,0.18)] ${previewFrameClass} ${isRosePowderTemplate ? "okado-rose-powder-surface relative" : ""}`}
         style={preview.backgroundStyle}

@@ -456,8 +456,10 @@ Références : [funnels](https://posthog.com/docs/product-analytics/funnels),
 
 Décision propriétaire du 30 octobre 2026 : tous les comptes SaaS de la bêta, actuels
 et futurs, sont couverts selon la confirmation contractuelle du propriétaire.
-Activation explicite côté serveur, instance mémoire séparée, parcours SaaS bornés
-et masquage strict ; le choix cookies et la mesure ordinaire restent inchangés.
+Activation explicite côté serveur, instance mémoire séparée, parcours SaaS bornés,
+textes de configuration/aperçu explicitement balisés, iframes d’aperçu assainies,
+canvas de jeu des aperçus autorisés ; les champs saisis et données identifiantes
+restent masqués. Le choix cookies et la mesure ordinaire restent inchangés.
 Retour public par `OKADO_REPLAY_PHASE=public`, avec expiration des autorisations
 des onglets ouverts en cinq minutes au maximum.
 [Périmètre, conservation et recette](releases/2026-10-30-closed-beta-replay-712.md).
