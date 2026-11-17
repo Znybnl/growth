@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, CircleDollarSign, Gamepad2, LayoutDashboard, Star, UserRound } from "lucide-react";
+import { BarChart3, CircleDollarSign, CircleHelp, Gamepad2, LayoutDashboard, Star, UserRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -249,6 +249,15 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
           ) : null}
 
           <div className="mt-auto border-t border-white/12 pt-4">
+            <Link
+              href="/contact"
+              prefetch={false}
+              className={`mb-5 flex min-h-10 items-center gap-3 rounded-[4px] border-l-2 px-3 text-sm transition ${isActive("/contact") ? "border-white bg-white/12 font-medium text-white" : "border-transparent text-white/72 hover:bg-white/8 hover:text-white"}`}
+              onClick={() => setMenuOpen(false)}
+            >
+              <CircleHelp className="size-4 shrink-0" aria-hidden="true" />
+              <span>Aide et contact</span>
+            </Link>
             <p className="text-[10px] uppercase tracking-[0.13em] text-white/55">Mon compte</p>
             <div className="mt-3 flex items-center gap-3">
               {user.authProvider === "google" && user.avatarUrl ? (
