@@ -102,6 +102,7 @@ import {
 import {
   createDefaultPosterSettings,
   createDefaultWheelSettings,
+  defaultBeautyWheelThemeForIndustry,
   DEFAULT_SCRATCH_CORAL_COLOR,
   DEFAULT_SCRATCH_SUBTITLE,
   DEFAULT_SCRATCH_HEADING_FONT_SIZE_PX,
@@ -567,7 +568,9 @@ function createDefaultAction(merchant: Merchant): CampaignAction {
 }
 
 function createDefaultState(merchant: Merchant): EditorState {
-  const wheel = createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR);
+  const beautyTheme = defaultBeautyWheelThemeForIndustry(merchant.industry);
+  const defaultTemplateId = beautyTheme?.id ?? DEFAULT_GAME_PAGE_TEMPLATE_ID;
+  const wheel = beautyTheme ? wheelPaletteForTemplate(beautyTheme.id, createDefaultWheelSettings()) : createDefaultWheelSettings(DEFAULT_COCORICO_PRIMARY_COLOR);
 
   return {
     merchantId: merchant.id,
@@ -590,21 +593,22 @@ function createDefaultState(merchant: Merchant): EditorState {
         sizePercent: 100,
         marginBottomPx: DEFAULT_WHEEL_SPACING_PX,
         align: "center",
+        ...(beautyTheme ? { textColor: beautyTheme.text } : {}),
       },
       background: {
         mode: "color",
-        color: "#ffffff",
+        color: beautyTheme?.background ?? "#ffffff",
         imageUrl: "",
       },
       heading: {
-        textColor: "#1f2937",
+        textColor: beautyTheme?.text ?? "#1f2937",
         fontSizePx: 40,
-        fontFamily: "fredoka",
+        fontFamily: beautyTheme?.font ?? "fredoka",
         fontWeight: 600,
         align: "center",
       },
       button: {
-        backgroundColor: DEFAULT_COCORICO_PRIMARY_COLOR,
+        backgroundColor: beautyTheme?.primary ?? DEFAULT_COCORICO_PRIMARY_COLOR,
         textColor: "#ffffff",
         borderColor: "#f4c14a",
         size: "sm",
@@ -613,12 +617,12 @@ function createDefaultState(merchant: Merchant): EditorState {
       },
       layout: {
         blockSpacingPx: defaultWheelBlockSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
-        templateId: DEFAULT_GAME_PAGE_TEMPLATE_ID,
+        templateId: defaultTemplateId,
         wheelSubtitle: "",
         subtitleSpacingPx: defaultWheelSubtitleSpacingForTemplate(DEFAULT_GAME_PAGE_TEMPLATE_ID),
       },
       wheel,
-      poster: createDefaultPosterSettings(merchant, wheel.loseColor),
+      poster: createDefaultPosterSettings(merchant, DEFAULT_COCORICO_PRIMARY_COLOR),
       email: createCampaignEmailDefaults(merchant),
     },
     actions: createDefaultActions(merchant),

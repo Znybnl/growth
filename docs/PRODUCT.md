@@ -111,6 +111,10 @@ avec les mêmes choix de visibilité égale. Les fournisseurs, l’identificatio
 décision. Aucune finalité, durée, version de consentement ou règle de collecte
 n’est modifiée. Rapport : [livraison #723](releases/2026-10-30-marketing-visual-polish-723.md).
 
+## Template de roue initial — #804
+
+Toute nouvelle roue d’un établissement Beauté, quel que soit son sous-secteur, commence avec **Nude & Or**. Les autres secteurs conservent leur défaut propre. Les campagnes et choix existants restent inchangés ; le marchand peut choisir un autre template.
+
 ## Libellés de roue longs — #631
 
 Dans le rendu partagé de la roue, un libellé qui manque de place dans son
