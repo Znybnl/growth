@@ -38,7 +38,7 @@ export const TRAVEL_SCRATCH_THEMES = [
     sampleHeadline: "L’aventure commence",
     sampleSubline: "Grattez et préparez votre prochain départ",
     scratch: { base: "#b94825", highlight: "#ed9a47", edge: "#fff0d1", reveal: "#fff0d1", textureOpacity: 0.2 },
-    text: "#922d16",
+    text: "#06243b",
     logo: "#06243b",
     font: "dm-sans",
     fontClass: "font-dm-sans",

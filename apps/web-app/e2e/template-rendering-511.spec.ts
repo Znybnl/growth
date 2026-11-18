@@ -130,7 +130,7 @@ test("halos Tropical et Road trip restent derrière les textes sans changer de f
   }
 });
 
-test("Road trip applique les couleurs plus foncées au titre, au sous-titre et au logo", async ({ page }) => {
+test("Road trip applique le bleu foncé et le halo beige derrière le titre, le sous-titre et le logo", async ({ page }) => {
   await isolate(page);
   await page.setViewportSize({ width: 390, height: 850 });
   const roadtrip = TRAVEL_WHEEL_THEMES.find(theme => theme.id === "travel-roadtrip")!;
@@ -144,6 +144,16 @@ test("Road trip applique les couleurs plus foncées au titre, au sous-titre et a
     await expect(heading).toHaveCSS("color", `rgb(${toRgb(roadtrip.text)})`);
     await expect(logo).toHaveCSS("color", `rgb(${toRgb(roadtrip.logo)})`);
     await expect(subtitle).toHaveCSS("color", `rgb(${toRgb(roadtrip.logo)})`);
+    const titleHalo = await heading.evaluate(element => {
+      const halo = getComputedStyle(element, "::before");
+      return { position: halo.position, zIndex: halo.zIndex, height: Number.parseFloat(halo.height), headingHeight: element.getBoundingClientRect().height, background: halo.backgroundImage, clipPath: halo.clipPath };
+    });
+    expect(titleHalo.position).toBe("absolute");
+    expect(titleHalo.zIndex).toBe("-1");
+    expect(titleHalo.height / titleHalo.headingHeight).toBeCloseTo(2.6, 1);
+    expect(titleHalo.background).toContain("radial-gradient");
+    expect(titleHalo.background).toContain("0.68");
+    expect(titleHalo.clipPath).toBe("none");
   }
 });
 

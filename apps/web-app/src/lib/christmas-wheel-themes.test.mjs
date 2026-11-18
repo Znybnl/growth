@@ -19,11 +19,11 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
   });
 }
 
-test("Road trip : textes par défaut assombris et cohérents entre roue et ticket", () => {
+test("Road trip : textes par défaut bleu foncé et cohérents entre roue et ticket", () => {
   const wheel = TRAVEL_WHEEL_THEMES.find(theme => theme.id === "travel-roadtrip");
   const scratch = TRAVEL_SCRATCH_THEMES.find(theme => theme.id === "travel-scratch-roadtrip");
   assert.ok(wheel && scratch);
-  assert.equal(wheel.text, "#922d16");
+  assert.equal(wheel.text, "#06243b");
   assert.equal(wheel.logo, "#06243b");
   assert.equal(scratch.text, wheel.text);
   assert.equal(scratch.logo, wheel.logo);
