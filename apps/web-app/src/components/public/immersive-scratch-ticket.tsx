@@ -671,7 +671,7 @@ export function ImmersiveScratchTicket({
               {travelTheme ? (
                 <span className="relative flex flex-col items-center gap-1.5 text-center" style={{ color: travelTheme.text }}>
                   <TravelIcon aria-hidden="true" className="h-7 w-7 opacity-90" strokeWidth={1.8} />
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em]">Grattez pour découvrir</span>
+                  <span className="font-semibold uppercase tracking-[0.14em]" style={{ fontSize: "clamp(12px, 4cqw, 18px)" }}>Grattez pour découvrir</span>
                 </span>
               ) : null}
             </div>
