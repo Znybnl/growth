@@ -76,6 +76,68 @@ test("tickets Voyage : le sous-titre reprend la typographie et le halo des roues
   }
 });
 
+test("halos Tropical et Road trip restent contenus au sous-titre sur roue et ticket", async ({ page }, info) => {
+  test.setTimeout(90_000);
+  await isolate(page);
+  for (const mode of ["public", "preview"]) {
+    for (const width of [320, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const wheel of TRAVEL_WHEEL_THEMES.filter(theme => theme.id !== "travel-elegant")) {
+        const scratch = TRAVEL_SCRATCH_THEMES.find(theme => theme.id === `travel-scratch-${wheel.id.replace("travel-", "")}`)!;
+        for (const longCopy of [false, true]) {
+          const headline = longCopy ? "Votre prochaine aventure commence demain\nau bout de la route" : "Cap sur l’aventure";
+          const secondary = longCopy ? "Des souvenirs inoubliables\nau soleil et sur la route" : "Une surprise vous attend";
+          for (const template of [wheel.id, scratch.id]) {
+            const wheelTemplate = !template.includes("scratch");
+            const selector = `[data-travel-template="${wheel.id}"] ${wheelTemplate ? "h1" : "h2"}`;
+            await page.goto(url(mode, template, { business: "travel", headline, secondary }), { waitUntil: "domcontentloaded" });
+            const heading = page.locator(selector).first();
+            const subtitle = page.getByTestId(wheelTemplate ? "christmas-wheel-subtitle" : "travel-scratch-subtitle").first();
+            await expect(heading).toBeVisible();
+            await expect(subtitle).toBeVisible();
+            const geometry = await subtitle.evaluate(element => {
+              const subtitleBounds = element.getBoundingClientRect();
+              const headingBounds = element.closest("[data-travel-template]")!
+                .querySelector("h1, h2")!.getBoundingClientRect();
+              const halo = getComputedStyle(element, "::before");
+              return {
+                haloTop: Number.parseFloat(halo.top),
+                haloHeight: Number.parseFloat(halo.height),
+                subtitleHeight: subtitleBounds.height,
+                subtitleTop: subtitleBounds.top,
+                headingBottom: headingBounds.bottom,
+              };
+            });
+            expect(geometry.haloTop, `${template} ${mode} ${width}px`).toBe(0);
+            expect(geometry.haloHeight, `${template} ${mode} ${width}px`).toBeLessThanOrEqual(geometry.subtitleHeight + 1);
+            expect(geometry.subtitleTop, `${template} ${mode} ${width}px`).toBeGreaterThanOrEqual(geometry.headingBottom);
+            if (mode === "public" && longCopy) {
+              await page.screenshot({ path: info.outputPath(`${template}-${width}-long-copy.png`), fullPage: true, animations: "disabled" });
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
+test("Road trip applique les couleurs plus foncées au titre, au sous-titre et au logo", async ({ page }) => {
+  await isolate(page);
+  await page.setViewportSize({ width: 390, height: 850 });
+  const roadtrip = TRAVEL_WHEEL_THEMES.find(theme => theme.id === "travel-roadtrip")!;
+  const toRgb = (hex: string) => hex.slice(1).match(/.{2}/g)!.map(value => Number.parseInt(value, 16)).join(", ");
+  for (const template of [roadtrip.id, "travel-scratch-roadtrip"]) {
+    const scratch = template.includes("scratch");
+    await page.goto(url("public", template, { business: "travel", secondary: "Un sous-titre de démonstration" }));
+    const heading = page.locator(`[data-travel-template="travel-roadtrip"] ${scratch ? "h2" : "h1"}`).first();
+    const logo = page.locator("[data-travel-template='travel-roadtrip'] header p").first();
+    const subtitle = page.getByTestId(scratch ? "travel-scratch-subtitle" : "christmas-wheel-subtitle").first();
+    await expect(heading).toHaveCSS("color", `rgb(${toRgb(roadtrip.text)})`);
+    await expect(logo).toHaveCSS("color", `rgb(${toRgb(roadtrip.logo)})`);
+    await expect(subtitle).toHaveCSS("color", `rgb(${toRgb(roadtrip.logo)})`);
+  }
+});
+
 for (const width of [320, 390, 1280]) {
   for (const mode of ["preview", "public", "game-preview"]) {
     test(`${mode} ${width}px : les sauts de ligne de Dynamique et Signature sont conservés`, async ({ page }, info) => {

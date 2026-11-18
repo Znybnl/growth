@@ -70,7 +70,7 @@
 [data-travel-template] .title { width: fit-content; max-width: 90%; }
 [data-travel-template="travel-tropical"] .title { padding: 0; border-radius: 0; background: transparent; }
 [data-travel-template="travel-roadtrip"] .title {
-  position: relative; isolation: isolate; padding: 1.8cqw 2cqw; color: #a63718;
+  position: relative; isolation: isolate; padding: 1.8cqw 2cqw;
 }
 [data-travel-template="travel-roadtrip"] .title::before {
   content: ""; position: absolute; z-index: -1; inset: -18% 0;
@@ -84,8 +84,8 @@
 }
 [data-travel-template="travel-roadtrip"] .subtitle::before,
 [data-travel-template="travel-tropical"] .subtitle::before {
-  content: ""; position: absolute; z-index: -1; left: 50%; top: 50%;
-  width: 175%; height: 260%; transform: translate(-50%, -50%); pointer-events: none;
+  content: ""; position: absolute; z-index: -1; left: 50%; top: 0;
+  width: 175%; height: 100%; transform: translateX(-50%); pointer-events: none;
   background: radial-gradient(ellipse at center, rgb(255 245 224 / 52%) 0%, rgb(255 245 224 / 32%) 38%, rgb(255 245 224 / 12%) 64%, transparent 86%);
 }
 [data-travel-template="travel-tropical"] .subtitle::before {

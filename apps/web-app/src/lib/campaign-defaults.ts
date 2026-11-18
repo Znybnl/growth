@@ -532,7 +532,8 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
 }
 
 export function defaultScratchLogoColor(templateId?: GamePageTemplateId) {
-  return halloweenScratchTemplate(templateId)?.logo ?? christmasScratchTemplate(templateId)?.logo ?? defaultScratchTextColor(templateId);
+  const travel = travelScratchTheme(templateId);
+  return halloweenScratchTemplate(templateId)?.logo ?? christmasScratchTemplate(templateId)?.logo ?? travel?.logo ?? defaultScratchTextColor(templateId);
 }
 
 export function resolveScratchTemplateTextColor(

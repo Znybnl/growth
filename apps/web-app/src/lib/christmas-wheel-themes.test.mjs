@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { CHRISTMAS_WHEEL_THEMES, christmasWheelDefaultBackground, christmasWheelPalette, christmasWheelSegmentColors } from "./christmas-wheel-themes.ts";
 import { parseCampaignSetupInput } from "./merchant-input.ts";
-import { wheelBackgroundForTemplateSelection, wheelHeadingFontForTemplateSelection, wheelHeadingColorForTemplateSelection, wheelLogoColorForTemplateSelection } from "./campaign-defaults.ts";
+import { wheelBackgroundForTemplateSelection, wheelHeadingFontForTemplateSelection, wheelHeadingColorForTemplateSelection, wheelLogoColorForTemplateSelection, defaultScratchTextColor, defaultScratchLogoColor } from "./campaign-defaults.ts";
 import { contrastRatio, legibleSegmentTextColor } from "./color-contrast.ts";
 import { buildWheelVisualSegments, selectWheelVisualSegments } from "./wheel-segments.ts";
 import { TRAVEL_WHEEL_THEMES } from "./travel-wheel-themes.ts";
+import { TRAVEL_SCRATCH_THEMES } from "./travel-scratch-themes.ts";
 
 for (const theme of TRAVEL_WHEEL_THEMES) {
   test(`${theme.id}: modèle persistant, fond natif et fond personnalisé`, () => {
@@ -17,6 +18,22 @@ for (const theme of TRAVEL_WHEEL_THEMES) {
     assert.equal(christmasWheelPalette(theme.id, form.presentation.wheel).rimColor, theme.rim);
   });
 }
+
+test("Road trip : textes par défaut assombris et cohérents entre roue et ticket", () => {
+  const wheel = TRAVEL_WHEEL_THEMES.find(theme => theme.id === "travel-roadtrip");
+  const scratch = TRAVEL_SCRATCH_THEMES.find(theme => theme.id === "travel-scratch-roadtrip");
+  assert.ok(wheel && scratch);
+  assert.equal(wheel.text, "#922d16");
+  assert.equal(wheel.logo, "#06243b");
+  assert.equal(scratch.text, wheel.text);
+  assert.equal(scratch.logo, wheel.logo);
+  assert.equal(wheelHeadingColorForTemplateSelection(wheel.id, "#ffffff"), wheel.text);
+  assert.equal(wheelLogoColorForTemplateSelection(wheel.id, "#ffffff"), wheel.logo);
+  assert.equal(defaultScratchTextColor(scratch.id), scratch.text);
+  assert.equal(defaultScratchLogoColor(scratch.id), scratch.logo);
+  assert.ok(contrastRatio(wheel.text, wheel.background) >= 4.5);
+  assert.ok(contrastRatio(wheel.logo, wheel.background) >= 4.5);
+});
 
 for (const theme of CHRISTMAS_WHEEL_THEMES) {
   test(`${theme.id}: parsing conservé et couleurs initiales isolées`, () => {
