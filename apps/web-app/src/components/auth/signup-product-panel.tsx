@@ -32,7 +32,6 @@ const panelCopy = {
 };
 
 export function SignupProductPanel({ mode = "signup" }: { mode?: keyof typeof panelCopy }) {
-  const isSignin = mode === "signin";
   const copy = panelCopy[mode];
   return (
     <aside className="relative hidden min-h-screen overflow-hidden bg-[#431a4c] px-8 py-10 text-white lg:flex lg:items-center lg:justify-center xl:px-12" aria-label="Découvrez Okado">
