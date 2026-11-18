@@ -141,6 +141,14 @@ Réglage partagé au workspace, RPC privées service_role et autorisation des me
 
 La RPC privée `get_support_monitoring` réalise recherche, jointures, comptages et pagination en base, avec paramètres liés et liste fixe de sources. Seul `service_role` peut l’exécuter ; page et DAL revérifient l’administrateur. Les lectures des quatre sources et du sélecteur sont parallèles ; une panne partielle reste visible et n’annule pas les autres lectures. Aucun payload de webhook, snapshot de gain ou payload d’e-mail n’est renvoyé. Les passages programmés et de reprise enregistrent désormais un résultat global non nominatif dans `business_logs`, attendu avant la réponse HTTP, sans changer la planification ou le worker. Un échec de journalisation ne transforme pas un envoi accepté en échec/reprise. Les anciens passages ne sont pas inventés ni reconstitués.
 
+### Reprise des événements Brevo — #816
+
+Les routes métier enregistrent et tentent l’événement après la réponse. Le ledger `brevo_event_deliveries` conserve le jalon et ses propriétés autorisées, l’utilisateur marchand associé, le statut, le compteur de tentatives, la prochaine reprise et des codes d’erreur fermés ; l’adresse est relue depuis `merchant_users` au moment d’une reprise, jamais copiée dans le ledger ou les logs. La référence utilisateur et la référence marchand suppriment les événements par cascade à l’effacement du compte correspondant.
+
+Un cron Vercel dédié, quotidien à 03:30 UTC, appelle `/api/internal/brevo-events/retry` avec `CRON_SECRET`. Une RPC `service_role` ne réclame qu’un événement dû à la fois (`FOR UPDATE SKIP LOCKED`). Les réponses Brevo 429/5xx et les pannes de lecture du contact planifient une reprise espacée, limitée à cinq tentatives ; les erreurs permanentes, les délais réseau sans réponse et un traitement interrompu sont placés en `needs_review`, sans renvoi automatique. L’envoi conserve l’horodatage d’origine et la clé de déduplication locale. L’API Brevo ne fournit pas ici de clé d’idempotence confirmée : les retries de réponse 5xx peuvent donc exceptionnellement produire un événement dupliqué si Brevo l’a accepté avant l’erreur.
+
+La route planifiée écrit un résumé global non nominatif dans `business_logs`. La page Supervision utilise une RPC `service_role` distincte et affiche les états d’attente, reprise et intervention, sans révéler l’e-mail, la propriété d’événement ou la clé brute. L’envoi direct initial reste indépendant du worker : aucune erreur Brevo n’est propagée aux inscriptions ou mutations Okado.
+
 - Les règles RLS, les schémas Supabase et les API font foi dans le code et les migrations ; ils doivent être inspectés avant toute modification de données ou d'autorisation.
 - Une nouvelle intégration externe, un nouveau sous-traitant ou un nouveau transfert de données exige une analyse avant implémentation.
 

@@ -1,5 +1,6 @@
 import { isSaasAdminEmail } from "@/lib/admin";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
+import { getBrevoEventFailurePolicy } from "@/lib/brevo-event-retry-policy";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase";
 import { logSupportEvent } from "@/lib/support-log";
 import { Merchant, MerchantUser } from "@/lib/types";
@@ -46,7 +47,7 @@ function getMerchantListIds() {
 }
 
 function safelyLogBrevoEvent(
-  level: "info" | "warn",
+  level: "info" | "warn" | "error",
   eventName: string,
   properties: Record<string, unknown>,
 ) {
@@ -145,27 +146,26 @@ async function postBrevoEventUnsafe(input: {
     return "failed" as const;
   }
 
-  if (existing?.status === "sent" || existing?.status === "processing") return "skipped" as const;
+  if (existing) return "skipped" as const;
 
-  if (existing?.status === "failed") {
-    const { data: claimed, error: claimError } = await supabase
-      .from("brevo_event_deliveries")
-      .update({ status: "processing", attempts: (existing.attempts ?? 1) + 1, last_error_status: null, updated_at: new Date().toISOString() })
-      .eq("dedupe_key", input.dedupeKey)
-      .eq("status", "failed")
-      .select("dedupe_key")
-      .maybeSingle();
-    if (claimError || !claimed) return "skipped" as const;
-  } else {
-    const { error: insertError } = await supabase.from("brevo_event_deliveries").insert({
-      dedupe_key: input.dedupeKey,
-      merchant_id: input.merchant.id,
-      event_name: input.eventName,
-      event_properties: eventProperties,
-      status: "processing",
-      attempts: 1,
+  const attemptedAt = new Date().toISOString();
+  const { error: insertError } = await supabase.from("brevo_event_deliveries").insert({
+    dedupe_key: input.dedupeKey,
+    merchant_id: input.merchant.id,
+    merchant_user_id: input.user.id,
+    event_name: input.eventName,
+    event_properties: eventProperties,
+    status: "processing",
+    attempts: 1,
+    last_attempt_at: attemptedAt,
+  });
+  if (insertError) {
+    safelyLogBrevoEvent("error", "brevo_event_ledger_insert_failed", {
+      merchantId: input.merchant.id,
+      eventName: input.eventName,
+      errorCode: "ledger_insert_failed",
     });
-    if (insertError) return "skipped" as const;
+    return "failed" as const;
   }
 
   const controller = new AbortController();
@@ -188,22 +188,30 @@ async function postBrevoEventUnsafe(input: {
     });
 
     if (!response.ok) {
+      const policy = getBrevoEventFailurePolicy(response.status, 1);
       await supabase.from("brevo_event_deliveries").update({
-        status: "failed",
+        status: policy.status,
+        next_attempt_at: policy.nextAttemptAt === null
+          ? null
+          : new Date(Date.now() + policy.nextAttemptAt).toISOString(),
+        last_error_code: policy.errorCode,
         last_error_status: response.status,
         updated_at: new Date().toISOString(),
       }).eq("dedupe_key", input.dedupeKey);
-      safelyLogBrevoEvent("warn", "brevo_onboarding_event_failed", {
+      safelyLogBrevoEvent(policy.status === "retry" ? "warn" : "error", "brevo_onboarding_event_failed", {
         merchantId: input.merchant.id,
         eventName: input.eventName,
         provider: "brevo",
         status: response.status,
+        errorCode: policy.errorCode,
       });
       return "failed" as const;
     }
 
     await supabase.from("brevo_event_deliveries").update({
       status: "sent",
+      next_attempt_at: null,
+      last_error_code: null,
       last_error_status: null,
       updated_at: new Date().toISOString(),
     }).eq("dedupe_key", input.dedupeKey);
@@ -215,18 +223,21 @@ async function postBrevoEventUnsafe(input: {
     return "sent" as const;
   } catch {
     try {
+      const policy = getBrevoEventFailurePolicy(null, 1);
       await supabase.from("brevo_event_deliveries").update({
-        status: "failed",
-        last_error_status: null,
+        status: policy.status,
+        next_attempt_at: null,
+        last_error_code: policy.errorCode,
         updated_at: new Date().toISOString(),
       }).eq("dedupe_key", input.dedupeKey);
     } catch {
       // A ledger update failure must not escape this best-effort delivery.
     }
-    safelyLogBrevoEvent("warn", "brevo_onboarding_event_failed", {
+    safelyLogBrevoEvent("error", "brevo_onboarding_event_failed", {
       merchantId: input.merchant.id,
       eventName: input.eventName,
       provider: "brevo",
+      errorCode: "network_outcome_ambiguous",
     });
     return "failed" as const;
   } finally {
@@ -245,6 +256,139 @@ async function postBrevoEvent(input: Parameters<typeof postBrevoEventUnsafe>[0])
     });
     return "failed" as const;
   }
+}
+
+type BrevoRetryRow = {
+  dedupe_key: string;
+  merchant_id: string;
+  merchant_user_id: string;
+  event_name: BrevoOnboardingEventName;
+  event_properties: Record<string, BrevoEventProperty>;
+  attempts: number;
+  created_at: string;
+};
+
+export async function dispatchBrevoEventRetries(limit = 50) {
+  if (!isBrevoConfigured() || !isSupabaseConfigured()) {
+    return { skipped: true, processed: 0, sent: 0, retrying: 0, needsReview: 0, limitReached: false };
+  }
+
+  const supabase = getSupabaseAdmin();
+  const boundedLimit = Math.min(100, Math.max(1, Math.trunc(limit)));
+  let processed = 0;
+  let sent = 0;
+  let retrying = 0;
+  let needsReview = 0;
+
+  while (processed < boundedLimit) {
+    const claimedResult = await supabase.rpc("claim_brevo_event_retry", {
+      p_now: new Date().toISOString(),
+    });
+    if (claimedResult.error) throw new Error("Lecture de la file Brevo impossible.");
+    const row = (Array.isArray(claimedResult.data) ? claimedResult.data[0] : claimedResult.data) as BrevoRetryRow | null;
+    if (!row) break;
+    processed += 1;
+
+    let email: string | null = null;
+    try {
+      const { data, error } = await supabase.from("merchant_users")
+        .select("email")
+        .eq("id", row.merchant_user_id)
+        .maybeSingle<{ email: string }>();
+      if (error) throw new Error("Lecture du contact Brevo impossible.");
+      email = data?.email?.trim().toLowerCase() || null;
+    } catch {
+      const policy = getBrevoEventFailurePolicy(503, row.attempts);
+      await supabase.from("brevo_event_deliveries").update({
+        status: policy.status,
+        next_attempt_at: policy.nextAttemptAt === null ? null : new Date(Date.now() + policy.nextAttemptAt).toISOString(),
+        last_error_code: "contact_lookup_failed",
+        last_error_status: null,
+        updated_at: new Date().toISOString(),
+      }).eq("dedupe_key", row.dedupe_key).eq("status", "processing");
+      if (policy.status === "retry") retrying += 1;
+      else needsReview += 1;
+      safelyLogBrevoEvent("error", "brevo_event_retry_failed", {
+        merchantId: row.merchant_id,
+        eventName: row.event_name,
+        errorCode: "contact_lookup_failed",
+      });
+      continue;
+    }
+
+    if (!email) {
+      await supabase.from("brevo_event_deliveries").update({
+        status: "needs_review",
+        next_attempt_at: null,
+        last_error_code: "contact_missing",
+        last_error_status: null,
+        updated_at: new Date().toISOString(),
+      }).eq("dedupe_key", row.dedupe_key).eq("status", "processing");
+      needsReview += 1;
+      continue;
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), BREVO_TIMEOUT_MS);
+    try {
+      const response = await fetch(BREVO_EVENT_ENDPOINT, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json", "api-key": getBrevoApiKey() },
+        body: JSON.stringify({
+          event_name: row.event_name,
+          identifiers: { email_id: email },
+          event_date: row.created_at,
+          event_properties: row.event_properties,
+        }),
+        signal: controller.signal,
+      });
+      if (response.ok) {
+        const { error } = await supabase.from("brevo_event_deliveries").update({
+          status: "sent", next_attempt_at: null, last_error_code: null, last_error_status: null,
+          updated_at: new Date().toISOString(),
+        }).eq("dedupe_key", row.dedupe_key).eq("status", "processing");
+        if (error) throw new Error("Mise à jour du ledger Brevo impossible.");
+        sent += 1;
+        safelyLogBrevoEvent("info", "brevo_event_retry_sent", {
+          merchantId: row.merchant_id, eventName: row.event_name, attempt: row.attempts,
+        });
+        continue;
+      }
+
+      const policy = getBrevoEventFailurePolicy(response.status, row.attempts);
+      const { error } = await supabase.from("brevo_event_deliveries").update({
+        status: policy.status,
+        next_attempt_at: policy.nextAttemptAt === null ? null : new Date(Date.now() + policy.nextAttemptAt).toISOString(),
+        last_error_code: policy.errorCode,
+        last_error_status: response.status,
+        updated_at: new Date().toISOString(),
+      }).eq("dedupe_key", row.dedupe_key).eq("status", "processing");
+      if (error) throw new Error("Mise à jour du ledger Brevo impossible.");
+      if (policy.status === "retry") retrying += 1;
+      else needsReview += 1;
+      safelyLogBrevoEvent(policy.status === "retry" ? "warn" : "error", "brevo_event_retry_failed", {
+        merchantId: row.merchant_id, eventName: row.event_name, status: response.status,
+        errorCode: policy.errorCode, attempt: row.attempts,
+      });
+    } catch {
+      // The request may have reached Brevo. Keep it out of automatic retries to avoid duplicate triggers.
+      try {
+        await supabase.from("brevo_event_deliveries").update({
+          status: "needs_review", next_attempt_at: null,
+          last_error_code: "network_outcome_ambiguous", last_error_status: null,
+          updated_at: new Date().toISOString(),
+        }).eq("dedupe_key", row.dedupe_key).eq("status", "processing");
+      } catch { /* The stale-processing sweep will mark this row for review. */ }
+      needsReview += 1;
+      safelyLogBrevoEvent("error", "brevo_event_retry_ambiguous", {
+        merchantId: row.merchant_id, eventName: row.event_name, errorCode: "network_outcome_ambiguous",
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  return { skipped: false, processed, sent, retrying, needsReview, limitReached: processed === boundedLimit };
 }
 
 export async function syncAndStartBrevoOnboardingSequence(input: {
@@ -496,13 +640,11 @@ async function upsertBrevoContact(input: {
     });
 
     if (!response.ok) {
-      const responseBody = await response.text().catch(() => "");
-      throw new Error(responseBody || `Brevo HTTP ${response.status}`);
+      throw new Error(`Brevo HTTP ${response.status}`);
     }
 
     safelyLogBrevoEvent("info", input.context.event, {
       merchantId: input.context.merchantId,
-      email,
       provider: "brevo",
     });
 
@@ -510,9 +652,10 @@ async function upsertBrevoContact(input: {
   } catch (error) {
     safelyLogBrevoEvent("warn", "brevo_contact_sync_failed", {
       merchantId: input.context.merchantId,
-      email,
       provider: "brevo",
-      error: error instanceof Error ? error.message : "Synchronisation Brevo impossible",
+      errorCode: error instanceof Error && /^Brevo HTTP \d+$/.test(error.message)
+        ? `brevo_contact_http_${error.message.slice(-3)}`
+        : "contact_sync_failed",
     });
 
     return "failed" as const;

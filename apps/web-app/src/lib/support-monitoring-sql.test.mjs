@@ -5,6 +5,8 @@ import { PGlite } from "@electric-sql/pglite";
 
 const migration = readFileSync(new URL("../../../../supabase/migrations/20261011220000_support_monitoring_491.sql", import.meta.url), "utf8");
 const rollback = readFileSync(new URL("../../../../supabase/rollback/20261011220000_support_monitoring_491.sql", import.meta.url), "utf8");
+const brevoMigration = readFileSync(new URL("../../../../supabase/migrations/20261117100000_brevo_onboarding_event_deliveries.sql", import.meta.url), "utf8");
+const brevoMonitoringMigration = readFileSync(new URL("../../../../supabase/migrations/20261118120000_brevo_event_retry_monitoring.sql", import.meta.url), "utf8");
 
 test("RPC SQL : recherche complète, pagination, compteurs, isolement, statuts, droits et rollback sans mutation", async () => {
   const db = new PGlite();
@@ -12,7 +14,9 @@ test("RPC SQL : recherche complète, pagination, compteurs, isolement, statuts, 
     await db.exec(`
       set time zone 'UTC';
       create role anon; create role authenticated; create role service_role;
+      create schema auth; create function auth.role() returns text language sql as 'select current_user::text';
       create table merchants(id text primary key,company_name text);
+      create table merchant_users(id text primary key,merchant_id text,email text);
       create table campaigns(id text primary key,merchant_id text,title text);
       create table prizes(id text primary key,label text);
       create table leads(id text primary key,campaign_id text,prize_id text,first_name text,email text,
@@ -48,6 +52,11 @@ test("RPC SQL : recherche complète, pagination, compteurs, isolement, statuts, 
       insert into business_logs values ('global',null,null,null,null,null,'info','gain_notification_scheduled_run','Acceptés : 2','2026-10-11T12:00Z'),
         ('error','a','c',null,null,null,'error','test','Erreur démo','2026-10-11T12:00Z');
     `);
+    await db.exec(brevoMigration);
+    await db.exec(brevoMonitoringMigration);
+    await db.exec(`insert into merchant_users values ('u1','a','owner@example.test');
+      insert into brevo_event_deliveries(dedupe_key,merchant_id,merchant_user_id,event_name,event_properties,status,attempts,last_attempt_at,next_attempt_at,last_error_code,created_at,updated_at)
+      values ('session-private-key','a','u1','okado_game_metrics_updated','{}','retry',2,'2026-10-11T12:00Z','2026-10-12T12:00Z','brevo_http_503','2026-10-11T12:00Z','2026-10-11T12:00Z');`);
     await db.exec(migration);
     await db.exec(migration);
     const call = async (section, extra = {}) => {
@@ -81,12 +90,18 @@ test("RPC SQL : recherche complète, pagination, compteurs, isolement, statuts, 
     assert.equal((await call("logs",{merchant:"a"})).stats.errorLogs,1);
     assert.equal((await call("logs",{from:"2026-10-12T00:00Z"})).stats.errorLogs,0);
     assert.equal((await call("logs",{merchant:"empty"})).stats.lastRun.event,"gain_notification_scheduled_run");
+    const brevo = (await db.query("select get_brevo_event_monitoring($1,$2,$3,$4,$5,$6,$7) result",
+      ["a","",null,null,"all",1,25])).rows[0].result;
+    assert.equal(brevo.total,1);assert.equal(brevo.stats.retrying,1);assert.equal(brevo.rows[0].kind,"brevo");
+    assert.equal(brevo.rows[0].errorCode,"brevo_http_503");
+    assert.doesNotMatch(JSON.stringify(brevo),/owner@example\.test|session-private-key/);
     assert.equal((await call("locations")).length,3);
     await assert.rejects(call("emails",{size:51}),/Invalid monitoring/);
     await assert.rejects(call("emails",{from:"2026-10-13T00:00Z",until:"2026-10-12T00:00Z"}),/Invalid monitoring/);
     for(const role of ["anon","authenticated"]){
       await db.exec(`set role ${role}`);
       await assert.rejects(call("locations"),/permission denied/);
+      await assert.rejects(db.query("select get_brevo_event_monitoring()"),/permission denied/);
       await db.exec("reset role");
     }
     await db.exec("set role service_role");assert.equal((await call("emails")).total,64);await db.exec("reset role");
@@ -99,5 +114,6 @@ test("RPC SQL : recherche complète, pagination, compteurs, isolement, statuts, 
     assert.equal((await db.query("select attempts from merchant_gain_notification_jobs where id='retry'")).rows[0].attempts,2);
     await db.exec(rollback);
     await assert.rejects(call("emails"),/does not exist/);
+    await db.exec(readFileSync(new URL("../../../../supabase/rollback/20261118120000_brevo_event_retry_monitoring.sql", import.meta.url), "utf8"));
   } finally {await db.close();}
 });

@@ -27,6 +27,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sup
           participant:"Camille",recipient:"camille@example.test",detail:"Un soin offert",code:"DEMO-NON-VALIDE",expiresAt:"2026-11-11T12:00Z"}]},
       logs:{available:true,total:1,page:1,stats:{errorLogs:0,lastRun:{at:"2026-10-11T10:00Z",status:"info",event:"gain_notification_scheduled_run",detail:"Acceptés : 3 ; échecs : 0."}},rows:[
         {id:"log-demo",kind:"log",at:"2026-10-11T10:00Z",status:"info",title:"gain_notification_scheduled_run",detail:"Acceptés : 3 ; échecs : 0."}]},
+      brevo:{available:true,total:1,page:1,stats:{brevoProcessing:0,brevoRetrying:0,brevoNeedsReview:1,oldestBrevoRetry:null},rows:[
+        {id:"hashed-event-demo",kind:"brevo",at:"2026-10-11T09:00Z",status:"needs_review",title:"okado_trial_started",
+          merchant:"Institut de démonstration",attempts:1,lastAttemptAt:"2026-10-11T09:00Z",errorCode:"network_outcome_ambiguous"}]},
     },
   };
   if (params.unavailable === "1") data.sections.logs = unavailableSlice();

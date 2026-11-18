@@ -5,7 +5,8 @@ for (const width of [320,390,1280]) {
     await page.setViewportSize({width,height:900});
     const errors:string[]=[];page.on("pageerror",error=>errors.push(error.message));
     await page.goto("/dev/support-monitoring");
-    await expect(page.getByRole("table")).toHaveCount(4);
+    await expect(page.getByRole("table")).toHaveCount(5);
+    await expect(page.getByRole("region", { name: "Tableau Brevo", exact: true })).toContainText("okado_trial_started");
     await expect(page.getByText("2 affichés sur 58 résultats")).toBeVisible();
     await expect(page.getByText("Intervention requise",{exact:true})).toBeVisible();
     await expect(page.getByText("Synchronisation active")).toHaveCount(0);
@@ -39,9 +40,12 @@ for (const width of [320,390,1280]) {
     await page.goto("/dev/support-monitoring?unavailable=1");
     await expect(page.getByRole("alert").filter({hasText:"Données indisponibles"})).toContainText("Journal");
     await expect(page.getByRole("region",{name:"Tableau Journal",exact:true})).toContainText("Lecture indisponible");
-    await expect(page.getByRole("table")).toHaveCount(4);
+    await expect(page.getByRole("table")).toHaveCount(5);
     await page.goto("/dev/support-monitoring?section=logs");
     await expect(page.getByRole("table")).toHaveCount(1);
+    await page.goto("/dev/support-monitoring?section=brevo");
+    await expect(page.getByRole("table")).toHaveCount(1);
+    await expect(page.getByText("Résultat réseau ambigu", { exact: true })).toBeVisible();
     await page.goto("/dev/support-monitoring?handled=1");
     await expect(page.getByRole("button",{name:"Marquer comme traité"})).toHaveCount(0);
     await expect(page.getByText("Traité le",{exact:false})).toBeVisible();

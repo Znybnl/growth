@@ -5,6 +5,10 @@
       "schedule": "15 3 * * *"
     },
     {
+      "path": "/api/internal/brevo-events/retry",
+      "schedule": "30 3 * * *"
+    },
+    {
       "path": "/api/internal/gain-notifications/recovery",
       "schedule": "15 3 * * *"
     },
