@@ -17,14 +17,14 @@ export function TravelGameHeader({ logoMode, logoText, logoUrl, logoWidthPx, log
   title: string; titleColor: string; titleFontSizePx: number; titleFontFamily: string; titleFontWeight: number; titleAlign: TextAlign; secondaryText: string; subtitleSpacingPx: number; scratch?: boolean;
 }) {
   const Heading = scratch ? "h2" : "h1";
-  return <>
+  return <div className={styles.travelHeader}>
     {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign, color: logoTextColor }}>
       {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} />
         : logoMode === "text" ? <p className={styles.brandText} style={{ fontSize: unit(logoTextSizePx) }}>{logoText}</p> : null}
     </header> : null}
     <Heading className={styles.title} style={{ color: titleColor, fontSize: unit(titleFontSizePx), fontFamily: titleFontFamily, fontWeight: titleFontWeight, textAlign: titleAlign }}>{title}</Heading>
     {secondaryText.trim() ? <p className={styles.subtitle} data-testid={scratch ? "travel-scratch-subtitle" : "christmas-wheel-subtitle"} style={{ color: logoTextColor, marginTop: unit(subtitleSpacingPx) }}>{secondaryText.trim()}</p> : null}
-  </>;
+  </div>;
 }
 
 export function ChristmasWheelScene({ templateId, background, logoMode = "text", logoText, logoUrl,

@@ -13,7 +13,7 @@ import { DashboardRecentCampaigns } from "@/components/merchant/dashboard-recent
 import { DashboardActivityChart } from "@/components/merchant/dashboard-activity-chart";
 import { MetricCard, PageHeader } from "@/components/ui/workspace";
 import { captureClientProductEvent, resetProductAnalytics } from "@/lib/client-product-analytics";
-import { createDefaultPosterSettings, defaultScratchTextColor, wheelHeadingColorForTemplateSelection, wheelPaletteForTemplate } from "@/lib/campaign-defaults";
+import { createDefaultPosterSettings, defaultScratchLogoColor, defaultScratchTextColor, wheelHeadingColorForTemplateSelection, wheelLogoColorForTemplateSelection, wheelPaletteForTemplate } from "@/lib/campaign-defaults";
 import type { CampaignPerformance, GamePageTemplateId, Merchant, PublicCampaign, TextFont } from "@/lib/types";
 import { halloweenFixture } from "./halloween-wheel";
 
@@ -67,6 +67,7 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
   const merchant: Merchant = { id: "template-proof-merchant", companyName,
     logoText: companyName, industry, onboardingCompleted: true, createdAt: "2026-10-15T00:00:00Z" };
   const color = ink ?? (scratch ? defaultScratchTextColor(templateId) : wheelHeadingColorForTemplateSelection(templateId, "#ffffff"));
+  const logoColor = ink ?? (scratch ? defaultScratchLogoColor(templateId) : wheelLogoColorForTemplateSelection(templateId, "#ffffff"));
   const form = {
     ...halloweenFixture, id: "template-proof-campaign", merchantId: merchant.id,
     prizes: prizeCase === "headspa" ? [
@@ -89,12 +90,12 @@ export function TemplateRenderingProof({ mode = "preview", templateId = "classic
       background: { mode: backgroundImage ? "image" as const : "color" as const,
         color: backgroundImage ? "#ffffff" : background,
         imageUrl: backgroundImage },
-      logo: { ...halloweenFixture.presentation.logo, textColor: color, marginBottomPx: business ? 64 : 20 },
+      logo: { ...halloweenFixture.presentation.logo, textColor: logoColor, marginBottomPx: business ? 64 : 20 },
       heading: { ...halloweenFixture.presentation.heading, textColor: color, fontSizePx: headingSize ? Number(headingSize) : business === "retail" ? 34 : 40, fontFamily: font ?? "poppins" as const },
       wheel: wheelPaletteForTemplate(templateId, halloweenFixture.presentation.wheel),
       layout: { ...halloweenFixture.presentation.layout, templateId, blockSpacingPx: business && !scratch ? 64 : 25,
         wheelTemplateStyles: savedStyles ? JSON.parse(savedStyles) : undefined,
-        scratchSubtitle: "Découvrez votre cadeau", wheelSubtitle: secondary ?? "" },
+        scratchSubtitle: secondary ?? "Découvrez votre cadeau", wheelSubtitle: secondary ?? "" },
     },
   };
   const publicCampaign: PublicCampaign = { ...form, merchantName: merchant.companyName, merchantLogoText: merchant.logoText,
