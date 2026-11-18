@@ -41,6 +41,7 @@ export const OPERATIONAL_API_ROUTES = [
   "/api/campaigns/setup",
   "/api/google-places/search",
   "/api/integrations/brevo/sync",
+  "/api/internal/brevo-events/retry",
   "/api/internal/gain-notifications",
   "/api/internal/gain-notifications/recovery",
   "/api/internal/maintenance",
