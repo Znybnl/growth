@@ -73,9 +73,9 @@ export function AuthShell({
   return (
     <div className="okado-auth-shell min-h-screen overflow-x-hidden bg-linen-canvas">
       <div className="grid min-h-screen lg:grid-cols-2">
-        <section className="flex min-h-screen justify-center overflow-y-auto bg-linen-canvas px-4 py-8 sm:px-6 lg:px-8 xl:px-10 xl:py-10">
-          <div className="flex w-full max-w-[620px] flex-col justify-center">
-            <div className="mb-8 flex items-center gap-3">
+        <section className="okado-auth-column flex min-h-screen justify-center overflow-y-auto bg-linen-canvas px-4 py-5 sm:px-6 sm:py-6 lg:items-[safe_center] lg:px-8 lg:py-4 xl:px-10">
+          <div className="flex min-h-[calc(100svh-2rem)] w-full max-w-[620px] flex-col justify-center">
+            <div data-testid="auth-brand" className="okado-auth-brand mb-6 flex items-center gap-3 sm:mb-8">
               <div
                 className="flex h-11 w-11 items-center justify-center rounded-[12px] text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-sm"
                 style={{ background: "var(--gradient-hero-blue-fade)" }}
@@ -90,6 +90,7 @@ export function AuthShell({
               </div>
             </div>
             <div
+              data-testid={flatContent ? "auth-card" : undefined}
               className={
                 flatContent
                   ? "mx-auto w-full max-w-[560px]"

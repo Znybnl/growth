@@ -1137,11 +1137,21 @@ select {
   outline: none;
 }
 
-.okado-auth-shell .okado-auth-credentials input:not([type="checkbox"]):not([type="color"]) {
+.okado-auth-shell .okado-auth-credentials :where(input:not([type="checkbox"]):not([type="color"]), textarea, select) {
   border-color: #cbc5cf !important;
 }
-.okado-auth-shell .okado-auth-credentials input:not([type="checkbox"]):not([type="color"]):focus {
+.okado-auth-shell .okado-auth-credentials :where(input:not([type="checkbox"]):not([type="color"]), textarea, select):focus {
   border-color: var(--color-aubergine) !important;
+}
+
+@media (max-height: 760px) and (min-width: 1024px) {
+  .okado-auth-column {
+    padding-block: 0.75rem;
+  }
+
+  .okado-auth-brand {
+    margin-bottom: 0.5rem;
+  }
 }
 
 .okado-public-redemption {
