@@ -2,7 +2,7 @@ import { after, NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
-import { syncMerchantContactToBrevo } from "@/lib/brevo";
+import { syncAndStartBrevoOnboardingSequence, syncMerchantContactToBrevo } from "@/lib/brevo";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { setSessionSecurityCookies } from "@/lib/session-security-server";
@@ -83,11 +83,17 @@ export async function GET(request: Request) {
 
     after(async () => {
       const sideEffects: Promise<unknown>[] = [
-        syncMerchantContactToBrevo({
-          merchant: session.merchant,
-          user: session.user,
-          source: "google",
-        }),
+        session.isNew
+          ? syncAndStartBrevoOnboardingSequence({
+              merchant: session.merchant,
+              user: session.user,
+              source: "google",
+            })
+          : syncMerchantContactToBrevo({
+              merchant: session.merchant,
+              user: session.user,
+              source: "google",
+            }),
       ];
 
       if (referralCode) {

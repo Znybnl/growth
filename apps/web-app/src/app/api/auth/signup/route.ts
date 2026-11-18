@@ -2,7 +2,7 @@ import { after, NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
-import { syncMerchantContactToBrevo } from "@/lib/brevo";
+import { syncAndStartBrevoOnboardingSequence } from "@/lib/brevo";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { getPublicErrorStatus } from "@/lib/public-api";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
             authProvider: "email",
           },
         ),
-        syncMerchantContactToBrevo({
+        syncAndStartBrevoOnboardingSequence({
           merchant: session.merchant,
           user: session.user,
           source: "signup",

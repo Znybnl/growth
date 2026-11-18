@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "test:affiliates": "node --test src/lib/affiliate-accounts.test.mjs src/lib/affiliate-accounts-sql.test.mjs",
+    "test:brevo-event-retries": "node --experimental-strip-types --test src/lib/brevo-event-retry-policy.test.mjs src/lib/brevo-event-retries-sql.test.mjs src/lib/brevo-event-retry-route.test.mjs src/lib/brevo-event-worker.test.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

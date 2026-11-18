@@ -910,6 +910,7 @@ export type CashierRedemptionStatus =
 
 export interface CashierRedemptionContext {
   status: CashierRedemptionStatus;
+  isPreview?: boolean;
   leadId?: string;
   campaignId?: string;
   campaignTitle?: string;

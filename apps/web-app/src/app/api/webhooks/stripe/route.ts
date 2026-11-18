@@ -1,4 +1,6 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+
+import { emitBrevoSubscriptionMilestone } from "@/lib/brevo";
 import Stripe from "stripe";
 
 import {
@@ -196,6 +198,16 @@ export async function POST(request: Request) {
         await captureProductEvent("subscription_active", merchantId, {
           merchantId,
           stripeEventType: event.type,
+        });
+      }
+
+      if (["checkout.session.completed", "customer.subscription.updated", "customer.subscription.deleted"].includes(event.type)) {
+        after(async () => {
+          await emitBrevoSubscriptionMilestone({
+            merchantId,
+            dedupeKey: `stripe_subscription:${event.id}`,
+            stripeEventType: event.type,
+          });
         });
       }
     }

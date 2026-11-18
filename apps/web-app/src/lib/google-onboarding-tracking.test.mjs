@@ -30,7 +30,10 @@ function callbackFixture() {
     "next/server": { NextResponse, after: task => state.deferred.push(task) },
     "@/lib/affiliate-repository": { createAffiliateReferralForMerchant: async () => undefined },
     "@/lib/admin-notifications": { notifyAdministratorsOfMerchantSignup: async () => undefined },
-    "@/lib/brevo": { syncMerchantContactToBrevo: async () => undefined },
+    "@/lib/brevo": {
+      syncAndStartBrevoOnboardingSequence: async () => undefined,
+      syncMerchantContactToBrevo: async () => undefined,
+    },
     "@/lib/product-analytics": {
       merchantDistinctId: merchantAnalyticsDistinctId,
       captureProductEvent: async (event, distinctId, properties) => {
@@ -69,7 +72,10 @@ test("JSON Google exchange: a returning account logs in once, a new account only
       "next/server": { NextResponse, after: task => deferred.push(task) },
       "@/lib/affiliate-repository": { createAffiliateReferralForMerchant: async () => undefined },
       "@/lib/admin-notifications": { notifyAdministratorsOfMerchantSignup: async () => undefined },
-      "@/lib/brevo": { syncMerchantContactToBrevo: async () => undefined },
+      "@/lib/brevo": {
+        syncAndStartBrevoOnboardingSequence: async () => undefined,
+        syncMerchantContactToBrevo: async () => undefined,
+      },
       "@/lib/merchant-account-repository": { authenticateOrProvisionMerchantWithGoogle: async () => ({ isNew,
         merchant: { id: "merchant-active", onboardingCompleted: true }, user: { id: "user-fixture", merchantId: "merchant-primary" } }) },
       "@/lib/product-analytics": { merchantDistinctId: merchantAnalyticsDistinctId, captureProductEvent: async (...args) => events.push(args) },
