@@ -45,7 +45,6 @@ export function SignupProductPanel({ mode = "signup" }: { mode?: keyof typeof pa
             <ScanLine className="h-7 w-7 sm:h-9 sm:w-9" />
           </div>
         </div>
-        {isSignin ? <p className="mt-2 text-xs text-white/85">Résultats fictifs, à titre illustratif.</p> : null}
         <h2 data-testid="auth-promo-copy" className="mt-6 max-w-[540px] text-balance text-[clamp(1.7rem,2.5vw,2.3rem)] font-semibold leading-[1.12] tracking-tight">{copy.title}</h2>
         <p className="mt-4 max-w-[510px] text-sm leading-6 text-white/90">{copy.body}</p>
         <ul className="mt-7 flex w-full flex-wrap justify-center gap-x-5 gap-y-3 text-left text-[14px] font-semibold leading-5 text-white">

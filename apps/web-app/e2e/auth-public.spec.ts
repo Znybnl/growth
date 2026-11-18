@@ -57,7 +57,8 @@ test.describe("Parcours public d'authentification", () => {
     const loginCard = await page.getByTestId("auth-card").boundingBox();
     expect(loginBrand).toMatchObject({ x: brand!.x, y: brand!.y, width: brand!.width });
     expect(loginCard).toMatchObject({ x: card!.x, y: card!.y, width: card!.width });
-    await expect(page.getByText("Résultats fictifs, à titre illustratif.")).toBeVisible();
+    await expect(page.getByText("Résultats fictifs, à titre illustratif.")).toHaveCount(0);
+    await expect(page.getByText("Connectez-vous à votre espace Okado.", { exact: true })).toBeVisible();
   });
 
   test("la page d'inscription bloque une inscription sans acceptation des conditions", async ({ page }) => {
