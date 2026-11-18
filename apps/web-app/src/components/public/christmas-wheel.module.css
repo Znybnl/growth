@@ -64,6 +64,7 @@
 .button:hover:not(:disabled) { filter: brightness(1.08); }
 .button:disabled { cursor: default; }
 [data-travel-template] .brand { width: 76%; padding: 0; border: 0; background: transparent; }
+[data-travel-template] .travelHeader { position: relative; isolation: isolate; }
 [data-travel-template] .brandText { font-family: var(--font-dm-sans), sans-serif; font-weight: 700; }
 [data-travel-template] .rule { display: none; }
 [data-travel-template] .subtitle { font-family: var(--font-dm-sans), sans-serif; font-weight: 600; }
@@ -79,13 +80,13 @@
 }
 [data-travel-template="travel-roadtrip"] .subtitle,
 [data-travel-template="travel-tropical"] .subtitle {
-  position: relative; isolation: isolate;
+  position: relative;
   text-shadow: none;
 }
 [data-travel-template="travel-roadtrip"] .subtitle::before,
 [data-travel-template="travel-tropical"] .subtitle::before {
-  content: ""; position: absolute; z-index: -1; left: 50%; top: 0;
-  width: 175%; height: 100%; transform: translateX(-50%); pointer-events: none;
+  content: ""; position: absolute; z-index: -1; left: 50%; top: 50%;
+  width: 175%; height: 260%; transform: translate(-50%, -50%); pointer-events: none;
   background: radial-gradient(ellipse at center, rgb(255 245 224 / 52%) 0%, rgb(255 245 224 / 32%) 38%, rgb(255 245 224 / 12%) 64%, transparent 86%);
 }
 [data-travel-template="travel-tropical"] .subtitle::before {

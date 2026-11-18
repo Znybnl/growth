@@ -76,7 +76,7 @@ test("tickets Voyage : le sous-titre reprend la typographie et le halo des roues
   }
 });
 
-test("halos Tropical et Road trip restent contenus au sous-titre sur roue et ticket", async ({ page }, info) => {
+test("halos Tropical et Road trip restent derrière les textes sans changer de forme sur roue et ticket", async ({ page }, info) => {
   test.setTimeout(90_000);
   await isolate(page);
   for (const mode of ["public", "preview"]) {
@@ -97,20 +97,29 @@ test("halos Tropical et Road trip restent contenus au sous-titre sur roue et tic
             await expect(subtitle).toBeVisible();
             const geometry = await subtitle.evaluate(element => {
               const subtitleBounds = element.getBoundingClientRect();
-              const headingBounds = element.closest("[data-travel-template]")!
-                .querySelector("h1, h2")!.getBoundingClientRect();
+              const header = element.parentElement!;
+              const heading = header.querySelector("h1, h2")!;
+              const headingStyle = getComputedStyle(heading);
               const halo = getComputedStyle(element, "::before");
               return {
+                headerIsolation: getComputedStyle(header).isolation,
+                subtitleIsolation: getComputedStyle(element).isolation,
+                haloPosition: halo.position,
+                haloZIndex: halo.zIndex,
                 haloTop: Number.parseFloat(halo.top),
                 haloHeight: Number.parseFloat(halo.height),
                 subtitleHeight: subtitleBounds.height,
                 subtitleTop: subtitleBounds.top,
-                headingBottom: headingBounds.bottom,
+                headingStacking: headingStyle.zIndex,
               };
             });
-            expect(geometry.haloTop, `${template} ${mode} ${width}px`).toBe(0);
-            expect(geometry.haloHeight, `${template} ${mode} ${width}px`).toBeLessThanOrEqual(geometry.subtitleHeight + 1);
-            expect(geometry.subtitleTop, `${template} ${mode} ${width}px`).toBeGreaterThanOrEqual(geometry.headingBottom);
+            expect(geometry.headerIsolation, `${template} ${mode} ${width}px`).toBe("isolate");
+            expect(geometry.subtitleIsolation, `${template} ${mode} ${width}px`).toBe("auto");
+            expect(geometry.haloPosition, `${template} ${mode} ${width}px`).toBe("absolute");
+            expect(geometry.haloZIndex, `${template} ${mode} ${width}px`).toBe("-1");
+            expect(geometry.haloTop, `${template} ${mode} ${width}px`).toBeCloseTo(geometry.subtitleHeight / 2, 1);
+            expect(geometry.haloHeight / geometry.subtitleHeight, `${template} ${mode} ${width}px`).toBeCloseTo(2.6, 1);
+            expect(geometry.headingStacking, `${template} ${mode} ${width}px`).toBe("auto");
             if (mode === "public" && longCopy) {
               await page.screenshot({ path: info.outputPath(`${template}-${width}-long-copy.png`), fullPage: true, animations: "disabled" });
             }
