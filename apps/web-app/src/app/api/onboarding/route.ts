@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
 import { emitBrevoOnboardingMilestone, syncMerchantContactToBrevo } from "@/lib/brevo";
@@ -18,19 +18,21 @@ export async function POST(request: Request) {
 
     const body = parseMerchantOnboardingInput(await request.json());
     const merchant = await updateMerchantOnboarding(session.user.id, body);
-    const brevoSyncResult = await syncMerchantContactToBrevo({
-      merchant,
-      user: session.user,
-      source: "onboarding",
-    });
-    if (brevoSyncResult === "synced") {
-      await emitBrevoOnboardingMilestone({
+    after(async () => {
+      const brevoSyncResult = await syncMerchantContactToBrevo({
         merchant,
         user: session.user,
-        eventName: "okado_onboarding_completed",
-        dedupeKey: `onboarding_completed:${merchant.id}`,
+        source: "onboarding",
       });
-    }
+      if (brevoSyncResult === "synced") {
+        await emitBrevoOnboardingMilestone({
+          merchant,
+          user: session.user,
+          eventName: "okado_onboarding_completed",
+          dedupeKey: `onboarding_completed:${merchant.id}`,
+        });
+      }
+    });
     await captureProductEvent(
       "onboarding_completed",
       merchantDistinctId(session.user.merchantId, session.user.id),

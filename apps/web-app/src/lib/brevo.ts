@@ -45,6 +45,18 @@ function getMerchantListIds() {
   return parseListIds(process.env.BREVO_MERCHANT_LIST_ID || process.env.BREVO_LIST_ID);
 }
 
+function safelyLogBrevoEvent(
+  level: "info" | "warn",
+  eventName: string,
+  properties: Record<string, unknown>,
+) {
+  try {
+    logSupportEvent(level, eventName, properties);
+  } catch {
+    // Observability must not make an optional Brevo side effect fail.
+  }
+}
+
 function sanitizeAttributeValue(value: unknown) {
   if (typeof value === "string") {
     return value.trim().slice(0, 255) || null;
@@ -104,7 +116,7 @@ function sanitizeEventProperties(input: Record<string, BrevoEventProperty>) {
   );
 }
 
-async function postBrevoEvent(input: {
+async function postBrevoEventUnsafe(input: {
   user: MerchantUser;
   merchant: Merchant;
   eventName: BrevoOnboardingEventName;
@@ -126,7 +138,7 @@ async function postBrevoEvent(input: {
     .maybeSingle<{ status: string; attempts: number }>();
 
   if (existingError) {
-    logSupportEvent("warn", "brevo_event_ledger_read_failed", {
+    safelyLogBrevoEvent("warn", "brevo_event_ledger_read_failed", {
       merchantId: input.merchant.id,
       eventName: input.eventName,
     });
@@ -181,7 +193,7 @@ async function postBrevoEvent(input: {
         last_error_status: response.status,
         updated_at: new Date().toISOString(),
       }).eq("dedupe_key", input.dedupeKey);
-      logSupportEvent("warn", "brevo_onboarding_event_failed", {
+      safelyLogBrevoEvent("warn", "brevo_onboarding_event_failed", {
         merchantId: input.merchant.id,
         eventName: input.eventName,
         provider: "brevo",
@@ -195,19 +207,23 @@ async function postBrevoEvent(input: {
       last_error_status: null,
       updated_at: new Date().toISOString(),
     }).eq("dedupe_key", input.dedupeKey);
-    logSupportEvent("info", "brevo_onboarding_event_sent", {
+    safelyLogBrevoEvent("info", "brevo_onboarding_event_sent", {
       merchantId: input.merchant.id,
       eventName: input.eventName,
       provider: "brevo",
     });
     return "sent" as const;
   } catch {
-    await supabase.from("brevo_event_deliveries").update({
-      status: "failed",
-      last_error_status: null,
-      updated_at: new Date().toISOString(),
-    }).eq("dedupe_key", input.dedupeKey);
-    logSupportEvent("warn", "brevo_onboarding_event_failed", {
+    try {
+      await supabase.from("brevo_event_deliveries").update({
+        status: "failed",
+        last_error_status: null,
+        updated_at: new Date().toISOString(),
+      }).eq("dedupe_key", input.dedupeKey);
+    } catch {
+      // A ledger update failure must not escape this best-effort delivery.
+    }
+    safelyLogBrevoEvent("warn", "brevo_onboarding_event_failed", {
       merchantId: input.merchant.id,
       eventName: input.eventName,
       provider: "brevo",
@@ -218,20 +234,41 @@ async function postBrevoEvent(input: {
   }
 }
 
+async function postBrevoEvent(input: Parameters<typeof postBrevoEventUnsafe>[0]) {
+  try {
+    return await postBrevoEventUnsafe(input);
+  } catch {
+    safelyLogBrevoEvent("warn", "brevo_onboarding_event_failed", {
+      merchantId: input.merchant.id,
+      eventName: input.eventName,
+      provider: "brevo",
+    });
+    return "failed" as const;
+  }
+}
+
 export async function syncAndStartBrevoOnboardingSequence(input: {
   merchant: Merchant;
   user: MerchantUser;
   source: "signup" | "google";
 }) {
-  const syncResult = await syncMerchantContactToBrevo(input);
-  if (syncResult !== "synced") return syncResult;
+  try {
+    const syncResult = await syncMerchantContactToBrevo(input);
+    if (syncResult !== "synced") return syncResult;
 
-  await postBrevoEvent({
-    ...input,
-    eventName: "okado_trial_started",
-    dedupeKey: `trial_started:${input.merchant.id}`,
-  });
-  return syncResult;
+    await postBrevoEvent({
+      ...input,
+      eventName: "okado_trial_started",
+      dedupeKey: `trial_started:${input.merchant.id}`,
+    });
+    return syncResult;
+  } catch {
+    safelyLogBrevoEvent("warn", "brevo_onboarding_sequence_start_failed", {
+      merchantId: input.merchant.id,
+      provider: "brevo",
+    });
+    return "failed" as const;
+  }
 }
 
 export async function emitBrevoOnboardingMilestone(input: {
@@ -244,7 +281,7 @@ export async function emitBrevoOnboardingMilestone(input: {
   return postBrevoEvent(input);
 }
 
-export async function emitBrevoCampaignMilestone(input: {
+async function emitBrevoCampaignMilestoneUnsafe(input: {
   campaignId: string;
   eventName: "okado_game_published" | "okado_first_participation" | "okado_first_redemption" | "okado_game_metrics_updated";
   dedupeKey: string;
@@ -344,7 +381,20 @@ export async function emitBrevoCampaignMilestone(input: {
   });
 }
 
-export async function emitBrevoSubscriptionMilestone(input: {
+export async function emitBrevoCampaignMilestone(input: Parameters<typeof emitBrevoCampaignMilestoneUnsafe>[0]) {
+  try {
+    return await emitBrevoCampaignMilestoneUnsafe(input);
+  } catch {
+    safelyLogBrevoEvent("warn", "brevo_campaign_milestone_failed", {
+      campaignId: input.campaignId,
+      eventName: input.eventName,
+      provider: "brevo",
+    });
+    return "failed" as const;
+  }
+}
+
+async function emitBrevoSubscriptionMilestoneUnsafe(input: {
   merchantId: string;
   dedupeKey: string;
   stripeEventType: string;
@@ -397,6 +447,18 @@ export async function emitBrevoSubscriptionMilestone(input: {
   });
 }
 
+export async function emitBrevoSubscriptionMilestone(input: Parameters<typeof emitBrevoSubscriptionMilestoneUnsafe>[0]) {
+  try {
+    return await emitBrevoSubscriptionMilestoneUnsafe(input);
+  } catch {
+    safelyLogBrevoEvent("warn", "brevo_subscription_milestone_failed", {
+      merchantId: input.merchantId,
+      provider: "brevo",
+    });
+    return "failed" as const;
+  }
+}
+
 async function upsertBrevoContact(input: {
   email: string;
   listIds: number[];
@@ -438,7 +500,7 @@ async function upsertBrevoContact(input: {
       throw new Error(responseBody || `Brevo HTTP ${response.status}`);
     }
 
-    logSupportEvent("info", input.context.event, {
+    safelyLogBrevoEvent("info", input.context.event, {
       merchantId: input.context.merchantId,
       email,
       provider: "brevo",
@@ -446,7 +508,7 @@ async function upsertBrevoContact(input: {
 
     return "synced" as const;
   } catch (error) {
-    logSupportEvent("warn", "brevo_contact_sync_failed", {
+    safelyLogBrevoEvent("warn", "brevo_contact_sync_failed", {
       merchantId: input.context.merchantId,
       email,
       provider: "brevo",
@@ -464,39 +526,47 @@ export async function syncMerchantContactToBrevo(input: {
   user: MerchantUser;
   source: "signup" | "google" | "onboarding" | "account" | "manual";
 }) {
-  const result = await upsertBrevoContact({
-    email: input.user.email,
-    listIds: getMerchantListIds(),
-    attributes: {
-      ...standardAttributes({
-        firstName: input.user.firstName,
-        lastName: input.user.lastName,
-      }),
-      ...Object.fromEntries(
-        Object.entries({ CONTACT_TIMEZONE: input.merchant.timeZone ?? "Europe/Paris" })
-          .map(([key, value]) => [key, sanitizeAttributeValue(value)] as const)
-          .filter(([, value]) => value !== null),
-      ),
-    },
-    context: {
-      event: "brevo_merchant_contact_synced",
-      merchantId: input.merchant.id,
-    },
-  });
-
-  if (result === "synced") {
-    await captureProductEvent(
-      "brevo_merchant_contact_synced",
-      merchantDistinctId(input.user.merchantId, input.user.id),
-      {
-        merchantId: input.merchant.id,
-        merchantUserId: input.user.id,
-        source: input.source,
+  try {
+    const result = await upsertBrevoContact({
+      email: input.user.email,
+      listIds: getMerchantListIds(),
+      attributes: {
+        ...standardAttributes({
+          firstName: input.user.firstName,
+          lastName: input.user.lastName,
+        }),
+        ...Object.fromEntries(
+          Object.entries({ CONTACT_TIMEZONE: input.merchant.timeZone ?? "Europe/Paris" })
+            .map(([key, value]) => [key, sanitizeAttributeValue(value)] as const)
+            .filter(([, value]) => value !== null),
+        ),
       },
-    );
-  }
+      context: {
+        event: "brevo_merchant_contact_synced",
+        merchantId: input.merchant.id,
+      },
+    });
 
-  return result;
+    if (result === "synced") {
+      await captureProductEvent(
+        "brevo_merchant_contact_synced",
+        merchantDistinctId(input.user.merchantId, input.user.id),
+        {
+          merchantId: input.merchant.id,
+          merchantUserId: input.user.id,
+          source: input.source,
+        },
+      );
+    }
+
+    return result;
+  } catch {
+    safelyLogBrevoEvent("warn", "brevo_contact_sync_failed", {
+      merchantId: input.merchant.id,
+      provider: "brevo",
+    });
+    return "failed" as const;
+  }
 }
 
 function countResult(summary: BrevoSyncResult, result: "synced" | "skipped" | "failed") {
