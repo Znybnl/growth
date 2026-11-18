@@ -75,6 +75,9 @@ test("onboarding centers its left panel and matches authentication field outline
   expect(card).not.toBeNull();
   const contentCenter = (brand!.y + card!.y + card!.height) / 2;
   expect(Math.abs(contentCenter - (column!.y + column!.height / 2))).toBeLessThan(4);
+  await expect(page.getByTestId("auth-promo-art")).toBeVisible();
+  await expect(page.getByTestId("auth-promo-copy")).toContainText("Une base prête pour votre première campagne.");
+  await expect(page.getByText("Préparez vos liens marketing réutilisables")).toBeVisible();
 
   const companyName = page.getByLabel("Nom de l’enseigne");
   await expect(companyName).toHaveCSS("border-top-color", "rgb(203, 197, 207)");
