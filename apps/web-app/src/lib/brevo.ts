@@ -672,7 +672,25 @@ async function upsertBrevoContact(input: {
   }
 }
 
-async function getBrevoSequenceStateAttributes(merchantId: string): Promise<BrevoContactAttributes | null> {
+function formatBrevoContactDate(value: string | null, timeZone?: string) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) throw new Error("Date Brevo invalide.");
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: timeZone || "Europe/Paris",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const part = (type: string) => parts.find((item) => item.type === type)?.value;
+  const year = part("year");
+  const month = part("month");
+  const day = part("day");
+  if (!year || !month || !day) throw new Error("Date Brevo invalide.");
+  return `${year}-${month}-${day}`;
+}
+
+async function getBrevoSequenceStateAttributes(merchantId: string, timeZone?: string): Promise<BrevoContactAttributes | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = getSupabaseAdmin();
   const { data: merchant, error: merchantError } = await supabase.from("merchants")
@@ -710,8 +728,8 @@ async function getBrevoSequenceStateAttributes(merchantId: string): Promise<Brev
 
   const subscriptionStatus = workspaceResult.data?.stripe_subscription_status ?? merchant.stripe_subscription_status;
   return {
-    OKADO_TRIAL_START_AT: merchant.trial_start_date ?? null,
-    OKADO_TRIAL_END_AT: merchant.trial_end_date ?? null,
+    OKADO_TRIAL_START_AT: formatBrevoContactDate(merchant.trial_start_date, timeZone),
+    OKADO_TRIAL_END_AT: formatBrevoContactDate(merchant.trial_end_date, timeZone),
     OKADO_SUBSCRIPTION_ACTIVE: subscriptionStatus === "active",
     OKADO_ONBOARDING_COMPLETED: merchant.onboarding_completed ?? false,
     OKADO_PUBLISHED_GAMES_COUNT: activeCampaigns.length,
@@ -723,15 +741,15 @@ async function getBrevoSequenceStateAttributes(merchantId: string): Promise<Brev
   };
 }
 
-async function sequenceStateAttributesForContact(merchantId: string) {
+async function sequenceStateAttributesForContact(merchant: Merchant) {
   if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED !== "true") return null;
-  return getBrevoSequenceStateAttributes(merchantId);
+  return getBrevoSequenceStateAttributes(merchant.id, merchant.timeZone);
 }
 
 async function syncBrevoSequenceState(input: { merchant: Merchant; user: MerchantUser }) {
   if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED !== "true") return "skipped" as const;
   try {
-    const attributes = await getBrevoSequenceStateAttributes(input.merchant.id);
+    const attributes = await getBrevoSequenceStateAttributes(input.merchant.id, input.merchant.timeZone);
     if (!attributes) return "failed" as const;
     return await upsertBrevoContact({
       email: input.user.email,
@@ -802,7 +820,7 @@ export async function syncMerchantContactToBrevo(input: {
   source: "signup" | "google" | "onboarding" | "account" | "manual";
 }) {
   try {
-    const sequenceState = await sequenceStateAttributesForContact(input.merchant.id);
+    const sequenceState = await sequenceStateAttributesForContact(input.merchant);
     if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED === "true" && !sequenceState) return "failed";
     const result = await upsertBrevoContact({
       email: input.user.email,
