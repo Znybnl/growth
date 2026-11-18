@@ -1,6 +1,29 @@
 # Sécurité de l'outillage de développement — #571
 
-## Analyse actualisée et décision
+## Actualisation du 18 novembre 2026 — exception temporaire picomatch
+
+La vérification de `origin/main` identifie un seul avis racine dans l'audit complet :
+[GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf), classé high
+pour `picomatch` jusqu'à `4.0.7` inclus. Le registre ne propose pas de version corrigée
+dans cet avis au moment de cette vérification; `4.0.7` est la version publiée observée.
+Les 19 entrées rapportées par npm sont `picomatch` et ses dépendances parentes dans
+les chaînes d'outils `shadcn`/ESLint, et correspondent toutes à ce même avis. Elles
+concernent les dépendances de développement. L'audit de production reste propre.
+
+Une exception temporaire est donc inscrite dans le garde-fou CI jusqu'au **2 décembre
+2026 inclus**, avec réexamen avant échéance. Elle ne tolère que ces 19 noms exacts,
+19 niveaux high, zéro autre niveau et l'URL/range de cet avis sur `picomatch`. Un
+nouveau nom, avis, niveau, total, rapport incomplet, panne du registre, audit de
+production affecté ou exécution après échéance échoue au contrôle. Aucune mise à jour
+Next.js supplémentaire n'est requise ici : les deux applications utilisent déjà
+Next.js et `eslint-config-next` **16.4.6**. La mise à niveau récente est conservée.
+
+Cette exception documente un blocage de l'outillage, pas une correction de la
+dépendance. Dès qu'une version corrigée compatible est publiée, la chaîne doit être
+mise à jour et l'exception retirée; sinon, le propriétaire doit la réévaluer avant
+le 2 décembre.
+
+## État vérifié le 25 octobre 2026 — analyse historique
 
 L'audit complet du 25 octobre 2026 sur `origin/main` signale **un paquet high**,
 `zod@4.4.3`. L'audit de production signale zéro vulnérabilité. Les 20 paquets
@@ -51,13 +74,12 @@ l'audit actuel (versions lues dans le lockfile) :
 
 ## Prévention
 
-Le garde-fou existant reste inchangé par défaut : `npm run check:dependencies`
-contrôle la production et l'alignement Next/ESLint des deux apps.
-`npm run check:dependencies:all` réutilise le même contrôle en ajoutant les
-dépendances de développement ; la CI exécute les deux. Une réponse absente,
-incomplète, malformée ou une sortie non nulle échoue toujours. Aucune exception.
-La CI peut désormais bloquer sur un nouvel avis d'outillage : le corriger ou
-demander une décision propriétaire documentée, pas masquer l'alerte.
+Le garde-fou `npm run check:dependencies` contrôle la production et l'alignement
+Next/ESLint des deux apps, sans exception de vulnérabilité. `npm run
+check:dependencies:all` ajoute les dépendances de développement et n'accepte que les
+empreintes documentées plus haut. Une réponse absente, incomplète, malformée, un avis
+différent ou l'exception picomatch après son échéance échoue au contrôle. La CI peut
+donc encore bloquer sur tout nouvel avis d'outillage.
 
 ## Vérifications et livraison
 
