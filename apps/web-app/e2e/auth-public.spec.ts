@@ -50,14 +50,27 @@ test.describe("Parcours public d'authentification", () => {
   test("connexion et inscription partagent l'alignement du logo et de la carte", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/inscription");
+    const signupColumn = await page.locator(".okado-auth-column").boundingBox();
     const brand = await page.getByTestId("auth-brand").boundingBox();
     const card = await page.getByTestId("auth-card").boundingBox();
+    expect(signupColumn).not.toBeNull();
+    expect(brand).not.toBeNull();
+    expect(card).not.toBeNull();
+    const signupCenter = (brand!.y + card!.y + card!.height) / 2;
+    expect(Math.abs(signupCenter - (signupColumn!.y + signupColumn!.height / 2))).toBeLessThan(4);
     await page.goto("/connexion");
+    const loginColumn = await page.locator(".okado-auth-column").boundingBox();
     const loginBrand = await page.getByTestId("auth-brand").boundingBox();
     const loginCard = await page.getByTestId("auth-card").boundingBox();
-    expect(loginBrand).toMatchObject({ x: brand!.x, y: brand!.y, width: brand!.width });
-    expect(loginCard).toMatchObject({ x: card!.x, y: card!.y, width: card!.width });
-    await expect(page.getByText("Résultats fictifs, à titre illustratif.")).toBeVisible();
+    expect(loginColumn).not.toBeNull();
+    expect(loginBrand).not.toBeNull();
+    expect(loginCard).not.toBeNull();
+    const loginCenter = (loginBrand!.y + loginCard!.y + loginCard!.height) / 2;
+    expect(Math.abs(loginCenter - (loginColumn!.y + loginColumn!.height / 2))).toBeLessThan(4);
+    expect(loginBrand).toMatchObject({ x: brand!.x, width: brand!.width });
+    expect(loginCard).toMatchObject({ x: card!.x, width: card!.width });
+    await expect(page.getByText("Résultats fictifs, à titre illustratif.")).toHaveCount(0);
+    await expect(page.getByText("Connectez-vous à votre espace Okado.", { exact: true })).toBeVisible();
   });
 
   test("la page d'inscription bloque une inscription sans acceptation des conditions", async ({ page }) => {
