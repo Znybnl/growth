@@ -165,6 +165,9 @@ jobs:
         run: npm run test:metrics -w @okado/web-app
       - name: Test merchant page reads, session isolation and private timings
         run: npm run test:page-performance -w @okado/web-app
+
+      - name: Test merchant email alerts
+        run: npm run test:merchant-email-alerts -w @okado/web-app
       - name: Test anonymous draw preparation timings and percentile report
         run: npm run test:draw-preparation -w @okado/web-app
       - name: Test merchant account affiliation, permissions, resubscription and migration

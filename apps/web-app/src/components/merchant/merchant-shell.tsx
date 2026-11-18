@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BarChart3, CircleDollarSign, CircleHelp, Gamepad2, LayoutDashboard, Star, UserRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -53,6 +53,7 @@ export function MerchantShell(props: MerchantShellProps) {
 
 function MerchantShellContent({ children, merchant, user, locations, activeLocationId, isSaasAdmin }: MerchantShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const adminNavItems = getPlatformAdminNavigationItems(isSaasAdmin);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLElement>(null);
@@ -325,8 +326,25 @@ function MerchantShellContent({ children, merchant, user, locations, activeLocat
                     ? `/data?campaign=${encodeURIComponent(merchantAlerts.emailCampaignId)}&emailStatus=attention`
                     : "/data?emailStatus=attention"
                 }
-                className="mt-3 block rounded-[4px] bg-[#f59e0b]/10 px-2 py-2 text-xs font-medium text-[#a15c00]"
-                onClick={() => setMenuOpen(false)}
+                className="mt-3 block rounded-[4px] bg-[#fff1d6] px-2 py-2 text-xs font-medium text-[#713f00]"
+                onClick={async (event) => {
+                  const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+                  if (!modified) event.preventDefault();
+                  const campaignId = merchantAlerts.emailCampaignId;
+                  const destination = campaignId ? `/data?campaign=${encodeURIComponent(campaignId)}&emailStatus=attention` : "/data?emailStatus=attention";
+                  setMenuOpen(false);
+                  if (campaignId) {
+                    try {
+                      for (let i = 0; i < merchantAlerts.emailSnapshot.length; i += 10000) {
+                        const response = await fetch("/api/merchant/email-alerts", { method: "POST", headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ campaignId, snapshot: merchantAlerts.emailSnapshot.slice(i, i + 10000) }) });
+                        if (!response.ok) break;
+                      }
+                    } catch { /* A failed acknowledgement leaves the alert visible. */ }
+                    window.dispatchEvent(new CustomEvent("merchant-alerts-refresh"));
+                  }
+                  if (!modified) router.push(destination);
+                }}
               >
                 {failedRewardEmails} e-mail{failedRewardEmails > 1 ? "s" : ""} de gain à vérifier
               </Link>
