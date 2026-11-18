@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { emitBrevoCampaignMilestone } from "@/lib/brevo";
 import { redeemMerchantLeadPrizeFromCashier } from "@/lib/store";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
@@ -69,6 +70,21 @@ export async function POST(request: Request) {
       forceRedemption,
       forceReason: forceRedemption ? forceReason : undefined,
     });
+
+    if (context.status === "redeemed" && context.campaignId && !context.isPreview) {
+      after(async () => {
+        await emitBrevoCampaignMilestone({
+          campaignId: context.campaignId!,
+          eventName: "okado_first_redemption",
+          dedupeKey: "first_redemption:{merchantId}",
+        });
+        await emitBrevoCampaignMilestone({
+          campaignId: context.campaignId!,
+          eventName: "okado_game_metrics_updated",
+          dedupeKey: `game_metrics:redemption:${context.leadId ?? "unknown"}`,
+        });
+      });
+    }
 
     logSupportEvent("info", "cashier_redemption_completed", {
       merchantId: session.merchant.id,

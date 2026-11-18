@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
-import { syncMerchantContactToBrevo } from "@/lib/brevo";
+import { emitBrevoOnboardingMilestone, syncMerchantContactToBrevo } from "@/lib/brevo";
 import { parseMerchantOnboardingInput } from "@/lib/merchant-input";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
@@ -18,11 +18,19 @@ export async function POST(request: Request) {
 
     const body = parseMerchantOnboardingInput(await request.json());
     const merchant = await updateMerchantOnboarding(session.user.id, body);
-    await syncMerchantContactToBrevo({
+    const brevoSyncResult = await syncMerchantContactToBrevo({
       merchant,
       user: session.user,
       source: "onboarding",
     });
+    if (brevoSyncResult === "synced") {
+      await emitBrevoOnboardingMilestone({
+        merchant,
+        user: session.user,
+        eventName: "okado_onboarding_completed",
+        dedupeKey: `onboarding_completed:${merchant.id}`,
+      });
+    }
     await captureProductEvent(
       "onboarding_completed",
       merchantDistinctId(session.user.merchantId, session.user.id),

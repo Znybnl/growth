@@ -14,7 +14,19 @@ type BrevoSyncResult = {
 };
 
 const BREVO_CONTACT_ENDPOINT = "https://api.brevo.com/v3/contacts";
+const BREVO_EVENT_ENDPOINT = "https://api.brevo.com/v3/events";
 const BREVO_TIMEOUT_MS = 2_500;
+
+type BrevoOnboardingEventName =
+  | "okado_trial_started"
+  | "okado_onboarding_completed"
+  | "okado_game_published"
+  | "okado_first_participation"
+  | "okado_first_redemption"
+  | "okado_subscription_updated"
+  | "okado_game_metrics_updated";
+
+type BrevoEventProperty = string | number | boolean | null;
 
 function parseListIds(value?: string) {
   if (!value) return [];
@@ -31,10 +43,6 @@ function getBrevoApiKey() {
 
 function getMerchantListIds() {
   return parseListIds(process.env.BREVO_MERCHANT_LIST_ID || process.env.BREVO_LIST_ID);
-}
-
-function shouldSyncCustomAttributes() {
-  return process.env.BREVO_SYNC_CUSTOM_ATTRIBUTES === "true";
 }
 
 function sanitizeAttributeValue(value: unknown) {
@@ -54,17 +62,41 @@ function standardAttributes(input: { firstName?: string; lastName?: string }) {
   const firstName = sanitizeAttributeValue(input.firstName);
   const lastName = sanitizeAttributeValue(input.lastName);
 
-  if (firstName) attributes.FIRSTNAME = firstName;
-  if (lastName) attributes.LASTNAME = lastName;
+  if (firstName) attributes.PRENOM = firstName;
+  if (lastName) attributes.NOM = lastName;
 
   return attributes;
 }
 
-function customAttributes(input: Record<string, unknown>) {
-  if (!shouldSyncCustomAttributes()) {
-    return {};
-  }
+export function isBrevoConfigured() {
+  return Boolean(getBrevoApiKey());
+}
 
+function onboardingEventProperties(merchant: Merchant): Record<string, BrevoEventProperty> {
+  const status = merchant.stripeSubscriptionStatus ?? "none";
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://app.okado.app").replace(/\/$/, "");
+
+  return {
+    merchant_id: merchant.id,
+    merchant_name: merchant.companyName,
+    industry: merchant.industry ?? null,
+    city: merchant.city ?? null,
+    time_zone: merchant.timeZone ?? "Europe/Paris",
+    trial_start_at: merchant.trialStartDate ?? merchant.createdAt,
+    trial_end_at: merchant.trialEndDate ?? null,
+    subscription_status: status,
+    subscription_active: status === "active",
+    onboarding_completed: merchant.onboardingCompleted ?? false,
+    app_url: appUrl,
+    url_create_game: `${appUrl}/campaigns/new`,
+    url_games: `${appUrl}/campaigns`,
+    url_account: `${appUrl}/account`,
+    url_login: `${appUrl}/connexion`,
+    url_pricing: "https://www.okado.app/tarifs",
+  };
+}
+
+function sanitizeEventProperties(input: Record<string, BrevoEventProperty>) {
   return Object.fromEntries(
     Object.entries(input)
       .map(([key, value]) => [key, sanitizeAttributeValue(value)] as const)
@@ -72,8 +104,297 @@ function customAttributes(input: Record<string, unknown>) {
   );
 }
 
-export function isBrevoConfigured() {
-  return Boolean(getBrevoApiKey());
+async function postBrevoEvent(input: {
+  user: MerchantUser;
+  merchant: Merchant;
+  eventName: BrevoOnboardingEventName;
+  dedupeKey: string;
+  properties?: Record<string, BrevoEventProperty>;
+}) {
+  const apiKey = getBrevoApiKey();
+  if (!apiKey || !input.user.email || !isSupabaseConfigured()) return "skipped" as const;
+
+  const supabase = getSupabaseAdmin();
+  const eventProperties = sanitizeEventProperties({
+    ...onboardingEventProperties(input.merchant),
+    ...input.properties,
+  });
+  const { data: existing, error: existingError } = await supabase
+    .from("brevo_event_deliveries")
+    .select("status,attempts")
+    .eq("dedupe_key", input.dedupeKey)
+    .maybeSingle<{ status: string; attempts: number }>();
+
+  if (existingError) {
+    logSupportEvent("warn", "brevo_event_ledger_read_failed", {
+      merchantId: input.merchant.id,
+      eventName: input.eventName,
+    });
+    return "failed" as const;
+  }
+
+  if (existing?.status === "sent" || existing?.status === "processing") return "skipped" as const;
+
+  if (existing?.status === "failed") {
+    const { data: claimed, error: claimError } = await supabase
+      .from("brevo_event_deliveries")
+      .update({ status: "processing", attempts: (existing.attempts ?? 1) + 1, last_error_status: null, updated_at: new Date().toISOString() })
+      .eq("dedupe_key", input.dedupeKey)
+      .eq("status", "failed")
+      .select("dedupe_key")
+      .maybeSingle();
+    if (claimError || !claimed) return "skipped" as const;
+  } else {
+    const { error: insertError } = await supabase.from("brevo_event_deliveries").insert({
+      dedupe_key: input.dedupeKey,
+      merchant_id: input.merchant.id,
+      event_name: input.eventName,
+      event_properties: eventProperties,
+      status: "processing",
+      attempts: 1,
+    });
+    if (insertError) return "skipped" as const;
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), BREVO_TIMEOUT_MS);
+  try {
+    const response = await fetch(BREVO_EVENT_ENDPOINT, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "api-key": apiKey,
+      },
+      body: JSON.stringify({
+        event_name: input.eventName,
+        identifiers: { email_id: input.user.email.trim().toLowerCase() },
+        event_date: new Date().toISOString(),
+        event_properties: eventProperties,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      await supabase.from("brevo_event_deliveries").update({
+        status: "failed",
+        last_error_status: response.status,
+        updated_at: new Date().toISOString(),
+      }).eq("dedupe_key", input.dedupeKey);
+      logSupportEvent("warn", "brevo_onboarding_event_failed", {
+        merchantId: input.merchant.id,
+        eventName: input.eventName,
+        provider: "brevo",
+        status: response.status,
+      });
+      return "failed" as const;
+    }
+
+    await supabase.from("brevo_event_deliveries").update({
+      status: "sent",
+      last_error_status: null,
+      updated_at: new Date().toISOString(),
+    }).eq("dedupe_key", input.dedupeKey);
+    logSupportEvent("info", "brevo_onboarding_event_sent", {
+      merchantId: input.merchant.id,
+      eventName: input.eventName,
+      provider: "brevo",
+    });
+    return "sent" as const;
+  } catch {
+    await supabase.from("brevo_event_deliveries").update({
+      status: "failed",
+      last_error_status: null,
+      updated_at: new Date().toISOString(),
+    }).eq("dedupe_key", input.dedupeKey);
+    logSupportEvent("warn", "brevo_onboarding_event_failed", {
+      merchantId: input.merchant.id,
+      eventName: input.eventName,
+      provider: "brevo",
+    });
+    return "failed" as const;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function syncAndStartBrevoOnboardingSequence(input: {
+  merchant: Merchant;
+  user: MerchantUser;
+  source: "signup" | "google";
+}) {
+  const syncResult = await syncMerchantContactToBrevo(input);
+  if (syncResult !== "synced") return syncResult;
+
+  await postBrevoEvent({
+    ...input,
+    eventName: "okado_trial_started",
+    dedupeKey: `trial_started:${input.merchant.id}`,
+  });
+  return syncResult;
+}
+
+export async function emitBrevoOnboardingMilestone(input: {
+  merchant: Merchant;
+  user: MerchantUser;
+  eventName: Exclude<BrevoOnboardingEventName, "okado_trial_started" | "okado_subscription_updated" | "okado_game_metrics_updated">;
+  dedupeKey: string;
+  properties?: Record<string, BrevoEventProperty>;
+}) {
+  return postBrevoEvent(input);
+}
+
+export async function emitBrevoCampaignMilestone(input: {
+  campaignId: string;
+  eventName: "okado_game_published" | "okado_first_participation" | "okado_first_redemption" | "okado_game_metrics_updated";
+  dedupeKey: string;
+  properties?: Record<string, BrevoEventProperty>;
+}) {
+  if (!isBrevoConfigured() || !isSupabaseConfigured()) return "skipped" as const;
+  const supabase = getSupabaseAdmin();
+  const { data: campaign, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id,merchant_id,is_active")
+    .eq("id", input.campaignId)
+    .maybeSingle<{ id: string; merchant_id: string; is_active: boolean }>();
+  if (campaignError || !campaign) return "skipped" as const;
+
+  if (input.eventName === "okado_game_published" && !campaign.is_active) return "skipped" as const;
+  if (input.eventName === "okado_first_redemption") {
+    const { count, error } = await supabase.from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("campaign_id", campaign.id)
+      .not("redeemed_at", "is", null);
+    if (error || !count) return "skipped" as const;
+  }
+
+  const { data: merchantRow, error: merchantError } = await supabase
+    .from("merchants")
+    .select("id,company_name,logo_text,industry,city,time_zone,onboarding_completed,trial_start_date,trial_end_date,stripe_subscription_status,created_at")
+    .eq("id", campaign.merchant_id)
+    .maybeSingle();
+  const { data: userRow, error: userError } = await supabase
+    .from("merchant_users")
+    .select("id,merchant_id,first_name,last_name,email,created_at")
+    .eq("merchant_id", campaign.merchant_id)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (merchantError || userError || !merchantRow || !userRow) return "skipped" as const;
+
+  const merchant: Merchant = {
+    id: merchantRow.id,
+    companyName: merchantRow.company_name,
+    logoText: merchantRow.logo_text,
+    industry: merchantRow.industry ?? undefined,
+    city: merchantRow.city ?? undefined,
+    timeZone: merchantRow.time_zone ?? undefined,
+    onboardingCompleted: merchantRow.onboarding_completed ?? false,
+    trialStartDate: merchantRow.trial_start_date ?? undefined,
+    trialEndDate: merchantRow.trial_end_date ?? undefined,
+    stripeSubscriptionStatus: merchantRow.stripe_subscription_status ?? undefined,
+    createdAt: merchantRow.created_at,
+  };
+  const user: MerchantUser = {
+    id: userRow.id,
+    merchantId: userRow.merchant_id,
+    firstName: userRow.first_name,
+    lastName: userRow.last_name,
+    email: userRow.email,
+    password: "",
+    createdAt: userRow.created_at,
+  };
+
+  const metricProperties: Record<string, BrevoEventProperty> = {};
+  if (input.eventName === "okado_first_participation" || input.eventName === "okado_game_metrics_updated") {
+    const { count, error } = await supabase.from("campaign_participations")
+      .select("participation_id", { count: "exact", head: true })
+      .eq("campaign_id", campaign.id);
+    if (!error && typeof count === "number") metricProperties.participations_count = count;
+  }
+  if (input.eventName === "okado_first_redemption" || input.eventName === "okado_game_metrics_updated") {
+    const { count, error } = await supabase.from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("campaign_id", campaign.id)
+      .not("redeemed_at", "is", null);
+    if (!error && typeof count === "number") metricProperties.redemptions_count = count;
+  }
+
+  const dedupeKey = input.dedupeKey.replace("{merchantId}", campaign.merchant_id);
+  return postBrevoEvent({
+    user,
+    merchant,
+    eventName: input.eventName,
+    dedupeKey,
+    properties: {
+      campaign_id: campaign.id,
+      campaign_is_published: campaign.is_active,
+      ...((input.eventName === "okado_first_participation" || input.eventName === "okado_first_redemption" || input.eventName === "okado_game_metrics_updated")
+        ? { metrics_scope: "persisted_non_preview_records" }
+        : {}),
+      ...(input.eventName === "okado_first_participation"
+        ? { participation_evidence_scope: "outside_explicit_preview" }
+        : {}),
+      ...(input.eventName === "okado_first_redemption"
+        ? { redemption_evidence_scope: "outside_explicit_preview" }
+        : {}),
+      ...metricProperties,
+      ...input.properties,
+    },
+  });
+}
+
+export async function emitBrevoSubscriptionMilestone(input: {
+  merchantId: string;
+  dedupeKey: string;
+  stripeEventType: string;
+}) {
+  if (!isBrevoConfigured() || !isSupabaseConfigured()) return "skipped" as const;
+  const supabase = getSupabaseAdmin();
+  const { data: merchantRow, error: merchantError } = await supabase
+    .from("merchants")
+    .select("id,company_name,logo_text,industry,city,time_zone,onboarding_completed,trial_start_date,trial_end_date,stripe_subscription_status,created_at")
+    .eq("id", input.merchantId)
+    .maybeSingle();
+  const { data: userRow, error: userError } = await supabase
+    .from("merchant_users")
+    .select("id,merchant_id,first_name,last_name,email,created_at")
+    .eq("merchant_id", input.merchantId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (merchantError || userError || !merchantRow || !userRow) return "skipped" as const;
+
+  const merchant: Merchant = {
+    id: merchantRow.id,
+    companyName: merchantRow.company_name,
+    logoText: merchantRow.logo_text,
+    industry: merchantRow.industry ?? undefined,
+    city: merchantRow.city ?? undefined,
+    timeZone: merchantRow.time_zone ?? undefined,
+    onboardingCompleted: merchantRow.onboarding_completed ?? false,
+    trialStartDate: merchantRow.trial_start_date ?? undefined,
+    trialEndDate: merchantRow.trial_end_date ?? undefined,
+    stripeSubscriptionStatus: merchantRow.stripe_subscription_status ?? undefined,
+    createdAt: merchantRow.created_at,
+  };
+  const user: MerchantUser = {
+    id: userRow.id,
+    merchantId: userRow.merchant_id,
+    firstName: userRow.first_name,
+    lastName: userRow.last_name,
+    email: userRow.email,
+    password: "",
+    createdAt: userRow.created_at,
+  };
+
+  return postBrevoEvent({
+    merchant,
+    user,
+    eventName: "okado_subscription_updated",
+    dedupeKey: input.dedupeKey,
+    properties: { stripe_event_type: input.stripeEventType },
+  });
 }
 
 async function upsertBrevoContact(input: {
@@ -151,15 +472,11 @@ export async function syncMerchantContactToBrevo(input: {
         firstName: input.user.firstName,
         lastName: input.user.lastName,
       }),
-      ...customAttributes({
-        OKADO_TYPE: "merchant",
-        OKADO_SOURCE: input.source,
-        MERCHANT_ID: input.merchant.id,
-        MERCHANT_NAME: input.merchant.companyName,
-        INDUSTRY: input.merchant.industry,
-        CITY: input.merchant.city,
-        SUBSCRIPTION_STATUS: input.merchant.stripeSubscriptionStatus,
-      }),
+      ...Object.fromEntries(
+        Object.entries({ CONTACT_TIMEZONE: input.merchant.timeZone ?? "Europe/Paris" })
+          .map(([key, value]) => [key, sanitizeAttributeValue(value)] as const)
+          .filter(([, value]) => value !== null),
+      ),
     },
     context: {
       event: "brevo_merchant_contact_synced",
