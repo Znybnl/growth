@@ -63,6 +63,33 @@ function expectPrivateInputsAbsent(page: Page) {
   }
 }
 
+test("onboarding centers its left panel and matches authentication field outlines", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/dev/onboarding-tracking");
+
+  const column = await page.locator(".okado-auth-column").boundingBox();
+  const brand = await page.getByTestId("auth-brand").boundingBox();
+  const card = await page.getByTestId("auth-card").boundingBox();
+  expect(column).not.toBeNull();
+  expect(brand).not.toBeNull();
+  expect(card).not.toBeNull();
+  const contentCenter = (brand!.y + card!.y + card!.height) / 2;
+  expect(Math.abs(contentCenter - (column!.y + column!.height / 2))).toBeLessThan(4);
+  await expect(page.getByTestId("auth-promo-art")).toBeVisible();
+  await expect(page.getByTestId("auth-promo-copy")).toContainText("Une base prête pour votre première campagne.");
+  await expect(page.getByText("Préparez vos liens marketing réutilisables")).toBeVisible();
+
+  const companyName = page.getByLabel("Nom de l’enseigne");
+  await expect(companyName).toHaveCSS("border-top-color", "rgb(203, 197, 207)");
+  await companyName.focus();
+  await expect(companyName).toHaveCSS("border-top-color", "rgb(97, 31, 105)");
+
+  await page.setViewportSize({ width: 1280, height: 560 });
+  await expect(page.locator(".okado-auth-column")).toHaveCSS("padding-top", "12px");
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeGreaterThan(560);
+  await expect(companyName).toBeVisible();
+});
+
 test("Google landing screen: anonymous history joined before onboarding steps and successful save @visual-1280", async ({ page, context, baseURL }, info) => {
   await acceptBeforeVisit(context, baseURL!);
   await page.goto("/connexion");
