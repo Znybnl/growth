@@ -10,7 +10,7 @@ export async function getMerchantOperationalAlerts(merchantId: string): Promise<
     const row = data?.[0];
     if (error || !row) throw new Error("Lecture des alertes impossible");
     return {
-      emailCount: Number(row.email_count), emailCampaignId: row.email_campaign_id,
+      emailCount: Number(row.email_count), emailCampaignId: row.email_campaign_id, emailSnapshot: row.email_snapshot ?? [],
       lowStockCount: Number(row.low_stock_count), exhaustedStockCount: Number(row.exhausted_stock_count),
       stockCampaignId: row.stock_campaign_id,
     };

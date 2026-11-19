@@ -646,6 +646,7 @@ export interface RewardEmailDelivery {
   subject: string;
   status: RewardEmailDeliveryStatus;
   errorMessage?: string;
+  bounceType?: string;
   sentAt?: string;
   deliveredAt?: string;
   bouncedAt?: string;
@@ -894,6 +895,7 @@ export interface MerchantLeadRow extends Lead {
   emailSentAt?: string;
   emailDeliveredAt?: string;
   emailErrorMessage?: string;
+  emailPermanentBounce?: boolean;
 }
 
 export type MerchantRecentContact = Pick<
