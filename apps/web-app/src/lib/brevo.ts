@@ -422,6 +422,8 @@ export async function emitBrevoOnboardingMilestone(input: {
   dedupeKey: string;
   properties?: Record<string, BrevoEventProperty>;
 }) {
+  if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED === "true" &&
+    await syncBrevoSequenceState(input) !== "synced") return "failed";
   return postBrevoEvent(input);
 }
 
@@ -485,6 +487,9 @@ async function emitBrevoCampaignMilestoneUnsafe(input: {
     password: "",
     createdAt: userRow.created_at,
   };
+
+  if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED === "true" &&
+    await syncBrevoSequenceState({ merchant, user }) !== "synced") return "failed";
 
   const metricProperties: Record<string, BrevoEventProperty> = {};
   if (input.eventName === "okado_first_participation" || input.eventName === "okado_game_metrics_updated") {
@@ -582,6 +587,9 @@ async function emitBrevoSubscriptionMilestoneUnsafe(input: {
     createdAt: userRow.created_at,
   };
 
+  if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED === "true" &&
+    await syncBrevoSequenceState({ merchant, user }) !== "synced") return "failed";
+
   return postBrevoEvent({
     merchant,
     user,
@@ -664,12 +672,156 @@ async function upsertBrevoContact(input: {
   }
 }
 
+function formatBrevoContactDate(value: string | null, timeZone?: string) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) throw new Error("Date Brevo invalide.");
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: timeZone || "Europe/Paris",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const part = (type: string) => parts.find((item) => item.type === type)?.value;
+  const year = part("year");
+  const month = part("month");
+  const day = part("day");
+  if (!year || !month || !day) throw new Error("Date Brevo invalide.");
+  return `${year}-${month}-${day}`;
+}
+
+async function getBrevoSequenceStateAttributes(merchantId: string, timeZone?: string): Promise<BrevoContactAttributes | null> {
+  if (!isSupabaseConfigured()) return null;
+  const supabase = getSupabaseAdmin();
+  const { data: merchant, error: merchantError } = await supabase.from("merchants")
+    .select("id,workspace_id,onboarding_completed,trial_start_date,trial_end_date,stripe_subscription_status")
+    .eq("id", merchantId).maybeSingle();
+  if (merchantError || !merchant) return null;
+
+  const [locationsResult, workspaceResult] = await Promise.all([
+    supabase.from("merchants").select("id").eq("workspace_id", merchant.workspace_id),
+    supabase.from("merchant_workspaces").select("stripe_subscription_status")
+      .eq("id", merchant.workspace_id).maybeSingle(),
+  ]);
+  if (locationsResult.error || workspaceResult.error || !locationsResult.data?.length) return null;
+  const locationIds = locationsResult.data.map((location) => location.id);
+  const { data: campaigns, error: campaignsError } = await supabase.from("campaigns")
+    .select("id,is_active").in("merchant_id", locationIds);
+  if (campaignsError) return null;
+  const activeCampaigns = (campaigns ?? []).filter((campaign) => campaign.is_active);
+  const draftCampaigns = (campaigns ?? []).filter((campaign) => !campaign.is_active);
+
+  let participationCount = 0;
+  let redemptionCount = 0;
+  if (activeCampaigns.length) {
+    const campaignIds = activeCampaigns.map((campaign) => campaign.id);
+    const [participations, redemptions] = await Promise.all([
+      supabase.from("campaign_participations").select("participation_id", { count: "exact", head: true })
+        .in("campaign_id", campaignIds),
+      supabase.from("leads").select("id", { count: "exact", head: true })
+        .in("campaign_id", campaignIds).not("redeemed_at", "is", null),
+    ]);
+    if (participations.error || redemptions.error || participations.count === null || redemptions.count === null) return null;
+    participationCount = participations.count ?? 0;
+    redemptionCount = redemptions.count ?? 0;
+  }
+
+  const subscriptionStatus = workspaceResult.data?.stripe_subscription_status ?? merchant.stripe_subscription_status;
+  return {
+    OKADO_TRIAL_START_AT: formatBrevoContactDate(merchant.trial_start_date, timeZone),
+    OKADO_TRIAL_END_AT: formatBrevoContactDate(merchant.trial_end_date, timeZone),
+    OKADO_SUBSCRIPTION_ACTIVE: subscriptionStatus === "active",
+    OKADO_ONBOARDING_COMPLETED: merchant.onboarding_completed ?? false,
+    OKADO_PUBLISHED_GAMES_COUNT: activeCampaigns.length,
+    OKADO_HAS_PUBLISHED_GAME: activeCampaigns.length > 0,
+    OKADO_DRAFT_GAMES_COUNT: draftCampaigns.length,
+    // These are persisted non-preview records and do not prove external customer activity.
+    OKADO_PARTICIPATIONS_COUNT: participationCount,
+    OKADO_REDEMPTIONS_COUNT: redemptionCount,
+  };
+}
+
+async function sequenceStateAttributesForContact(merchant: Merchant) {
+  if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED !== "true") return null;
+  return getBrevoSequenceStateAttributes(merchant.id, merchant.timeZone);
+}
+
+async function syncBrevoSequenceState(input: { merchant: Merchant; user: MerchantUser }) {
+  if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED !== "true") return "skipped" as const;
+  try {
+    const attributes = await getBrevoSequenceStateAttributes(input.merchant.id, input.merchant.timeZone);
+    if (!attributes) return "failed" as const;
+    return await upsertBrevoContact({
+      email: input.user.email,
+      listIds: getMerchantListIds(),
+      attributes: {
+        ...standardAttributes({ firstName: input.user.firstName, lastName: input.user.lastName }),
+        CONTACT_TIMEZONE: input.merchant.timeZone ?? "Europe/Paris",
+        ...attributes,
+      },
+      context: { event: "brevo_sequence_state_synced", merchantId: input.merchant.id },
+    });
+  } catch {
+    safelyLogBrevoEvent("warn", "brevo_sequence_state_sync_failed", {
+      merchantId: input.merchant.id, provider: "brevo",
+    });
+    return "failed" as const;
+  }
+}
+
+export async function refreshBrevoSequenceState(input: { merchant: Merchant; user: MerchantUser }) {
+  try {
+    return await syncBrevoSequenceState(input);
+  } catch {
+    safelyLogBrevoEvent("warn", "brevo_sequence_state_sync_failed", {
+      merchantId: input.merchant.id, provider: "brevo",
+    });
+    return "failed" as const;
+  }
+}
+
+export async function refreshBrevoSequenceStateByMerchantId(merchantId: string) {
+  if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED !== "true" || !isSupabaseConfigured()) return "skipped" as const;
+  try {
+    const supabase = getSupabaseAdmin();
+    const [{ data: row, error: merchantError }, { data: userRow, error: userError }] = await Promise.all([
+      supabase.from("merchants")
+        .select("id,company_name,logo_text,industry,city,time_zone,onboarding_completed,trial_start_date,trial_end_date,stripe_subscription_status,created_at")
+        .eq("id", merchantId).maybeSingle(),
+      supabase.from("merchant_users")
+        .select("id,merchant_id,first_name,last_name,email,created_at")
+        .eq("merchant_id", merchantId).order("created_at", { ascending: true }).limit(1).maybeSingle(),
+    ]);
+    if (merchantError || userError || !row || !userRow) return "failed" as const;
+    const merchant: Merchant = {
+      id: row.id, companyName: row.company_name, logoText: row.logo_text,
+      industry: row.industry ?? undefined, city: row.city ?? undefined,
+      timeZone: row.time_zone ?? undefined, onboardingCompleted: row.onboarding_completed ?? false,
+      trialStartDate: row.trial_start_date ?? undefined, trialEndDate: row.trial_end_date ?? undefined,
+      stripeSubscriptionStatus: row.stripe_subscription_status ?? undefined, createdAt: row.created_at,
+    };
+    const user: MerchantUser = {
+      id: userRow.id, merchantId: userRow.merchant_id,
+      firstName: userRow.first_name, lastName: userRow.last_name,
+      email: userRow.email, password: "", createdAt: userRow.created_at,
+    };
+    return await refreshBrevoSequenceState({ merchant, user });
+  } catch {
+    safelyLogBrevoEvent("warn", "brevo_sequence_state_sync_failed", {
+      merchantId, provider: "brevo",
+    });
+    return "failed" as const;
+  }
+}
+
 export async function syncMerchantContactToBrevo(input: {
   merchant: Merchant;
   user: MerchantUser;
   source: "signup" | "google" | "onboarding" | "account" | "manual";
 }) {
   try {
+    const sequenceState = await sequenceStateAttributesForContact(input.merchant);
+    if (process.env.BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED === "true" && !sequenceState) return "failed";
     const result = await upsertBrevoContact({
       email: input.user.email,
       listIds: getMerchantListIds(),
@@ -683,6 +835,7 @@ export async function syncMerchantContactToBrevo(input: {
             .map(([key, value]) => [key, sanitizeAttributeValue(value)] as const)
             .filter(([, value]) => value !== null),
         ),
+        ...(sequenceState ?? {}),
       },
       context: {
         event: "brevo_merchant_contact_synced",

@@ -1,7 +1,7 @@
 import { after, NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
-import { emitBrevoOnboardingMilestone } from "@/lib/brevo";
+import { emitBrevoOnboardingMilestone, refreshBrevoSequenceState } from "@/lib/brevo";
 import { CampaignComplianceError } from "@/lib/campaign-compliance";
 import { parseCampaignSetupInput } from "@/lib/merchant-input";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
@@ -169,6 +169,10 @@ export async function POST(request: Request) {
           creationMode: body.creationMode ?? "editor",
         },
       );
+    } else {
+      after(async () => {
+        await refreshBrevoSequenceState({ merchant: session.merchant, user: session.user });
+      });
     }
 
     const totalMs = Math.round((performance.now() - requestStartedAt) * 10) / 10;
