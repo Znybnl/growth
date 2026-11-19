@@ -49,8 +49,14 @@ export function BetaReplayProof() {
     <section data-layout={wizardLayout} data-inline-preview={wizardLayout === "wide" ? "true" : "false"} className="okado-wizard" aria-label="Wizard fictif">
       <div className="wizard-layout grid gap-4">
         <aside className="wizard-progress rounded-xl border p-4">Le menu du wizard</aside>
-        <main className="wizard-form rounded-xl border p-4">Sous-titre et description fictifs</main>
-        <aside className="wizard-live-preview rounded-xl border p-4">Preview live fictive</aside>
+        <main className="wizard-form rounded-xl border p-4">
+          Sous-titre et description fictifs
+          <div data-testid="replay-template-thumbnail" aria-label="Miniature du template Voyage" style={{ height: 80, backgroundImage: 'url("/images/templates/travel/elegant.webp")', backgroundSize: "cover" }} />
+        </main>
+        <aside className="wizard-live-preview rounded-xl border p-4">
+          Preview live fictive
+          {mounted ? <DraftPreviewViewport inline><div data-replay-visible><h2>Preview live du wizard</h2><p>Description de la preview visible dans le wizard.</p></div></DraftPreviewViewport> : null}
+        </aside>
       </div>
     </section>
     {mounted && <BetaReplayBoundary subject={subject} />}
