@@ -507,6 +507,7 @@ function WizardGamePreview({
         merchant={merchant}
         preview={preview}
         mobileViewport
+        containerViewport
         flushTop
       /></DraftPreviewViewport>
     </WizardPhoneFrame>
