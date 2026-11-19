@@ -336,12 +336,15 @@ for (const size of [{ width: 1280, height: 720 }, { width: 1280, height: 600 }, 
     const replayNavigation = replay.locator('aside[aria-label="Navigation de l’espace de travail"]');
     await expect(replayNavigation).toBeVisible();
     await expect(replay.getByRole("heading", { name: "Pilotez vos campagnes" })).toBeVisible();
-    await expect(replay.frameLocator("iframe").first().getByText("Description libre affichée dans l’aperçu du jeu.")).toBeVisible();
+    await expect(replay.frameLocator('iframe[title="Prévisualisation fictive"]').getByText("Description libre affichée dans l’aperçu du jeu.")).toBeVisible();
     await expect(replayNavigation.locator("nav").first()).toContainText("Campagnes");
     await expect(replayNavigation.locator("nav svg").first()).toBeVisible();
     await expect(replay.locator(".okado-wizard .wizard-progress")).toBeVisible();
     await expect(replay.locator(".okado-wizard .wizard-form")).toBeVisible();
     await expect(replay.locator(".okado-wizard .wizard-live-preview")).toBeVisible();
+    await expect(replay.locator(".okado-wizard .wizard-live-preview").getByText("Description de la preview visible dans le wizard.")).toBeVisible();
+    await expect.poll(() => replay.getByLabel("Miniature du template Voyage").evaluate(element => getComputedStyle(element).backgroundImage))
+      .toContain("/images/templates/travel/elegant.webp");
     await expect(replay.locator(".okado-metric-card__value").first()).toHaveText("12");
     const restored = await replayNavigation.boundingBox();
     expect(restored?.width).toBeCloseTo(original!.width, 0);

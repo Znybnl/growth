@@ -56,6 +56,10 @@ test("ordinary text is visible while explicitly marked participant data stays ma
   assert.equal(maskBetaReplayInput("password-secret", input("INPUT", "password")), "***************");
   assert.equal(maskBetaReplayAttribute("style", "background: url(secret)"), "");
   assert.equal(maskBetaReplayAttribute("style", "padding: 12px"), "padding: 12px");
+  assert.equal(maskBetaReplayAttribute("style", "background-image: url('/images/templates/travel/elegant.webp')"), 'background-image: url("https://app.okado.app/images/templates/travel/elegant.webp")');
+  assert.equal(maskBetaReplayAttribute("style", "background-image: url('/uploads/private-campaign.png')"), "");
+  assert.equal(maskBetaReplayAttribute("style", "background: linear-gradient(135deg, #c49a43, #f1d98f 48%, #c49a43)"), "background: linear-gradient(135deg, #c49a43, #f1d98f 48%, #c49a43)");
+  assert.equal(maskBetaReplayAttribute("style", "background: linear-gradient(135deg, #c49a43, #f1d98f), url('/images/templates/travel/roadtrip.webp')"), 'background: linear-gradient(135deg, #c49a43, #f1d98f), url("https://app.okado.app/images/templates/travel/roadtrip.webp")');
   assert.equal(maskBetaReplayAttribute("style", "color:#abcdef; background-color:rgba(1, 2, 3, 0.5);text-align:center;font-weight:700;transform:scale(0.5);background-image:url(private)"), "color:#abcdef; background-color:rgba(1, 2, 3, 0.5);text-align:center;font-weight:700;transform:scale(0.5)");
   assert.equal(maskBetaReplayAttribute("style", "color:var(--private);transform:scale(var(--private));background-color:url(private)"), "");
   assert.equal(maskBetaReplayAttribute("style", "--private-name: private-css-secret;content:'private-css-secret';width:10px"), "width:10px");
@@ -82,6 +86,8 @@ test("Tailwind layout tokens survive independently of rejected private tokens", 
   assert.equal(maskBetaReplayAttribute("data-orientation", "vertical"), "vertical");
   for (const [name, value] of [["data-layout", "wide"], ["data-layout", "compact"], ["data-inline-preview", "true"], ["data-inline-preview", "false"], ["data-step-index", "4"], ["data-promo-variant", "inspired"], ["data-slot", "button"], ["data-align", "right"], ["data-added", "true"], ["data-recommended", "false"], ["data-travel-template", "travel-roadtrip"]]) assert.equal(maskBetaReplayAttribute(name, value), value);
   for (const [name, value] of [["data-layout", "wide@example.test"], ["data-inline-preview", "secret"], ["data-step-index", "secret"], ["data-travel-template", "private@example.test"]]) assert.equal(maskBetaReplayAttribute(name, value), "");
+  assert.equal(maskBetaReplayAttribute("data-replay-preview", ""), "true");
+  assert.equal(maskBetaReplayAttribute("data-replay-visible", ""), "true");
   const icon = { closest: () => ({}) };
   assert.equal(maskBetaReplayAttribute("d", "M 2 4 L 8 12", icon), "M 2 4 L 8 12");
   assert.equal(maskBetaReplayAttribute("stroke", "currentColor", icon), "currentColor");

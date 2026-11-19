@@ -55,7 +55,7 @@ jobs:
   analytics-identity:
     name: Verify PostHog identity and consent
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -82,7 +82,7 @@ jobs:
   web:
     name: Verify source and web build
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4

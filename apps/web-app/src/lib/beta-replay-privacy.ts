@@ -55,6 +55,27 @@ function publicReplayImage(raw: string) {
   } catch { return null; }
 }
 
+function replaySafeBackground(value: string) {
+  if (value.length > 2048 || /[;{}<>\\\u0000-\u001f]/.test(value)) return null;
+  let rejectedImage = false;
+  const safeImages: string[] = [];
+  const normalized = value.replace(/url\(([^)]*)\)/gi, (_match, rawUrl: string) => {
+    const candidate = rawUrl.trim().replace(/^(['"])(.*)\1$/, "$2");
+    const safeImage = publicReplayImage(candidate);
+    if (!safeImage) {
+      rejectedImage = true;
+      return "";
+    }
+    const index = safeImages.push(safeImage) - 1;
+    return `REPLAY_SAFE_IMAGE_${index}`;
+  });
+  if (rejectedImage || /url\s*\(/i.test(normalized) || /(?:var|expression|attr|javascript|data)\s*\(/i.test(normalized)) return null;
+  const functions = normalized.replace(/(?:repeating-)?(?:linear|radial|conic)-gradient\(/gi, "(")
+    .replace(/rgba?\(/gi, "(");
+  if (/[a-z-]+\(/i.test(functions) || !/^[\w\s#.,%()+*/-]+$/.test(functions)) return null;
+  return safeImages.reduce((result, image, index) => result.replace(`REPLAY_SAFE_IMAGE_${index}`, `url("${image}")`), normalized);
+}
+
 function sanitizedReplayPreviewDocument(raw: string) {
   try {
     const document = new DOMParser().parseFromString(raw, "text/html");
@@ -117,6 +138,9 @@ export function maskBetaReplayAttribute(name: string, value: string, element?: E
   // UI descriptions remain useful even on private inputs (for example the
   // placeholder "E-mail"); the marker masks the entered value itself.
   if (["title", "aria-label", "placeholder"].includes(name)) return value;
+  // These non-content markers allow approved preview iframes and their artwork
+  // to remain identifiable in rrweb snapshots and player reconstruction.
+  if (["data-replay-preview", "data-replay-visible"].includes(name)) return "true";
   // Only finite UI states and presentation metadata; arbitrary data attributes
   // can contain customer data and are not forwarded to the replay.
   if (name === "data-state" && /^(?:open|closed|active|inactive|checked|unchecked|on|off)$/.test(value)) return value;
@@ -132,17 +156,26 @@ export function maskBetaReplayAttribute(name: string, value: string, element?: E
   if (name === "style") {
     // CSS variables/content can contain text or URLs. Keep a small set of
     // numeric layout and finite presentation values only.
-    return value.split(";").filter(declaration => {
-      const [property, cssValue, extra] = declaration.split(":").map(part => part.trim());
-      if (!extra && /^(?:color|background-color|border-color|fill|stroke)$/.test(property)) {
-        return (cssValue?.length ?? 0) <= 40 && /^(?:#[\da-f]{3,8}|transparent|currentColor|rgba?\(\s*[\d.,%\s]+\))$/i.test(cssValue ?? "");
+    return value.split(";").map(declaration => {
+      const separator = declaration.indexOf(":");
+      if (separator < 0) return "";
+      const property = declaration.slice(0, separator).trim();
+      const cssValue = declaration.slice(separator + 1).trim();
+      if (["background", "background-image"].includes(property)) {
+        const safeBackground = replaySafeBackground(cssValue);
+        const spacing = declaration.slice(separator + 1).match(/^\s*/)?.[0] ?? "";
+        return safeBackground ? `${declaration.slice(0, separator + 1)}${spacing}${safeBackground}` : "";
       }
-      if (!extra && property === "text-align") return /^(?:left|right|center|start|end|justify)$/.test(cssValue ?? "");
-      if (!extra && property === "font-weight") return /^(?:normal|bold|[1-9]00)$/.test(cssValue ?? "");
-      if (!extra && property === "transform") return (cssValue?.length ?? 0) <= 16 && /^scale\(\s*(?:0(?:\.\d+)?|1(?:\.0+)?)\s*\)$/.test(cssValue ?? "");
+      const extra = declaration.slice(separator + 1).includes(":") ? ":" : "";
+      if (!extra && /^(?:color|background-color|border-color|fill|stroke)$/.test(property)) {
+        return (cssValue?.length ?? 0) <= 40 && /^(?:#[\da-f]{3,8}|transparent|currentColor|rgba?\(\s*[\d.,%\s]+\))$/i.test(cssValue ?? "") ? declaration : "";
+      }
+      if (!extra && property === "text-align") return /^(?:left|right|center|start|end|justify)$/.test(cssValue ?? "") ? declaration : "";
+      if (!extra && property === "font-weight") return /^(?:normal|bold|[1-9]00)$/.test(cssValue ?? "") ? declaration : "";
+      if (!extra && property === "transform") return (cssValue?.length ?? 0) <= 16 && /^scale\(\s*(?:0(?:\.\d+)?|1(?:\.0+)?)\s*\)$/.test(cssValue ?? "") ? declaration : "";
       return !extra && /^(?:(?:min-|max-)?(?:width|height)|(?:padding|margin)(?:-(?:top|right|bottom|left))?|top|right|bottom|left|(?:row-|column-)?gap|opacity|z-index|border-radius)$/.test(property) &&
-        /^(?:auto|none|-?\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%)?)(?:\s+(?:auto|-?\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%)?))*$/.test(cssValue ?? "");
-    }).join(";");
+        /^(?:auto|none|-?\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%)?)(?:\s+(?:auto|-?\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%)?))*$/.test(cssValue ?? "") ? declaration : "";
+    }).filter(Boolean).join(";");
   }
   if (["type", "disabled", "checked", "selected", "multiple", "rel"].includes(name)) return value;
   if (["width", "height", "colspan", "rowspan"].includes(name) && /^\d+$/.test(value)) return value;

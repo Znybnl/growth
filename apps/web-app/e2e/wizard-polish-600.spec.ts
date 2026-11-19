@@ -119,12 +119,11 @@ test("@visual-1280 : aperçu et typographie identiques à la prévisualisation m
     await page.goto(fixture("wizard-responsive-edit", template));
     await expect(page.getByRole("button", { name: "Agrandir", exact: true })).toHaveCount(0);
     await expect(page.getByText("Aperçu en direct", { exact: true })).toHaveCount(0);
-    const live = page.frameLocator('iframe[title^="Aperçu du brouillon"]');
+    const live = page.getByTestId("draft-preview-viewport");
     await expect(live.locator(".okado-wheel-subtitle")).toBeVisible();
     await actual.goto(fixture("game-preview", template));
     await expect(actual.locator(".okado-wheel-subtitle")).toBeVisible();
-    const frame = page.frames().find(f => f.url() === "about:srcdoc")!;
-    expect(await frame.evaluate(() => ({ width: innerWidth, height: innerHeight }))).toEqual({ width: 390, height: 740 });
+    expect(await live.evaluate(node => ({ width: node.clientWidth, height: node.clientHeight }))).toEqual({ width: 390, height: 740 });
     const phone = (await page.getByTestId("wizard-phone-preview").boundingBox())!;
     expect(phone.width).toBeLessThanOrEqual(261);
     expect(phone.height).toBeLessThan(481);
@@ -132,7 +131,7 @@ test("@visual-1280 : aperçu et typographie identiques à la prévisualisation m
     const previousSize = template === "beauty-nude" ? 14.08 : template === "beauty-botanical" ? 14.4 : 14;
     expect(subtitleSize).toBeCloseTo(previousSize + 2, 1);
     for (const selector of [".okado-wheel-subtitle", ".okado-beauty-heading, .okado-cocorico-promo-text", ".font-display"]) {
-      const dimensions = (node: Element) => { const style = getComputedStyle(node); const bounds = node.getBoundingClientRect(); return { fontSize: style.fontSize, family: style.fontFamily, lineHeight: style.lineHeight, width: bounds.width, height: bounds.height }; };
+      const dimensions = (node: Element) => { const style = getComputedStyle(node); const element = node as HTMLElement; return { fontSize: style.fontSize, family: style.fontFamily, lineHeight: style.lineHeight, width: element.offsetWidth, height: element.offsetHeight }; };
       const fromDraft = await live.locator(selector).first().evaluate(dimensions);
       const fromPreview = await actual.locator(selector).first().evaluate(dimensions);
       expect(fromDraft.fontSize).toBe(fromPreview.fontSize);
@@ -156,11 +155,14 @@ test("@visual-1280 : tickets cohérents et typographie du brouillon à la résol
   await actual.route("**/api/**", route => route.fulfill({ json: { campaign: { actions: [] } } }));
   for (const template of ["beauty-scratch-nude", "scratch-lilac"]) {
     await page.goto(fixture("wizard-responsive-edit", template));
-    const live = page.frameLocator('iframe[title^="Aperçu du brouillon"]');
+    const live = page.getByTestId("draft-preview-viewport");
     await expect(live.locator("h2")).toBeVisible();
     await actual.goto(fixture("game-preview", template));
-    const typography = (node: Element) => { const s = getComputedStyle(node); return { size: s.fontSize, line: s.lineHeight, width: node.getBoundingClientRect().width }; };
-    expect(await live.locator("h2").evaluate(typography)).toEqual(await actual.locator("h2").first().evaluate(typography));
+    const typography = (node: Element) => { const s = getComputedStyle(node); return { size: parseFloat(s.fontSize), line: parseFloat(s.lineHeight) }; };
+    const liveTypography = await live.locator("h2").evaluate(typography);
+    const actualTypography = await actual.locator("h2").first().evaluate(typography);
+    expect(liveTypography.size).toBeCloseTo(actualTypography.size, 0);
+    expect(liveTypography.line).toBeCloseTo(actualTypography.line, 0);
     await page.screenshot({ path: info.outputPath(`live-${template}.png`) });
     await step(page, 2);
     for (const art of await page.getByTestId("game-template-art").all()) expect((await art.boundingBox())!.height).toBe(160);

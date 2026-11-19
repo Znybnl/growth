@@ -101,8 +101,8 @@ test("@visual-1280 Beauty Pop dans le vrai wizard, 1280×720 et 1280×600",async
     await expect(page.getByTestId("wizard-footer").getByRole("button",{name:/Enregistrer/})).toBeEnabled();
     await page.getByRole("button",{name:"Voir l’aperçu",exact:true}).click();
     const dialog=page.getByRole("dialog",{name:"Aperçu du jeu"});
-    const phone=dialog.frameLocator("iframe");
-    await expect(phone.getByRole("button",{name:"Jouer à la roue"})).toBeInViewport();
+    const phone=dialog.getByTestId("draft-preview-viewport");
+    await expect(phone.getByTestId("game-wheel-frame").locator("button").first()).toBeInViewport();
     await expect(phone.locator('img[data-template-art="beauty-pop"]')).toHaveJSProperty("complete",true);
     await captureVisualAt1280(page,info,"beauty-pop-apercu",height);
     await page.keyboard.press("Escape");
