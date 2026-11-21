@@ -92,7 +92,8 @@ test("@visual-1280 : cartes Beauté et autres homogènes, sélection conservée"
     const otherTitle = page.getByRole("heading", { name: "Autres templates", exact: true });
     expect(await beautyTitle.evaluate(e => getComputedStyle(e).fontSize)).toBe(await otherTitle.evaluate(e => getComputedStyle(e).fontSize));
     const cards = page.getByTestId("game-template-card");
-    expect(await cards.count()).toBe(15);
+    expect(await cards.count()).toBe(16);
+    await expect(cards.filter({ hasText: "Sunset Drive" })).toHaveCount(1);
     for (const art of await page.getByTestId("game-template-art").all()) expect((await art.boundingBox())!.height).toBe(160);
     const modern = cards.filter({ has: page.getByText("Moderne", { exact: true }) });
     await modern.click();
