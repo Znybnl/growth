@@ -206,9 +206,13 @@ Références : [identité stable et transitions](https://posthog.com/docs/produc
 [identify et alias](https://posthog.com/docs/product-analytics/identify).
 Diagnostic, preuves et recette : [livraison #592](releases/2026-10-18-posthog-identity-592.md).
 
-Avant d’activer des usages non essentiels comme la session replay, vérifier la
-base légale, le consentement et le masquage des champs avec le responsable
-produit et le référent conformité.
+La PR #513 (issue #508) a volontairement désactivé l’enregistrement de session
+natif de `posthog-js` dans le cadre du consentement analytics. La PR #713 (issue
+#712) a ensuite ajouté un recorder distinct, limité aux comptes SaaS authentifiés
+de la bêta fermée, après confirmation contractuelle du propriétaire. Cette
+exception reste bornée par sa politique serveur et son masquage dédié. Toute
+extension au jeu public, aux participants ou à d’autres parcours nécessite une
+décision et une analyse dédiées du responsable produit et du référent conformité.
 
 ### Parcours acquisition → activation
 
@@ -258,9 +262,13 @@ Sur la vitrine, avant accord, le SDK PostHog n'est pas téléchargé et
 `posthog.init` n'est pas appelé ; aucun historique de clics n'est mis en attente
 pour être rejoué après acceptation. Le SDK est chargé à la demande à l'accord,
 sans bloquer l'interface.
-Après accord, seuls les
-événements explicites et pages vues sont activés : autocapture, replay,
-enregistrement console, exceptions, enquêtes, tours et flags sont désactivés.
+Après accord, seuls les événements explicites et pages vues sont activés. Dans
+ce SDK analytics, l’enregistrement de session natif reste désactivé, ainsi que
+l’autocapture, la console, les exceptions, les enquêtes, les tours et les flags.
+Cette désactivation ne coupe pas le recorder séparé de la bêta fermée décrit
+plus bas : son autorisation serveur et son instance mémoire sont indépendantes
+du consentement analytics ; aucun consentement cookies n’est fabriqué et aucun
+événement produit ordinaire n’est envoyé par cette instance.
 Les paramètres/fragment d'URL, titres et propriétés personnelles automatiques
 sont retirés avant envoi. Les UTM explicites n'acceptent que des codes courts
 alphanumériques, tirets et underscores ; ne jamais y encoder de donnée personnelle.
@@ -464,3 +472,23 @@ Le choix cookies et la mesure ordinaire restent inchangés.
 Retour public par `OKADO_REPLAY_PHASE=public`, avec expiration des autorisations
 des onglets ouverts en cinq minutes au maximum.
 [Périmètre, conservation et recette](releases/2026-10-30-closed-beta-replay-712.md).
+
+### Historique et garde anti-régression
+
+La PR #513 a désactivé le recorder automatique du SDK analytics ; elle n’a pas
+supprimé le recorder contrôlé ajouté ensuite par la PR #713. Le client dédié
+`apps/web-app/src/lib/beta-replay-client.ts` garde l’option native désactivée,
+puis démarre explicitement les snapshots uniquement après un bail serveur valide.
+La politique `apps/web-app/src/lib/beta-replay-policy.ts` exige la phase
+`closed_beta`, le projet `212872` et une session SaaS authentifiée ; elle échoue
+fermée si une condition manque. Le périmètre et le masquage restent ceux décrits
+dans la note de livraison ci-dessus.
+
+La CI doit conserver les deux contrôles complémentaires :
+`apps/web-app/src/lib/analytics-consent.test.mjs` vérifie que le SDK analytics
+ordinaire n’enregistre pas les sessions ; `apps/web-app/e2e/beta-replay.spec.ts`
+intercepte le vrai SDK et exige des snapshots synthétiques pendant un bail
+autorisé, puis vérifie leur arrêt quand la politique est révoquée. Le test
+`npm run test:beta-replay -w @okado/web-app` couvre les gardes de politique et
+le masquage. Ne pas retirer l’un de ces contrôles ni activer le recorder natif
+pour réparer l’absence de snapshots bêta : corriger la voie dédiée et sa politique.
