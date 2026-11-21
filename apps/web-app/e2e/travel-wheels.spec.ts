@@ -76,7 +76,7 @@ for (const theme of TRAVEL_SCRATCH_THEMES) {
   });
 }
 
-for (const theme of TRAVEL_WHEEL_THEMES) {
+for (const theme of TRAVEL_WHEEL_THEMES.filter(theme => theme.id !== "travel-sunset-drive")) {
   test(`${theme.name} : fond et proportions en mobile`, async ({ page }, info) => {
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 844 });

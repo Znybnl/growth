@@ -1,6 +1,7 @@
 import type { GamePageTemplateId } from "@/lib/types";
 
 export const TRAVEL_WHEEL_THEMES = [
+  { id: "travel-sunset-drive", name: "Sunset Drive", description: "Promenade au soleil couchant et roue corail", artwork: "/images/templates/travel/sunset-drive.webp", primary: "#ee3949", secondary: "#ffe5bc", third: "#ee3949", background: "#35166c", text: "#fff0d6", logo: "#fff0d6", button: "#50062f", rim: "#ac3637" },
   { id: "travel-elegant", name: "Voyage élégant", description: "Passeport vert et dorures", artwork: "/images/templates/travel/elegant.webp", primary: "#124b35", secondary: "#f9ead1", third: "#124b35", background: "#f9ead1", text: "#123c2e", logo: "#123c2e", button: "#124b35", rim: "#c89535" },
   { id: "travel-tropical", name: "Vacances tropicales", description: "Lagon turquoise et plage ensoleillée", artwork: "/images/templates/travel/tropical.webp", primary: "#00a99e", secondary: "#fff1d8", third: "#50c1bb", background: "#a5e5e5", text: "#065360", logo: "#065360", button: "#006c66", rim: "#e9a72d" },
   { id: "travel-roadtrip", name: "Road trip", description: "Montagnes, route et coucher de soleil", artwork: "/images/templates/travel/roadtrip.webp", primary: "#c84922", secondary: "#ffebca", third: "#31808a", background: "#ffebca", text: "#06243b", logo: "#06243b", button: "#c84922", rim: "#e5a337" },

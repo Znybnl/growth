@@ -3138,6 +3138,7 @@ export function CampaignEditor({
               </section> : null}
               <h3 className="text-base font-semibold text-carbon">Autres templates</h3>
               <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="classic-template-options">
+                {form.gameType === "wheel" && merchant.industry !== "Agences de voyage" ? <button type="button" aria-pressed={form.presentation.layout.templateId === "travel-sunset-drive"} onClick={() => selectBeautyWheelTemplate("travel-sunset-drive")} className={`rounded-[22px] border p-4 text-left transition ${form.presentation.layout.templateId === "travel-sunset-drive" ? "border-[#2f6df6] bg-[#eff4ff]" : "border-[#d7e0ed] bg-white hover:border-[#b8c5da]"}`}><WheelTemplateThumbnail templateId="travel-sunset-drive" /><span className="text-sm font-semibold text-[#111827]">Sunset Drive</span><span className="mt-1 block text-xs text-[#526078]">Promenade au soleil couchant et roue corail</span></button> : null}
                 {(form.gameType === "wheel"
                   ? wheelPageTemplateOptions.filter((template) => !isBeautyIndustry(merchant.industry) || (template.value !== "rose-institut" && template.value !== "christmas-rose"))
                   : scratchPageTemplateOptions.filter((template) => !isHiddenScratchTemplate(template.value) && (!isBeautyIndustry(merchant.industry) || template.value !== "scratch-christmas-rose"))

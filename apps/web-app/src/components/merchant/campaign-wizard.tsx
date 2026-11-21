@@ -2468,6 +2468,7 @@ export function CampaignWizard({
               </section> : null}
               <h3 className="text-base font-semibold text-carbon">Autres templates</h3>
               <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3" data-testid="classic-template-options">
+                {draft.gameType === "wheel" && merchant.industry !== "Agences de voyage" ? <GameTemplateCard label="Sunset Drive" description="Promenade au soleil couchant et roue corail" selected={draft.presentation.layout.templateId === "travel-sunset-drive"} onSelect={() => selectBeautyWheelTemplate("travel-sunset-drive")}><WheelTemplateThumbnail templateId="travel-sunset-drive" card /></GameTemplateCard> : null}
                 {(
                   draft.gameType === "scratch"
                     ? [

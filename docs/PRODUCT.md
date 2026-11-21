@@ -598,3 +598,7 @@ sans commission sur la pause ni redémarrage de la fenêtre. Le paiement reste m
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.
 - [ ] Définir précisément le seuil de parité fonctionnelle du wizard qui déclenchera le retrait du formulaire classique.
 - [ ] Valider les règles de conformité restantes dans `docs/DOMAIN_RULES.md` (consentement, conservation des données et preuves associées).
+
+### Roue Sunset Drive — issue #832
+
+Sunset Drive ajoute un décor de promenade au coucher du soleil et une roue corail et ivoire à la collection Voyage ; il est également proposé dans les autres templates pour les commerces des autres secteurs. Le fond fourni par le propriétaire est chargé comme fond natif et peut être remplacé par une image ou une couleur. Titre et sous-titre restent éditables, avec un style ivoire initial, titre en capitales à l’affichage et sous-titre italique ; la police et la taille du titre restent configurables. Les tailles fluides sont calculées par rapport à la largeur de la scène, afin de conserver les proportions dans les aperçus intégrés comme sur mobile. Le logo reste celui du commerce. La roue utilise le moteur commun et représente tous les lots éligibles, sans modifier le tirage.
