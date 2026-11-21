@@ -62,6 +62,7 @@ import {
   unwrapSupabaseResult,
 } from "@/lib/supabase";
 import { WebhookEventPayload } from "resend";
+import { isPermanentRewardEmailBounce } from "@/lib/reward-email-bounce";
 import { logSupportEvent } from "@/lib/support-log";
 import { resolveMerchantLogoText } from "@/lib/merchant-logo-text";
 
@@ -411,6 +412,7 @@ type RewardEmailDeliveryRow = {
   subject: string;
   status: "queued" | "sent" | "delivered" | "bounced" | "complained" | "suppressed" | "failed";
   error_message: string | null;
+  bounce_type?: string | null;
   sent_at: string | null;
   delivered_at: string | null;
   bounced_at: string | null;
@@ -430,6 +432,7 @@ type RewardEmailDeliverySummaryRow = {
   sent_at: string | null;
   delivered_at: string | null;
   error_message: string | null;
+  bounce_type?: string | null;
 };
 
 type RewardEmailEventRow = {
@@ -759,6 +762,7 @@ function toRewardEmailDelivery(row: RewardEmailDeliveryRow): RewardEmailDelivery
     subject: row.subject,
     status: row.status,
     errorMessage: row.error_message ?? undefined,
+    bounceType: row.bounce_type ?? undefined,
     sentAt: row.sent_at ?? undefined,
     deliveredAt: row.delivered_at ?? undefined,
     bouncedAt: row.bounced_at ?? undefined,
@@ -803,6 +807,7 @@ function enrichLeadRowsWithEmailDeliveries(
       emailSentAt: normalizedLead.prizeId ? delivery?.sent_at ?? undefined : undefined,
       emailDeliveredAt: normalizedLead.prizeId ? delivery?.delivered_at ?? undefined : undefined,
       emailErrorMessage: normalizedLead.prizeId ? delivery?.error_message ?? undefined : undefined,
+      emailPermanentBounce: Boolean(normalizedLead.prizeId && delivery?.status === "bounced" && delivery.bounce_type === "Permanent"),
     };
   });
 }
@@ -1313,7 +1318,7 @@ export async function getSupabaseMerchantLeads(
     readAllRows((offset,end) => supabase.from("prizes").select("id,label,campaign_id,total_quantity,remaining_quantity,probability,estimated_unit_cost,purchase_required,created_at", { count: "exact" }).in("campaign_id", campaignIds).order("id").range(offset,end)),
     readAllRows((offset,end) => supabase
       .from("reward_email_deliveries")
-      .select("lead_id,status,sent_at,delivered_at,error_message", { count: "exact" })
+      .select("lead_id,status,sent_at,delivered_at,error_message,bounce_type", { count: "exact" })
       .in("campaign_id", campaignIds).order("id").range(offset,end)),
   ]);
   const leadsData = unwrapSupabaseResult(leadsResult, "Lecture des contacts impossible");
@@ -1480,7 +1485,7 @@ async function getSupabaseCampaignDataViewLegacy(
     readAllRows((offset,end) => supabase.from("campaign_events").select("*", { count: "exact" }).eq("campaign_id", campaignId).order("id").range(offset,end)),
     readAllRows((offset,end) => supabase
       .from("reward_email_deliveries")
-      .select("lead_id,status,sent_at,delivered_at,error_message", { count: "exact" })
+      .select("lead_id,status,sent_at,delivered_at,error_message,bounce_type", { count: "exact" })
       .eq("campaign_id", campaignId).order("id").range(offset,end)),
     getCampaignLocalSettings(campaignId),
   ]);
@@ -1683,7 +1688,7 @@ async function readCampaignResultsContacts(
     leadIds.length
       ? readAllRows((offset,end) => supabase
           .from("reward_email_deliveries")
-          .select("lead_id,status,sent_at,delivered_at,error_message", { count: "exact" })
+          .select("lead_id,status,sent_at,delivered_at,error_message,bounce_type", { count: "exact" })
           .in("lead_id", leadIds).order("id").range(offset,end))
       : Promise.resolve({ data: [], error: null })
   );
@@ -3128,6 +3133,10 @@ export async function getSupabaseRewardEmailResendPayload(leadId: string, mercha
   const history = await getSupabaseLeadRewardEmailHistory(leadId, merchant.id);
   const lead = history.lead;
 
+  if (isPermanentRewardEmailBounce(history.delivery, history.events)) {
+    throw new Error("Renvoi indisponible : l’adresse e-mail a fait l’objet d’un rejet permanent (hard bounce).");
+  }
+
   if (!lead.prizeId || !lead.redemptionCode) {
     throw new Error("Aucun lot gagnant à renvoyer");
   }
@@ -3341,6 +3350,7 @@ export async function syncRewardEmailWebhookInSupabase(event: WebhookEventPayloa
     if (event.type === "email.bounced") {
       deliveryUpdate.bounced_at = timestamp;
       deliveryUpdate.error_message = event.data.bounce.message;
+      deliveryUpdate.bounce_type = event.data.bounce.type;
     }
 
     if (event.type === "email.complained") {
