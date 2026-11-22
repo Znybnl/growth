@@ -3634,8 +3634,8 @@ export function CampaignEditor({
                     <label className="text-sm">
                       <span className="mb-2 block text-[#616b7c]">{currentTemplateId === "travel-sunset-drive" ? "Couleur du logo" : "Couleur du logo et sous-titre"}</span>
                       <input
-                        type="color"
-                        value={form.presentation.logo.textColor ?? form.presentation.heading.textColor}
+                        type="color" disabled={currentTemplateId === "travel-sunset-drive"}
+                        value={currentTemplateId === "travel-sunset-drive" ? "#fff0d6" : form.presentation.logo.textColor ?? form.presentation.heading.textColor}
                         onChange={(event) =>
                           setForm((current) => ({
                             ...current,
@@ -3648,10 +3648,10 @@ export function CampaignEditor({
                             },
                           }))
                         }
-                        className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none"
+                        className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none disabled:cursor-not-allowed disabled:opacity-55"
                         aria-label={currentTemplateId === "travel-sunset-drive" ? "Couleur du logo" : "Couleur du logo et sous-titre"}
                       />
-                      {currentTemplateId === "travel-sunset-drive" ? <span className="mt-2 block text-xs text-[#526078]">Titre et sous-titre : ivoire fixe du template.</span> : null}
+                      {currentTemplateId === "travel-sunset-drive" ? <span className="mt-2 block text-xs text-[#526078]">Logo texte, titre et sous-titre : ivoire fixe du template.</span> : null}
                     </label>
                   </div>
 

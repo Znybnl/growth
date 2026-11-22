@@ -2974,13 +2974,13 @@ export function CampaignWizard({
                          </span>
                          <input
                            type="color"
-                           disabled={isHalloweenFixedPalette(draft.presentation.layout.templateId)}
-                           value={isHalloweenFixedPalette(draft.presentation.layout.templateId) ? "#ffffff" : draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
+                           disabled={isHalloweenFixedPalette(draft.presentation.layout.templateId) || (draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive")}
+                           value={isHalloweenFixedPalette(draft.presentation.layout.templateId) ? "#ffffff" : draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive" ? "#fff0d6" : draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
                            onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, textColor: event.target.value } } })}
                            className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1 disabled:cursor-not-allowed"
                            aria-label={draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive" ? "Couleur du logo" : "Couleur du logo et sous-titre"}
                          />
-                         {draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive" ? <span className="mt-2 block text-xs text-[#526078]">Titre et sous-titre : ivoire fixe du template.</span> : null}
+                         {draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive" ? <span className="mt-2 block text-xs text-[#526078]">Logo texte, titre et sous-titre : ivoire fixe du template.</span> : null}
                          {isHalloweenFixedPalette(draft.presentation.layout.templateId) ? <span className="mt-2 block text-xs text-[#526078]">Logo blanc et sous-titre doré : couleurs fixes du template.</span> : null}
                        </label>
                    </div>

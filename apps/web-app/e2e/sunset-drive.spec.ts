@@ -104,7 +104,7 @@ test("@visual-1280 Sunset Drive : couleurs fixes, police, taille et espacements 
   await expect(primary).toBeDisabled();
   await expect(primary).toHaveValue("#ee3949");
   await expect(page.getByLabel("Couleur du texte principal")).toBeDisabled();
-  await page.getByLabel("Couleur du logo", { exact: true }).fill("#4488aa");
+  await expect(page.getByLabel("Couleur du logo", { exact: true })).toBeDisabled();
   await page.locator('#wizard-appearance-colors').getByLabel("Police du texte").selectOption("playfair");
   await page.getByLabel("Taille de la police").first().fill("52");
   const spacings = ["Espacement sous le logo (px)", "Espacement entre le texte principal et le sous-titre (px)", "Espacement entre le texte et la roue (px)"];
@@ -117,7 +117,7 @@ test("@visual-1280 Sunset Drive : couleurs fixes, police, taille et espacements 
     await expect(title).toHaveCSS("color", "rgb(255, 240, 214)");
     await expect(title).toHaveCSS("font-family", /Playfair/);
     await expect(subtitle).toHaveCSS("color", "rgb(255, 240, 214)");
-    await expect(preview.locator("header").first()).toHaveCSS("color", "rgb(68, 136, 170)");
+    await expect(preview.locator("header").first()).toHaveCSS("color", "rgb(255, 240, 214)");
     const values = await preview.evaluate(root => {
       const title = root.querySelector("h1")!;
       const subtitle = root.querySelector('[data-testid="christmas-wheel-subtitle"]')!;
@@ -148,14 +148,14 @@ test("Sunset Drive : couleurs verrouillées dans l’éditeur classique", async 
   await page.getByLabel("Activer le mode expert").click();
   await expect(page.getByLabel("Couleur principale", { exact: true })).toBeDisabled();
   await expect(page.getByLabel("Couleur du texte principal", { exact: true })).toBeDisabled();
-  await expect(page.getByLabel("Couleur du logo", { exact: true })).toBeEnabled();
-  await page.getByLabel("Couleur du logo", { exact: true }).fill("#4488aa");
+  await expect(page.getByLabel("Couleur du logo", { exact: true })).toBeDisabled();
+  await expect(page.getByLabel("Couleur du logo", { exact: true })).toBeDisabled();
   const preview = page.locator('[data-template-id="travel-sunset-drive"]').first();
   const title = preview.locator("h1").first();
   await expect(title).toBeAttached();
   await expect(title).toHaveCSS("color", "rgb(255, 240, 214)");
   await expect(preview.getByTestId("christmas-wheel-subtitle")).toHaveCSS("color", "rgb(255, 240, 214)");
-  await expect(preview.locator("header")).toHaveCSS("color", "rgb(68, 136, 170)");
+  await expect(preview.locator("header")).toHaveCSS("color", "rgb(255, 240, 214)");
   const logo = preview.locator("header p");
   const initialLogoSize = parseFloat(await logo.evaluate(el => getComputedStyle(el).fontSize));
   await page.getByRole("slider", { name: "Taille du logo" }).fill("60");
@@ -183,6 +183,6 @@ test("Sunset Drive conserve les couleurs fixes avec des réglages enregistrés d
     const scene = page.getByTestId("christmas-wheel-scene");
     await expect(scene.locator("h1")).toHaveCSS("color", "rgb(255, 240, 214)");
     await expect(scene.getByTestId("christmas-wheel-subtitle")).toHaveCSS("color", "rgb(255, 240, 214)");
-    await expect(scene.locator("header")).toHaveCSS("color", "rgb(68, 136, 170)");
+    await expect(scene.locator("header")).toHaveCSS("color", "rgb(255, 240, 214)");
   }
 });

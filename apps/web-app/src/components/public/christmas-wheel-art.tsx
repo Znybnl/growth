@@ -45,7 +45,7 @@ export function ChristmasWheelScene({ templateId, background, logoMode = "text",
     {artwork ? <Image src={artwork} alt="" fill sizes="(max-width: 600px) 100vw, 600px" loading="eager" className={styles.art} data-template-art={background.imageUrl ? undefined : templateId} unoptimized={Boolean(background.imageUrl)} /> : null}
     <div className={styles.content}>
       {isSunset ? <>
-      {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign, color: logoTextColor }}>
+      {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign, color: "#fff0d6" }}>
         {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} /> : logoMode === "text" ? <p className={styles.brandText} style={{ fontSize: unit(logoTextSizePx) }}>{logoText}</p> : null}
       </header> : null}
       <h1 className={styles.sunsetTitle} style={{ color: "#fff0d6", textAlign: titleAlign, fontFamily: titleFontFamily, "--sunset-title-scale": titleFontSizePx / 40 } as CSSProperties}>{title}</h1>
