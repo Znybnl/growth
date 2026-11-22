@@ -58,7 +58,7 @@ import { CampaignSpacingControls } from "@/components/merchant/campaign-spacing-
 import { GameTypeChoice } from "@/components/merchant/game-type-choice";
 import { BeautyWheelTemplateGallery } from "@/components/merchant/beauty-wheel-template-gallery";
 import { BeautyScratchTemplateGallery } from "@/components/merchant/beauty-scratch-template-gallery";
-import { TravelScratchTemplateGallery } from "@/components/merchant/travel-scratch-template-gallery";
+import { TravelScratchTemplateCard, TravelScratchTemplateGallery } from "@/components/merchant/travel-scratch-template-gallery";
 import { ScratchTemplateThumbnail } from "@/components/merchant/scratch-template-thumbnail";
 import { WheelTemplateThumbnail } from "@/components/merchant/wheel-template-thumbnail";
 import { SocialChannelIcon } from "@/components/merchant/social-channel-icon";
@@ -3138,6 +3138,7 @@ export function CampaignEditor({
               </section> : null}
               <h3 className="text-base font-semibold text-carbon">Autres templates</h3>
               <div className="mt-3 grid gap-3 md:grid-cols-2" data-testid="classic-template-options">
+                {form.gameType === "scratch" && merchant.industry !== "Agences de voyage" ? <TravelScratchTemplateCard theme={travelScratchTheme("travel-scratch-sunset-drive")!} selectedTemplateId={form.presentation.layout.templateId} onSelect={selectBeautyScratchTemplate} /> : null}
                 {form.gameType === "wheel" && merchant.industry !== "Agences de voyage" ? <button type="button" aria-pressed={form.presentation.layout.templateId === "travel-sunset-drive"} onClick={() => selectBeautyWheelTemplate("travel-sunset-drive")} className={`rounded-[22px] border p-4 text-left transition ${form.presentation.layout.templateId === "travel-sunset-drive" ? "border-[#2f6df6] bg-[#eff4ff]" : "border-[#d7e0ed] bg-white hover:border-[#b8c5da]"}`}><WheelTemplateThumbnail templateId="travel-sunset-drive" /><span className="text-sm font-semibold text-[#111827]">Sunset Drive</span><span className="mt-1 block text-xs text-[#526078]">Promenade au soleil couchant et roue corail</span></button> : null}
                 {(form.gameType === "wheel"
                   ? wheelPageTemplateOptions.filter((template) => !isBeautyIndustry(merchant.industry) || (template.value !== "rose-institut" && template.value !== "christmas-rose"))
@@ -3278,10 +3279,10 @@ export function CampaignEditor({
                   Couleur principale du ticket
                 </span>
                 <span className="mb-3 block text-xs leading-5 text-[#69758a]">
-                  Elle définit la teinte de la zone à gratter et reste personnalisable.
+                  {currentTemplateId === "travel-scratch-sunset-drive" ? "Palette fixe du template." : "Elle définit la teinte de la zone à gratter et reste personnalisable."}
                 </span>
                 <input
-                  type="color"
+                  type="color" disabled={currentTemplateId === "travel-scratch-sunset-drive"}
                   value={form.accent.signal}
                   onChange={(event) =>
                     setForm((current) => ({
@@ -3614,8 +3615,8 @@ export function CampaignEditor({
                     <label className="text-sm" hidden={isHalloweenTemplate}>
                       <span className="mb-2 block text-[#616b7c]">Couleur du texte principal</span>
                       <input
-                        type="color" disabled={currentTemplateId === "travel-sunset-drive"}
-                        value={currentTemplateId === "travel-sunset-drive" ? "#fff0d6" : form.presentation.heading.textColor}
+                        type="color" disabled={(currentTemplateId === "travel-sunset-drive" || currentTemplateId === "travel-scratch-sunset-drive")}
+                        value={(currentTemplateId === "travel-sunset-drive" || currentTemplateId === "travel-scratch-sunset-drive") ? "#fff0d6" : form.presentation.heading.textColor}
                         onChange={(event) =>
                           setForm((current) => ({
                             ...current,
@@ -3632,10 +3633,10 @@ export function CampaignEditor({
                       />
                     </label>
                     <label className="text-sm">
-                      <span className="mb-2 block text-[#616b7c]">{currentTemplateId === "travel-sunset-drive" ? "Couleur du logo" : "Couleur du logo et sous-titre"}</span>
+                      <span className="mb-2 block text-[#616b7c]">{(currentTemplateId === "travel-sunset-drive" || currentTemplateId === "travel-scratch-sunset-drive") ? "Couleur du logo" : "Couleur du logo et sous-titre"}</span>
                       <input
-                        type="color" disabled={currentTemplateId === "travel-sunset-drive"}
-                        value={currentTemplateId === "travel-sunset-drive" ? "#fff0d6" : form.presentation.logo.textColor ?? form.presentation.heading.textColor}
+                        type="color" disabled={(currentTemplateId === "travel-sunset-drive" || currentTemplateId === "travel-scratch-sunset-drive")}
+                        value={(currentTemplateId === "travel-sunset-drive" || currentTemplateId === "travel-scratch-sunset-drive") ? "#fff0d6" : form.presentation.logo.textColor ?? form.presentation.heading.textColor}
                         onChange={(event) =>
                           setForm((current) => ({
                             ...current,
@@ -3649,9 +3650,9 @@ export function CampaignEditor({
                           }))
                         }
                         className="h-14 w-full rounded-[20px] border border-[#d7e0ed] bg-[#f7f9fc] px-2 py-2 outline-none disabled:cursor-not-allowed disabled:opacity-55"
-                        aria-label={currentTemplateId === "travel-sunset-drive" ? "Couleur du logo" : "Couleur du logo et sous-titre"}
+                        aria-label={(currentTemplateId === "travel-sunset-drive" || currentTemplateId === "travel-scratch-sunset-drive") ? "Couleur du logo" : "Couleur du logo et sous-titre"}
                       />
-                      {currentTemplateId === "travel-sunset-drive" ? <span className="mt-2 block text-xs text-[#526078]">Logo texte, titre et sous-titre : ivoire fixe du template.</span> : null}
+                      {(currentTemplateId === "travel-sunset-drive" || currentTemplateId === "travel-scratch-sunset-drive") ? <span className="mt-2 block text-xs text-[#526078]">Logo texte, titre et sous-titre : ivoire fixe du template.</span> : null}
                     </label>
                   </div>
 
@@ -4375,9 +4376,9 @@ export function CampaignEditor({
                 <label className="text-sm">
                   <span className="mb-2 block text-[#616b7c]">Couleur principale</span>
                   <input
-                    type="color" disabled={currentTemplateId === "travel-sunset-drive"}
+                    type="color" disabled={(currentTemplateId === "travel-sunset-drive" || currentTemplateId === "travel-scratch-sunset-drive")}
                     value={
-                      currentTemplateId === "travel-sunset-drive" ? "#ee3949" : currentTemplateId === "cocorico-wheel"
+                      (currentTemplateId === "travel-sunset-drive" || currentTemplateId === "travel-scratch-sunset-drive") ? "#ee3949" : currentTemplateId === "cocorico-wheel"
                         ? resolveCocoricoPrimaryColor(form.presentation.wheel.loseColor)
                         : form.presentation.wheel.loseColor
                     }

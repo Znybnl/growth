@@ -75,6 +75,7 @@ const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
   "travel-elegant",
   "travel-tropical",
   "travel-roadtrip",
+  "travel-scratch-sunset-drive",
   "travel-scratch-elegant",
   "travel-scratch-tropical",
   "travel-scratch-roadtrip",

@@ -606,3 +606,5 @@ Sunset Drive ajoute un décor de promenade au coucher du soleil et une roue cora
 Sunset Drive affiche six secteurs jusqu’à cinq résultats distincts et huit au-delà, en comptant la perte comme un résultat lorsqu’elle existe. Au-delà de huit résultats distincts, le nombre de secteurs augmente pour ne masquer aucun lot. La règle reste purement visuelle.
 
 La couleur principale de la roue est corail fixe ; le titre et le sous-titre restent ivoire fixe, indépendamment de la couleur du logo. La police et la taille du titre, la taille du logo ainsi que les trois espacements restent modifiables. La couleur du logo texte est fixée à l’ivoire ; une image de logo conserve ses couleurs.
+
+Le ticket à gratter Sunset Drive reprend le fond et l’en-tête de la roue ; la zone corail utilise le moteur de grattage existant. Le logo texte, le titre et le sous-titre restent ivoire fixe.

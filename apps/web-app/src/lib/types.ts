@@ -44,6 +44,7 @@ export type GamePageTemplateId =
   | "travel-elegant"
   | "travel-tropical"
   | "travel-roadtrip"
+  | "travel-scratch-sunset-drive"
   | "travel-scratch-elegant"
   | "travel-scratch-tropical"
   | "travel-scratch-roadtrip"

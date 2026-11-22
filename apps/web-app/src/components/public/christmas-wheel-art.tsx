@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useId, type CSSProperties, type ReactNode } from "react";
 import { FittedWheelLabel } from "./fitted-wheel-label";
+import { SUNSET_DRIVE } from "@/lib/sunset-drive-theme";
 import { legibleSegmentTextColor } from "@/lib/color-contrast";
 import { textFontFamily } from "@/lib/format";
 import { christmasWheelDefaultBackground, christmasWheelSegmentColors, christmasWheelTheme, type ChristmasWheelTemplateId } from "@/lib/christmas-wheel-themes";
@@ -27,6 +28,21 @@ export function TravelGameHeader({ logoMode, logoText, logoUrl, logoWidthPx, log
   </div>;
 }
 
+/** Shared header for the Sunset Drive wheel and scratch ticket. */
+export function SunsetGameHeader({ logoMode, logoText, logoUrl, logoWidthPx, logoTextSizePx, logoAlign, logoBottomSpacingPx, title, titleFontSizePx, titleFontFamily, titleAlign, secondaryText, subtitleSpacingPx, scratch = false }: {
+  logoMode: LogoMode; logoText: string; logoUrl?: string; logoWidthPx: number; logoTextSizePx: number; logoAlign: TextAlign; logoBottomSpacingPx: number;
+  title: string; titleFontSizePx: number; titleFontFamily: string; titleAlign: TextAlign; secondaryText: string; subtitleSpacingPx: number; scratch?: boolean;
+}) {
+  const Heading = scratch ? "h2" : "h1";
+  return <>
+    {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign, color: SUNSET_DRIVE.ivory }}>
+      {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} /> : logoMode === "text" ? <p className={styles.brandText} style={{ fontSize: unit(logoTextSizePx) }}>{logoText}</p> : null}
+    </header> : null}
+    <Heading className={styles.sunsetTitle} style={{ color: SUNSET_DRIVE.ivory, textAlign: titleAlign, fontFamily: titleFontFamily, "--sunset-title-scale": titleFontSizePx / 40 } as CSSProperties}>{title}</Heading>
+    {secondaryText.trim() ? <p className={styles.sunsetSubtitle} data-testid={scratch ? "travel-scratch-subtitle" : "christmas-wheel-subtitle"} style={{ color: SUNSET_DRIVE.ivory, marginTop: unit(subtitleSpacingPx) }}>{secondaryText}</p> : null}
+  </>;
+}
+
 export function ChristmasWheelScene({ templateId, background, logoMode = "text", logoText, logoUrl,
   logoWidthPx, logoTextSizePx, logoTextColor, logoAlign, logoBottomSpacingPx, title,
   titleColor, titleFontSizePx, titleFontFamily, titleFontWeight, titleAlign, secondaryText,
@@ -44,13 +60,7 @@ export function ChristmasWheelScene({ templateId, background, logoMode = "text",
   return <section className={`${styles.scene} ${publicPage ? styles.public : ""}`} data-testid="christmas-wheel-scene" data-travel-template={templateId.startsWith("travel-") ? templateId : undefined} style={{ position: "relative", backgroundColor: renderBackgroundArt ? background.color : "transparent", color: logoTextColor }}>
     {artwork ? <Image src={artwork} alt="" fill sizes="(max-width: 600px) 100vw, 600px" loading="eager" className={styles.art} data-template-art={background.imageUrl ? undefined : templateId} unoptimized={Boolean(background.imageUrl)} /> : null}
     <div className={styles.content}>
-      {isSunset ? <>
-      {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign, color: "#fff0d6" }}>
-        {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} /> : logoMode === "text" ? <p className={styles.brandText} style={{ fontSize: unit(logoTextSizePx) }}>{logoText}</p> : null}
-      </header> : null}
-      <h1 className={styles.sunsetTitle} style={{ color: "#fff0d6", textAlign: titleAlign, fontFamily: titleFontFamily, "--sunset-title-scale": titleFontSizePx / 40 } as CSSProperties}>{title}</h1>
-      {secondaryText.trim() ? <p className={styles.sunsetSubtitle} data-testid="christmas-wheel-subtitle" style={{ color: "#fff0d6", marginTop: unit(subtitleSpacingPx) }}>{secondaryText}</p> : null}
-      </> : templateId.startsWith("travel-") ? <TravelGameHeader {...{ logoMode, logoText, logoUrl, logoWidthPx, logoTextSizePx, logoTextColor, logoAlign, logoBottomSpacingPx, title, titleColor, titleFontSizePx, titleFontFamily, titleFontWeight, titleAlign, secondaryText, subtitleSpacingPx }} /> : <>
+      {isSunset ? <SunsetGameHeader {...{ logoMode, logoText, logoUrl, logoWidthPx, logoTextSizePx, logoAlign, logoBottomSpacingPx, title, titleFontSizePx, titleFontFamily, titleAlign, secondaryText, subtitleSpacingPx }} /> : templateId.startsWith("travel-") ? <TravelGameHeader {...{ logoMode, logoText, logoUrl, logoWidthPx, logoTextSizePx, logoTextColor, logoAlign, logoBottomSpacingPx, title, titleColor, titleFontSizePx, titleFontFamily, titleFontWeight, titleAlign, secondaryText, subtitleSpacingPx }} /> : <>
       {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign }}>
         {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} />
           : logoMode === "text" ? <><p className={styles.brandText} style={{ fontSize: unit(logoTextSizePx) }}>{logoText}</p><span className={styles.rule} style={{ marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} aria-hidden="true" /></> : null}
