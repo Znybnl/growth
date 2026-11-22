@@ -48,7 +48,9 @@ test("mobile : la progression est compacte et le contexte de campagne reste visi
     await expect(page.locator("#wizard-appearance-logo")).toBeInViewport();
     await assertNoPageOverflow(page);
 
-    const selectedTemplate = page.getByTestId("classic-template-options").locator('button[aria-pressed="true"]');
+    const selectedTemplate = page.locator(
+      '[aria-labelledby="beauty-wheel-templates-title"] button[aria-pressed="true"], [data-testid="classic-template-options"] button[aria-pressed="true"], [data-testid="travel-template-options"] button[aria-pressed="true"]',
+    );
     await expect(selectedTemplate).toHaveCount(1);
     await expect(selectedTemplate.getByText("Sélectionné")).toBeVisible();
   }
