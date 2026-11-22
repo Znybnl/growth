@@ -48,8 +48,8 @@ export function ChristmasWheelScene({ templateId, background, logoMode = "text",
       {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign, color: logoTextColor }}>
         {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} /> : logoMode === "text" ? <p className={styles.brandText} style={{ fontSize: unit(logoTextSizePx) }}>{logoText}</p> : null}
       </header> : null}
-      <h1 className={styles.sunsetTitle} style={{ color: titleColor, textAlign: titleAlign, fontFamily: titleFontFamily, "--sunset-title-scale": titleFontSizePx / 40 } as CSSProperties}>{title}</h1>
-      {secondaryText.trim() ? <p className={styles.sunsetSubtitle} data-testid="christmas-wheel-subtitle" style={{ color: logoTextColor, marginTop: unit(subtitleSpacingPx) }}>{secondaryText}</p> : null}
+      <h1 className={styles.sunsetTitle} style={{ color: "#fff0d6", textAlign: titleAlign, fontFamily: titleFontFamily, "--sunset-title-scale": titleFontSizePx / 40 } as CSSProperties}>{title}</h1>
+      {secondaryText.trim() ? <p className={styles.sunsetSubtitle} data-testid="christmas-wheel-subtitle" style={{ color: "#fff0d6", marginTop: unit(subtitleSpacingPx) }}>{secondaryText}</p> : null}
       </> : templateId.startsWith("travel-") ? <TravelGameHeader {...{ logoMode, logoText, logoUrl, logoWidthPx, logoTextSizePx, logoTextColor, logoAlign, logoBottomSpacingPx, title, titleColor, titleFontSizePx, titleFontFamily, titleFontWeight, titleAlign, secondaryText, subtitleSpacingPx }} /> : <>
       {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign }}>
         {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} />
@@ -57,7 +57,7 @@ export function ChristmasWheelScene({ templateId, background, logoMode = "text",
       </header> : null}
       <h1 className={`${styles.title} ${gildedTitle ? styles.goldTitle : ""}`} style={{ color: titleColor, fontSize: unit(titleFontSizePx), fontFamily: titleFontFamily, fontWeight: titleFontWeight, textAlign: titleAlign }}>{title}</h1>
       {secondaryText.trim() ? <p className={styles.subtitle} data-testid="christmas-wheel-subtitle" style={{ marginTop: unit(subtitleSpacingPx) }}>{secondaryText}</p> : null}</>}
-      <div className={styles.wheelSlot} style={{ marginTop: unit(Math.max(24, blockSpacingPx)) }}>
+      <div className={styles.wheelSlot} style={{ marginTop: unit(isSunset ? blockSpacingPx : Math.max(24, blockSpacingPx)) }}>
         {!isSunset && blockSpacingPx >= 40 ? <div className={styles.festiveRule} aria-hidden="true"><span /><svg viewBox="0 0 16 16"><path d="m8 0 2 5 6 3-6 2-2 6-2-6-6-2 6-3Z" fill="currentColor" /></svg><span /></div> : null}
         {children}
       </div>
@@ -86,7 +86,8 @@ export function ChristmasWheelVisual({ templateId, segments, palette, rotation =
 }) {
   const id = `christmas-${useId().replace(/:/g, "")}`;
   const theme = christmasWheelTheme(templateId)!;
-  const colors = christmasWheelSegmentColors(templateId, segments.length, palette ?? { loseColor: theme.primary, alternateLoseColor: theme.secondary, winColor: theme.third });
+  const selectedPalette = palette ?? { loseColor: theme.primary, alternateLoseColor: theme.secondary, winColor: theme.third };
+  const colors = christmasWheelSegmentColors(templateId, segments.length, templateId === "travel-sunset-drive" ? { ...selectedPalette, loseColor: theme.primary } : selectedPalette);
   const rim = palette?.rimColor ?? theme.rim;
   const angle = 360 / Math.max(1, segments.length);
   // Stable SVG strings across Node/V8 and browsers (Math trig may differ at 1e-14).
@@ -118,7 +119,7 @@ export function ChristmasWheelVisual({ templateId, segments, palette, rotation =
           return <g key={segment.id} data-segment-id={segment.id}>
             <path d={`M320 320 L${start.x} ${start.y} A300 300 0 ${angle > 180 ? 1 : 0} 1 ${end.x} ${end.y} Z`} fill={`url(#${id}-sector-${index})`} stroke="#f4dfba" strokeWidth="1.8" />
             <FittedWheelLabel lines={lines} baseFontSize={size} lineHeight={size * .98} initialOffset={-(lines.length - 1) * size * .49}
-              radius={204} buttonRadius={isTravel ? 74 : 112} outerRadius={300} sectorAngle={angle}
+              radius={204} buttonRadius={isTravel ? 74 : isSunset ? 105 : 112} outerRadius={300} sectorAngle={angle} textAngle={isSunset ? mid : 0}
               x={location.x} y={location.y} fill={templateId === "travel-tropical" && colors[index] !== (palette?.alternateLoseColor ?? theme.secondary) ? "#ffffff" : legibleSegmentTextColor(colors[index], theme.logo)}
               fontFamily={textFontFamily("dm-sans")} fontWeight="650" textAnchor="middle" dominantBaseline="middle"
               transform={`rotate(${upright} ${location.x} ${location.y})`} />
@@ -134,7 +135,7 @@ export function ChristmasWheelVisual({ templateId, segments, palette, rotation =
         <linearGradient id={`${id}-gold`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="#fff9d8" /><stop offset=".12" stopColor={rim} /><stop offset=".24" stopColor="#fff2c1" /><stop offset=".38" stopColor={rim} /><stop offset=".52" stopColor="#fff4c9" /><stop offset=".72" stopColor={rim} /><stop offset=".88" stopColor="#fce7b0" /><stop offset="1" stopColor="#725125" /></linearGradient>
         <linearGradient id={`${id}-pointer`}><stop stopColor="#79511f" /><stop offset=".21" stopColor={rim} /><stop offset=".48" stopColor="#fff2be" /><stop offset=".56" stopColor="#e6c078" /><stop offset="1" stopColor={rim} /></linearGradient>
       </defs>
-      {isSunset ? <><circle cx="320" cy="320" r="306" fill="none" stroke="#a63035" strokeWidth="15" /><circle cx="320" cy="320" r="300" fill="none" stroke="#ffc684" strokeWidth="6" /><circle cx="320" cy="320" r="110" fill="#ffe5bc" stroke="#a63035" strokeWidth="9" /></> : <>
+      {isSunset ? <><circle cx="320" cy="320" r="306" fill="none" stroke="#a63035" strokeWidth="15" /><circle cx="320" cy="320" r="300" fill="none" stroke="#ffc684" strokeWidth="6" /><circle cx="320" cy="320" r="103" fill="#ffe5bc" stroke="#a63035" strokeWidth="9" /></> : <>
       <circle cx="320" cy="320" r="311" fill="none" stroke="#fff9e5" strokeWidth="2.4" />
       <circle cx="320" cy="320" r="307" fill="none" stroke="#8b632f" strokeWidth="5" />
       <circle cx="320" cy="320" r="305" fill="none" stroke={`url(#${id}-gold)`} strokeWidth="10" />

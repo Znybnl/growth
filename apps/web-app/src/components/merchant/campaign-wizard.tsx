@@ -2655,7 +2655,7 @@ export function CampaignWizard({
                    <input
                      type="color"
                       disabled={isHalloweenFixedPalette(draft.presentation.layout.templateId) || (draft.gameType === "wheel" && isTravelWheelTemplate(draft.presentation.layout.templateId)) || (draft.gameType === "scratch" && scratchTemplateUsesFixedPrimaryColor(draft.presentation.layout.templateId))}
-                     value={draft.presentation.layout.templateId === "halloween-gold" ? "#ecac52" : draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
+                     value={draft.presentation.layout.templateId === "halloween-gold" ? "#ecac52" : draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive" ? "#ee3949" : draft.gameType === "wheel" ? draft.presentation.wheel.loseColor : draft.accent.signal}
                      onChange={(event) => {
                        const color = event.target.value;
                        setDraft((current) => {
@@ -2966,10 +2966,10 @@ export function CampaignWizard({
                      <div className="mt-3 grid gap-4 sm:grid-cols-2">
                        {!isCocoricoWheelTemplate(draft.presentation.layout.templateId) && draft.presentation.layout.templateId !== "halloween-gold" ? <label className="block text-sm">
                          <span className="mb-2 block font-semibold">Couleur du texte principal</span>
-                         <input type="color" value={draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1" aria-label="Couleur du texte principal" />
+                         <input type="color" disabled={draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive"} value={draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive" ? "#fff0d6" : draft.presentation.heading.textColor} onChange={(event) => patchDraft({ presentation: { ...draft.presentation, heading: { ...draft.presentation.heading, textColor: event.target.value } } })} className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] p-1 disabled:cursor-not-allowed disabled:opacity-55" aria-label="Couleur du texte principal" />
                        </label> : null}
                        <label className="block text-sm">
-                         <span className="mb-2 flex items-center justify-between gap-2 font-semibold">Couleur du logo et sous-titre
+                         <span className="mb-2 flex items-center justify-between gap-2 font-semibold">{draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive" ? "Couleur du logo" : "Couleur du logo et sous-titre"}
                            {isHalloweenFixedPalette(draft.presentation.layout.templateId) ? <span className="rounded-full bg-[#f1ebff] px-2 py-0.5 text-[11px] font-semibold text-[#6944a1]">Palette fixe</span> : null}
                          </span>
                          <input
@@ -2978,8 +2978,9 @@ export function CampaignWizard({
                            value={isHalloweenFixedPalette(draft.presentation.layout.templateId) ? "#ffffff" : draft.presentation.logo.textColor ?? draft.presentation.heading.textColor}
                            onChange={(event) => patchDraft({ presentation: { ...draft.presentation, logo: { ...draft.presentation.logo, textColor: event.target.value } } })}
                            className="h-12 w-full cursor-pointer rounded-[12px] border border-[#dbe3ed] bg-white p-1 disabled:cursor-not-allowed"
-                           aria-label="Couleur du logo et sous-titre"
+                           aria-label={draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive" ? "Couleur du logo" : "Couleur du logo et sous-titre"}
                          />
+                         {draft.gameType === "wheel" && draft.presentation.layout.templateId === "travel-sunset-drive" ? <span className="mt-2 block text-xs text-[#526078]">Titre et sous-titre : ivoire fixe du template.</span> : null}
                          {isHalloweenFixedPalette(draft.presentation.layout.templateId) ? <span className="mt-2 block text-xs text-[#526078]">Logo blanc et sous-titre doré : couleurs fixes du template.</span> : null}
                        </label>
                    </div>

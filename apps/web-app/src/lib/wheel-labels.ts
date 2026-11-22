@@ -6,13 +6,16 @@ export function enforceMinimumWheelPrizeLabelFontSize(fontSize: number) {
 
 /** Fit one measured label, never increase it or change its horizontal proportions. */
 export function fittedWheelLabelFontSize(baseFontSize: number, width: number, height: number,
-  radius: number, innerRadius: number, outerRadius: number, angle: number) {
+  radius: number, innerRadius: number, outerRadius: number, angle: number, textAngle = 0) {
   if (!(width > 0) || !(height > 0)) return baseFontSize;
   const halfAngle = Math.min(89, angle / 2) * Math.PI / 180;
+  const radians = textAngle * Math.PI / 180;
+  const radialExtent = (Math.abs(Math.cos(radians)) * width + Math.abs(Math.sin(radians)) * height) / 2;
+  const tangentialExtent = (Math.abs(Math.sin(radians)) * width + Math.abs(Math.cos(radians)) * height) / 2;
   const fits = (scale: number) => {
-    const near = radius - width * scale / 2;
-    const far = radius + width * scale / 2;
-    const halfHeight = height * scale / 2;
+    const near = radius - radialExtent * scale;
+    const far = radius + radialExtent * scale;
+    const halfHeight = tangentialExtent * scale;
     return near >= innerRadius + 6
       && Math.hypot(far, halfHeight) <= outerRadius - 8
       && halfHeight + 5 <= near * Math.tan(halfAngle);

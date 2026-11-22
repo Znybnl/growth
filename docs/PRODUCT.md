@@ -602,3 +602,7 @@ sans commission sur la pause ni redémarrage de la fenêtre. Le paiement reste m
 ### Roue Sunset Drive — issue #832
 
 Sunset Drive ajoute un décor de promenade au coucher du soleil et une roue corail et ivoire à la collection Voyage ; il est également proposé dans les autres templates pour les commerces des autres secteurs. Le fond fourni par le propriétaire est chargé comme fond natif et peut être remplacé par une image ou une couleur. Titre et sous-titre restent éditables, avec un style ivoire initial, titre en capitales à l’affichage et sous-titre italique ; la police et la taille du titre restent configurables. Les tailles fluides sont calculées par rapport à la largeur de la scène, afin de conserver les proportions dans les aperçus intégrés comme sur mobile. Le logo reste celui du commerce. La roue utilise le moteur commun et représente tous les lots éligibles, sans modifier le tirage.
+
+Sunset Drive affiche six secteurs jusqu’à cinq résultats distincts et huit au-delà, en comptant la perte comme un résultat lorsqu’elle existe. Au-delà de huit résultats distincts, le nombre de secteurs augmente pour ne masquer aucun lot. La règle reste purement visuelle.
+
+La couleur principale de la roue est corail fixe ; le titre et le sous-titre restent ivoire fixe, indépendamment de la couleur du logo. La police et la taille du titre, la couleur et la taille du logo, ainsi que les trois espacements restent modifiables.

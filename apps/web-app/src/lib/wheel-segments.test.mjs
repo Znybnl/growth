@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildWheelVisualSegments, selectWheelVisualSegments, rosePowderVisualSegments, signatureVisualSegments } from "./wheel-segments.ts";
+import { buildWheelVisualSegments, selectWheelVisualSegments, rosePowderVisualSegments, signatureVisualSegments, sunsetDriveVisualSegments } from "./wheel-segments.ts";
 
 const prizes = [
   { id: "discount15", label: "-15% PRESTATION", probability: 15 },
@@ -74,4 +74,20 @@ test("vide et probabilités nulles, négatives ou invalides ne créent pas de lo
     { id: "invalid", label: "Invalide", probability: NaN },
   ]);
   assert.ok(selectWheelVisualSegments(source, "none").every(segment => segment.tone === "lose"));
+});
+
+
+test("Sunset Drive : six ou huit secteurs selon les résultats distincts, perte comprise", () => {
+  for (let count = 1; count <= 12; count++) for (const total of [50, 100]) {
+    const source = buildWheelVisualSegments(Array.from({ length: count }, (_, index) => ({
+      id: `prize-${index}`, label: `Lot ${index}`, probability: total / count,
+    })));
+    const outcomes = new Set(source.map(baseId));
+    for (const winner of source) {
+      const visible = sunsetDriveVisualSegments(source, winner.id);
+      assert.equal(visible.length, Math.max(outcomes.size <= 5 ? 6 : 8, outcomes.size));
+      assert.deepEqual(new Set(visible.map(baseId)), outcomes);
+      assert.ok(visible.some(segment => segment.id === winner.id));
+    }
+  }
 });
