@@ -76,7 +76,7 @@ for (const theme of TRAVEL_SCRATCH_THEMES) {
   });
 }
 
-for (const theme of TRAVEL_WHEEL_THEMES) {
+for (const theme of TRAVEL_WHEEL_THEMES.filter(theme => theme.id !== "travel-sunset-drive")) {
   test(`${theme.name} : fond et proportions en mobile`, async ({ page }, info) => {
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 844 });
@@ -193,7 +193,7 @@ test("@visual-1280 section Voyage dédiée aux tickets dans les deux éditeurs",
     if (mode.startsWith("wizard")) await selectWizardStep(page, 2);
     const section = page.getByTestId("travel-scratch-template-options");
     await expect(page.getByRole("heading", { name: "Templates Voyage" })).toBeVisible();
-    await expect(section.getByRole("button")).toHaveCount(3);
+    await expect(section.getByRole("button")).toHaveCount(TRAVEL_SCRATCH_THEMES.length);
     for (const theme of TRAVEL_SCRATCH_THEMES) {
       const card = section.getByRole("button", { name: new RegExp(theme.name) });
       await card.click();

@@ -13,7 +13,7 @@ import { dynamicWheelLightSegmentColor } from "@/lib/campaign-defaults";
 import { legibleSegmentTextColor } from "@/lib/color-contrast";
 import { wheelButtonBackgroundForWhiteText } from "@/lib/wheel-button-contrast";
 import { beautyWheelButtonTextColor, beautyWheelLegibleText, beautyWheelTheme, isBeautyWheelTemplate, type BeautyWheelTemplateId } from "@/lib/beauty-wheel-themes";
-import { rosePowderVisualSegments, selectWheelVisualSegments, signatureVisualSegments } from "@/lib/wheel-segments";
+import { rosePowderVisualSegments, selectWheelVisualSegments, signatureVisualSegments, sunsetDriveVisualSegments } from "@/lib/wheel-segments";
 import { buildBeautyWheelSegmentColors, limitBeautyWheelSegments } from "@/lib/beauty-wheel-segments";
 import { enforceMinimumWheelPrizeLabelFontSize } from "@/lib/wheel-labels";
 import { FittedWheelLabel } from "@/components/public/fitted-wheel-label";
@@ -270,7 +270,9 @@ export function WheelOfFortune({
     ? pageTemplate as Exclude<BeautyWheelTemplateId, "beauty-rose">
     : null;
   const beautyTheme = beautyWheelTheme(pageTemplate);
-  const baseVisualSegments = isChristmasWheelTemplate(pageTemplate)
+  const baseVisualSegments = pageTemplate === "travel-sunset-drive"
+    ? sunsetDriveVisualSegments(segments, winningSegmentId)
+    : isChristmasWheelTemplate(pageTemplate)
     ? selectWheelVisualSegments(segments, winningSegmentId, 6)
     : pageTemplate === "halloween-gold"
     ? halloweenWheelVisualSegments(segments, winningSegmentId)

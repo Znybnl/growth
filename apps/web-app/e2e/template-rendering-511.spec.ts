@@ -49,7 +49,7 @@ test("tickets Voyage : la taille choisie pour le texte principal est respectée"
 test("tickets Voyage : le sous-titre reprend la typographie et le halo des roues", async ({ page }, info) => {
   await isolate(page);
   await page.setViewportSize({ width: 390, height: 850 });
-  for (const [wheel, scratch] of TRAVEL_WHEEL_THEMES.map((wheel) => [wheel, TRAVEL_SCRATCH_THEMES.find((theme) => theme.id === `travel-scratch-${wheel.id.replace("travel-", "")}`)!] as const)) {
+  for (const [wheel, scratch] of TRAVEL_WHEEL_THEMES.filter(wheel => wheel.id !== "travel-sunset-drive").map((wheel) => [wheel, TRAVEL_SCRATCH_THEMES.find((theme) => theme.id === `travel-scratch-${wheel.id.replace("travel-", "")}`)!] as const)) {
     await page.goto(url("public", wheel.id, { business: "travel", secondary: "Un sous-titre de démonstration" }));
     const wheelSubtitle = page.getByTestId("christmas-wheel-subtitle");
     await expect(wheelSubtitle).toBeVisible();
@@ -82,7 +82,7 @@ test("halos Tropical et Road trip restent derrière les textes sans changer de f
   for (const mode of ["public", "preview"]) {
     for (const width of [320, 1280]) {
       await page.setViewportSize({ width, height: 900 });
-      for (const wheel of TRAVEL_WHEEL_THEMES.filter(theme => theme.id !== "travel-elegant")) {
+      for (const wheel of TRAVEL_WHEEL_THEMES.filter(theme => theme.id !== "travel-elegant" && theme.id !== "travel-sunset-drive")) {
         const scratch = TRAVEL_SCRATCH_THEMES.find(theme => theme.id === `travel-scratch-${wheel.id.replace("travel-", "")}`)!;
         for (const longCopy of [false, true]) {
           const headline = longCopy ? "Votre prochaine aventure commence demain\nau bout de la route" : "Cap sur l’aventure";

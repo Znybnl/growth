@@ -71,9 +71,11 @@ const TEXT_FONTS = new Set<TextFont>([
 const BUTTON_SIZES = new Set<ButtonSize>(["sm", "md", "lg"]);
 const BACKGROUND_MODES = new Set<BackgroundMode>(["color", "image"]);
 const GAME_PAGE_TEMPLATE_IDS = new Set<GamePageTemplateId>([
+  "travel-sunset-drive",
   "travel-elegant",
   "travel-tropical",
   "travel-roadtrip",
+  "travel-scratch-sunset-drive",
   "travel-scratch-elegant",
   "travel-scratch-tropical",
   "travel-scratch-roadtrip",

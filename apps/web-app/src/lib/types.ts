@@ -40,9 +40,11 @@ export type PosterTemplateId =
   | "pastel-editorial-wheel"
   | "ivory-editorial-wheel";
 export type GamePageTemplateId =
+  | "travel-sunset-drive"
   | "travel-elegant"
   | "travel-tropical"
   | "travel-roadtrip"
+  | "travel-scratch-sunset-drive"
   | "travel-scratch-elegant"
   | "travel-scratch-tropical"
   | "travel-scratch-roadtrip"

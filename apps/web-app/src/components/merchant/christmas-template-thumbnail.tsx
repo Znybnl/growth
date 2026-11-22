@@ -11,8 +11,8 @@ export function ChristmasTemplateThumbnail({ templateId, card }: { templateId: C
     <div className="absolute inset-0" style={{ background: `linear-gradient(90deg, ${theme.background}d9, ${theme.background}40 48%, transparent 70%)` }} />
     {card ? <div className={styles.thumbnailCopy} style={{ color: theme.text }}>
       <div className={styles.thumbnailBrand} style={{ color: theme.logo }}>Votre établissement</div>
-      <div className={styles.thumbnailTitle} data-testid="template-sample-heading">Jouez &amp;<br />gagnez</div>
-      <div className={styles.thumbnailSubtitle} style={{ color: theme.logo }}>{templateId.startsWith("travel-") ? "De belles surprises pour votre prochain voyage" : "De belles surprises vous attendent pour Noël"}</div>
+      <div className={styles.thumbnailTitle} style={templateId === "travel-sunset-drive" ? { fontFamily: "var(--font-dm-sans), sans-serif", fontWeight: 800, lineHeight: 1.05 } : undefined} data-testid="template-sample-heading">{templateId === "travel-sunset-drive" ? "SUNSET DRIVE" : <>Jouez &amp;<br />gagnez</>}</div>
+      <div className={styles.thumbnailSubtitle} style={{ color: theme.logo, ...(templateId === "travel-sunset-drive" ? { fontFamily: "var(--font-dm-sans), sans-serif", fontStyle: "italic" } : {}) }}>{templateId === "travel-sunset-drive" ? "Tentez votre chance" : templateId.startsWith("travel-") ? "De belles surprises pour votre prochain voyage" : "De belles surprises vous attendent pour Noël"}</div>
     </div> : null}
     <div className={card ? styles.thumbnailWheel : "relative mx-auto w-24 pt-2"}>
       <ChristmasWheelVisual templateId={templateId} segments={labels.map((label, index) => ({ id: `sample-${index}`, label, tone: index === 3 ? "lose" as const : "win" as const }))} interactive={false} />

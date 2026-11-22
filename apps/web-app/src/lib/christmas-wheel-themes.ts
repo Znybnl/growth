@@ -36,7 +36,7 @@ export function christmasWheelPalette(templateId: ChristmasWheelTemplateId, curr
 
 /** Sector colors are decorative; they never encode or determine the draw odds. */
 export function christmasWheelSegmentColors(templateId: ChristmasWheelTemplateId, count: number, palette: Pick<CampaignWheelSettings, "loseColor" | "alternateLoseColor" | "winColor">) {
-  const colors = templateId === "travel-elegant" ? [palette.alternateLoseColor, palette.loseColor] : templateId === "travel-tropical" ? [palette.alternateLoseColor, palette.loseColor, palette.alternateLoseColor, palette.winColor] : templateId === "christmas-rose"
+  const colors = (templateId === "travel-elegant" || templateId === "travel-sunset-drive") ? [palette.alternateLoseColor, palette.loseColor] : templateId === "travel-tropical" ? [palette.alternateLoseColor, palette.loseColor, palette.alternateLoseColor, palette.winColor] : templateId === "christmas-rose"
     ? [palette.alternateLoseColor, palette.loseColor, palette.alternateLoseColor, palette.winColor]
     : [palette.alternateLoseColor, palette.loseColor, palette.winColor];
   const result = Array.from({ length: count }, (_, index) => colors[index % colors.length]);
