@@ -132,6 +132,7 @@ export const IMMERSIVE_SCRATCH_TEMPLATE_IDS = [
   "beauty-scratch-noir-or",
   "beauty-scratch-lilas",
   "beauty-scratch-corail",
+  "travel-scratch-sunset-drive",
   "travel-scratch-elegant",
   "travel-scratch-tropical",
   "travel-scratch-roadtrip",

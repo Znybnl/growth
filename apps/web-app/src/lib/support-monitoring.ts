@@ -1,7 +1,7 @@
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { isSaasAdminEmail } from "@/lib/admin";
 
-export const SUPPORT_SECTIONS = ["emails", "webhooks", "claims", "logs"] as const;
+export const SUPPORT_SECTIONS = ["emails", "webhooks", "claims", "logs", "brevo"] as const;
 export type SupportSection = typeof SUPPORT_SECTIONS[number];
 export type SupportParams = Record<string, string | string[] | undefined>;
 export type SupportFilters = {
@@ -10,19 +10,22 @@ export type SupportFilters = {
   pages: Record<SupportSection, number>; error?: string;
 };
 export type SupportRecord = {
-  id: string; kind: "reward" | "notification" | "webhook" | "claim" | "log";
+  id: string; kind: "reward" | "notification" | "webhook" | "claim" | "log" | "brevo";
   at: string; status: string; title?: string; merchant?: string; participant?: string;
   recipient?: string; detail?: string; eventAt?: string; handled?: boolean;
   handledAt?: string; canHandle?: boolean; code?: string; availableAt?: string;
   expiresAt?: string; retryAt?: string; attempts?: number; periodStart?: string;
   periodEnd?: string; part?: number; parts?: number; providerId?: string;
   campaignId?: string; leadId?: string;
+  errorCode?: string; errorStatus?: number; lastAttemptAt?: string;
 };
 export type SupportStats = {
   incidents?: number; queued?: number; jobsWaiting?: number; jobsRetry?: number;
   jobsReview?: number; eventsWaiting?: number; oldestEvent?: string | null;
   latestWebhook?: string | null;
   errorLogs?: number;
+  brevoProcessing?: number; brevoRetrying?: number; brevoNeedsReview?: number;
+  oldestBrevoRetry?: string | null;
   lastRun?: { at: string; status: string; event: string; detail?: string } | null;
 };
 export type SupportSlice = { rows: SupportRecord[]; total: number | null; page: number;
@@ -89,13 +92,17 @@ export async function getSupportMonitoring(adminEmail: string | undefined, filte
       })(),
       ...SUPPORT_SECTIONS.map(async key => {
         try {
-          const { data, error } = await db.rpc("get_support_monitoring", {
-            p_section: key, p_merchant: filters.merchant || null, p_query: filters.q,
+          const dataParams = {
+            p_merchant: filters.merchant || null, p_query: filters.q,
             p_from: filters.from ? filters.from + "T00:00:00Z" : null,
             p_until: filters.to ? new Date(Date.parse(filters.to) + 86_400_000).toISOString() : null,
-            p_status: filters.status, p_incidents: filters.incidents,
-            p_page: filters.pages[key], p_size: 25,
-          });
+            p_status: filters.status, p_page: filters.pages[key], p_size: 25,
+          };
+          const { data, error } = key === "brevo"
+            ? await db.rpc("get_brevo_event_monitoring", dataParams)
+            : await db.rpc("get_support_monitoring", {
+              ...dataParams, p_section: key, p_incidents: filters.incidents,
+            });
           if (!error && data && Array.isArray(data.rows) && Number.isSafeInteger(data.total) &&
             data.total >= 0 && Number.isSafeInteger(data.page) && data.page >= 1) {
             result.sections[key] = { rows: data.rows, total: data.total, page: data.page,

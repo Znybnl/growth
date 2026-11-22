@@ -17,10 +17,15 @@ publics, il faut donc changer ce réglage : aucune date d’ouverture n’a ét�
 Le périmètre comprend l’accueil SaaS `/`, l’onboarding, la liste des campagnes,
 leur création/édition, affiche/e-mail et la bibliothèque de fonds. Les pages de
 jeu publiques hors prévisualisation, l’authentification, les participants, Mon compte/
-abonnement, les retraits et l’administration sensible sont exclus. Le replay
-  montre les interactions et la structure ; les contenus libres et images importées
-  restent masqués. Certaines illustrations de templates intégrées à l'application
-  peuvent être affichées. Il ne permet donc pas une recette pixel à pixel des créations.
+abonnement, les retraits et l’administration sensible sont exclus. Le replay montre
+les interactions, la structure et le contenu de configuration : sous-titres,
+descriptions, lots et prévisualisations marchandes. Aucun écran de joueur n’est
+enregistré. Seuls les mots de passe et le nom, prénom et e-mail des participants
+sont masqués ; les autres textes et valeurs de saisie, y compris téléphones et
+URL, sont visibles. Les éléments participants sont balisés précisément avec
+`data-replay-private`, sans masquer leurs conteneurs ni les éléments voisins. Les images
+importées et canvas hors aperçu restent bloqués ; les illustrations de templates
+intégrées, vecteurs et canvas des aperçus autorisés peuvent être affichés.
 
 ## Autorisation et confidentialité
 
@@ -34,26 +39,34 @@ abonnement, les retraits et l’administration sensible sont exclus. Le replay
   sans profil ou e-mail ajouté, avec l’identifiant pseudonyme stable compte/utilisateur.
   Aucun événement produit ordinaire dans cette instance ; aucun accord cookies
   fabriqué ni modification de l’analytics existant.
-- Saisies et textes masqués sauf une liste explicite de libellés UI fixes et les
-  valeurs numériques des cartes KPI agrégées ; attributs
-  privés supprimés, en conservant seulement le CSS public compilé par Next.js pour
+- Les mots de passe sont masqués automatiquement ; les noms, prénoms et e-mails
+  des participants sont balisés précisément. Les autres textes et valeurs de
+  saisie sont visibles, sans filtrage générique des e-mails, téléphones ou URL.
+  Les attributs de présentation du wizard, dont `data-layout` et
+  `data-inline-preview`, sont conservés par une liste de valeurs autorisées afin
+  de restaurer le menu latéral et la preview live. Les attributs
+  privés sont supprimés ; seul le CSS public compilé par Next.js est conservé pour
   que les replays gardent leur mise en page. Les classes Tailwind sont filtrées
   individuellement, y compris les dimensions, couleurs et variantes entre crochets.
   Les styles en ligne ne conservent que des valeurs de présentation bornées,
   notamment couleurs, alignement et échelle, sans URL ni variables CSS.
-  Les icônes Lucide du produit conservent leur géométrie vectorielle. Les images
+  Les icônes Lucide du produit et les vecteurs des aperçus balisés conservent leur
+  géométrie. Les images
   statiques autorisées se limitent aux répertoires de templates prédéfinis ; les
   images optimisées Next.js issues de ces répertoires sont ramenées à leur URL
   publique sans paramètres. Les autres images optimisées restent masquées ; les
   URL d'images importées et leurs paramètres ne sont pas conservés. Les autres
-  SVG, médias, images, canvas, éléments privés et contenus
+  SVG, médias, images, canvas hors aperçu, éléments privés et contenus
   éditables bloqués. Ni console, ni corps/en-têtes réseau, ni capture JSON-LD.
   URL sans requête, fragment ou identifiant dynamique.
 - Les iframes de brouillon, d'aperçu de l'e-mail et de prévisualisation marchande
   du jeu sur la route standard peuvent être enregistrées dans un écran autorisé ;
-  les mêmes filtres de texte, saisie et attributs s'appliquent à leur contenu.
+  leur contenu suit les mêmes filtres de textes identifiants, saisies et blocs
+  privés. Les attributs `srcdoc` ne sont conservés qu'en version filtrée, sans
+  scripts, styles en ligne, champs saisissables ni URL non autorisées. Les autres
+  iframes restent bloquées.
   Les iframes tierces ne sont pas accessibles au recorder et leur contenu peut
-  rester vide. Le contenu libre et les données sensibles restent masqués.
+  rester vide.
 - Avec consentement analytics, les événements de l'identité connectée portent
   l'identifiant du replay autorisé en cours, pour apparaître dans sa chronologie.
   Aucun événement n'est ajouté lorsque le consentement analytics est absent.

@@ -974,6 +974,7 @@ export function CampaignExperience({
     <div
       className={`okado-public-experience relative min-h-screen ${isTravelScratch ? "flex flex-col overflow-x-hidden" : "overflow-hidden"} ${pageTemplate === "beauty-rose" ? "okado-rose-powder-surface" : ""}`}
       data-template-id={pageTemplate}
+      data-replay-visible={isPreview ? "" : undefined}
       style={{
         backgroundColor: isHalloweenTemplate ? "#050403" : pageBackgroundColor,
         backgroundImage: isHalloweenTemplate ? "none" : backgroundStyle,
@@ -1420,6 +1421,7 @@ export function CampaignExperience({
         </div>
         <form className="mt-5 space-y-4" onSubmit={submitWinnerForm}>
           <input
+            data-replay-private
             value={firstName}
             onChange={(event) => setFirstName(event.target.value)}
             required
@@ -1430,6 +1432,7 @@ export function CampaignExperience({
 
           <input
             id="winner-first-name"
+            data-replay-private
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -1573,7 +1576,7 @@ export function CampaignExperience({
                 </div>
               ) : null}
               <p className="mt-3 break-words text-xs leading-5 text-[#61687a]">
-                Code de retrait : <span className="font-semibold" data-replay-private>{redemptionCode}</span>
+                Code de retrait : <span className="font-semibold">{redemptionCode}</span>
               </p>
             </div>
           ) : null}

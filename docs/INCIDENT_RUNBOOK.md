@@ -65,6 +65,7 @@ Ces seuils sont des seuils opérationnels de départ, à réévaluer après les 
 |---|---:|---|
 | Erreurs HTTP 5xx sur les parcours publics | > 1 % sur 5 minutes ou 5 erreurs consécutives | Vérifier le dernier déploiement et préparer un rollback Vercel |
 | Échec de la maintenance quotidienne | 1 exécution manquante ou en erreur | Vérifier le cron, les logs et l'expiration des sessions |
+| Événement Brevo à vérifier | Au moins 1 événement `needs_review`, ou une reprise en attente depuis plus de 48 h | Supervision → Brevo : consulter le code/statut d’erreur et le dernier passage ; vérifier l’événement dans Brevo avant tout renvoi manuel. Un résultat réseau ambigu n’est jamais renvoyé automatiquement. |
 | Webhooks Stripe ou Resend en échec | 3 échecs consécutifs | Vérifier la signature, le fournisseur et les livraisons en attente |
 | Erreur Supabase sur une route métier critique | 3 erreurs en 5 minutes | Vérifier la disponibilité, les migrations et les règles RLS |
 

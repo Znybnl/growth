@@ -49,7 +49,7 @@ test("tickets Voyage : la taille choisie pour le texte principal est respectée"
 test("tickets Voyage : le sous-titre reprend la typographie et le halo des roues", async ({ page }, info) => {
   await isolate(page);
   await page.setViewportSize({ width: 390, height: 850 });
-  for (const [wheel, scratch] of TRAVEL_WHEEL_THEMES.map((wheel) => [wheel, TRAVEL_SCRATCH_THEMES.find((theme) => theme.id === `travel-scratch-${wheel.id.replace("travel-", "")}`)!] as const)) {
+  for (const [wheel, scratch] of TRAVEL_WHEEL_THEMES.filter(wheel => wheel.id !== "travel-sunset-drive").map((wheel) => [wheel, TRAVEL_SCRATCH_THEMES.find((theme) => theme.id === `travel-scratch-${wheel.id.replace("travel-", "")}`)!] as const)) {
     await page.goto(url("public", wheel.id, { business: "travel", secondary: "Un sous-titre de démonstration" }));
     const wheelSubtitle = page.getByTestId("christmas-wheel-subtitle");
     await expect(wheelSubtitle).toBeVisible();
@@ -73,6 +73,87 @@ test("tickets Voyage : le sous-titre reprend la typographie et le halo des roues
     else expect(halo).toContain("radial-gradient");
     if (wheel.id === "travel-roadtrip") expect(halo).toContain("0.68");
     if (wheel.id === "travel-tropical") expect(halo).toContain("0.56");
+  }
+});
+
+test("halos Tropical et Road trip restent derrière les textes sans changer de forme sur roue et ticket", async ({ page }, info) => {
+  test.setTimeout(90_000);
+  await isolate(page);
+  for (const mode of ["public", "preview"]) {
+    for (const width of [320, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const wheel of TRAVEL_WHEEL_THEMES.filter(theme => theme.id !== "travel-elegant" && theme.id !== "travel-sunset-drive")) {
+        const scratch = TRAVEL_SCRATCH_THEMES.find(theme => theme.id === `travel-scratch-${wheel.id.replace("travel-", "")}`)!;
+        for (const longCopy of [false, true]) {
+          const headline = longCopy ? "Votre prochaine aventure commence demain\nau bout de la route" : "Cap sur l’aventure";
+          const secondary = longCopy ? "Des souvenirs inoubliables\nau soleil et sur la route" : "Une surprise vous attend";
+          for (const template of [wheel.id, scratch.id]) {
+            const wheelTemplate = !template.includes("scratch");
+            const selector = `[data-travel-template="${wheel.id}"] ${wheelTemplate ? "h1" : "h2"}`;
+            await page.goto(url(mode, template, { business: "travel", headline, secondary }), { waitUntil: "domcontentloaded" });
+            const heading = page.locator(selector).first();
+            const subtitle = page.getByTestId(wheelTemplate ? "christmas-wheel-subtitle" : "travel-scratch-subtitle").first();
+            await expect(heading).toBeVisible();
+            await expect(subtitle).toBeVisible();
+            const geometry = await subtitle.evaluate(element => {
+              const subtitleBounds = element.getBoundingClientRect();
+              const header = element.parentElement!;
+              const heading = header.querySelector("h1, h2")!;
+              const headingStyle = getComputedStyle(heading);
+              const halo = getComputedStyle(element, "::before");
+              return {
+                headerIsolation: getComputedStyle(header).isolation,
+                subtitleIsolation: getComputedStyle(element).isolation,
+                haloPosition: halo.position,
+                haloZIndex: halo.zIndex,
+                haloTop: Number.parseFloat(halo.top),
+                haloHeight: Number.parseFloat(halo.height),
+                subtitleHeight: subtitleBounds.height,
+                subtitleTop: subtitleBounds.top,
+                headingStacking: headingStyle.zIndex,
+              };
+            });
+            expect(geometry.headerIsolation, `${template} ${mode} ${width}px`).toBe("isolate");
+            expect(geometry.subtitleIsolation, `${template} ${mode} ${width}px`).toBe("auto");
+            expect(geometry.haloPosition, `${template} ${mode} ${width}px`).toBe("absolute");
+            expect(geometry.haloZIndex, `${template} ${mode} ${width}px`).toBe("-1");
+            expect(geometry.haloTop, `${template} ${mode} ${width}px`).toBeCloseTo(geometry.subtitleHeight / 2, 1);
+            expect(geometry.haloHeight / geometry.subtitleHeight, `${template} ${mode} ${width}px`).toBeCloseTo(2.6, 1);
+            expect(geometry.headingStacking, `${template} ${mode} ${width}px`).toBe("auto");
+            if (mode === "public" && longCopy) {
+              await page.screenshot({ path: info.outputPath(`${template}-${width}-long-copy.png`), fullPage: true, animations: "disabled" });
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
+test("Road trip applique le bleu foncé et le halo beige derrière le titre, le sous-titre et le logo", async ({ page }) => {
+  await isolate(page);
+  await page.setViewportSize({ width: 390, height: 850 });
+  const roadtrip = TRAVEL_WHEEL_THEMES.find(theme => theme.id === "travel-roadtrip")!;
+  const toRgb = (hex: string) => hex.slice(1).match(/.{2}/g)!.map(value => Number.parseInt(value, 16)).join(", ");
+  for (const template of [roadtrip.id, "travel-scratch-roadtrip"]) {
+    const scratch = template.includes("scratch");
+    await page.goto(url("public", template, { business: "travel", secondary: "Un sous-titre de démonstration" }));
+    const heading = page.locator(`[data-travel-template="travel-roadtrip"] ${scratch ? "h2" : "h1"}`).first();
+    const logo = page.locator("[data-travel-template='travel-roadtrip'] header p").first();
+    const subtitle = page.getByTestId(scratch ? "travel-scratch-subtitle" : "christmas-wheel-subtitle").first();
+    await expect(heading).toHaveCSS("color", `rgb(${toRgb(roadtrip.text)})`);
+    await expect(logo).toHaveCSS("color", `rgb(${toRgb(roadtrip.logo)})`);
+    await expect(subtitle).toHaveCSS("color", `rgb(${toRgb(roadtrip.logo)})`);
+    const titleHalo = await heading.evaluate(element => {
+      const halo = getComputedStyle(element, "::before");
+      return { position: halo.position, zIndex: halo.zIndex, height: Number.parseFloat(halo.height), headingHeight: element.getBoundingClientRect().height, background: halo.backgroundImage, clipPath: halo.clipPath };
+    });
+    expect(titleHalo.position).toBe("absolute");
+    expect(titleHalo.zIndex).toBe("-1");
+    expect(titleHalo.height / titleHalo.headingHeight).toBeCloseTo(2.6, 1);
+    expect(titleHalo.background).toContain("radial-gradient");
+    expect(titleHalo.background).toContain("0.68");
+    expect(titleHalo.clipPath).toBe("none");
   }
 });
 

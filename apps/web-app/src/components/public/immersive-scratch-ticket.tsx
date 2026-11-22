@@ -17,7 +17,7 @@ import { halloweenScratchTemplate } from "@/lib/halloween-scratch-template";
 import { travelScratchTheme } from "@/lib/travel-scratch-themes";
 import { textFontFamily } from "@/lib/format";
 import type { TextFont } from "@/lib/types";
-import { TravelGameHeader } from "./christmas-wheel-art";
+import { SunsetGameHeader, TravelGameHeader } from "./christmas-wheel-art";
 import { BRUSH_CLIP_PATH, SCALLOPED_TICKET_CLIP_PATH, SMOOTH_FESTIVE_BRUSH_CLIP_PATH } from "@/lib/scratch-surface-shapes";
 
 type ScratchTemplateId = ImmersiveScratchTemplateId;
@@ -241,7 +241,7 @@ export function ImmersiveScratchTicket({
   const isSunburst = template === "scratch-sunburst";
   const beautyTheme = scratchVisualTheme(template);
   const travelTheme = travelScratchTheme(template);
-  const TravelIcon = travelTheme?.id === "travel-scratch-tropical"
+  const TravelIcon = (travelTheme?.id === "travel-scratch-tropical" || travelTheme?.id === "travel-scratch-sunset-drive")
     ? Palmtree
     : travelTheme?.id === "travel-scratch-roadtrip"
       ? Compass
@@ -546,7 +546,7 @@ export function ImmersiveScratchTicket({
         style={{ minHeight: travelTheme ? undefined : seasonalTheme ? "190cqw" : fitContainer ? "min(844px, 212cqw)" : "min(100svh, 212cqw)" }}
       >
         <div className={`relative z-10 shrink-0 ${headingAlignmentClass}`} data-travel-template={travelTheme?.id.replace("travel-scratch-", "travel-")} style={travelTheme ? { width: "100%", containerType: "inline-size" } : undefined}>
-          {travelTheme ? <TravelGameHeader scratch logoMode={logoMode} logoText={logoText || "Votre commerce"} logoUrl={logoUrl} logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor || ink} logoAlign={logoAlignmentClass === "justify-start" ? "left" : logoAlignmentClass === "justify-end" ? "right" : "center"} logoBottomSpacingPx={logoBottomSpacingPx} title={displayHeadline} titleColor={ink} titleFontSizePx={headingFontSizePx ?? 40} titleFontFamily={textFontFamily(headingFontFamily ?? travelTheme.font)} titleFontWeight={headingFontWeight} titleAlign={headingAlignmentClass === "text-left" ? "left" : headingAlignmentClass === "text-right" ? "right" : "center"} secondaryText={secondaryText || ""} subtitleSpacingPx={subtitleSpacingPx} /> : <>
+          {travelTheme?.id === "travel-scratch-sunset-drive" ? <SunsetGameHeader scratch logoMode={logoMode} logoText={logoText || "Votre commerce"} logoUrl={logoUrl} logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoAlign={logoAlignmentClass === "justify-start" ? "left" : logoAlignmentClass === "justify-end" ? "right" : "center"} logoBottomSpacingPx={logoBottomSpacingPx} title={displayHeadline} titleFontSizePx={headingFontSizePx ?? 40} titleFontFamily={textFontFamily(headingFontFamily ?? travelTheme.font)} titleAlign={headingAlignmentClass === "text-left" ? "left" : headingAlignmentClass === "text-right" ? "right" : "center"} secondaryText={secondaryText || ""} subtitleSpacingPx={subtitleSpacingPx} /> : travelTheme ? <TravelGameHeader scratch logoMode={logoMode} logoText={logoText || "Votre commerce"} logoUrl={logoUrl} logoWidthPx={logoWidthPx} logoTextSizePx={logoTextSizePx} logoTextColor={logoTextColor || ink} logoAlign={logoAlignmentClass === "justify-start" ? "left" : logoAlignmentClass === "justify-end" ? "right" : "center"} logoBottomSpacingPx={logoBottomSpacingPx} title={displayHeadline} titleColor={ink} titleFontSizePx={headingFontSizePx ?? 40} titleFontFamily={textFontFamily(headingFontFamily ?? travelTheme.font)} titleFontWeight={headingFontWeight} titleAlign={headingAlignmentClass === "text-left" ? "left" : headingAlignmentClass === "text-right" ? "right" : "center"} secondaryText={secondaryText || ""} subtitleSpacingPx={subtitleSpacingPx} /> : <>
           {logoMode !== "none" ? (
             <div className={`flex ${logoAlignmentClass}`} style={{ marginBottom: `${Math.max(0, logoBottomSpacingPx)}px` }}>
               {issue724ScratchStyle && logoMode === "text" ? (
@@ -671,7 +671,7 @@ export function ImmersiveScratchTicket({
               {travelTheme ? (
                 <span className="relative flex flex-col items-center gap-1.5 text-center" style={{ color: travelTheme.text }}>
                   <TravelIcon aria-hidden="true" className="h-7 w-7 opacity-90" strokeWidth={1.8} />
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em]">Grattez pour découvrir</span>
+                  <span className="font-semibold uppercase tracking-[0.14em]" style={{ fontSize: "clamp(12px, 4cqw, 18px)" }}>Grattez pour découvrir</span>
                 </span>
               ) : null}
             </div>

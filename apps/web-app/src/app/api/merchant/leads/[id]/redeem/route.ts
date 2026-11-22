@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { requireAuthenticatedSession } from "@/lib/auth";
+import { emitBrevoCampaignMilestone } from "@/lib/brevo";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { logSupportEvent } from "@/lib/support-log";
@@ -26,6 +27,20 @@ export async function POST(
     }
 
     const updatedLead = await redeemLeadPrize(id);
+    if (updatedLead.status === "redeemed") {
+      after(async () => {
+        await emitBrevoCampaignMilestone({
+          campaignId: updatedLead.campaignId,
+          eventName: "okado_first_redemption",
+          dedupeKey: "first_redemption:{merchantId}",
+        });
+        await emitBrevoCampaignMilestone({
+          campaignId: updatedLead.campaignId,
+          eventName: "okado_game_metrics_updated",
+          dedupeKey: `game_metrics:redemption:${updatedLead.id}`,
+        });
+      });
+    }
     invalidateMerchantCampaignOverview(session.merchant.id);
     logSupportEvent("info", "prize_redeemed", {
       merchantId: session.merchant.id,

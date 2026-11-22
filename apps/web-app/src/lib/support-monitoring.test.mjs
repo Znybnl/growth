@@ -30,7 +30,7 @@ registerHooks({
   },
 });
 const {getSupportMonitoring,parseSupportFilters,supportHref}=await import("./support-monitoring.ts");
-const {recordGainNotificationRun}=await import("./support-task-log.ts");
+const {recordGainNotificationRun,recordBrevoEventRetryRun}=await import("./support-task-log.ts");
 const cron=await import("../app/api/internal/gain-notifications/route.ts");
 const page=(await import("../app/(merchant)/support/page.tsx")).default;
 let state;
@@ -39,18 +39,20 @@ beforeEach(()=>{
   state.db={
     async rpc(name,args){
       state.calls.push([name,args]);
-      if(state.reject===args.p_section)throw Error("private-secret");
-      if(state.error===args.p_section)return {error:{message:"private-secret"}};
+      const section=args.p_section??(name==="get_brevo_event_monitoring"?"brevo":null);
+      if(state.reject===section)throw Error("private-secret");
+      if(state.error===section)return {error:{message:"private-secret"}};
       if(args.p_section==="locations")return {data:[{id:"a",name:"Institut Démo"}]};
-      const rows=args.p_section==="emails"?[
+      const rows=section==="emails"?[
         {id:"11111111-1111-4111-8111-111111111111",kind:"reward",at:"2026-10-11T12:00Z",status:"failed",title:"Jeu démo",
           participant:"Camille",recipient:"camille@example.test",detail:"<script>injection</script>",canHandle:true,eventAt:"2026-10-11T12:00:00.123456Z"},
         {id:"job",kind:"notification",at:"2026-10-11T12:00Z",status:"needs_review",title:"weekly",merchant:"Institut Démo",attempts:6},
-      ]:args.p_section==="webhooks"?[{id:"webhook",kind:"webhook",at:"2026-06-18T18:10Z",status:"email.delivered"}]
-      :args.p_section==="claims"?[{id:"claim",kind:"claim",at:"2026-10-11T12:00Z",status:"claimed",detail:"Soin",code:"DEMO"}]:[];
-      return {data:{rows,total:58,page:args.p_page,stats:args.p_section==="emails"
+      ]:section==="webhooks"?[{id:"webhook",kind:"webhook",at:"2026-06-18T18:10Z",status:"email.delivered"}]
+      :section==="claims"?[{id:"claim",kind:"claim",at:"2026-10-11T12:00Z",status:"claimed",detail:"Soin",code:"DEMO"}]
+      :section==="brevo"?[{id:"hashed-id",kind:"brevo",at:"2026-10-11T12:00Z",status:"needs_review",title:"okado_trial_started",attempts:1,errorCode:"network_outcome_ambiguous"}]:[];
+      return {data:{rows,total:section==="brevo"?1:58,page:args.p_page??1,stats:section==="emails"
         ?{incidents:55,queued:2,jobsWaiting:4,jobsRetry:1,jobsReview:3,eventsWaiting:6}
-        :args.p_section==="webhooks"?{latestWebhook:"2026-06-18T18:10Z"}:{lastRun:null,errorLogs:0}}};
+        :section==="brevo"?{brevoProcessing:0,brevoRetrying:0,brevoNeedsReview:1}:section==="webhooks"?{latestWebhook:"2026-06-18T18:10Z"}:{lastRun:null,errorLogs:0}}};
     },
     from(table){return {async insert(row){state.writes.push([table,row]);return {error:state.insertError};}};},
   };
@@ -76,7 +78,7 @@ test("autorisations : refus avant toute lecture, y compris service role direct",
 test("DAL : filtres en base, dates UTC inclusives, cinq lectures et état actuel hors recherche",async()=>{
   const filters=parseSupportFilters({merchant:"a",q:"ancien",from:"2026-10-11",to:"2026-10-11",emailsPage:"3"});
   const data=await getSupportMonitoring(state.session.user.email,filters);
-  assert.equal(state.calls.length,5);assert.equal(data.sections.emails.total,58);
+  assert.equal(state.calls.length,6);assert.equal(data.sections.emails.total,58);
   const args=state.calls.find(([,a])=>a.p_section==="emails")[1];
   assert.deepEqual(args,{p_section:"emails",p_merchant:"a",p_query:"ancien",p_from:"2026-10-11T00:00:00Z",
     p_until:"2026-10-12T00:00:00.000Z",p_status:"all",p_incidents:"all",p_page:3,p_size:25});
@@ -93,15 +95,17 @@ test("panne partielle : indisponible, sans zéro fictif ni divulgation ; dates i
   const invalid=await getSupportMonitoring(state.session.user.email,parseSupportFilters({from:"bad"}));
   assert.equal(state.calls.length,0);assert.equal(invalid.sections.emails.total,null);
 });
-test("rendu : quatre tableaux, compteurs exacts, états non trompeurs, acquittement et échappement",async()=>{
+test("rendu : cinq tableaux, compteurs exacts, états non trompeurs, acquittement et échappement",async()=>{
   const html=renderToStaticMarkup(await page({searchParams:Promise.resolve({q:"1",emailsPage:"2"})}));
-  assert.equal((html.match(/<table\b/g)??[]).length,4);
+  assert.equal((html.match(/<table\b/g)??[]).length,5);
   assert.match(html,/2 affichés sur 58 résultats/);assert.match(html,/Page 2 \/ 3/);
   assert.match(html,/Synthèse hebdomadaire|Synthèse hebdomadaire/);
   assert.match(html,/Intervention requise/);assert.match(html,/Marquer comme traité/);
   assert.match(html,/&lt;script&gt;injection/);assert.doesNotMatch(html,/<script>/);
   assert.match(html,/Non observé/);assert.doesNotMatch(html,/Synchronisation active|Santé production|Suivi vendeur requis/);
+  assert.match(html,/okado_trial_started/);assert.match(html,/Résultat réseau ambigu/);
   assert.equal((renderToStaticMarkup(await page({searchParams:Promise.resolve({section:"logs"})})).match(/<table\b/g)??[]).length,1);
+  assert.equal((renderToStaticMarkup(await page({searchParams:Promise.resolve({section:"brevo"})})).match(/<table\b/g)??[]).length,1);
 });
 test("traces planifiées : attendues, whitelist non nominative, preview sans écriture, échec non bloquant",async()=>{
   const original=process.env.VERCEL_ENV;
@@ -115,6 +119,14 @@ test("traces planifiées : attendues, whitelist non nominative, preview sans éc
     state.insertError={message:"private-secret"};
     await recordGainNotificationRun(true,{skipped:true});
     assert.equal(state.writes[2][1].level,"warn");
+    state.insertError=null;
+    await recordBrevoEventRetryRun({processed:3,sent:1,retrying:1,needsReview:1,recipient:"secret@example.test",payload:"private"});
+    assert.equal(state.writes[3][1].event,"brevo_event_retry_run");
+    assert.equal(state.writes[3][1].level,"error");
+    assert.doesNotMatch(JSON.stringify(state.writes[3]),/secret|private/);
+    state.insertError={message:"private-secret"};
+    await recordBrevoEventRetryRun({},true);
+    assert.equal(state.writes.length,5);
   }finally{if(original===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=original;}
 });
 test("vraie route planifiée : autorisation avant trace, succès attendu et échec durable sans secret",async()=>{

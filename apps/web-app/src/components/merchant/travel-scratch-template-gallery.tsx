@@ -17,8 +17,14 @@ export function TravelScratchTemplateGallery({
         Templates Voyage
       </h3>
       <div className="grid min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,13rem),1fr))] gap-3" data-testid="travel-scratch-template-options">
-        {TRAVEL_SCRATCH_THEMES.map((theme) => (
-          <GameTemplateCard
+        {TRAVEL_SCRATCH_THEMES.map((theme) => <TravelScratchTemplateCard key={theme.id} theme={theme} selectedTemplateId={selectedTemplateId} onSelect={onSelect} />)}
+      </div>
+    </section>
+  );
+}
+
+export function TravelScratchTemplateCard({ theme, selectedTemplateId, onSelect }: { theme: (typeof TRAVEL_SCRATCH_THEMES)[number]; selectedTemplateId?: string; onSelect: (id: GamePageTemplateId) => void }) {
+  return <GameTemplateCard
             key={theme.id}
             label={theme.name}
             description={theme.description}
@@ -37,9 +43,5 @@ export function TravelScratchTemplateGallery({
                 </span>
               </div>
             </div>
-          </GameTemplateCard>
-        ))}
-      </div>
-    </section>
-  );
+          </GameTemplateCard>;
 }

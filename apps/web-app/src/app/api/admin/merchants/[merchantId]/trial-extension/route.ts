@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { assertSaasAdminEmail } from "@/lib/admin";
 import { extendMerchantTrial, AdminTrialExtensionError } from "@/lib/admin-repository";
 import { getAuthenticatedSession } from "@/lib/auth";
 import { logSupportEvent } from "@/lib/support-log";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
+import { refreshBrevoSequenceStateByMerchantId } from "@/lib/brevo";
 
 type RouteContext = {
   params: Promise<{ merchantId: string }>;
@@ -27,6 +28,9 @@ export async function POST(request: Request, { params }: RouteContext) {
 
     const { merchantId } = await params;
     const result = await extendMerchantTrial(merchantId, body.days as number);
+    after(async () => {
+      await refreshBrevoSequenceStateByMerchantId(merchantId);
+    });
     logSupportEvent("info", "admin-trial-extended", {
       merchantId: result.merchantId,
       actorUserId: session.user.id,

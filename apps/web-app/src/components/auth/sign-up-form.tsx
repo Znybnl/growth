@@ -243,6 +243,8 @@ export function SignUpForm() {
             J’accepte les <a href="https://www.okado.app/cgv" target="_blank" rel="noreferrer" className="underline">conditions générales de vente</a>.
           </span>
         </label>
+        <p className="mt-3 text-xs">Consultez notre <a href="https://www.okado.app/confidentialite" target="_blank" rel="noreferrer" className="underline">politique de confidentialité</a>. En créant votre compte, vous recevrez des e-mails professionnels de démarrage et de suivi de votre essai Okado, en lien avec votre activité. Vous pouvez vous y opposer à tout moment en écrivant à <a href="mailto:contact@okado.app?subject=Opposition%20aux%20e-mails%20Okado" className="underline">contact@okado.app</a> ; chaque e-mail comporte un lien pour vous y opposer. Cette information ne constitue pas un consentement marketing général.
+        </p>
       </div>
 
       {error ? (

@@ -6,6 +6,8 @@ import { DataCampaignSelector } from "@/components/merchant/data-campaign-select
 import { DataSearchForm } from "@/components/merchant/data-search-form";
 import { FileDownloadButton } from "@/components/merchant/download-feedback";
 import { LeadPrizeActions } from "@/components/merchant/lead-prize-actions";
+import { RewardEmailActions } from "@/components/merchant/reward-email-actions";
+import { EmailErrorDetail } from "@/components/merchant/email-error-detail";
 import { PrizeStockActions } from "@/components/merchant/prize-stock-actions";
 import { EmptyState, MetricCard, PageHeader, ResponsiveTable, StatusNotice } from "@/components/ui/workspace";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -244,10 +246,9 @@ function LeadsExportSection({
                     </div>
                   ) : null}
                   {lead.emailErrorMessage ? (
-                    <div className="mt-1 max-w-[140px] truncate text-xs font-semibold text-[#c2410c]" title={lead.emailErrorMessage}>
-                      {lead.emailErrorMessage}
-                    </div>
+                    <EmailErrorDetail message={lead.emailErrorMessage} />
                   ) : null}
+                  {lead.prizeId ? <RewardEmailActions leadId={lead.id} status={lead.status} deliveryStatus={lead.emailDeliveryStatus} permanentBounce={Boolean(lead.emailPermanentBounce)} /> : null}
                 </td>
                 <td data-label="Retrait" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
                   <LeadPrizeActions
@@ -255,7 +256,6 @@ function LeadsExportSection({
                     status={lead.status}
                     hasPrize={Boolean(lead.prizeId)}
                     isExpired={isRewardExpired(lead.status, lead.rewardExpiresAt)}
-                    emailDeliveryStatus={lead.emailDeliveryStatus}
                   />
                 </td>
                 <td data-label="Consentement" className="border-b border-[#eef2f7] px-3 py-4 text-slate">
@@ -385,7 +385,7 @@ async function DataPageContent({ searchParams }: DataPageProps) {
         </div>
         {emailStatus === "attention" ? (
           <StatusNotice tone="warning" className="mt-4">
-            Cette vue affiche uniquement les e-mails en échec pour un gain attribué et encore à retirer. Renvoyez l’e-mail ou consultez son historique pour résoudre l’alerte.
+            Cette vue affiche les e-mails en échec pour un gain attribué et encore à retirer. Consultez les détails dans la colonne E-mail gain.
           </StatusNotice>
         ) : null}
       </section>

@@ -1,5 +1,14 @@
 # Produit — Okado
 
+## Aide et contact des utilisateurs marchands — #813
+
+Un utilisateur marchand connecté peut ouvrir « Aide et contact » depuis le menu
+de l'application, sur ordinateur ou mobile. Il renseigne un objet et un message
+pour signaler une anomalie, proposer une évolution ou demander de l'aide ; aucune
+catégorie ni pièce jointe n'est demandée. La demande est envoyée à
+`contact@okado.app` avec l'adresse du compte dans `Reply-To`. Le site public
+conserve ses liens e-mail existants et n'a pas de formulaire de contact.
+
 ## Inscription marchand — #795
 
 La page d’inscription présente le jeu, la diffusion et le suivi dans un panneau
@@ -311,11 +320,13 @@ légende, sélection et mise au point clavier.
 
 ## Décisions produit confirmées
 
-- Supervision (#491) affiche des observations, pas un certificat de santé production : dernier webhook daté, dernier traitement planifié observé, source indisponible explicite, aucun zéro fabriqué. Les files d’attente actuelles sont limitées à l’établissement choisi mais indépendantes des filtres de période/recherche. Les quatre historiques ont des filtres serveur, un total exact et des pages de 25 lignes indépendantes. Les jours du filtre sont explicitement UTC (fin incluse), les horodatages affichés en heure de France. Les gains non retirés sont un suivi commercial, jamais une panne. Les e-mails de gain et les notifications établissement sont distingués ; acceptation Resend, livraison, reprise et intervention ne sont pas confondues. Aucun renvoi ou changement de préférence depuis cette consultation. Le journal n’est pas exhaustif et les webhooks archivés ne constituent pas tous les envois du fournisseur.
+- Supervision (#491) affiche des observations, pas un certificat de santé production : dernier webhook daté, dernier traitement planifié observé, source indisponible explicite, aucun zéro fabriqué. Les files d’attente actuelles sont limitées à l’établissement choisi mais indépendantes des filtres de période/recherche. Les cinq historiques ont des filtres serveur, un total exact et des pages de 25 lignes indépendantes. Les jours du filtre sont explicitement UTC (fin incluse), les horodatages affichés en heure de France. Les gains non retirés sont un suivi commercial, jamais une panne. Les e-mails de gain et les notifications établissement sont distingués ; acceptation Resend, livraison, reprise et intervention ne sont pas confondues. Le journal n’est pas exhaustif et les webhooks archivés ne constituent pas tous les envois du fournisseur.
 
-- Supervision présente les e-mails, webhooks, gains sans retrait et journal dans quatre tableaux pleine largeur superposés (issue #489). Recherche, filtres, informations et traitement des incidents sont conservés. Sur mobile, chaque tableau peut défiler horizontalement, sans élargir la page. Aucun changement aux envois, gains, droits ou données fournisseur.
+- Supervision présente les e-mails, webhooks, gains sans retrait, journal et événements Brevo dans cinq tableaux pleine largeur superposés. La table Brevo suit l’état de reprise et les erreurs sans afficher d’adresse, de propriété d’événement ou de clé de déduplication. Recherche, filtres, informations et traitement des incidents existants sont conservés. Sur mobile, chaque tableau peut défiler horizontalement, sans élargir la page.
 
 - Supervision distingue les incidents d’e-mail **à traiter** et **traités** (issue #487). L’administrateur peut « Marquer comme traité » un échec, rebond, plainte ou suppression historique. L’action enregistre la date et l’identité de l’administrateur et retire l’incident des alertes actives de Supervision, Pilotage et de la navigation ; le filtre « Traités » permet de retrouver les derniers incidents acquittés. Le statut réel de l’envoi, l’erreur et les événements fournisseur sont conservés. Aucun renvoi ni changement de programmation des reprises n’est déclenché. Un nouvel événement ou un changement de statut invalide l’acquittement précédent ; une page devenue obsolète ne peut pas acquitter ce nouvel incident. Le compteur global des e-mails actifs n’est pas limité aux 20 incidents affichés.
+
+- Alertes e-mail marchandes (#828) : le clic ouvre les résultats filtrés de la campagne et masque, pour l’établissement, les incidents affichés lors du clic. Les incidents des autres campagnes et les nouveaux événements restent visibles ; le traitement administrateur et le statut réel de livraison ne changent pas. Les résultats exposent l’erreur complète et interdisent le renvoi lorsque le fournisseur a identifié un rebond permanent. Les types temporaires ou indéterminés conservent les règles de renvoi existantes.
 
 - Pilotage propose « Voir la fiche » pour chaque compte (issue #475). Cette popin en lecture seule présente l’identité, le logo, les coordonnées, les liens marketing, la fiche Google enregistrée et les paramètres non secrets de l’établissement. Les comptes multi-sites disposent d’un sélecteur parmi leurs sites actifs accessibles. Les champs absents sont indiqués sans inventer d’URL ; seuls les liens HTTP(S) valides sans identifiants intégrés s’ouvrent dans un nouvel onglet. Le chargement intervient à l’ouverture, avec état de chargement, erreur et reprise. Aucune modification, aucun changement de site actif ni de données de jeu ; PIN et secrets techniques restent masqués.
 
@@ -347,6 +358,8 @@ légende, sélection et mise au point clavier.
 - Les agences de voyage disposent de trois roues supplémentaires : Voyage élégant, Vacances tropicales et Road trip & aventure. Chaque modèle utilise son fond natif, remplaçable par un fond personnalisé ; textes, logo, couleurs et lots restent configurables. Le tirage utilise le moteur commun et les modèles existants ne sont pas modifiés (issue #779).
 - Le secteur Beauté propose six sous-secteurs : Beauté généraliste / multi-activité, Coiffure, Ongles, Regard — cils & sourcils, Massage & Spa et Soins visage & corps. Les anciennes valeurs ne sont conservées que si référencées. Les suggestions sont ciblées par sous-secteur ; sans bibliothèque dédiée, la bibliothèque généraliste reste disponible en repli.
 - Les établissements du secteur Beauté disposent de six styles de roue supplémentaires, quel que soit leur sous-secteur. Cette collection apparaît avant les modèles génériques dans les éditeurs ; les joueurs voient le modèle enregistré sans restriction de secteur. Le logo, le titre, le sous-titre, les couleurs et la police restent personnalisables. Les centres JOUER des six thèmes `beauty-*` sont sans icône, avec une police agrandie et un reflet discret en haut à gauche (issue #460). Éclat conserve son bouton, son pointeur et son anneau blanc antérieurs à la PR #461. L'interaction du bouton reste identique.
+- Sur Éclat (`rose-institut`), modifier la couleur principale recolore uniquement les segments roses ; les segments secondaires restent blanc rosé (`#fff9fb`) indépendamment de la couleur principale.
+- Sur Signature (`restaurant-pop`), moins de huit résultats possibles donnent huit segments ; à partir de huit résultats, la roue affiche au moins dix segments. Le résultat perdu compte lorsque sa probabilité est positive et chaque résultat reste visible. Cette règle concerne l’affichage et ne modifie pas les probabilités de tirage (issue #811).
 
 ## Choix des polices Beauté — #551
 
@@ -589,3 +602,13 @@ sans commission sur la pause ni redémarrage de la fenêtre. Le paiement reste m
 - [ ] Définir les critères de retrait forcé à afficher et à journaliser pour le personnel du commerce.
 - [ ] Définir précisément le seuil de parité fonctionnelle du wizard qui déclenchera le retrait du formulaire classique.
 - [ ] Valider les règles de conformité restantes dans `docs/DOMAIN_RULES.md` (consentement, conservation des données et preuves associées).
+
+### Roue Sunset Drive — issue #832
+
+Sunset Drive ajoute un décor de promenade au coucher du soleil et une roue corail et ivoire à la collection Voyage ; il est également proposé dans les autres templates pour les commerces des autres secteurs. Le fond fourni par le propriétaire est chargé comme fond natif et peut être remplacé par une image ou une couleur. Titre et sous-titre restent éditables, avec un style ivoire initial, titre en capitales à l’affichage et sous-titre italique ; la police et la taille du titre restent configurables. Les tailles fluides sont calculées par rapport à la largeur de la scène, afin de conserver les proportions dans les aperçus intégrés comme sur mobile. Le logo reste celui du commerce. La roue utilise le moteur commun et représente tous les lots éligibles, sans modifier le tirage.
+
+Sunset Drive affiche six secteurs jusqu’à cinq résultats distincts et huit au-delà, en comptant la perte comme un résultat lorsqu’elle existe. Au-delà de huit résultats distincts, le nombre de secteurs augmente pour ne masquer aucun lot. La règle reste purement visuelle.
+
+La couleur principale de la roue est corail fixe ; le titre et le sous-titre restent ivoire fixe, indépendamment de la couleur du logo. La police et la taille du titre, la taille du logo ainsi que les trois espacements restent modifiables. La couleur du logo texte est fixée à l’ivoire ; une image de logo conserve ses couleurs.
+
+Le ticket à gratter Sunset Drive reprend le fond et l’en-tête de la roue ; la zone corail utilise le moteur de grattage existant. Le logo texte, le titre et le sous-titre restent ivoire fixe.

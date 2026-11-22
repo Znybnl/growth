@@ -155,6 +155,7 @@ test("planification quotidienne sans forfait supérieur, reprise indépendante d
   const config=JSON.parse(readFileSync(new URL("../../vercel.json",import.meta.url),"utf8"));
   assert.deepEqual(config.crons,[
     {path:"/api/internal/maintenance",schedule:"15 3 * * *"},
+    {path:"/api/internal/brevo-events/retry",schedule:"30 3 * * *"},
     {path:"/api/internal/gain-notifications/recovery",schedule:"15 3 * * *"},
     {path:"/api/internal/gain-notifications",schedule:"0 8 * * *"},
     {path:"/api/internal/reward-reminders",schedule:"0 8 * * *"},

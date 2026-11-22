@@ -6,18 +6,22 @@ import { SUPPORT_SECTIONS, supportHref } from "@/lib/support-monitoring";
 import type { SupportFilters, SupportMonitoring, SupportRecord, SupportSection, SupportSlice } from "@/lib/support-monitoring";
 import type { RewardEmailDeliveryStatus } from "@/lib/types";
 
-const titles: Record<SupportSection, string> = { emails: "E-mails", webhooks: "Webhooks", claims: "Gains", logs: "Journal" };
+const titles: Record<SupportSection, string> = { emails: "E-mails", webhooks: "Webhooks", claims: "Gains", logs: "Journal", brevo: "Brevo" };
 const cell = "border-b border-fog px-4 py-4 align-top text-sm leading-5 text-ash [overflow-wrap:anywhere]";
 const field = "min-w-0 w-full rounded-xl border border-border bg-white px-3 py-3 text-sm";
 const labels: Record<string, string> = { instant: "À chaque gain", daily: "Synthèse quotidienne",
   weekly: "Synthèse hebdomadaire", monthly: "Synthèse mensuelle", pending: "En attente", sending: "En cours",
-  sent: "Accepté par Resend", retry: "Échec — reprise prévue", needs_review: "Intervention requise", cancelled: "Annulé" };
+  sent: "Accepté par Resend", retry: "Reprise prévue", needs_review: "Intervention requise", cancelled: "Annulé",
+  processing: "En cours", failed: "Échec", brevo_http_429: "Limite Brevo (429)", brevo_http_500: "Erreur Brevo (5xx)",
+  network_outcome_ambiguous: "Résultat réseau ambigu", contact_lookup_failed: "Contact indisponible",
+  contact_missing: "Contact supprimé", processing_interrupted: "Envoi interrompu" };
 const date = (value?: string | null) => value && Number.isFinite(Date.parse(value)) ? formatDateTime(value) : "Non observé";
 
 function Status({ row }: { row: SupportRecord }) {
   const danger = ["failed", "bounced", "complained", "suppressed", "needs_review", "retry", "error"].includes(row.status);
   const label = row.kind === "notification" ? labels[row.status] ?? row.status
     : row.kind === "reward" ? row.status === "sent" ? "Accepté par Resend" : rewardEmailStatusLabel(row.status as RewardEmailDeliveryStatus)
+    : row.kind === "brevo" ? row.status === "needs_review" ? "À vérifier" : labels[row.status] ?? row.status
     : row.kind === "claim" ? leadStatusLabel(row.status as "claimed" | "redeemed" | "expired") : row.status;
   return <StatusBadge tone={danger ? "danger" : row.status === "warn" ? "warning" : "muted"}>{label}</StatusBadge>;
 }
@@ -62,10 +66,13 @@ export function SupportDashboard({ data, filters, base = "/support" }: {
   data: SupportMonitoring; filters: SupportFilters; base?: string;
 }) {
   const email = data.sections.emails, log = data.sections.logs, webhook = data.sections.webhooks;
+  const brevo = data.sections.brevo;
   const stats = email.stats;
   const number = (value?: number) => email.available && value !== undefined ? String(value) : "Indisponible";
+  const brevoNumber = (value?: number) => brevo.available && value !== undefined ? String(value) : "Indisponible";
   const unavailable = SUPPORT_SECTIONS.filter(key => !data.sections[key].available);
   const lastRun = log.stats.lastRun;
+  const lastBrevoRun = brevo.stats.lastRun;
   return <div className="min-w-0 space-y-6">
     <section aria-label="Synthèse opérationnelle" className="okado-card min-w-0 p-5">
       <header className="flex flex-wrap items-center justify-between gap-3">
@@ -80,10 +87,17 @@ export function SupportDashboard({ data, filters, base = "/support" }: {
           ["E-mails de gain en attente / en cours", number(stats.queued)],
           ["Notifications en attente / en cours", number(stats.jobsWaiting)],
           ["Notifications à vérifier", number(stats.jobsReview)],
+          ["Événements Brevo en reprise", brevoNumber(brevo.stats.brevoRetrying)],
+          ["Événements Brevo à vérifier", brevoNumber(brevo.stats.brevoNeedsReview)],
         ].map(([label, value]) => <div key={label} className="rounded-lg border border-border bg-purple-haze/30 p-4">
           <dt className="text-sm text-ash">{label}</dt><dd className="mt-2 text-2xl font-semibold text-graphite">{value}</dd>
         </div>)}
       </dl>
+      {brevo.available ? <p className="mt-4 text-sm text-ash">
+        {brevo.stats.brevoProcessing ?? 0} événement(s) en cours ; {brevo.stats.brevoRetrying ?? 0} en reprise ; {brevo.stats.brevoNeedsReview ?? 0} à vérifier.
+        {brevo.stats.oldestBrevoRetry ? ` La plus ancienne reprise date du ${date(brevo.stats.oldestBrevoRetry)}.` : ""}
+        {" "}Les résultats réseau ambigus ne sont jamais renvoyés automatiquement.
+      </p> : null}
       {email.available ? <p className="mt-4 text-sm text-ash">
         {stats.jobsRetry ?? 0} notification(s) en reprise après échec. {stats.eventsWaiting ?? 0} événement(s) en attente de préparation.
         {stats.oldestEvent ? ` Le plus ancien date du ${date(stats.oldestEvent)}.` : ""}
@@ -93,9 +107,12 @@ export function SupportDashboard({ data, filters, base = "/support" }: {
         <p>Dernier webhook reçu : {webhook.available ? date(webhook.stats.latestWebhook) : "Indisponible"}.
           {" "}Un événement reçu ne garantit pas la santé de Resend ; aucun événement ne prouve pas une panne.</p>
         <p>Dernier passage planifié observé (plateforme) : {!log.available ? "Indisponible" : !lastRun ? "Non observé"
-          : `${date(lastRun.at)} — ${lastRun.event === "gain_notification_recovery_run" ? "reprise" : "synthèses"} — ${lastRun.status === "error" ? "échec ou limite atteinte" : lastRun.status === "warn" ? "non exécuté" : "terminé"}`}.
+          : `${date(lastRun.at)} — ${lastRun.event === "gain_notification_recovery_run" ? "reprise" : lastRun.event === "brevo_event_retry_run" ? "reprises Brevo" : "synthèses"} — ${lastRun.status === "error" ? "échec ou limite atteinte" : lastRun.status === "warn" ? "non exécuté" : "terminé"}`}.
           {lastRun?.detail ? ` ${lastRun.detail}` : ""}
           {" "}Cette observation n’est ni une garantie de ponctualité, ni une preuve de réception des e-mails.</p>
+        <p>Dernière reprise Brevo : {!brevo.available ? "Indisponible" : !lastBrevoRun ? "Non observée"
+          : `${date(lastBrevoRun.at)} — ${lastBrevoRun.status === "error" ? "erreur ou événements à vérifier" : lastBrevoRun.status === "warn" ? "reprise ou traitement ignoré" : "terminée"}`}.
+          {lastBrevoRun?.detail ? ` ${lastBrevoRun.detail}` : ""}</p>
       </div>
       <p className="mt-3 text-sm text-ash">Erreurs journalisées sur la période (hors recherche) :
         {" "}{log.available && log.stats.errorLogs !== undefined ? log.stats.errorLogs : "Indisponible"}.
@@ -138,6 +155,7 @@ export function SupportDashboard({ data, filters, base = "/support" }: {
               ["retry", "Notification : reprise"], ["needs_review", "Notification : intervention"],
               ["cancelled", "Notification : annulée"], ["claimed", "Gain : à retirer"], ["redeemed", "Gain : retiré"],
               ["expired", "Gain : expiré"], ["email.delivered", "Webhook : distribué"], ["email.bounced", "Webhook : rebond"],
+              ["processing", "Brevo : en cours"],
               ["info", "Journal : information"], ["warn", "Journal : attention"], ["error", "Journal : erreur"],
             ].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select></label>
@@ -161,10 +179,12 @@ export function SupportDashboard({ data, filters, base = "/support" }: {
       const headers = key === "emails" ? ["Jeu / notification", "Destinataire", "Statut", "Détail", "Dernier événement / création", "Traitement"]
         : key === "webhooks" ? ["Date", "Événement", "Jeu / établissement", "Destinataire", "Envoi associé", "Identifiant Resend"]
         : key === "claims" ? ["Lot / jeu", "Participant", "Statut", "Code de retrait", "Disponible", "Expiration"]
+        : key === "brevo" ? ["Date", "Événement", "Établissement", "Statut", "Tentatives / reprise", "Erreur"]
         : ["Date", "Événement", "Niveau", "Contexte", "Détail"];
       const subtitle = key === "emails" ? "E-mails de gain et notifications aux établissements. « Accepté par Resend » ne signifie pas réception en boîte mail. Aucun renvoi automatique depuis cet écran."
         : key === "webhooks" ? "Événements effectivement archivés, y compris sans e-mail de gain associé. Ce tableau ne constitue pas l’historique complet de tous les envois Resend."
         : key === "claims" ? "Suivi commercial des gains, y compris retirés ou expirés. Un gain non retiré n’est pas un incident technique."
+        : key === "brevo" ? "Historique de reprise des événements Brevo. Les adresses et propriétés de contact ne sont pas affichées. Les cas ambigus sont à vérifier avant tout renvoi."
         : "Événements effectivement journalisés. Une source vide ne garantit pas l’absence d’incident sur la plateforme.";
       return <div key={key} id={"monitor-" + key} className="min-w-0">
         <SupportTable id={"monitor-table-" + key} title={titles[key]} subtitle={subtitle}
@@ -172,7 +192,14 @@ export function SupportDashboard({ data, filters, base = "/support" }: {
           headers={headers} empty={slice.available ? "Aucun résultat ne correspond aux filtres." : "Lecture indisponible. Actualisez pour réessayer."}
           hasRows={slice.available && slice.rows.length > 0}>
           {slice.rows.map(row => <tr key={row.kind + row.id} className="hover:bg-purple-haze/40">
-            {key === "emails" ? <EmailCells row={row} /> : key === "webhooks" ? <>
+            {key === "emails" ? <EmailCells row={row} /> : key === "brevo" ? <>
+              <td className={cell}>{date(row.at)}</td>
+              <td className={cell}><p className="font-semibold text-graphite">{row.title}</p></td>
+              <td className={cell}>{row.merchant ?? "—"}</td>
+              <td className={cell}><Status row={row} /></td>
+              <td className={cell}>{row.attempts ?? 0} tentative(s)<p className="mt-1">Prochaine reprise : {date(row.retryAt)}</p><p className="mt-1 text-xs">Dernière tentative : {date(row.lastAttemptAt)}</p></td>
+              <td className={cell}>{row.errorCode ? labels[row.errorCode] ?? row.errorCode : "—"}{row.errorStatus ? ` · HTTP ${row.errorStatus}` : ""}</td>
+            </> : key === "webhooks" ? <>
               <td className={cell}>{date(row.at)}</td><td className={cell}>{row.status}</td>
               <td className={cell}>{row.title ?? "Non associé à un gain"}<p className="mt-1">{row.merchant ?? "—"}</p></td>
               <td className={cell}>{row.recipient ?? "—"}</td><td className={cell}>{row.detail ?? "Non associé"}</td>

@@ -343,7 +343,7 @@ export function wheelLogoColorForTemplateSelection(templateId: GamePageTemplateI
 
 /** Dynamique starts with Poppins unless the merchant already chose a font for it. */
 export function wheelHeadingFontForTemplateSelection(templateId: GamePageTemplateId, currentFont: TextFont): TextFont {
-  if (templateId === "travel-tropical" || templateId === "travel-roadtrip") return "dm-sans";
+  if (templateId === "travel-tropical" || templateId === "travel-roadtrip" || templateId === "travel-sunset-drive") return "dm-sans";
   if (isChristmasWheelTemplate(templateId)) return "bodoni";
   if (templateId === "halloween-gold") return "bodoni";
   return templateId === "classic" ? "poppins" : currentFont;
@@ -537,7 +537,8 @@ export function defaultScratchTextColor(templateId?: GamePageTemplateId) {
 }
 
 export function defaultScratchLogoColor(templateId?: GamePageTemplateId) {
-  return halloweenScratchTemplate(templateId)?.logo ?? christmasScratchTemplate(templateId)?.logo ?? defaultScratchTextColor(templateId);
+  const travel = travelScratchTheme(templateId);
+  return halloweenScratchTemplate(templateId)?.logo ?? christmasScratchTemplate(templateId)?.logo ?? travel?.logo ?? defaultScratchTextColor(templateId);
 }
 
 export function resolveScratchTemplateTextColor(

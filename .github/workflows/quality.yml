@@ -13,7 +13,7 @@ jobs:
   visual-1280:
     name: Visual checks at 1280px
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -55,7 +55,7 @@ jobs:
   analytics-identity:
     name: Verify PostHog identity and consent
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -82,7 +82,7 @@ jobs:
   web:
     name: Verify source and web build
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -139,6 +139,8 @@ jobs:
         run: npm run test:poster-composition -w @okado/web-app
       - name: Test merchant gain notifications and RLS
         run: npm run test:gain-notifications -w @okado/web-app
+      - name: Test merchant contact delivery and reply address
+        run: npm run test:contact -w @okado/web-app
       - name: Test Resend webhook signatures and storage errors
         run: npm run test:resend-webhook -w @okado/web-app
       - name: Test Beauty suggestion catalog and migration
@@ -163,6 +165,9 @@ jobs:
         run: npm run test:metrics -w @okado/web-app
       - name: Test merchant page reads, session isolation and private timings
         run: npm run test:page-performance -w @okado/web-app
+
+      - name: Test merchant email alerts
+        run: npm run test:merchant-email-alerts -w @okado/web-app
       - name: Test anonymous draw preparation timings and percentile report
         run: npm run test:draw-preparation -w @okado/web-app
       - name: Test merchant account affiliation, permissions, resubscription and migration

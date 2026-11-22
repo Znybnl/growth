@@ -46,7 +46,7 @@ test("@visual-1280 Nude : tous les lots dans le vrai cadre du wizard à 1280×72
     await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-edit&template=beauty-nude&business=beauty&prizes=headspa");
     await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
     const dialog = page.getByRole("dialog", { name: "Aperçu du jeu" });
-    const labels = dialog.frameLocator("iframe").getByTestId("game-wheel-frame").locator("svg text");
+    const labels = dialog.getByTestId("draft-preview-viewport").getByTestId("game-wheel-frame").locator("svg text");
     await expect(labels).toHaveCount(8);
     expect((await labels.allTextContents()).some(text => text.includes("HEADSPA"))).toBe(true);
     await expect.poll(async () => Number(await labels.filter({hasText:/LUXOPUNCTURE/}).getAttribute("font-size"))).toBeLessThan(25);

@@ -31,9 +31,21 @@ export function selectWheelVisualSegments(
   return visible;
 }
 
+/** Sunset Drive counts distinct outcomes, including loss; never hide an outcome. */
+export function sunsetDriveVisualSegments(segments: WheelVisualSegment[], winningSegmentId: string): WheelVisualSegment[] {
+  const outcomes = new Set(segments.map((segment) => segment.id.replace(/-visual-\d+$/, "")));
+  return selectWheelVisualSegments(segments, winningSegmentId, outcomes.size <= 5 ? 6 : 8);
+}
+
 /** Rose poudré targets eight sectors, retaining every reward and the exact result. */
 export function rosePowderVisualSegments(segments: WheelVisualSegment[], winningSegmentId: string): WheelVisualSegment[] {
   return selectWheelVisualSegments(segments, winningSegmentId, 8);
+}
+
+/** Signature uses eight slices below eight distinct outcomes, including loss. */
+export function signatureVisualSegments(segments: WheelVisualSegment[], winningSegmentId: string): WheelVisualSegment[] {
+  const outcomes = new Set(segments.map((segment) => segment.id.replace(/-visual-\d+$/, "")));
+  return selectWheelVisualSegments(segments, winningSegmentId, outcomes.size < 8 ? 8 : 10);
 }
 
 type WheelPrizeInput = {

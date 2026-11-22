@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import * as merchantLogoText from "./merchant-logo-text.ts";
+import * as rewardBounce from "./reward-email-bounce.ts";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -146,6 +147,43 @@ test("#500 alertes : agrégat lié à la session, réponse privée et erreur san
     "@/lib/auth":{requireAuthenticatedSession:async()=>{throw Error("Unauthorized")}}});
   await assert.rejects(()=>denied.GET(),/Unauthorized/);
   assert.equal(calls.length,1);
+});
+test("#828 consultation : établissement de session, origine et erreurs protégés", async () => {
+  const calls=[];
+  const route=load("../app/api/merchant/email-alerts/route.ts", {
+    "next/server":{NextResponse:{json:Response.json.bind(Response)}},
+    "@/lib/auth":{requireAuthenticatedSession:async()=>({merchant:{id:"site-autorise"}})},
+    "@/lib/request-security":{
+      assertTrustedMutationRequest:request=>{if(request.headers.get("origin")!=="https://okado.test") throw Error("origin");},
+      getRequestSecurityErrorStatus:()=>403,
+    },
+    "@/lib/supabase":{getSupabaseAdmin:()=>({rpc:async(name,args)=>{calls.push({name,args});return {error:null};}})},
+  });
+  const request=(body,origin="https://okado.test")=>new Request("https://okado.test/api/merchant/email-alerts",{
+    method:"POST",headers:{"content-type":"application/json",origin},body:JSON.stringify(body),
+  });
+  const snapshot=[{id:"d",status:"failed",eventAt:null}];
+  const result=await route.POST(request({campaignId:"campaign",snapshot,merchantId:"other"}));
+  assert.equal(result.status,200); assert.equal(calls[0].name,"see_merchant_email_alerts");
+  assert.equal(calls[0].args.p_merchant_id,"site-autorise");
+  assert.equal((await route.POST(request({campaignId:"campaign",snapshot},"https://evil.test"))).status,403);
+  assert.equal((await route.POST(request({campaignId:"campaign",snapshot:[{id:"d"}]}))).status,400);
+  assert.equal(calls.length,1);
+});
+test("#828 renvoi serveur : rebond permanent arrêté avant toute préparation d’envoi", async () => {
+  const reads=[];
+  const rows={leads:{id:"l",campaign_id:"c",prize_id:"p",status:"claimed",redemption_code:"code"},
+    campaigns:{id:"c",merchant_id:"m"},reward_email_deliveries:{id:"d",lead_id:"l",campaign_id:"c",status:"bounced",
+      bounce_type:"Permanent",resend_email_id:"provider",last_event_at:"2026-01-01T00:00:00Z"},reward_email_events:[]};
+  const db={from(table){reads.push(table); const q={select(){return q},eq(){return q},
+    maybeSingle:async()=>({data:rows[table],error:null}),order:async()=>({data:rows[table],error:null})}; return q;}};
+  const repo=load("./campaign-repository.ts",{
+    "@/lib/supabase":{getSupabaseAdmin:()=>db},
+    "@/lib/reward-email-bounce":rewardBounce,
+  });
+  await assert.rejects(repo.getSupabaseRewardEmailResendPayload("l",{id:"m"}),/rejet permanent/);
+  assert.deepEqual(reads,["leads","campaigns","reward_email_deliveries","reward_email_events"]);
+  await assert.rejects(repo.getSupabaseRewardEmailResendPayload("l",{id:"other"}),/Accès refusé/);
 });
 test("#500 timings : résultat/erreur préservés, données exclues, désactivation",async()=>{
   const entries=[];

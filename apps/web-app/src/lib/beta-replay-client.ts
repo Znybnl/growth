@@ -5,7 +5,7 @@ import {
   BETA_REPLAY_REFRESH_MS, BETA_REPLAY_STOP_EVENT, BETA_REPLAY_VERSION,
   betaReplayPage, validBetaReplayLease,
 } from "@/lib/beta-replay-contract";
-import { BETA_REPLAY_BLOCK_SELECTOR, betaReplayUrl, maskBetaReplayAttribute, maskBetaReplayText } from "@/lib/beta-replay-privacy";
+import { BETA_REPLAY_BLOCK_SELECTOR, betaReplayUrl, maskBetaReplayAttribute, maskBetaReplayInput, maskBetaReplayText } from "@/lib/beta-replay-privacy";
 
 let recorder: PostHog | undefined;
 let recorderLoading: Promise<PostHog> | undefined;
@@ -57,10 +57,15 @@ function getRecorder(subject: string): Promise<PostHog> {
       enable_recording_console_log: false,
       disable_session_recording: true, disable_capture_url_hashes: true,
       session_recording: {
-        maskAllInputs: true, maskTextSelector: "*", maskTextFn: maskBetaReplayText,
+        maskAllInputs: false, maskTextSelector: "*", maskTextFn: maskBetaReplayText, maskInputFn: maskBetaReplayInput,
+        // Enable the callback for every form control. It masks only passwords
+        // and fields carrying the precise participant privacy marker.
+        maskInputOptions: { color: true, date: true, "datetime-local": true, email: true, month: true, number: true, range: true, search: true, tel: true, text: true, time: true, url: true, week: true, textarea: true, select: true, password: true },
         maskAttributeFn: maskBetaReplayAttribute, blockSelector: BETA_REPLAY_BLOCK_SELECTOR,
         recordCrossOriginIframes: false, recordHeaders: false, recordBody: false,
-        captureCanvas: { recordCanvas: false }, captureJsonLd: false,
+        // Merchant live previews include scratch-ticket canvases. The replay
+        // contract blocks canvases outside explicitly marked preview surfaces.
+        captureCanvas: { recordCanvas: true }, captureJsonLd: false,
         maskCapturedNetworkRequestFn: request => {
           // The SDK also calls this hook with only { name } for the replay page URL.
           // Dropping that call drops rrweb's viewport metadata before the full snapshot.

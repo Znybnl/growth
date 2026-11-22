@@ -12,12 +12,13 @@ type Props = SVGProps<SVGTextElement> & {
   buttonRadius: number;
   outerRadius: number;
   sectorAngle: number;
+  textAngle?: number;
 };
 
 export function FittedWheelLabel({ lines, baseFontSize, lineHeight, initialOffset,
-  radius, buttonRadius, outerRadius, sectorAngle, ...props }: Props) {
+  radius, buttonRadius, outerRadius, sectorAngle, textAngle = 0, ...props }: Props) {
   const ref = useRef<SVGTextElement>(null);
-  const key = JSON.stringify([lines, baseFontSize, lineHeight, initialOffset, props.fontFamily, props.fontWeight, radius, buttonRadius, outerRadius, sectorAngle]);
+  const key = JSON.stringify([lines, baseFontSize, lineHeight, initialOffset, props.fontFamily, props.fontWeight, radius, buttonRadius, outerRadius, sectorAngle, textAngle]);
   const [fit, setFit] = useState({ key, size: baseFontSize });
   const size = fit.key === key ? fit.size : baseFontSize;
   useLayoutEffect(() => {
@@ -29,14 +30,14 @@ export function FittedWheelLabel({ lines, baseFontSize, lineHeight, initialOffse
       const currentSize = Number(text.getAttribute("font-size")) || baseFontSize;
       const normalization = baseFontSize / currentSize;
       const next = fittedWheelLabelFontSize(baseFontSize, bounds.width * normalization,
-        bounds.height * normalization, radius, buttonRadius, outerRadius, sectorAngle);
+        bounds.height * normalization, radius, buttonRadius, outerRadius, sectorAngle, textAngle);
       setFit(current => current.key === key && current.size === next ? current : { key, size: next });
     };
     measure();
     void document.fonts.ready.then(measure);
     document.fonts.addEventListener("loadingdone", measure);
     return () => { cancelled = true; document.fonts.removeEventListener("loadingdone", measure); };
-  }, [key, baseFontSize, radius, buttonRadius, outerRadius, sectorAngle]);
+  }, [key, baseFontSize, radius, buttonRadius, outerRadius, sectorAngle, textAngle]);
   const scale = size / baseFontSize;
   return <text {...props} ref={ref} fontSize={size} data-wheel-label="true"
     data-base-font-size={baseFontSize} data-label-radius={radius}

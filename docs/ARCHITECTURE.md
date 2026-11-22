@@ -1,5 +1,16 @@
 # Architecture — Okado
 
+## Formulaire de contact marchand — #813
+
+La page authentifiée `/contact` envoie objet et message à une route serveur.
+Après vérification de la session, de l'origine et d'une limite par utilisateur
+dans le mécanisme Supabase existant, cette route transmet un e-mail texte via
+Resend à `contact@okado.app`. L'expéditeur utilise la configuration serveur
+Okado ; `Reply-To` est l'adresse du compte authentifié. La requête porte un
+identifiant d'envoi réutilisé lors d'une reprise pour éviter les doublons chez
+le fournisseur. Aucun historique de demandes ni contenu de message n'est
+enregistré dans la base de l'application.
+
 ## Mesures opérationnelles — #710
 
 Le fournisseur OpenTelemetry installé au démarrage observe les spans HTTP
@@ -129,6 +140,18 @@ Réglage partagé au workspace, RPC privées service_role et autorisation des me
 ### Supervision administrative — #491
 
 La RPC privée `get_support_monitoring` réalise recherche, jointures, comptages et pagination en base, avec paramètres liés et liste fixe de sources. Seul `service_role` peut l’exécuter ; page et DAL revérifient l’administrateur. Les lectures des quatre sources et du sélecteur sont parallèles ; une panne partielle reste visible et n’annule pas les autres lectures. Aucun payload de webhook, snapshot de gain ou payload d’e-mail n’est renvoyé. Les passages programmés et de reprise enregistrent désormais un résultat global non nominatif dans `business_logs`, attendu avant la réponse HTTP, sans changer la planification ou le worker. Un échec de journalisation ne transforme pas un envoi accepté en échec/reprise. Les anciens passages ne sont pas inventés ni reconstitués.
+
+### Reprise des événements Brevo — #816
+
+Les routes métier enregistrent et tentent l’événement après la réponse. Le ledger `brevo_event_deliveries` conserve le jalon et ses propriétés autorisées, l’utilisateur marchand associé, le statut, le compteur de tentatives, la prochaine reprise et des codes d’erreur fermés ; l’adresse est relue depuis `merchant_users` au moment d’une reprise, jamais copiée dans le ledger ou les logs. La référence utilisateur et la référence marchand suppriment les événements par cascade à l’effacement du compte correspondant.
+
+Un cron Vercel dédié, quotidien à 03:30 UTC, appelle `/api/internal/brevo-events/retry` avec `CRON_SECRET`. Une RPC `service_role` ne réclame qu’un événement dû à la fois (`FOR UPDATE SKIP LOCKED`). Les réponses Brevo 429/5xx et les pannes de lecture du contact planifient une reprise espacée, limitée à cinq tentatives ; les erreurs permanentes, les délais réseau sans réponse et un traitement interrompu sont placés en `needs_review`, sans renvoi automatique. L’envoi conserve l’horodatage d’origine et la clé de déduplication locale. L’API Brevo ne fournit pas ici de clé d’idempotence confirmée : les retries de réponse 5xx peuvent donc exceptionnellement produire un événement dupliqué si Brevo l’a accepté avant l’erreur.
+
+La route planifiée écrit un résumé global non nominatif dans `business_logs`. La page Supervision utilise une RPC `service_role` distincte et affiche les états d’attente, reprise et intervention, sans révéler l’e-mail, la propriété d’événement ou la clé brute. L’envoi direct initial reste indépendant du worker : aucune erreur Brevo n’est propagée aux inscriptions ou mutations Okado.
+
+Les automatisations Brevo portent les délais et les branches conditionnelles. L’application envoie les jalons à leur transition et actualise, au même moment, des attributs de contact représentant l’état courant de l’essai, de l’abonnement, de l’onboarding, des jeux publiés/brouillons et des compteurs persistés. Brevo réévalue ces attributs après ses délais ; l’application n’a pas de cron de séquence ni de scan périodique des comptes. Les neuf attributs personnalisés ont été créés et vérifiés dans le compte Brevo le 19 novembre 2026. La synchronisation applicative reste désactivée par défaut ; effectuer d’abord le rattrapage ponctuel des contacts existants et configurer `BREVO_SEQUENCE_STATE_ATTRIBUTES_ENABLED=true` au déploiement contrôlé.
+
+Les workflows Brevo utilisent le jalon `okado_trial_started`, les jalons de publication et les attributs d’état mis à jour par l’application. Leur contenu et leurs délais se modifient dans Brevo sans changer une planification applicative. L’application transmet les dates fixes de l’essai et l’état d’abonnement courant ; l’automation doit calculer ses délais depuis les dates et s’arrêter sur les transitions d’état pertinentes, sans s’appuyer sur un booléen d’essai qui deviendrait périmé à l’échéance. Les envois basés sur une échéance à 10 h locale doivent être validés avec le fuseau effectif utilisé par l’automation Brevo ; si l’automation n’applique que le fuseau du compte, le comportement ne répond pas à une exigence par contact. Les événements liés à une participation client, au bilan J+5 et à la variante d’échéance avec activité restent suspendus : les sources actuelles ne distinguent pas les essais internes des clients.
 
 - Les règles RLS, les schémas Supabase et les API font foi dans le code et les migrations ; ils doivent être inspectés avant toute modification de données ou d'autorisation.
 - Une nouvelle intégration externe, un nouveau sous-traitant ou un nouveau transfert de données exige une analyse avant implémentation.

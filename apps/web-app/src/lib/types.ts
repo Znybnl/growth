@@ -40,9 +40,11 @@ export type PosterTemplateId =
   | "pastel-editorial-wheel"
   | "ivory-editorial-wheel";
 export type GamePageTemplateId =
+  | "travel-sunset-drive"
   | "travel-elegant"
   | "travel-tropical"
   | "travel-roadtrip"
+  | "travel-scratch-sunset-drive"
   | "travel-scratch-elegant"
   | "travel-scratch-tropical"
   | "travel-scratch-roadtrip"
@@ -646,6 +648,7 @@ export interface RewardEmailDelivery {
   subject: string;
   status: RewardEmailDeliveryStatus;
   errorMessage?: string;
+  bounceType?: string;
   sentAt?: string;
   deliveredAt?: string;
   bouncedAt?: string;
@@ -894,6 +897,7 @@ export interface MerchantLeadRow extends Lead {
   emailSentAt?: string;
   emailDeliveredAt?: string;
   emailErrorMessage?: string;
+  emailPermanentBounce?: boolean;
 }
 
 export type MerchantRecentContact = Pick<
@@ -910,6 +914,7 @@ export type CashierRedemptionStatus =
 
 export interface CashierRedemptionContext {
   status: CashierRedemptionStatus;
+  isPreview?: boolean;
   leadId?: string;
   campaignId?: string;
   campaignTitle?: string;

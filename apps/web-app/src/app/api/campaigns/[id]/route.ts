@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { deleteCampaign, getCampaignPerformance, toggleCampaign } from "@/lib/store";
+import { refreshBrevoSequenceState } from "@/lib/brevo";
 
 type RouteProps = {
   params: Promise<{
@@ -22,6 +23,9 @@ export async function PATCH(request: Request, { params }: RouteProps) {
     const { id } = await params;
     const body = (await request.json()) as { isActive: boolean };
     const campaign = await toggleCampaign(id, body.isActive, session.merchant.id);
+    after(async () => {
+      await refreshBrevoSequenceState({ merchant: session.merchant, user: session.user });
+    });
     return NextResponse.json({ campaign });
   } catch (error) {
     return NextResponse.json(
@@ -67,6 +71,9 @@ export async function DELETE(_request: Request, { params }: RouteProps) {
 
     const { id } = await params;
     await deleteCampaign(id, session.merchant.id);
+    after(async () => {
+      await refreshBrevoSequenceState({ merchant: session.merchant, user: session.user });
+    });
     return NextResponse.json({ id });
   } catch (error) {
     return NextResponse.json(

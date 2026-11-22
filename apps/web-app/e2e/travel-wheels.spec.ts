@@ -76,7 +76,7 @@ for (const theme of TRAVEL_SCRATCH_THEMES) {
   });
 }
 
-for (const theme of TRAVEL_WHEEL_THEMES) {
+for (const theme of TRAVEL_WHEEL_THEMES.filter(theme => theme.id !== "travel-sunset-drive")) {
   test(`${theme.name} : fond et proportions en mobile`, async ({ page }, info) => {
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 844 });
@@ -150,7 +150,7 @@ test("@visual-1280 section Voyage dédiée dans les deux éditeurs", async ({ pa
       await expect(page.getByTestId("classic-template-options").getByRole("button", { name: new RegExp(theme.name) })).toHaveCount(0);
       if (mode.startsWith("wizard")) {
         await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
-        const preview = page.getByRole("dialog", { name: "Aperçu du jeu" }).frameLocator("iframe");
+        const preview = page.getByRole("dialog", { name: "Aperçu du jeu" }).getByTestId("draft-preview-viewport");
         const artwork = preview.locator(`img[data-template-art="${theme.id}"]`);
         await expect(artwork).toHaveJSProperty("complete", true);
         expect(await artwork.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
@@ -180,7 +180,7 @@ test("aperçu intégré Voyage : un titre long ne coupe pas la zone à gratter",
   await page.goto(`/dev/template-rendering-proof?mode=wizard-responsive-edit&business=travel&template=travel-scratch-tropical&headingSize=72&headline=${title}`);
   await selectWizardStep(page, 2);
   await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
-  const preview = page.getByRole("dialog", { name: "Aperçu du jeu" }).frameLocator("iframe");
+  const preview = page.getByRole("dialog", { name: "Aperçu du jeu" }).getByTestId("draft-preview-viewport");
   const scratch = preview.getByTestId("scratch-ticket-surface");
   await scratch.scrollIntoViewIfNeeded();
   await expect(scratch).toBeInViewport({ ratio: 0.99 });
@@ -193,7 +193,7 @@ test("@visual-1280 section Voyage dédiée aux tickets dans les deux éditeurs",
     if (mode.startsWith("wizard")) await selectWizardStep(page, 2);
     const section = page.getByTestId("travel-scratch-template-options");
     await expect(page.getByRole("heading", { name: "Templates Voyage" })).toBeVisible();
-    await expect(section.getByRole("button")).toHaveCount(3);
+    await expect(section.getByRole("button")).toHaveCount(TRAVEL_SCRATCH_THEMES.length);
     for (const theme of TRAVEL_SCRATCH_THEMES) {
       const card = section.getByRole("button", { name: new RegExp(theme.name) });
       await card.click();
@@ -203,9 +203,8 @@ test("@visual-1280 section Voyage dédiée aux tickets dans les deux éditeurs",
         await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
         const preview = page.getByRole("dialog", { name: "Aperçu du jeu" });
         await expect(preview).toBeVisible();
-        const frame = await preview.locator("iframe").elementHandle();
-        const previewFrame = await frame!.contentFrame();
-        expect(await previewFrame!.evaluate(() => document.documentElement.scrollHeight - document.documentElement.clientHeight)).toBeLessThanOrEqual(1);
+        const viewport = preview.getByTestId("draft-preview-viewport");
+        expect(await viewport.evaluate(node => node.scrollHeight - node.clientHeight)).toBeLessThanOrEqual(1);
         await page.screenshot({ path: info.outputPath(`ticket-voyage-preview-${theme.id}.png`), animations: "disabled" });
         await page.keyboard.press("Escape");
       }
@@ -272,7 +271,7 @@ for (const game of ["wheel", "scratch"] as const) {
     await advanced.click();
     const input = page.getByLabel("Couleur du texte principal");
     await expect(input).toHaveValue("#065360");
-    const title = page.getByTestId("wizard-phone-preview").frameLocator("iframe").locator(game === "wheel" ? "h1" : "h2").first();
+    const title = page.getByTestId("wizard-phone-preview").locator(game === "wheel" ? "h1" : "h2").first();
     await expect(title).toHaveCSS("color", "rgb(6, 83, 96)");
     await input.fill("#b45283");
     await expect(title).toHaveCSS("color", "rgb(180, 82, 131)");

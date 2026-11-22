@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
+import { emitBrevoCampaignMilestone } from "@/lib/brevo";
 import { getPublicErrorStatus, getPublicRetryAfter, isValidPublicIdentifier } from "@/lib/public-api";
 import { verifyParticipationToken } from "@/lib/participation-token";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
@@ -21,6 +22,18 @@ export async function POST(request: Request) {
     });
     const recorded = await recordDrawSessionParticipation(body.campaignId, body.sessionId);
     if (!recorded) return NextResponse.json({ error: "Session indisponible." }, { status: 409 });
+    after(async () => {
+      await emitBrevoCampaignMilestone({
+        campaignId: body.campaignId,
+        eventName: "okado_first_participation",
+        dedupeKey: `first_participation:{merchantId}`,
+      });
+      await emitBrevoCampaignMilestone({
+        campaignId: body.campaignId,
+        eventName: "okado_game_metrics_updated",
+        dedupeKey: `game_metrics:${body.sessionId}`,
+      });
+    });
     return NextResponse.json({ recorded: true }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     logSupportEvent("error", "draw_participation_failed", {

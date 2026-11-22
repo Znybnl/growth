@@ -1,6 +1,14 @@
 import type { GamePageTemplateId } from "@/lib/types";
+import { SUNSET_DRIVE } from "@/lib/sunset-drive-theme";
 
 export const TRAVEL_SCRATCH_THEMES = [
+  {
+    id: SUNSET_DRIVE.scratchId, name: "Sunset Drive", description: "Promenade au soleil couchant et ticket corail.",
+    artwork: SUNSET_DRIVE.artwork, background: SUNSET_DRIVE.artwork,
+    sampleHeadline: "SUNSET DRIVE", sampleSubline: "Tentez votre chance",
+    scratch: { base: SUNSET_DRIVE.coral, highlight: "#ff8a71", edge: "#ffe5bc", reveal: "#ffe5bc", textureOpacity: 0.2 },
+    text: SUNSET_DRIVE.ivory, logo: SUNSET_DRIVE.ivory, font: "dm-sans", fontClass: "font-dm-sans",
+  },
   {
     id: "travel-scratch-elegant",
     name: "Voyage élégant",
@@ -38,8 +46,8 @@ export const TRAVEL_SCRATCH_THEMES = [
     sampleHeadline: "L’aventure commence",
     sampleSubline: "Grattez et préparez votre prochain départ",
     scratch: { base: "#b94825", highlight: "#ed9a47", edge: "#fff0d1", reveal: "#fff0d1", textureOpacity: 0.2 },
-    text: "#a63718",
-    logo: "#082d4a",
+    text: "#06243b",
+    logo: "#06243b",
     font: "dm-sans",
     fontClass: "font-dm-sans",
   },

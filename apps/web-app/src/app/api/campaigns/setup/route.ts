@@ -1,6 +1,7 @@
 import { after, NextResponse } from "next/server";
 
 import { getAuthenticatedSession } from "@/lib/auth";
+import { emitBrevoOnboardingMilestone, refreshBrevoSequenceState } from "@/lib/brevo";
 import { CampaignComplianceError } from "@/lib/campaign-compliance";
 import { parseCampaignSetupInput } from "@/lib/merchant-input";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
@@ -148,6 +149,15 @@ export async function POST(request: Request) {
       },
     );
     if (body.isActive) {
+      after(async () => {
+        await emitBrevoOnboardingMilestone({
+          merchant: session.merchant,
+          user: session.user,
+          eventName: "okado_game_published",
+          dedupeKey: `first_game_published:${session.merchant.id}`,
+          properties: { campaign_id: savedCampaignId },
+        });
+      });
       void captureProductEvent(
         "campaign_published",
         merchantDistinctId(session.user.merchantId, session.user.id),
@@ -159,6 +169,10 @@ export async function POST(request: Request) {
           creationMode: body.creationMode ?? "editor",
         },
       );
+    } else {
+      after(async () => {
+        await refreshBrevoSequenceState({ merchant: session.merchant, user: session.user });
+      });
     }
 
     const totalMs = Math.round((performance.now() - requestStartedAt) * 10) / 10;

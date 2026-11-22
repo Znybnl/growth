@@ -6,10 +6,10 @@ import { GAME_PREVIEW_VIEWPORT } from "@/lib/game-preview-viewport";
 
 // Percentage-height preview backgrounds need a definite height through every
 // ancestor; body min-height alone leaves a content-sized root and a blank footer.
-const DOCUMENT = '<!doctype html><html lang="fr" style="height:100%"><head></head><body style="height:100%;margin:0;overflow-x:hidden"><div id="draft-preview-root" style="height:100%" inert></div></body></html>';
+const DOCUMENT = '<!doctype html><html lang="fr" style="height:100%"><head></head><body style="height:100%;margin:0;overflow-x:hidden"><div id="draft-preview-root" data-replay-visible style="height:100%" inert></div></body></html>';
 
 /** A real mobile CSS viewport; no game endpoint, persisted draft, or player API. */
-export function DraftPreviewViewport({ children, fullWindow = false }: { children: ReactNode; fullWindow?: boolean }) {
+export function DraftPreviewViewport({ children, fullWindow = false, inline = false }: { children: ReactNode; fullWindow?: boolean; inline?: boolean }) {
   const [mount, setMount] = useState<HTMLElement | null>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
 
@@ -31,6 +31,11 @@ export function DraftPreviewViewport({ children, fullWindow = false }: { childre
     observer.observe(document.head, { childList: true, subtree: true, characterData: true });
     return () => observer.disconnect();
   }, [mount]);
+
+  // The wizard's phone preview lives inside the merchant replay recorder.
+  // rrweb does not reliably serialize a nested srcDoc document, so render this
+  // fixed mobile viewport in the parent DOM. Standalone previews stay isolated.
+  if (inline) return <div data-replay-visible data-testid="draft-preview-viewport" className="overflow-hidden" style={{ ...GAME_PREVIEW_VIEWPORT, containerType: "inline-size" }}>{children}</div>;
 
   return <>
     <iframe

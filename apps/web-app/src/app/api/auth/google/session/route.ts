@@ -2,7 +2,7 @@ import { after, NextResponse } from "next/server";
 
 import { createAffiliateReferralForMerchant } from "@/lib/affiliate-repository";
 import { notifyAdministratorsOfMerchantSignup } from "@/lib/admin-notifications";
-import { syncMerchantContactToBrevo } from "@/lib/brevo";
+import { syncAndStartBrevoOnboardingSequence, syncMerchantContactToBrevo } from "@/lib/brevo";
 import { authenticateOrProvisionMerchantWithGoogle } from "@/lib/merchant-account-repository";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
 import { getPublicErrorStatus } from "@/lib/public-api";
@@ -94,11 +94,17 @@ export async function POST(request: Request) {
     const origin = new URL(request.url).origin;
     after(async () => {
       const sideEffects: Promise<unknown>[] = [
-        syncMerchantContactToBrevo({
-          merchant: session.merchant,
-          user: session.user,
-          source: "google",
-        }),
+        session.isNew
+          ? syncAndStartBrevoOnboardingSequence({
+              merchant: session.merchant,
+              user: session.user,
+              source: "google",
+            })
+          : syncMerchantContactToBrevo({
+              merchant: session.merchant,
+              user: session.user,
+              source: "google",
+            }),
       ];
 
       if (!session.isNew) sideEffects.push(captureProductEvent("login_completed",

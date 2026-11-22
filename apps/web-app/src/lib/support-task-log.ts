@@ -21,3 +21,27 @@ export async function recordGainNotificationRun(
     if (error) console.warn("[SUPPORT][scheduled-run-record-unavailable]");
   } catch { console.warn("[SUPPORT][scheduled-run-record-unavailable]"); }
 }
+
+export async function recordBrevoEventRetryRun(
+  result: { processed?: number; sent?: number; retrying?: number; needsReview?: number; skipped?: boolean; limitReached?: boolean },
+  failed = false,
+) {
+  if (process.env.VERCEL_ENV !== "production") return;
+  const count = (value?: number) => Number.isSafeInteger(value) && value! >= 0 ? value : 0;
+  const level = failed || result.needsReview || result.limitReached ? "error" : result.retrying ? "warn" : result.skipped ? "warn" : "info";
+  const summary = failed ? "Échec du traitement Brevo planifié."
+    : result.skipped ? "Traitement Brevo ignoré : configuration indisponible."
+    : `Traités : ${count(result.processed)} ; acceptés : ${count(result.sent)} ; reprises prévues : ${count(result.retrying)} ; à vérifier : ${count(result.needsReview)} ; limite atteinte : ${result.limitReached ? "oui" : "non"}.`;
+  try {
+    const { error } = await getSupabaseAdmin().from("business_logs").insert({
+      level,
+      event: "brevo_event_retry_run",
+      summary,
+      payload: {},
+      created_at: new Date().toISOString(),
+    });
+    if (error) console.warn("[SUPPORT][brevo-event-run-record-unavailable]");
+  } catch {
+    console.warn("[SUPPORT][brevo-event-run-record-unavailable]");
+  }
+}

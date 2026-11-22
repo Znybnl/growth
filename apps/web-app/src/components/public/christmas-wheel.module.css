@@ -64,22 +64,23 @@
 .button:hover:not(:disabled) { filter: brightness(1.08); }
 .button:disabled { cursor: default; }
 [data-travel-template] .brand { width: 76%; padding: 0; border: 0; background: transparent; }
+[data-travel-template] .travelHeader { position: relative; isolation: isolate; }
 [data-travel-template] .brandText { font-family: var(--font-dm-sans), sans-serif; font-weight: 700; }
 [data-travel-template] .rule { display: none; }
 [data-travel-template] .subtitle { font-family: var(--font-dm-sans), sans-serif; font-weight: 600; }
 [data-travel-template] .title { width: fit-content; max-width: 90%; }
 [data-travel-template="travel-tropical"] .title { padding: 0; border-radius: 0; background: transparent; }
 [data-travel-template="travel-roadtrip"] .title {
-  position: relative; isolation: isolate; padding: 1.8cqw 2cqw; color: #a63718;
+  position: relative; isolation: isolate;
 }
 [data-travel-template="travel-roadtrip"] .title::before {
-  content: ""; position: absolute; z-index: -1; inset: -18% 0;
-  background: #fff1d8; opacity: .96;
-  clip-path: polygon(1% 17%, 7% 11%, 18% 14%, 29% 7%, 44% 12%, 58% 5%, 72% 10%, 87% 6%, 99% 13%, 96% 30%, 100% 43%, 95% 58%, 99% 76%, 91% 85%, 78% 81%, 65% 91%, 49% 84%, 34% 93%, 20% 85%, 8% 90%, 3% 78%, 6% 62%, 0 47%);
+  content: ""; position: absolute; z-index: -1; left: 50%; top: 50%;
+  width: 175%; height: 260%; transform: translate(-50%, -50%); pointer-events: none;
+  background: radial-gradient(ellipse at center, rgb(255 245 224 / 68%) 0%, rgb(255 245 224 / 46%) 38%, rgb(255 245 224 / 22%) 64%, transparent 86%);
 }
 [data-travel-template="travel-roadtrip"] .subtitle,
 [data-travel-template="travel-tropical"] .subtitle {
-  position: relative; isolation: isolate;
+  position: relative;
   text-shadow: none;
 }
 [data-travel-template="travel-roadtrip"] .subtitle::before,
@@ -111,3 +112,9 @@
 .thumbnailTitle { margin-top: 9px; font-family: var(--font-bodoni), Georgia, serif; font-size: 19px; line-height: 1.03; }
 .thumbnailSubtitle { margin-top: 8px; font-family: var(--font-cormorant-garamond), Georgia, serif; font-size: 9px; font-weight: 600; line-height: 1.25; text-wrap: balance; }
 .thumbnailWheel { position: relative; width: 100%; z-index: 1; }
+
+.sunsetTitle { width: 94%; margin: 0 auto; font-family: var(--font-dm-sans), sans-serif; font-size: calc(clamp(30px, 10.8cqw, 48px) * var(--sunset-title-scale, 1)); font-weight: 800; line-height: 1.05; text-transform: uppercase; overflow-wrap: anywhere; text-wrap: balance; }
+.sunsetSubtitle { width: 90%; margin-inline: auto; margin-bottom: 0; text-align: center; font-family: var(--font-dm-sans), sans-serif; font-size: clamp(16px, 5.1cqw, 22px); font-style: italic; font-weight: 600; line-height: 1.25; white-space: pre-line; overflow-wrap: anywhere; }
+.sunsetButton { inset: 35%; background: var(--christmas-button-color); border: 3px solid #ffe5bc; box-shadow: 0 0 0 3px #a63035; font-style: italic; }
+.sunsetButton::before { display: none; }
+.sunsetWheel .rotor svg > circle { display: none; }

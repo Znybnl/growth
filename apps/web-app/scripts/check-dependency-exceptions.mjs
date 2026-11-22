@@ -4,7 +4,8 @@ import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd(), "../..");
 const includeDevelopment = process.argv?.includes("--include-dev") ?? false;
-const patchedVersion = "16.4.2";
+const patchedVersion = "16.4.6";
+const picomatchExceptionReviewBy = "2026-12-02";
 const packages = ["web-app", "landing-page"].map((name) => {
   const manifest = JSON.parse(fs.readFileSync(path.join(repoRoot, "apps", name, "package.json"), "utf8"));
   return { name, next: manifest.dependencies?.next, eslint: manifest.devDependencies?.["eslint-config-next"] };
@@ -40,12 +41,35 @@ if (audit.error || !audit.metadata?.vulnerabilities ||
 const vulnerabilities = audit.vulnerabilities;
 const names = Object.keys(vulnerabilities).sort();
 const developmentExceptionNames = ["@shadcn/registry", "deepmerge", "shadcn"];
-const reviewedDevelopmentException = includeDevelopment &&
+const picomatchExceptionNames = [
+  "@dotenvx/dotenvx", "@next/eslint-plugin-next", "@shadcn/registry", "@ts-morph/common",
+  "@typescript-eslint/eslint-plugin", "@typescript-eslint/parser", "@typescript-eslint/type-utils",
+  "@typescript-eslint/typescript-estree", "@typescript-eslint/utils", "eslint-config-next",
+  "eslint-import-resolver-typescript", "fast-glob", "fdir", "micromatch", "picomatch",
+  "shadcn", "tinyglobby", "ts-morph", "typescript-eslint",
+].sort();
+const reviewedLowDevelopmentException = includeDevelopment &&
   names.length === developmentExceptionNames.length &&
   names.every((name) => developmentExceptionNames.includes(name)) &&
   Object.values(vulnerabilities).every(({ severity }) => severity === "low") &&
   vulnerabilities.deepmerge?.via?.some((advisory) => advisory.url === "https://github.com/advisories/GHSA-gcqx-w48m-w2h4");
-const allowedNames = reviewedDevelopmentException ? developmentExceptionNames : [];
+const picomatchAdvisories = Object.entries(vulnerabilities).flatMap(([name, vulnerability]) =>
+  (vulnerability.via ?? []).filter((advisory) => typeof advisory === "object").map((advisory) => ({ name, advisory })),
+);
+const counts = audit.metadata.vulnerabilities;
+const reviewedPicomatchException = includeDevelopment &&
+  new Date().toISOString().slice(0, 10) <= picomatchExceptionReviewBy &&
+  names.length === picomatchExceptionNames.length &&
+  names.every((name, index) => name === picomatchExceptionNames[index]) &&
+  Object.values(vulnerabilities).every(({ severity }) => severity === "high") &&
+  counts.total === 19 && counts.high === 19 && counts.moderate === 0 && counts.low === 0 && counts.critical === 0 &&
+  picomatchAdvisories.length === 1 && picomatchAdvisories[0].name === "picomatch" &&
+  picomatchAdvisories[0].advisory.url === "https://github.com/advisories/GHSA-fc5q-39xc-vjpf" &&
+  picomatchAdvisories[0].advisory.range === "<=4.0.7";
+const reviewedDevelopmentException = reviewedLowDevelopmentException || reviewedPicomatchException;
+const allowedNames = reviewedLowDevelopmentException
+  ? developmentExceptionNames
+  : reviewedPicomatchException ? picomatchExceptionNames : [];
 const unexpectedNames = names.filter((name) => !allowedNames.includes(name));
 const total = audit.metadata?.vulnerabilities?.total ?? names.length;
 const frameworksAreAligned = packages.every(({ next, eslint }) => next === patchedVersion && eslint === patchedVersion);
@@ -53,7 +77,7 @@ const frameworksAreAligned = packages.every(({ next, eslint }) => next === patch
 if (
   (result.status !== 0 && !reviewedDevelopmentException) ||
   unexpectedNames.length ||
-  total !== (reviewedDevelopmentException ? developmentExceptionNames.length : 0) ||
+  total !== (reviewedLowDevelopmentException ? developmentExceptionNames.length : reviewedPicomatchException ? picomatchExceptionNames.length : 0) ||
   !frameworksAreAligned ||
   vulnerabilities.next ||
   vulnerabilities.postcss ||
@@ -65,5 +89,5 @@ if (
 }
 
 console.log(
-  `OK - Audit ${includeDevelopment ? "complet (production et développement)" : "de production"} ; Next.js et ESLint ${patchedVersion} alignés sur les deux applications.${reviewedDevelopmentException ? " Exception documentée : un avis faible et non corrigé dans shadcn de développement." : ""}`,
+  `OK - Audit ${includeDevelopment ? "complet (production et développement)" : "de production"} ; Next.js et ESLint ${patchedVersion} alignés sur les deux applications.${reviewedLowDevelopmentException ? " Exception documentée : un avis faible dans shadcn de développement." : ""}${reviewedPicomatchException ? ` Exception temporaire : GHSA-fc5q-39xc-vjpf uniquement dans les dépendances de développement, à réexaminer avant le ${picomatchExceptionReviewBy}.` : ""}`,
 );
