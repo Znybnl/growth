@@ -110,7 +110,7 @@ export function SignUpForm() {
 
       if (!response.ok) {
         const knownErrors: Record<string, string> = {
-          "Un compte existe deja avec cette adresse e-mail.": "Un compte existe déjà avec cette adresse e-mail.",
+          "Un compte existe déjà avec cette adresse e-mail.": "Un compte existe déjà avec cette adresse e-mail.",
           "Adresse e-mail invalide.": "Saisissez une adresse e-mail valide.",
           "Les mots de passe ne correspondent pas.": "Les mots de passe ne correspondent pas.",
         };

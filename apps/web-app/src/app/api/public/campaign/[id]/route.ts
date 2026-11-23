@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: RouteProps) {
     );
     if (isPreview && previewToken && !hasValidPreviewToken) {
       return NextResponse.json(
-        { error: "Le jeton de prÃ©visualisation est invalide ou expirÃ©." },
+        { error: "Le jeton de prévisualisation est invalide ou expiré." },
         { status: 403 },
       );
     }

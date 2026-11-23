@@ -285,7 +285,7 @@ async function ensureSupabaseAuthUser(input: AuthSyncInput) {
       }
     }
 
-    throw new Error("Creation de l'utilisateur Supabase Auth impossible.");
+    throw new Error("Création de l'utilisateur Supabase Auth impossible.");
   }
 
   return data.user.id;
@@ -311,10 +311,10 @@ async function createSupabaseAuthIdentity(input: AuthIdentityInput) {
 
   if (error || !data.user) {
     if (error && isDuplicateAuthUserError(error.message)) {
-      throw new Error("Un compte existe deja avec cette adresse e-mail.");
+      throw new Error("Un compte existe déjà avec cette adresse e-mail.");
     }
 
-    throw new Error("Creation de l'utilisateur Supabase Auth impossible.");
+    throw new Error("Création de l'utilisateur Supabase Auth impossible.");
   }
 
   return data.user.id;
@@ -753,7 +753,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
     .maybeSingle();
 
   if (existing.data) {
-    throw new Error("Un compte existe deja avec cette adresse e-mail.");
+    throw new Error("Un compte existe déjà avec cette adresse e-mail.");
   }
 
   const merchantId = generateId("merchant");
@@ -819,7 +819,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
     });
 
     if (merchantInsert.error) {
-      throw new Error("Creation du marchand impossible.");
+      throw new Error("Création du marchand impossible.");
     }
 
     const userInsert = await supabase.from("merchant_users").insert({
@@ -834,7 +834,7 @@ export async function createMerchantAccountInSupabase(input: MerchantSignUpInput
 
     if (userInsert.error) {
       await supabase.from("merchants").delete().eq("id", merchantId);
-      throw new Error("Creation du compte impossible.");
+      throw new Error("Création du compte impossible.");
     }
 
     if (workspaceAvailable) {
@@ -1650,11 +1650,11 @@ export async function updateMerchantAccountInSupabase(
     .maybeSingle<{ id: string }>();
 
   if (existingUser.error) {
-    throw new Error("Verification de l'adresse e-mail impossible.");
+    throw new Error("Vérification de l'adresse e-mail impossible.");
   }
 
   if (existingUser.data) {
-    throw new Error("Cette adresse e-mail est deja utilisee.");
+    throw new Error("Cette adresse e-mail est déjà utilisée.");
   }
 
   const companyName = input.companyName.trim();
