@@ -127,8 +127,8 @@ test("@visual-1280 les trois modèles dans le vrai wizard, 1280×720 et 1280×60
       await expect(page.getByTestId("wizard-footer").getByRole("button", { name: /Enregistrer/ })).toBeEnabled();
       await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: "Aperçu du jeu" });
-      const phone = dialog.getByTestId("draft-preview-viewport");
-      await expect(dialog.getByRole("button", { name: "Jouer à la roue" })).toBeInViewport();
+      const phone = dialog.frameLocator('iframe[data-replay-preview]');
+      await expect(phone.getByRole("button", { name: "Jouer à la roue" })).toBeInViewport();
       await expect(phone.locator(`img[data-template-art="${theme.id}"]`)).toHaveJSProperty("complete", true);
       await captureVisualAt1280(page, info, `${theme.id}-apercu`, height);
       await page.keyboard.press("Escape");

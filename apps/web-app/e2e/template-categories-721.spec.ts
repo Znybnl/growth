@@ -69,7 +69,7 @@ test("@visual-1280 le ticket Noël rose poudré est dans Templates Beauté sans 
       const previewToggle = page.getByRole("button", { name: /Voir l.?aperçu/ });
       if (await previewToggle.count() && await previewToggle.isVisible()) await previewToggle.click();
       const nativeArtwork = mode.startsWith("wizard")
-        ? page.getByTestId("draft-preview-viewport").locator('img[data-template-art="scratch-christmas-rose"]')
+        ? page.frameLocator('iframe[data-replay-preview]').locator('img[data-template-art="scratch-christmas-rose"]')
         : page.locator('img[data-template-art="scratch-christmas-rose"]');
       await expect(nativeArtwork).toBeVisible();
       await expect.poll(() => nativeArtwork.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);

@@ -503,11 +503,10 @@ function WizardGamePreview({
   if (standalone) return <DraftPreviewViewport fullWindow><CampaignLivePreview merchant={merchant} preview={preview} mobileViewport flushTop /></DraftPreviewViewport>;
   return (
     <WizardPhoneFrame>
-      <DraftPreviewViewport inline><CampaignLivePreview
+      <DraftPreviewViewport><CampaignLivePreview
         merchant={merchant}
         preview={preview}
         mobileViewport
-        containerViewport
         flushTop
       /></DraftPreviewViewport>
     </WizardPhoneFrame>
