@@ -18,7 +18,8 @@ import { BEAUTY_SCRATCH_TEMPLATES, CLASSIC_NUDE_SCRATCH_TEMPLATE_ID, NUDE_SCRATC
 import { travelScratchTheme } from "@/lib/travel-scratch-themes";
 
 export const LEGACY_DEFAULT_WHEEL_SUBTITLE = "Faites tournez la roue pour jouer !";
-export const DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
+export const PREVIOUS_DEFAULT_WHEEL_SUBTITLE = "Tounez la roue et tentez de gagner !";
+export const DEFAULT_WHEEL_SUBTITLE = "Jouez et gagnez";
 export const DEFAULT_SCRATCH_SUBTITLE = "Grattez le ticket pour jouer !";
 export const DEFAULT_GAME_PAGE_TEMPLATE_ID: GamePageTemplateId = "cocorico-wheel";
 export const DEFAULT_WHEEL_PRIMARY_COLOR = "#1b2842";
@@ -67,6 +68,7 @@ export function campaignSubtitleForGameTypeChange(
   const isKnownDefault = [
     DEFAULT_WHEEL_SUBTITLE,
     LEGACY_DEFAULT_WHEEL_SUBTITLE,
+    PREVIOUS_DEFAULT_WHEEL_SUBTITLE,
     DEFAULT_SCRATCH_SUBTITLE,
   ].includes(normalized);
 
@@ -78,7 +80,7 @@ export function campaignSubtitleForGameTypeChange(
 }
 
 export function normalizeWheelSubtitle(value: string) {
-  return value.trim() === LEGACY_DEFAULT_WHEEL_SUBTITLE ? DEFAULT_WHEEL_SUBTITLE : value;
+  return value.trim() === LEGACY_DEFAULT_WHEEL_SUBTITLE ? PREVIOUS_DEFAULT_WHEEL_SUBTITLE : value;
 }
 
 export function defaultWheelSubtitleSpacingForTemplate(templateId?: GamePageTemplateId) {
