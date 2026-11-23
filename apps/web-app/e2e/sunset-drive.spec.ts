@@ -111,14 +111,14 @@ test("@visual-1280 Sunset Drive : couleurs fixes, police, taille et espacements 
   for (const label of spacings) await page.getByRole("slider", { name: label }).fill("0");
   async function previewMargins() {
     await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
-    const preview = page.getByRole("dialog", { name: "Aperçu du jeu" }).getByTestId("draft-preview-viewport");
+    const preview = page.getByRole("dialog", { name: "Aperçu du jeu" }).frameLocator('iframe[data-replay-preview]');
     const title = preview.locator("h1").first();
     const subtitle = preview.getByTestId("christmas-wheel-subtitle").first();
     await expect(title).toHaveCSS("color", "rgb(255, 240, 214)");
     await expect(title).toHaveCSS("font-family", /Playfair/);
     await expect(subtitle).toHaveCSS("color", "rgb(255, 240, 214)");
     await expect(preview.locator("header").first()).toHaveCSS("color", "rgb(255, 240, 214)");
-    const values = await preview.evaluate(root => {
+    const values = await preview.locator('[data-testid="christmas-wheel-scene"]').evaluate(root => {
       const title = root.querySelector("h1")!;
       const subtitle = root.querySelector('[data-testid="christmas-wheel-subtitle"]')!;
       const wheel = root.querySelector('[data-testid="christmas-wheel"]')!;
