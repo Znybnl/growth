@@ -131,6 +131,10 @@ test("@visual-1280 : aperçu et typographie identiques à la prévisualisation m
     const subtitleSize = await live.locator(".okado-wheel-subtitle").evaluate(node => parseFloat(getComputedStyle(node).fontSize));
     const previousSize = template === "beauty-nude" ? 14.08 : template === "beauty-botanical" ? 14.4 : 14;
     expect(subtitleSize).toBeCloseTo(previousSize + 2, 1);
+    const wheelSelector = 'svg[viewBox="0 0 640 640"]';
+    const liveWheelWidth = await live.locator(wheelSelector).first().evaluate(node => parseFloat(getComputedStyle(node).width));
+    const actualWheelWidth = await actual.locator(wheelSelector).first().evaluate(node => parseFloat(getComputedStyle(node).width));
+    expect(liveWheelWidth).toBeCloseTo(actualWheelWidth, 0);
     for (const selector of [".okado-wheel-subtitle", ".okado-beauty-heading, .okado-cocorico-promo-text", ".font-display"]) {
       const dimensions = (node: Element) => { const style = getComputedStyle(node); const element = node as HTMLElement; return { fontSize: style.fontSize, family: style.fontFamily, lineHeight: style.lineHeight, width: element.offsetWidth, height: element.offsetHeight }; };
       const fromDraft = await live.locator(selector).first().evaluate(dimensions);
