@@ -120,17 +120,21 @@ test("@visual-1280 : aperçu et typographie identiques à la prévisualisation m
     await page.goto(fixture("wizard-responsive-edit", template));
     await expect(page.getByRole("button", { name: "Agrandir", exact: true })).toHaveCount(0);
     await expect(page.getByText("Aperçu en direct", { exact: true })).toHaveCount(0);
-    const live = page.getByTestId("draft-preview-viewport");
+    const live = page.frameLocator('iframe[data-replay-preview]');
     await expect(live.locator(".okado-wheel-subtitle")).toBeVisible();
     await actual.goto(fixture("game-preview", template));
     await expect(actual.locator(".okado-wheel-subtitle")).toBeVisible();
-    expect(await live.evaluate(node => ({ width: node.clientWidth, height: node.clientHeight }))).toEqual({ width: 390, height: 740 });
+    expect(await page.locator('iframe[data-replay-preview]').evaluate(node => ({ width: node.clientWidth, height: node.clientHeight }))).toEqual({ width: 390, height: 740 });
     const phone = (await page.getByTestId("wizard-phone-preview").boundingBox())!;
     expect(phone.width).toBeLessThanOrEqual(261);
     expect(phone.height).toBeLessThan(481);
     const subtitleSize = await live.locator(".okado-wheel-subtitle").evaluate(node => parseFloat(getComputedStyle(node).fontSize));
     const previousSize = template === "beauty-nude" ? 14.08 : template === "beauty-botanical" ? 14.4 : 14;
     expect(subtitleSize).toBeCloseTo(previousSize + 2, 1);
+    const wheelSelector = 'svg[viewBox="0 0 640 640"]';
+    const liveWheelWidth = await live.locator(wheelSelector).first().evaluate(node => parseFloat(getComputedStyle(node).width));
+    const actualWheelWidth = await actual.locator(wheelSelector).first().evaluate(node => parseFloat(getComputedStyle(node).width));
+    expect(liveWheelWidth).toBeCloseTo(actualWheelWidth, 0);
     for (const selector of [".okado-wheel-subtitle", ".okado-beauty-heading, .okado-cocorico-promo-text", ".font-display"]) {
       const dimensions = (node: Element) => { const style = getComputedStyle(node); const element = node as HTMLElement; return { fontSize: style.fontSize, family: style.fontFamily, lineHeight: style.lineHeight, width: element.offsetWidth, height: element.offsetHeight }; };
       const fromDraft = await live.locator(selector).first().evaluate(dimensions);
@@ -156,7 +160,7 @@ test("@visual-1280 : tickets cohérents et typographie du brouillon à la résol
   await actual.route("**/api/**", route => route.fulfill({ json: { campaign: { actions: [] } } }));
   for (const template of ["beauty-scratch-nude", "scratch-lilac"]) {
     await page.goto(fixture("wizard-responsive-edit", template));
-    const live = page.getByTestId("draft-preview-viewport");
+    const live = page.frameLocator('iframe[data-replay-preview]');
     await expect(live.locator("h2")).toBeVisible();
     await actual.goto(fixture("game-preview", template));
     const typography = (node: Element) => { const s = getComputedStyle(node); return { size: parseFloat(s.fontSize), line: parseFloat(s.lineHeight) }; };
