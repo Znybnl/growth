@@ -40,7 +40,7 @@ export async function notifyAdministratorsOfMerchantSignup(input: {
   const contactName = `${input.user.firstName} ${input.user.lastName}`.trim();
   const accountUrl = `${input.origin}/admin?q=${encodeURIComponent(input.user.email)}`;
   const safeMerchantName = escapeHtml(merchantName);
-  const safeContactName = escapeHtml(contactName || "Non renseigne");
+  const safeContactName = escapeHtml(contactName || "Non renseigné");
   const safeEmail = escapeHtml(input.user.email);
 
   const resend = new Resend(apiKey);
@@ -49,9 +49,9 @@ export async function notifyAdministratorsOfMerchantSignup(input: {
     to: getRecipients(),
     subject: `Nouvelle inscription Okado - ${merchantName}`,
     text: [
-      "Un nouveau compte marchand vient d'etre cree.",
+      "Un nouveau compte marchand vient d'être créé.",
       `Commerce : ${merchantName}`,
-      `Contact : ${contactName || "Non renseigne"}`,
+      `Contact : ${contactName || "Non renseigné"}`,
       `Email : ${input.user.email}`,
       `Inscription : ${input.provider}`,
       `Pilotage : ${accountUrl}`,

@@ -1179,7 +1179,7 @@ function updateMerchantAccountInMemory(
   const duplicate = store.users.find((item) => item.email === email && item.id !== userId);
 
   if (duplicate) {
-    throw new Error("Cette adresse e-mail est deja utilisee.");
+    throw new Error("Cette adresse e-mail est déjà utilisée.");
   }
 
   const merchant = getMerchant(merchantId ?? user.merchantId);

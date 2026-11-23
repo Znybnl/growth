@@ -9,7 +9,7 @@ export default function NotFound() {
           Campagne introuvable
         </h1>
         <p className="mt-4 text-base leading-7 text-black/65">
-          La campagne n&apos;est pas active, ou son lien public a ete retire.
+          La campagne n&apos;est pas active, ou son lien public a été retiré.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link

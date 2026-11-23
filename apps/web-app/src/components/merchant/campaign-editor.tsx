@@ -2992,7 +2992,7 @@ export function CampaignEditor({
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="okado-label">
-                  Identit de campagne
+                  Identité de campagne
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-[#111827]">
                   Nommez votre animation
