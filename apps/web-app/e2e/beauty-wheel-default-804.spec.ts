@@ -8,11 +8,11 @@ test.beforeEach(async ({ page }) => {
 
 test("nouvelle roue Beauté : Nude & Or persiste après ticket et sauvegarde", async ({ page }) => {
   await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-create&business=beauty");
-  const preview = page.locator('.okado-preview-surface[data-template-id="beauty-nude"]');
+  const preview = page.frameLocator('iframe[data-replay-preview]').locator('.okado-preview-surface[data-template-id="beauty-nude"]');
   await expect(preview).toBeVisible();
   const choices = page.getByTestId("wizard-game-choices");
   await choices.getByRole("button", { name: /Ticket à gratter/ }).click();
-  await expect(page.locator('.okado-preview-surface[data-template-id="beauty-scratch-nude"]')).toBeVisible();
+  await expect(page.frameLocator('iframe[data-replay-preview]').locator('.okado-preview-surface[data-template-id="beauty-scratch-nude"]')).toBeVisible();
   await choices.getByRole("button", { name: /Roue de la fortune/ }).click();
   await expect(preview).toBeVisible();
   await page.getByRole("button", { name: "Continuer", exact: true }).click();
@@ -29,7 +29,7 @@ test("nouvelle roue Beauté : Nude & Or persiste après ticket et sauvegarde", a
 
 test("autre secteur et campagne existante gardent Moderne", async ({ page }) => {
   await page.goto("/dev/template-rendering-proof?mode=wizard-responsive-create&business=retail");
-  await expect(page.locator('.okado-preview-surface[data-template-id="cocorico-wheel"]')).toBeVisible();
+  await expect(page.frameLocator('iframe[data-replay-preview]').locator('.okado-preview-surface[data-template-id="cocorico-wheel"]')).toBeVisible();
   await page.goto("/dev/template-rendering-proof?mode=wizard-responsive&business=beauty&template=cocorico-wheel");
-  await expect(page.locator('.okado-preview-surface[data-template-id="cocorico-wheel"]')).toBeVisible();
+  await expect(page.frameLocator('iframe[data-replay-preview]').locator('.okado-preview-surface[data-template-id="cocorico-wheel"]')).toBeVisible();
 });
