@@ -114,7 +114,7 @@ test("@visual-1280 : aperçu du brouillon courant, clavier et redimensionnement 
   await promise.fill("Un aperçu non enregistré");
   await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Aperçu du jeu" });
-  await expect(dialog.getByTestId("draft-preview-viewport").getByText("Un aperçu non enregistré", { exact: true })).toBeVisible();
+  await expect(dialog.frameLocator('iframe[data-replay-preview]').getByText("Un aperçu non enregistré", { exact: true })).toBeVisible();
   await page.keyboard.press("Tab");
   expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
   await captureVisualAt1280(page, info, "apercu-brouillon", 600);

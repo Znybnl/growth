@@ -214,7 +214,7 @@ test("@visual-1280 tickets festifs dans le wizard et aperçu, 1280×720 / 1280×
       if (NON_SEASONAL_TEMPLATES.has(theme.id)) await expect(card).not.toContainText(/noël/i);
       await captureVisualAt1280(page, info, theme.id, height);
       await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
-      const frame = page.getByRole("dialog", { name: "Aperçu du jeu" }).getByTestId("draft-preview-viewport");
+      const frame = page.getByRole("dialog", { name: "Aperçu du jeu" }).frameLocator('iframe[data-replay-preview]');
       await expect(frame.locator(`canvas[data-foil-texture="${theme.id}"]`)).toHaveAttribute("data-foil-loaded", "true");
       await captureVisualAt1280(page, info, `${theme.id}-apercu`, height);
       await page.keyboard.press("Escape");

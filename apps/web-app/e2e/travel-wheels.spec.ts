@@ -150,7 +150,7 @@ test("@visual-1280 section Voyage dédiée dans les deux éditeurs", async ({ pa
       await expect(page.getByTestId("classic-template-options").getByRole("button", { name: new RegExp(theme.name) })).toHaveCount(0);
       if (mode.startsWith("wizard")) {
         await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
-        const preview = page.getByRole("dialog", { name: "Aperçu du jeu" }).getByTestId("draft-preview-viewport");
+        const preview = page.getByRole("dialog", { name: "Aperçu du jeu" }).frameLocator('iframe[data-replay-preview]');
         const artwork = preview.locator(`img[data-template-art="${theme.id}"]`);
         await expect(artwork).toHaveJSProperty("complete", true);
         expect(await artwork.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
@@ -203,7 +203,7 @@ test("@visual-1280 section Voyage dédiée aux tickets dans les deux éditeurs",
         await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
         const preview = page.getByRole("dialog", { name: "Aperçu du jeu" });
         await expect(preview).toBeVisible();
-        const viewport = preview.getByTestId("draft-preview-viewport");
+        const viewport = preview.frameLocator('iframe[data-replay-preview]').locator('html');
         expect(await viewport.evaluate(node => node.scrollHeight - node.clientHeight)).toBeLessThanOrEqual(1);
         await page.screenshot({ path: info.outputPath(`ticket-voyage-preview-${theme.id}.png`), animations: "disabled" });
         await page.keyboard.press("Escape");
