@@ -121,6 +121,8 @@ import {
   deriveLighterHex,
   limitCampaignSubtitleLines,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
+  MAX_CAMPAIGN_PROMISE_LENGTH,
+  MAX_RECOMMENDED_CAMPAIGN_PROMISE_LENGTH,
   clampCampaignSpacingPx,
   normalizeScratchAccent,
   normalizeWheelSubtitle,
@@ -166,6 +168,20 @@ type WizardError = {
 };
 
 type WizardDraft = CampaignSetupInput;
+
+function CampaignPromiseLengthWarning({ length }: { length: number }) {
+  if (length <= MAX_RECOMMENDED_CAMPAIGN_PROMISE_LENGTH) return null;
+  return (
+    <p
+      role="status"
+      aria-live="polite"
+      className="mt-2 rounded-[10px] border border-[#fed7aa] bg-[#fff7ed] px-3 py-2 text-xs leading-5 text-[#9a3412]"
+    >
+      Au-delà de {MAX_RECOMMENDED_CAMPAIGN_PROMISE_LENGTH} caractères, un texte trop long n’est pas recommandé pour rester lisible sur mobile.
+    </p>
+  );
+}
+
 type WizardPrize = WizardDraft["prizes"][number];
 
 type PrizeEditorState = {
@@ -1882,11 +1898,12 @@ export function CampaignWizard({
                     })
                   }
                   rows={3}
-                  maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
+                  maxLength={MAX_CAMPAIGN_PROMISE_LENGTH}
                   className="mt-3 w-full resize-none rounded-[12px] border border-[#dbe3ed] bg-[#fbfcfe] px-4 py-3.5 text-sm leading-6 text-[#182033] outline-none transition focus:border-aubergine focus:ring-4 focus:ring-aubergine/15"
                 />
+                <CampaignPromiseLengthWarning length={draft.subtitle.length} />
                 <span className="mt-1 block text-xs text-[#8993a6]">
-                  {draft.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · 3 lignes conseillées pour conserver un rendu lisible sur mobile.
+                  {draft.subtitle.length}/{MAX_CAMPAIGN_PROMISE_LENGTH} caractères · 3 lignes conseillées pour conserver un rendu lisible sur mobile.
                 </span>
               </label>
               {draft.gameType === "scratch" && isImmersiveScratchTemplate(draft.presentation.layout.templateId) ? (

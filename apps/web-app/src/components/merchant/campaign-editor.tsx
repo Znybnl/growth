@@ -128,6 +128,7 @@ import {
   DEFAULT_WHEEL_SUBTITLE,
   MAX_BEAUTY_WHEEL_TITLE_LINES,
   MAX_CAMPAIGN_SUBTITLE_LENGTH,
+  MAX_CAMPAIGN_PROMISE_LENGTH,
   campaignLogoTextSizePx,
   campaignWheelBlockSpacingPx,
   clampCampaignLogoSizePercent,
@@ -3545,11 +3546,11 @@ export function CampaignEditor({
                     ),
                   )}
                   rows={form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId) ? MAX_BEAUTY_WHEEL_TITLE_LINES : 3}
-                  maxLength={MAX_CAMPAIGN_SUBTITLE_LENGTH}
+                  maxLength={MAX_CAMPAIGN_PROMISE_LENGTH}
                   className="w-full rounded-[20px] border border-[#d7e0ed] bg-white px-4 py-3 outline-none"
                 />
                 <span className="mt-1 block text-xs text-[#8993a6]">
-                  {form.subtitle.length}/{MAX_CAMPAIGN_SUBTITLE_LENGTH} caractères · {form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId) ? `${MAX_BEAUTY_WHEEL_TITLE_LINES} lignes de saisie maximum · la taille reste celle que vous choisissez.` : "3 lignes maximum pour conserver un rendu lisible sur mobile."}
+                  {form.subtitle.length}/{MAX_CAMPAIGN_PROMISE_LENGTH} caractères · {form.gameType === "wheel" && isBeautyWheelTemplate(form.presentation.layout.templateId) ? `${MAX_BEAUTY_WHEEL_TITLE_LINES} lignes de saisie maximum · la taille reste celle que vous choisissez.` : "3 lignes maximum pour conserver un rendu lisible sur mobile."}
                 </span>
               </label>
 

@@ -273,6 +273,13 @@ dans la colonne. Le libellé Aperçu en direct et l’action Agrandir sont retir
 Les cartes de modèles Beauté et classiques partagent cadre, hauteur de visuel,
 légende, sélection et mise au point clavier.
 
+Pour la promesse affichée au client, les champs du wizard et de l’éditeur
+classique limitent la saisie à 100 caractères. Dans le wizard, une alerte
+accessible sous chaque champ de cette promesse apparaît au-delà de 50
+caractères et disparaît à 50 ou moins. Les sous-titres secondaires gardent
+leurs limites actuelles ; les valeurs déjà enregistrées ne sont pas
+réécrites automatiquement (issue #844).
+
 ### P-02 — Participer à un jeu depuis un QR code
 
 - Assistance administrative (issue #470) : « QR de diffusion » dans Pilotage → Voir les jeux, puis téléchargement dans le Wizard administrateur et après son enregistrement. Ce fichier SVG mène au jeu public du bon établissement ; le « QR de test » reste séparé. Un brouillon reste non publié et un avertissement demande d’attendre sa publication avant diffusion. Le bouton signale le téléchargement en cours et affiche une erreur en cas d’accès refusé ou de connexion interrompue, sans enregistrer un fichier JSON/HTML à la place du QR.
