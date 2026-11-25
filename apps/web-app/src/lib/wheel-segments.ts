@@ -4,6 +4,48 @@ export type WheelVisualSegment = {
   tone: "win" | "lose";
 };
 
+function roundUpToEven(value: number) {
+  return value + (value % 2);
+}
+
+function baseWheelOutcomeId(segmentId: string) {
+  return segmentId.replace(/-visual-[0-9]+$/, "");
+}
+
+/** Keep every selected result and add one visual copy when parity requires it. */
+function ensureEvenWheelVisualSegments(segments: WheelVisualSegment[]): WheelVisualSegment[] {
+  if (!segments.length || segments.length % 2 === 0) return segments;
+
+  const outcomeCounts = new Map<string, number>();
+  for (const segment of segments) {
+    const outcomeId = baseWheelOutcomeId(segment.id);
+    outcomeCounts.set(outcomeId, (outcomeCounts.get(outcomeId) ?? 0) + 1);
+  }
+  const repeated = segments.find(
+    (segment) => (outcomeCounts.get(baseWheelOutcomeId(segment.id)) ?? 0) > 1,
+  ) ?? segments[0];
+  const outcomeId = baseWheelOutcomeId(repeated.id);
+  let occurrence = outcomeCounts.get(outcomeId) ?? 1;
+  const existingIds = new Set(segments.map((segment) => segment.id));
+  let id = outcomeId + "-visual-" + occurrence;
+  while (existingIds.has(id)) {
+    occurrence += 1;
+    id = outcomeId + "-visual-" + occurrence;
+  }
+
+  return [
+    ...segments,
+    {
+      ...repeated,
+      id,
+      label:
+        repeated.tone === "lose"
+          ? occurrence % 2 === 0 ? "PERDU" : "DOMMAGE"
+          : repeated.label,
+    },
+  ];
+}
+
 /** Presentation only: never hide a distinct reward to meet a visual sector target. */
 export function selectWheelVisualSegments(
   segments: WheelVisualSegment[],
@@ -18,8 +60,9 @@ export function selectWheelVisualSegments(
   }
   const winner = segments.find((segment) => segment.id === winningSegmentId);
   if (winner) required.set(baseId(winner), winner);
-  const target = Number.isFinite(targetCount) ? Math.max(1, Math.floor(targetCount)) : 8;
-  const count = Math.min(segments.length, Math.max(target, required.size));
+  const targetValue = Number.isFinite(targetCount) ? Math.max(2, Math.floor(targetCount)) : 8;
+  const target = roundUpToEven(targetValue);
+  const count = Math.min(segments.length, Math.max(target, roundUpToEven(required.size)));
   const visible = segments.slice(0, count);
   const requiredIds = new Set([...required.values()].map((segment) => segment.id));
   for (const segment of required.values()) {
@@ -28,7 +71,7 @@ export function selectWheelVisualSegments(
     const replaceAt = visible.findLastIndex((item) => !requiredIds.has(item.id));
     if (replaceAt >= 0) visible[replaceAt] = segment;
   }
-  return visible;
+  return ensureEvenWheelVisualSegments(visible);
 }
 
 /** Sunset Drive counts distinct outcomes, including loss; never hide an outcome. */
@@ -54,7 +97,7 @@ type WheelPrizeInput = {
   probability: number;
 };
 
-/** Builds ten visual slices from the configured odds without changing the actual draw logic. */
+/** Builds an even number of visual slices without changing the actual draw logic. */
 export function buildWheelVisualSegments(prizes: WheelPrizeInput[]): WheelVisualSegment[] {
   const minimumSegmentCount = 10;
   const eligiblePrizes = prizes.filter(
@@ -81,7 +124,7 @@ export function buildWheelVisualSegments(prizes: WheelPrizeInput[]): WheelVisual
     return [];
   }
 
-  const slotCount = Math.max(minimumSegmentCount, buckets.length);
+  const slotCount = roundUpToEven(Math.max(minimumSegmentCount, buckets.length));
   const denominator = Math.max(100, winningProbability);
   const counts = buckets.map(() => 1);
   const idealCounts = buckets.map((bucket) => (bucket.weight / denominator) * slotCount);
