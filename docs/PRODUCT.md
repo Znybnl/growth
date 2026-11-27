@@ -115,6 +115,10 @@ n’est modifiée. Rapport : [livraison #723](releases/2026-10-30-marketing-visu
 
 Toute nouvelle roue d’un établissement Beauté, quel que soit son sous-secteur, commence avec **Nude & Or**. Les autres secteurs conservent leur défaut propre. Les campagnes et choix existants restent inchangés ; le marchand peut choisir un autre template.
 
+## Nombre de secteurs des roues — #846
+
+Tous les templates affichent un nombre pair de secteurs. Si une règle de template ou le nombre de résultats exige un total impair, le rendu l’arrondit au nombre pair supérieur et ajoute au besoin une répétition visuelle d’un résultat existant. Les chances et le tirage ne changent pas.
+
 ## Libellés de roue longs — #631
 
 Dans le rendu partagé de la roue, un libellé qui manque de place dans son

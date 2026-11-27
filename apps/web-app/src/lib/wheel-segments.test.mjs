@@ -19,7 +19,10 @@ test("Signature adapte ses segments au nombre de résultats, perte comprise", ()
     const distinct = new Set(source.map(baseId));
     for (const winner of source) {
       const visible = signatureVisualSegments(source, winner.id);
-      assert.equal(visible.length, Math.max(distinct.size < 8 ? 8 : 10, distinct.size));
+      assert.equal(
+        visible.length,
+        Math.max(distinct.size < 8 ? 8 : 10, distinct.size + (distinct.size % 2)),
+      );
       assert.deepEqual(new Set(visible.map(baseId)), distinct);
       assert.ok(visible.some(segment => segment.id === winner.id));
     }
@@ -85,7 +88,10 @@ test("Sunset Drive : six ou huit secteurs selon les résultats distincts, perte 
     const outcomes = new Set(source.map(baseId));
     for (const winner of source) {
       const visible = sunsetDriveVisualSegments(source, winner.id);
-      assert.equal(visible.length, Math.max(outcomes.size <= 5 ? 6 : 8, outcomes.size));
+      assert.equal(
+        visible.length,
+        Math.max(outcomes.size <= 5 ? 6 : 8, outcomes.size + (outcomes.size % 2)),
+      );
       assert.deepEqual(new Set(visible.map(baseId)), outcomes);
       assert.ok(visible.some(segment => segment.id === winner.id));
     }

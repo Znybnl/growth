@@ -22,6 +22,8 @@ augmenter le nombre de secteurs si nécessaire. Le résultat exact du tirage res
 présent pour l'animation. Cette présentation ne modifie ni chances réelles,
 stocks, tirages ou résultats enregistrés. Décision propriétaire du 23 octobre 2026.
 
+Tous les templates de roue affichent un nombre pair de secteurs. Si une cible ou le nombre de résultats distincts impose un nombre impair, le rendu arrondit au nombre pair supérieur et répète visuellement un résultat déjà représenté. Cette répétition ne change ni les probabilités, ni les lots éligibles, ni le résultat du tirage. La parité évite que deux secteurs de même couleur se touchent à la jonction lorsque le template alterne deux couleurs. Règle validée pour l’issue #846.
+
 Ce document regroupe les invariants fonctionnels approuvés d'Okado. Il ne remplace pas un avis juridique. Toute évolution du consentement, des données personnelles, des avis Google ou des règles de retrait doit être validée par le propriétaire avant implémentation.
 
 ## Consultation administrative des établissements — #475
