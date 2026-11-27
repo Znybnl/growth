@@ -585,6 +585,10 @@ La suite `test:admin-campaigns` couvre aussi les vrais handlers de duplication a
 
 `e2e/admin-campaign-duplication.spec.ts` exerce les vrais composants à 320/390/1280 px : menu admin vs marchand, recherche/pagination, sélection, option d’identité, création et liens, affichage des échecs partiels, non-répétition et absence d’erreur d’hydratation. Les requêtes de cette fixture synthétique `/dev/admin-duplication-proof` sont interceptées ; aucun accès administrateur n’est accordé par la fixture, qui renvoie 404 en production. `admin-campaign-access.spec.ts` teste les refus HTTP réels. Recette propriétaire : depuis une campagne de l’établissement administrateur, dupliquer vers un compte pilote de test, vérifier ses données/logo/liens/affiche et son stock initial, puis ouvrir le brouillon depuis Pilotage. La source doit rester inchangée ; aucun test ne modifie un commerce réel.
 
+## Duplication d’un jeu marchand — #850
+
+`npm run test:campaign-duplication -w @okado/web-app` vérifie le mapping des lots vers une copie : nouvel identifiant, conditions d’utilisation conservées (texte renseigné ou vide), achat requis conservé séparément, et absence de reprise de l’identifiant source ou du stock courant.
+
 ## Confirmation d’enregistrement — #577
 
 `e2e/game-ready-577.spec.ts` vérifie la confirmation dans le vrai cadre marchand

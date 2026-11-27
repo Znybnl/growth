@@ -65,6 +65,7 @@ import { WebhookEventPayload } from "resend";
 import { isPermanentRewardEmailBounce } from "@/lib/reward-email-bounce";
 import { logSupportEvent } from "@/lib/support-log";
 import { resolveMerchantLogoText } from "@/lib/merchant-logo-text";
+import { buildDuplicatedPrizeInput } from "@/lib/campaign-duplication";
 
 type CampaignRow = {
   id: string;
@@ -2236,14 +2237,9 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
       id: generateId("action"),
     })),
     rewardRules: performance.campaign.rewardRules,
-    prizes: performance.prizes.map((prize) => ({
-      id: generateId("prize"),
-      label: prize.label,
-      totalQuantity: prize.totalQuantity,
-      probability: prize.probability,
-      estimatedUnitCost: prize.estimatedUnitCost,
-      purchaseRequired: prize.purchaseRequired,
-    })),
+    prizes: performance.prizes.map((prize) =>
+      buildDuplicatedPrizeInput(prize, generateId("prize")),
+    ),
   });
 
   return campaignId;
