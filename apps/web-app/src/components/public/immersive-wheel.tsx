@@ -112,7 +112,7 @@ export function ImmersiveWheel({
   const [hasSpun, setHasSpun] = useState(false);
   const filterId = useId().replace(/:/g, "");
   const isCosmic = template === "cosmic-orbit";
-  const visualSegments = segments.slice(0, 10);
+  const visualSegments = segments;
   const segmentAngle = 360 / Math.max(visualSegments.length, 1);
   const targetIndex = Math.max(0, visualSegments.findIndex((segment) => segment.id === winningSegmentId));
   const primary = wheelStyle?.loseColor ?? accent.signal;

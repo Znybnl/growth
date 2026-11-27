@@ -114,7 +114,7 @@ export function CocoricoWheel({
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [hasSpun, setHasSpun] = useState(false);
-  const visualSegments = segments.slice(0, 10);
+  const visualSegments = segments;
   const segmentAngle = 360 / Math.max(visualSegments.length, 1);
   const targetIndex = Math.max(
     0,
