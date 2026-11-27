@@ -11,6 +11,7 @@ test("la copie d’un lot reprend ses conditions et garde l’achat requis indé
     remainingQuantity: 9,
     probability: 25,
     estimatedUnitCost: 2.5,
+    estimatedUnitCostKnown: false,
     purchaseRequired: true,
     usageConditions: "Valable sur la prochaine visite, hors soldes.",
   };
@@ -21,6 +22,7 @@ test("la copie d’un lot reprend ses conditions et garde l’achat requis indé
     totalQuantity: 40,
     probability: 25,
     estimatedUnitCost: 2.5,
+    estimatedUnitCostKnown: false,
     purchaseRequired: true,
     usageConditions: "Valable sur la prochaine visite, hors soldes.",
   });

@@ -587,7 +587,7 @@ La suite `test:admin-campaigns` couvre aussi les vrais handlers de duplication a
 
 ## Duplication d’un jeu marchand — #850
 
-`npm run test:campaign-duplication -w @okado/web-app` vérifie le mapping des lots vers une copie : nouvel identifiant, conditions d’utilisation conservées (texte renseigné ou vide), achat requis conservé séparément, et absence de reprise de l’identifiant source ou du stock courant.
+`npm run test:campaign-duplication -w @okado/web-app` vérifie le mapping des lots vers une copie : nouvel identifiant, conditions d’utilisation conservées (texte renseigné ou vide), achat requis conservé séparément, marqueur de coût non renseigné conservé, et absence de reprise de l’identifiant source ou du stock courant. `test:admin-campaigns` vérifie aussi la conservation de ce marqueur dans les copies administratives.
 
 ## Confirmation d’enregistrement — #577
 
