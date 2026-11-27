@@ -119,6 +119,8 @@ Toute nouvelle roue d’un établissement Beauté, quel que soit son sous-secteu
 
 Tous les templates affichent un nombre pair de secteurs. Si une règle de template ou le nombre de résultats exige un total impair, le rendu l’arrondit au nombre pair supérieur et ajoute au besoin une répétition visuelle d’un résultat existant. Les chances et le tirage ne changent pas.
 
+Moderne, Bicolore, Orbit néon et Soleil pop affichent tous les secteurs générés, y compris au-delà de 10 résultats distincts. Orbit néon et Soleil pop restent masqués du sélecteur actuel.
+
 ## Libellés de roue longs — #631
 
 Dans le rendu partagé de la roue, un libellé qui manque de place dans son
