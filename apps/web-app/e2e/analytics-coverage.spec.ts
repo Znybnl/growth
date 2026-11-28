@@ -49,6 +49,9 @@ test("measured page families have safe SDK pageviews; game previews are excluded
   await expect.poll(() => events(page, "campaign_wizard_step_viewed").length).toBeGreaterThan(0);
   for (const template of APPLICATION_ANALYTICS_PAGES) {
     if (template.startsWith("/campaign/")) continue;
+    // The recovery route belongs to the closed registry, but before_send
+    // intentionally drops its pageviews because the URL can contain a token.
+    if (template === "/reinitialiser-mot-de-passe") continue;
     const before = events(page, "$pageview").length;
     const path = template.replace(/\[(id|code)\]/g, "private-entity@example.test");
     await page.evaluate(path => window.history.pushState({}, "", path + "?email=private-email@example.test&previewToken=private-token#private-fragment"), path);
@@ -57,6 +60,11 @@ test("measured page families have safe SDK pageviews; game previews are excluded
   }
   const payloads = JSON.stringify(events(page, "$pageview"));
   expect(payloads).not.toMatch(/private-entity|private-email|private-token|private-fragment/);
+  const beforeRecovery = events(page, "$pageview").length;
+  await page.evaluate(() => window.history.pushState({}, "", "/reinitialiser-mot-de-passe?email=private-email@example.test#token_hash=private-token"));
+  await page.waitForTimeout(1200);
+  expect(events(page, "$pageview")).toHaveLength(beforeRecovery);
+  expect(JSON.stringify(events(page, "$pageview"))).not.toMatch(/reinitialiser-mot-de-passe|private-email|private-token/);
   const beforeGame = events(page, "$pageview").length;
   await page.evaluate(() => window.history.pushState({}, "", "/campaign/private-id?preview=1&previewToken=private-token"));
   await page.waitForTimeout(1200);
