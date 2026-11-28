@@ -11,10 +11,19 @@ test.beforeEach(async ({ page, context, baseURL }) => {
 test("Sunset Drive : typographie, fond, lots et interaction", async ({ page }, info) => {
   for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto(`/dev/template-rendering-proof?mode=public&business=travel&template=travel-sunset-drive&background=%2335166c&headline=Sunset%20Drive&secondary=Tentez%20votre%20chance`);
+    await page.goto(`/dev/template-rendering-proof?mode=public&business=travel&template=travel-sunset-drive&background=%2335166c&headline=JOUEZ%20%26%0AGAGNEZ&secondary=Tentez%20votre%20chance`);
     const scene = page.getByTestId("christmas-wheel-scene");
     const heading = scene.locator("h1");
     const subtitle = scene.getByTestId("christmas-wheel-subtitle");
+    const titleLines = heading.locator('span:not([aria-hidden="true"])');
+    await expect(titleLines).toHaveText(["JOUEZ &", "GAGNEZ"]);
+    const lineGap = await titleLines.evaluateAll(lines => {
+      const first = lines[0].getBoundingClientRect();
+      const second = lines[1].getBoundingClientRect();
+      const lineHeight = parseFloat(getComputedStyle(lines[0].parentElement!).lineHeight);
+      return second.top - first.top - lineHeight;
+    });
+    expect(lineGap).toBeCloseTo(0, 1);
     await expect(heading).toHaveCSS("text-transform", "uppercase");
     await expect(heading).toHaveCSS("font-weight", "900");
     await expect(subtitle).toHaveCSS("font-weight", "600");
