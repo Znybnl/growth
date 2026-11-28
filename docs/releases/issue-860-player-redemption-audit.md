@@ -78,7 +78,7 @@ Le schéma résume les branches présentes; il ne constitue pas une preuve de re
 | Lint | 0 erreur; 4 avertissements `window.location.assign()` préexistants dans les formulaires d’inscription et de gestion d’établissement, hors fichiers modifiés. |
 | Build / TypeScript | `next build` réussi sous Next.js 16.4.6. |
 | `git diff --check` | Réussi (fichiers CRLF vérifiés avec `core.whitespace=cr-at-eol`). |
-| CI | Pas encore exécutée; la PR doit fournir ce contrôle. |
+| Checks Vercel sur la PR | 2/2 réussis (`growth`, `okado-index`). Aucun statut GitHub Actions n’est apparu dans les statuts consultés. |
 
 Les avertissements Node `MODULE_TYPELESS_PACKAGE_JSON` observés pendant les tests ne font pas échouer les suites.
 
