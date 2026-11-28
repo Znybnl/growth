@@ -385,7 +385,7 @@ function sourcePerformance(merchantId = "site") {
       actions:[{id:"old-action",kind:"instagram",label:"Suivez-nous",url:"https://instagram.com/source"},{id:"old-google",kind:"google",label:"Google",url:"https://g.page/source"}],
       rewardRules:{isWinningEveryTime:true,availableAfterHours:24,availabilityDurationDays:60,participationIntervalDays:30},
     },
-    prizes:[{id:"old-prize",campaignId:"existing",label:"-10%",totalQuantity:100,remainingQuantity:7,probability:100,estimatedUnitCost:2,purchaseRequired:true,usageConditions:"Sur la prochaine visite"}],
+    prizes:[{id:"old-prize",campaignId:"existing",label:"-10%",totalQuantity:100,remainingQuantity:7,probability:100,estimatedUnitCost:2,estimatedUnitCostKnown:false,purchaseRequired:true,usageConditions:"Sur la prochaine visite"}],
     kpis:{wins:93},leads:[{email:"never-copy@example.test"}],
   };
 }
@@ -434,6 +434,7 @@ test("copie : réglages conservés, nouveaux IDs, stock initial, aucun résultat
   assert.equal(copy.prizes[0].remainingQuantity,undefined);
   assert.equal(copy.prizes[0].totalQuantity,100);
   assert.equal(copy.prizes[0].usageConditions,"Sur la prochaine visite");
+  assert.equal(copy.prizes[0].estimatedUnitCostKnown,false);
   assert.notEqual(copy.actions[0].id,"old-action");
   assert.equal(copy.leads,undefined); assert.equal(copy.kpis,undefined);
   assert.deepEqual(copy.adminCreationAudit,{adminUserId:"admin-user",accountMerchantId:"other"});
