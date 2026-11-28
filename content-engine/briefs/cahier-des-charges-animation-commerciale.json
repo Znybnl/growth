@@ -1,0 +1,49 @@
+{
+  "topic": "Cahier des charges d’une animation commerciale : modèle pour un commerce",
+  "intent": "Fournir une fiche de cadrage opérationnelle avant de lancer une animation dans un commerce.",
+  "audience": "Responsables de commerces physiques",
+  "decision": "create",
+  "overlap_analysis": "Le guide budget chiffre les coûts ; celui-ci organise les décisions, responsabilités et échéances. Le guide animations aide au choix du format.",
+  "outline": "Fiche à compléter ; objectif ; contraintes ; plafond et rôles ; planning ; conditions ; bilan.",
+  "cta": "Découvrir le fonctionnement d’Okado",
+  "status": "READY_FOR_HUMAN_REVIEW",
+  "sources": [
+    {
+      "url": "https://www.bordeauxgironde.cci.fr/sites/g/files/mwbcuj1076/files/2020-09/boite_a_outils_animations_et_reglementations-compress%C3%A9_0.pdf",
+      "accessed_at": "2026-11-28",
+      "claim": "Cadrage, budget et bilan d’une animation ; le modèle rédigé est une proposition, non un document obligatoire.",
+      "evidence": "Boîte à outils CCI consultée."
+    },
+    {
+      "url": "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees",
+      "accessed_at": "2026-11-27",
+      "claim": "En France, cadre général des loteries publicitaires et exigence de loyauté ; cas particulier à vérifier.",
+      "evidence": "Fiche DGCCRF consultée."
+    },
+    {
+      "url": "https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel",
+      "accessed_at": "2026-11-27",
+      "claim": "Distinguer les communications de service de la prospection et vérifier le consentement et les exceptions applicables.",
+      "evidence": "Fiche CNIL consultée."
+    },
+    {
+      "url": "https://www.okado.app/comment-ca-marche",
+      "accessed_at": "2026-11-27",
+      "claim": "Jeu mobile QR, prévisualisation, diffusion et retrait ; complété par règles produit locales.",
+      "evidence": "Page Okado consultée ; docs/DOMAIN_RULES.md et docs/PRODUCT.md."
+    }
+  ],
+  "checks": [
+    {
+      "item": "Sources et produit",
+      "result": "pass",
+      "evidence": "Sources primaires consultées ; hypothèses et exemples identifiés comme fictifs."
+    },
+    {
+      "item": "Relecture SEO et recouvrement",
+      "result": "pass",
+      "evidence": "Intention distincte de calcul du guide budget ; relecture humaine de la formulation et du cadre juridique nécessaire."
+    }
+  ],
+  "review_notes": "Aucune approbation ; date de publication technique provisoire ; lien entrant candidat depuis le guide budget après publication approuvée."
+}

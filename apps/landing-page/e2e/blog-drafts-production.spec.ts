@@ -5,7 +5,8 @@ import { publicContent } from "../src/lib/public-content";
 test("production excludes drafts from routes, listing, sitemap and public links", async ({ request }) => {
   const drafts = blogPosts.filter((post) => post.draft);
   expect(drafts.map((post) => post.path)).not.toContain("/blog/animation-salon-coiffure");
-  expect(drafts).toHaveLength(2);
+  expect(drafts).toHaveLength(3);
+  expect(drafts.map((post) => post.path)).toEqual(expect.arrayContaining(["/blog/cahier-des-charges-animation-commerciale", "/blog/organiser-remise-lots-jeu-magasin", "/blog/jeu-qr-code-file-attente-commerce"]));
   expect(blogPosts.some((post) => post.path === "/blog/jeu-qr-code-salon-coiffure")).toBe(false);
   expect((await request.get("/blog/jeu-qr-code-salon-coiffure")).status()).toBe(404);
   expect(drafts.length).toBeGreaterThan(0);
@@ -33,6 +34,7 @@ test("approved pilot is visible with valid metadata and incoming links", async (
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://www.okado.app${slug}`);
   await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", "Trouvez des idées de lots pour votre jeu en magasin : exemples par métier, budget fictif, stocks et conseils pour préparer la remise.");
   await expect(page).toHaveTitle(/Quels lots pour un jeu QR code en magasin/);
+  await expect(page.getByText("Guide préparé avec une assistance IA et publié par Okado", { exact: false })).toBeVisible();
   await expect(page.locator('meta[property="article:published_time"]')).toHaveAttribute("content", "2026-11-11");
   await expect(page.getByRole("link", { name: "Essayer Okado gratuitement" })).toHaveAttribute("href", "https://app.okado.app/inscription");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
