@@ -65,7 +65,10 @@ import { WebhookEventPayload } from "resend";
 import { isPermanentRewardEmailBounce } from "@/lib/reward-email-bounce";
 import { logSupportEvent } from "@/lib/support-log";
 import { resolveMerchantLogoText } from "@/lib/merchant-logo-text";
-import { buildDuplicatedPrizeInput } from "@/lib/campaign-duplication";
+import {
+  buildDuplicatedGoogleClickSetting,
+  buildDuplicatedPrizeInput,
+} from "@/lib/campaign-duplication";
 
 type CampaignRow = {
   id: string;
@@ -2222,6 +2225,7 @@ export async function duplicateCampaignInSupabase(id: string, merchant: Merchant
     subtitle: performance.campaign.subtitle,
     goalType: performance.campaign.goalType,
     emailCaptureEnabled: performance.campaign.emailCaptureEnabled,
+    ...buildDuplicatedGoogleClickSetting(performance.campaign),
     ctaLabel: performance.campaign.ctaLabel,
     successMetric: performance.campaign.successMetric,
     targetUrl: performance.campaign.targetUrl,
@@ -2261,6 +2265,7 @@ export async function duplicateCampaignToMerchantInSupabase(
     subtitle: performance.campaign.subtitle,
     goalType: performance.campaign.goalType,
     emailCaptureEnabled: performance.campaign.emailCaptureEnabled,
+    ...buildDuplicatedGoogleClickSetting(performance.campaign),
     ctaLabel: performance.campaign.ctaLabel,
     successMetric: performance.campaign.successMetric,
     targetUrl: performance.campaign.targetUrl,

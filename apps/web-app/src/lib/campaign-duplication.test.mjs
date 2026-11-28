@@ -1,6 +1,22 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildDuplicatedPrizeInput } from "./campaign-duplication.ts";
+import { buildDuplicatedGoogleClickSetting, buildDuplicatedPrizeInput } from "./campaign-duplication.ts";
+
+test("la copie conserve le réglage de clic Google sans reprendre l’accord du jeu source", () => {
+  const copy = buildDuplicatedGoogleClickSetting({
+    googleClickRequired: true,
+    googleClickAcceptanceId: "source-acceptance",
+  });
+
+  assert.deepEqual(copy, { googleClickRequired: true });
+  assert.equal("googleClickAcceptanceId" in copy, false);
+});
+
+test("la copie conserve un réglage de clic Google désactivé", () => {
+  assert.deepEqual(buildDuplicatedGoogleClickSetting({ googleClickRequired: false }), {
+    googleClickRequired: false,
+  });
+});
 
 test("la copie d’un lot reprend ses conditions et garde l’achat requis indépendant", () => {
   const source = {

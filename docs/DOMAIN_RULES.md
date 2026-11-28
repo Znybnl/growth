@@ -96,7 +96,7 @@ manuels ; aucun transfert n'est déclenché par le marquage « Payée ».
 
 ## Cycle de vie d'un jeu
 
-- Toute duplication de jeu conserve la configuration de chaque lot, dont ses conditions d’utilisation et son réglage « Achat requis ». La copie est indépendante, reprend le stock initial et reste un brouillon ; le jeu source et ses historiques, contacts et gains ne sont pas modifiés ni copiés.
+- Toute duplication de jeu conserve la configuration de chaque lot, dont ses conditions d’utilisation et son réglage « Achat requis ». Elle conserve également le réglage « Clic Google requis », mais jamais l’accord Google lié au jeu source : le nouveau jeu doit recevoir son propre accord avant activation. La copie est indépendante, reprend le stock initial et reste un brouillon ; le jeu source et ses historiques, contacts et gains ne sont pas modifiés ni copiés.
 
 - Confirmation après sauvegarde — #577 : l’aperçu isolé est l’action principale,
   le QR de diffusion est visible et son téléchargement reste explicite.
