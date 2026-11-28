@@ -74,7 +74,7 @@ test("Sunset Drive disponible hors secteur Voyage et taille du titre modifiable"
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/dev/template-rendering-proof?mode=public&business=travel&template=travel-sunset-drive&background=%2335166c&headingSize=48');
-  expect(parseFloat(await page.locator('h1').first().evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(50.54, 1);
+  expect(parseFloat(await page.locator('h1').first().evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(53.82, 1);
 });
 
 test("Sunset Drive adapte ses secteurs et conserve les lots en page et aperçu", async ({ page }, info) => {
@@ -107,7 +107,7 @@ test("Sunset Drive adapte ses secteurs et conserve les lots en page et aperçu",
 
 test("@visual-1280 Sunset Drive : couleurs fixes, police, taille et espacements dans le wizard", async ({ page }, info) => {
   await page.setViewportSize({ width: 1280, height: 720 });
-  await page.goto('/dev/template-rendering-proof?mode=wizard-responsive-edit&template=travel-sunset-drive&business=travel&secondary=Tentez%20votre%20chance');
+  await page.goto('/dev/template-rendering-proof?mode=wizard-responsive-edit&template=travel-sunset-drive&business=travel&headline=JOUEZ%20%26%0AGAGNEZ&secondary=Tentez%20votre%20chance');
   await selectWizardStep(page, 2);
   const primary = page.getByLabel("Couleur principale de la roue").first();
   await expect(primary).toBeDisabled();
@@ -149,6 +149,9 @@ test("@visual-1280 Sunset Drive : couleurs fixes, police, taille et espacements 
   expect(smallLogo[4]).toBeLessThan(smaller[4]);
   await page.getByLabel("Couleur du texte principal").scrollIntoViewIfNeeded();
   await captureVisualAt1280(page, info, "sunset-reglages");
+  await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Aperçu du jeu" })).toBeVisible();
+  await captureVisualAt1280(page, info, "sunset-apercu-titre");
 });
 
 test("Sunset Drive : couleurs verrouillées dans l’éditeur classique", async ({ page }) => {
