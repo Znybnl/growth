@@ -330,11 +330,11 @@ test("les pages et CTA conservent uniquement le contexte d’acquisition autoris
     destination: "/inscription",
   });
   expect(JSON.stringify(events)).not.toMatch(/private@example|token=secret/);
-  await page.goto("/?utm_source=fixture&utm_medium=seo");
+  await page.goto("/?utm_source=chatgpt.com&utm_medium=seo");
   await expect.poll(() => events.filter(event => event.event === "$pageview" && event.properties.page === "/").length).toBeGreaterThan(0);
   await page.getByRole("region", { name: /Donnez à vos clients/ }).getByRole("link", { name: "Essayer gratuitement", exact: true }).click();
   await expect.poll(() => events.filter(event => event.event === "marketing_cta_clicked" && event.properties.location === "hero").length).toBe(1);
   expect(events.find(event => event.event === "marketing_cta_clicked" && event.properties.location === "hero")!.properties).toMatchObject({
-    cta: "start_trial", page: "/", location: "hero", destination: "/inscription", utmSource: "fixture", utmMedium: "seo",
+    cta: "start_trial", page: "/", location: "hero", destination: "/inscription", utmSource: "chatgpt.com", utmMedium: "seo",
   });
 });
