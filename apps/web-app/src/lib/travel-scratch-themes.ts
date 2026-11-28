@@ -7,7 +7,7 @@ export const TRAVEL_SCRATCH_THEMES = [
     artwork: SUNSET_DRIVE.artwork, background: SUNSET_DRIVE.artwork,
     sampleHeadline: "SUNSET DRIVE", sampleSubline: "Tentez votre chance",
     scratch: { base: SUNSET_DRIVE.coral, highlight: "#ff8a71", edge: "#ffe5bc", reveal: "#ffe5bc", textureOpacity: 0.2 },
-    text: SUNSET_DRIVE.ivory, logo: SUNSET_DRIVE.ivory, font: "dm-sans", fontClass: "font-dm-sans",
+    text: SUNSET_DRIVE.ivory, logo: SUNSET_DRIVE.ivory, font: "inter", fontClass: "font-inter",
   },
   {
     id: "travel-scratch-elegant",
@@ -62,7 +62,7 @@ export const TRAVEL_SCRATCH_THEMES = [
   scratch: { base: string; highlight: string; edge: string; reveal: string; textureOpacity: number };
   text: string;
   logo: string;
-  font: "bodoni" | "dm-sans";
+  font: "bodoni" | "dm-sans" | "inter";
   fontClass: string;
 }>;
 

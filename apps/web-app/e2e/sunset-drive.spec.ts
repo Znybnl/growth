@@ -11,19 +11,28 @@ test.beforeEach(async ({ page, context, baseURL }) => {
 test("Sunset Drive : typographie, fond, lots et interaction", async ({ page }, info) => {
   for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto(`/dev/template-rendering-proof?mode=public&business=travel&template=travel-sunset-drive&background=%2335166c&headline=Sunset%20Drive&secondary=Tentez%20votre%20chance`);
+    await page.goto(`/dev/template-rendering-proof?mode=public&business=travel&template=travel-sunset-drive&background=%2335166c&headline=JOUEZ%20%26%0AGAGNEZ&secondary=Tentez%20votre%20chance`);
     const scene = page.getByTestId("christmas-wheel-scene");
     const heading = scene.locator("h1");
     const subtitle = scene.getByTestId("christmas-wheel-subtitle");
+    const titleLines = heading.locator('span:not([aria-hidden="true"])');
+    await expect(titleLines).toHaveText(["JOUEZ &", "GAGNEZ"]);
+    const lineGap = await titleLines.evaluateAll(lines => {
+      const first = lines[0].getBoundingClientRect();
+      const second = lines[1].getBoundingClientRect();
+      const lineHeight = parseFloat(getComputedStyle(lines[0].parentElement!).lineHeight);
+      return second.top - first.top - lineHeight;
+    });
+    expect(lineGap).toBeCloseTo(0, 1);
     await expect(heading).toHaveCSS("text-transform", "uppercase");
-    await expect(heading).toHaveCSS("font-weight", "800");
+    await expect(heading).toHaveCSS("font-weight", "900");
     await expect(subtitle).toHaveCSS("font-weight", "600");
     await expect(subtitle).toHaveCSS("font-style", "italic");
     await expect(subtitle).toHaveText("Tentez votre chance");
     await expect(heading).toHaveCSS("color", "rgb(255, 240, 214)");
     await expect(subtitle).toHaveCSS("color", "rgb(255, 240, 214)");
     if (width === 390) {
-      expect(parseFloat(await heading.evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(42.12, 1);
+      expect(parseFloat(await heading.evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(44.85, 1);
       expect(parseFloat(await subtitle.evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(19.89, 1);
     }
     await expect(page.locator('img[data-template-art="travel-sunset-drive"]')).toHaveJSProperty("complete", true);
@@ -65,7 +74,7 @@ test("Sunset Drive disponible hors secteur Voyage et taille du titre modifiable"
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/dev/template-rendering-proof?mode=public&business=travel&template=travel-sunset-drive&background=%2335166c&headingSize=48');
-  expect(parseFloat(await page.locator('h1').first().evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(50.54, 1);
+  expect(parseFloat(await page.locator('h1').first().evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(53.82, 1);
 });
 
 test("Sunset Drive adapte ses secteurs et conserve les lots en page et aperçu", async ({ page }, info) => {
@@ -98,7 +107,7 @@ test("Sunset Drive adapte ses secteurs et conserve les lots en page et aperçu",
 
 test("@visual-1280 Sunset Drive : couleurs fixes, police, taille et espacements dans le wizard", async ({ page }, info) => {
   await page.setViewportSize({ width: 1280, height: 720 });
-  await page.goto('/dev/template-rendering-proof?mode=wizard-responsive-edit&template=travel-sunset-drive&business=travel&secondary=Tentez%20votre%20chance');
+  await page.goto('/dev/template-rendering-proof?mode=wizard-responsive-edit&template=travel-sunset-drive&business=travel&headline=JOUEZ%20%26%0AGAGNEZ&secondary=Tentez%20votre%20chance');
   await selectWizardStep(page, 2);
   const primary = page.getByLabel("Couleur principale de la roue").first();
   await expect(primary).toBeDisabled();
@@ -140,6 +149,9 @@ test("@visual-1280 Sunset Drive : couleurs fixes, police, taille et espacements 
   expect(smallLogo[4]).toBeLessThan(smaller[4]);
   await page.getByLabel("Couleur du texte principal").scrollIntoViewIfNeeded();
   await captureVisualAt1280(page, info, "sunset-reglages");
+  await page.getByRole("button", { name: "Voir l’aperçu", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Aperçu du jeu" })).toBeVisible();
+  await captureVisualAt1280(page, info, "sunset-apercu-titre");
 });
 
 test("Sunset Drive : couleurs verrouillées dans l’éditeur classique", async ({ page }) => {

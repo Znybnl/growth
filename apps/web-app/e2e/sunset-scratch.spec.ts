@@ -22,7 +22,7 @@ test("ticket Sunset Drive disponible aux commerces dans les deux éditeurs", asy
   }
 });
 
-test("Sunset Drive respecte les retours à la ligne du titre et du sous-titre", async ({ page }) => {
+test("Sunset Drive respecte les retours à la ligne du titre et du sous-titre", async ({ page }, info) => {
   await page.setViewportSize({ width: 390, height: 844 });
   for (const template of ["travel-sunset-drive", "travel-scratch-sunset-drive"]) {
     for (const mode of ["public", "game-preview"]) {
@@ -38,6 +38,9 @@ test("Sunset Drive respecte les retours à la ligne du titre et du sous-titre", 
           return range.getClientRects().length;
         });
         expect(lines).toBeGreaterThanOrEqual(2);
+      }
+      if (template === "travel-scratch-sunset-drive" && mode === "public") {
+        await page.screenshot({ path: info.outputPath("sunset-scratch-multiline.png"), fullPage: true, animations: "disabled" });
       }
     }
   }

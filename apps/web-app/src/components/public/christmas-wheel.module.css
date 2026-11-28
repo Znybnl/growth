@@ -113,7 +113,17 @@
 .thumbnailSubtitle { margin-top: 8px; font-family: var(--font-cormorant-garamond), Georgia, serif; font-size: 9px; font-weight: 600; line-height: 1.25; text-wrap: balance; }
 .thumbnailWheel { position: relative; width: 100%; z-index: 1; }
 
-.sunsetTitle { width: 94%; margin: 0 auto; font-family: var(--font-dm-sans), sans-serif; font-size: calc(clamp(30px, 10.8cqw, 48px) * var(--sunset-title-scale, 1)); font-weight: 800; line-height: 1.05; text-transform: uppercase; white-space: pre-line; overflow-wrap: anywhere; text-wrap: balance; }
+.sunsetTitle {
+  width: 100%; margin: 0; padding: 0 12px;
+  font-family: var(--font-inter), "Inter", sans-serif;
+  font-size: calc(clamp(34px, 11.5cqw, 48px) * var(--sunset-title-scale, 1));
+  font-weight: 900; font-style: italic; line-height: 0.95; letter-spacing: -0.035em;
+  color: #fff0d6; text-transform: uppercase; text-align: center; text-decoration: none;
+  text-shadow: 2px 3px 0 #f04468;
+  white-space: pre-line; overflow-wrap: anywhere;
+}
+.sunsetTitle span { display: block; white-space: nowrap; }
+.sunsetTitle .sunsetTitleSeparator { display: none; }
 .sunsetSubtitle { width: 90%; margin-inline: auto; margin-bottom: 0; text-align: center; font-family: var(--font-dm-sans), sans-serif; font-size: clamp(16px, 5.1cqw, 22px); font-style: italic; font-weight: 600; line-height: 1.25; text-shadow: 0 1px 3px rgba(80, 6, 47, 0.28); white-space: pre-line; overflow-wrap: anywhere; }
 .sunsetButton { inset: 35%; background: var(--christmas-button-color); border: 3px solid #ffe5bc; box-shadow: 0 0 0 3px #a63035; font-style: italic; }
 .sunsetButton::before { display: none; }

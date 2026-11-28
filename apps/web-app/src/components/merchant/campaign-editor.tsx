@@ -160,6 +160,7 @@ import { userBackgroundImageStyle } from "@/lib/campaign-background";
 import { getPrizeValidationMessages } from "@/lib/prize-validation";
 import { buildWheelVisualSegments, WheelVisualSegment } from "@/lib/wheel-segments";
 import { isRestaurantIndustry } from "@/lib/merchant-options";
+import { isSunsetDriveTemplate } from "@/lib/sunset-drive-theme";
 import {
   ActionKind,
   BackgroundLibraryAsset,
@@ -359,7 +360,17 @@ const textFontOptions: TextFont[] = [
   "space-grotesk",
   "fredoka",
 ];
+const sunsetTextFontOptions: TextFont[] = [...textFontOptions, "inter"];
 const cocoricoTextFontOptions: TextFont[] = ["roboto", "days-one", "fredoka"];
+
+function headingFontOptionsForTemplate(templateId?: GamePageTemplateId) {
+  if (!templateId) return textFontOptions;
+  const beautyOptions = beautyWheelFontOptions(templateId);
+  if (beautyOptions) return beautyOptions;
+  if (isCocoricoWheelTemplate(templateId)) return cocoricoTextFontOptions;
+  if (isSunsetDriveTemplate(templateId)) return sunsetTextFontOptions;
+  return textFontOptions;
+}
 const wheelPageTemplateOptions: Array<{
   value: GamePageTemplateId;
   title: string;
@@ -3686,7 +3697,7 @@ export function CampaignEditor({
                   <div className="text-sm">
                     <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                     <div className="grid gap-3">
-                      {(beautyWheelFontOptions(form.presentation.layout.templateId) ?? (isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions)).map((font) => {
+                      {headingFontOptionsForTemplate(form.presentation.layout.templateId).map((font) => {
                         const active = form.presentation.heading.fontFamily === font;
 
                         return (
@@ -4333,7 +4344,7 @@ export function CampaignEditor({
               <div className="text-sm">
                 <span className="mb-3 block text-[#616b7c]">Police du texte</span>
                 <div className="grid gap-3">
-                  {(beautyWheelFontOptions(form.presentation.layout.templateId) ?? (isCocoricoWheelTemplate(form.presentation.layout.templateId) ? cocoricoTextFontOptions : textFontOptions)).map((font) => {
+                  {headingFontOptionsForTemplate(form.presentation.layout.templateId).map((font) => {
                     const active = form.presentation.heading.fontFamily === font;
 
                     return (
