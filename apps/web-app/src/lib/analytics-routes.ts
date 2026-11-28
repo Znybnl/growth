@@ -1,6 +1,6 @@
 /** Closed route families only: never send user-defined path segments. */
 export const APPLICATION_ANALYTICS_PAGES = [
-  "/", "/connexion", "/inscription", "/connexion/google/callback", "/onboarding", "/merchant",
+  "/", "/connexion", "/inscription", "/mot-de-passe-oublie", "/connexion/google/callback", "/onboarding", "/merchant",
   "/campaigns", "/campaigns/new", "/campaigns/new/guided",
   "/campaigns/[id]/edit", "/campaigns/[id]/edit/guided", "/campaigns/[id]/poster", "/campaigns/[id]/email",
   "/data", "/account", "/contact", "/locations", "/backgrounds", "/affiliates", "/caisse", "/support",

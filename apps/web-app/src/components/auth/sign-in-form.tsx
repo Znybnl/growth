@@ -119,7 +119,26 @@ export function SignInForm() {
         </div>
       </div>
 
-      <div className="mt-5 flex items-center justify-between gap-4 text-sm">
+      <div className="-mt-1 flex justify-end">
+        <Link
+          href="/mot-de-passe-oublie"
+          prefetch={false}
+          onClick={() => {
+            const savedEmail = email.trim();
+            if (!savedEmail) return;
+            try {
+              sessionStorage.setItem("okado:password-recovery-email", savedEmail);
+            } catch {
+              // Prefilling is optional when browser storage is unavailable.
+            }
+          }}
+          className="inline-flex min-h-10 items-center rounded-md px-2 text-sm font-medium text-aubergine underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-aubergine"
+        >
+          Mot de passe oublié ?
+        </Link>
+      </div>
+
+      <div className="mt-1 flex items-center justify-between gap-4 text-sm">
         <label className="flex items-center gap-3 text-ash">
           <input
             type="checkbox"

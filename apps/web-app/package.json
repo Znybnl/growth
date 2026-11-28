@@ -10,6 +10,7 @@
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",
+    "test:password-recovery": "node --experimental-strip-types --test src/lib/password-recovery.test.mjs",
     "test:visual-1280": "playwright test --project=chromium --grep @visual-1280",
     "test:reward-email": "node --experimental-strip-types --import ./scripts/ts-alias-loader.mjs --test src/lib/email-settings.test.mjs",
     "test:contact": "node --experimental-strip-types --test src/lib/contact-request.test.mjs",

@@ -54,6 +54,24 @@ app.okado.app              →  SaaS marchand et parcours publics de jeu
 - **Production** : environnement accessible aux marchands et joueurs.
 - Il n'y a pas de préproduction séparée. La prévisualisation d'un jeu est un parcours produit de test, isolé des données de production ; elle ne remplace pas une préproduction technique.
 
+## Authentification et récupération du mot de passe
+
+La connexion marchand utilise Supabase Auth et les cookies de session SSR existants.
+La récupération est traitée par des routes serveur dédiées sous /api/auth/recovery.
+Le lien e-mail Supabase transporte TokenHash dans le fragment du navigateur ;
+le fragment est retiré de l'historique avant toute requête. Le nouveau mot de passe
+n'est accepté qu'après vérification Supabase du jeton de récupération ou avec la
+session de récupération vérifiée qui en résulte. L'adresse e-mail est hachée dans
+la clé du rate limiter existant. Le jeton et le mot de passe ne sont pas transmis
+aux analytics ; la page de définition du nouveau mot de passe en est exclue. Seule
+la demande initiale peut émettre un événement générique après consentement.
+
+Le modèle HTML livré dans apps/web-app/emails/password-recovery.html doit être
+copié dans le modèle Recovery de Supabase et les redirections exactes doivent être
+autorisées dans Auth. Cette opération de tableau de bord n'est pas automatisée par
+le dépôt. Aucun environnement de préproduction n'est défini ; toute configuration
+de production et tout envoi de validation restent soumis à l'autorisation du propriétaire.
+
 ## Données et accès
 
 ### Coût de lot non renseigné — #609 phase5

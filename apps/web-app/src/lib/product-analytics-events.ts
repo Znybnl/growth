@@ -68,6 +68,7 @@ export type ProductAnalyticsEvent =
   | "onboarding_step_viewed"
   | "poster_downloaded"
   | "prize_redeemed"
+  | "password_reset_requested"
   | "results_campaign_selected"
   | "reward_email_failed"
   | "reward_email_sent"

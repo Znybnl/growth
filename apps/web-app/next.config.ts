@@ -62,6 +62,20 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: "/mot-de-passe-oublie",
+        headers: [
+          { key: "Referrer-Policy", value: "no-referrer" },
+          { key: "Cache-Control", value: "private, no-store" },
+        ],
+      },
+      {
+        source: "/reinitialiser-mot-de-passe",
+        headers: [
+          { key: "Referrer-Policy", value: "no-referrer" },
+          { key: "Cache-Control", value: "private, no-store" },
+        ],
+      },
+      {
         source: "/campaign/:id/preview-embed",
         headers: [
           {
