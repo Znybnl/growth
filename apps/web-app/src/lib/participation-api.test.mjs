@@ -18,7 +18,8 @@ const publicApi=load("./public-api.ts");
 function handler({recorded=true,error=null}={}) {
   const state={calls:[],limits:[]};
   const route=load("../app/api/public/draw/played/route.ts",{
-    "next/server":{NextResponse:{json:Response.json.bind(Response)}},
+    "next/server":{NextResponse:{json:Response.json.bind(Response)},after:callback=>{void callback();}},
+    "@/lib/brevo":{emitBrevoCampaignMilestone:async()=>{}},
     "@/lib/public-api":publicApi,"@/lib/participation-token":tokens,
     "@/lib/support-log":{logSupportEvent:()=>{}},
     "@/lib/public-security-store":{assertPersistentPublicRateLimit:async(r,o)=>state.limits.push(o)},

@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, getSupabaseAdmin } from "@/lib/supabase";
+import { sanitizeSupportLogPayload } from "@/lib/support-log-sanitize";
 
 type SupportLogLevel = "info" | "warn" | "error";
 
@@ -22,16 +23,6 @@ function getMemoryLogs() {
   return globalThis.__okadoSupportLogs;
 }
 
-function sanitizePayload(payload: SupportLogPayload) {
-  if (!payload) {
-    return undefined;
-  }
-
-  return Object.fromEntries(
-    Object.entries(payload).filter(([, value]) => value !== undefined),
-  );
-}
-
 function firstString(payload: Record<string, unknown> | undefined, keys: string[]) {
   if (!payload) return null;
 
@@ -52,7 +43,6 @@ function buildSummary(payload: Record<string, unknown> | undefined) {
     firstString(payload, ["error", "message", "status"]),
     firstString(payload, ["campaignId"]),
     firstString(payload, ["leadId"]),
-    firstString(payload, ["email", "recipientEmail"]),
   ].filter(Boolean);
 
   return usefulParts.length ? usefulParts.join(" · ").slice(0, 500) : null;
@@ -76,8 +66,6 @@ function persistSupportLog(entry: SupportLogEntry) {
           merchant_id: merchantId,
           campaign_id: firstString(payload, ["campaignId"]),
           lead_id: firstString(payload, ["leadId"]),
-          email: firstString(payload, ["email", "recipientEmail", "leadEmail"]),
-          redemption_code: firstString(payload, ["redemptionCode"]),
           summary: buildSummary(payload),
           payload: payload ?? {},
           created_at: entry.createdAt,
@@ -100,7 +88,7 @@ export function logSupportEvent(
   payload?: SupportLogPayload,
 ) {
   const prefix = `[SUPPORT][${event}]`;
-  const cleanedPayload = sanitizePayload(payload);
+  const cleanedPayload = sanitizeSupportLogPayload(payload);
   const entry: SupportLogEntry = {
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),

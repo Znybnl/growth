@@ -91,10 +91,8 @@ export async function POST(request: Request) {
       merchantUserId: session.user.id,
       leadId,
       campaignId: context.campaignId,
-      redemptionCode: context.redemptionCode,
       purchaseConfirmed: Boolean(body.purchaseConfirmed),
       forceRedemption,
-      forceReason: forceRedemption ? forceReason : undefined,
     });
     void captureProductEvent(
       "cashier_redemption_completed",
