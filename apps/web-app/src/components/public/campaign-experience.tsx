@@ -17,6 +17,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { captureClientProductEvent } from "@/lib/client-product-analytics";
 import { useProductStepTracking } from "@/components/analytics/product-step-tracking";
 import { requiresGoogleClick } from "@/lib/google-click-policy";
+import { runOnceForSession } from "@/lib/session-action-guard";
 import { BrandMark } from "@/components/brand-mark";
 import { CocoricoPromoText } from "@/components/public/cocorico-promo-text";
 import { CocoricoWheel } from "@/components/public/cocorico-wheel";
@@ -486,6 +487,8 @@ export function CampaignExperience({
   const [marketingClickDelayElapsed, setMarketingClickDelayElapsed] = useState(false);
   const marketingClickDelayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const launchingGame = useRef(false);
+  const scratchParticipationSession = useRef<string | null>(null);
+  const scratchRevealSession = useRef<string | null>(null);
   const [previewToken, setPreviewToken] = useState<string | null>(initialPreviewToken ?? null);
   const [previewResult, setPreviewResult] = useState<Pick<CreateDrawSessionResult, "prize"> | null>(null);
   const [drawResult, setDrawResult] = useState<PublicDrawResult | null>(null);
@@ -890,7 +893,23 @@ export function CampaignExperience({
   }
 
   function handleScratchStart() {
-    if (!isPreview && drawSession) void recordScratchParticipation(drawSession);
+    if (isPreview || !drawSession) return;
+    runOnceForSession(scratchParticipationSession, drawSession.id, () => {
+      void recordScratchParticipation(drawSession);
+    });
+  }
+
+  function handleScratchReveal() {
+    if (!drawSession) return;
+    runOnceForSession(scratchRevealSession, drawSession.id, () => {
+      void handleGameReveal();
+    });
+  }
+
+  function revealScratchWithoutGesture() {
+    if (!drawSession || stage !== "ready") return;
+    handleScratchStart();
+    handleScratchReveal();
   }
 
   const managedBackgroundUrl = campaign.presentation.background.mode === "image" &&
@@ -1218,7 +1237,7 @@ export function CampaignExperience({
                 accent={scratchAccent}
                 resultLabel={scratchLabel}
                 enabled={stage === "ready"}
-                onReveal={() => void handleGameReveal()}
+                onReveal={handleScratchReveal}
                 onStart={() => void openActionAndTrack()}
                 onScratchStart={handleScratchStart}
                 logoMode={campaign.logoMode}
@@ -1247,7 +1266,7 @@ export function CampaignExperience({
                 accent={scratchAccent}
                 resultLabel={scratchLabel}
                 enabled={stage === "ready"}
-                onReveal={() => void handleGameReveal()}
+                onReveal={handleScratchReveal}
                 onScratchStart={handleScratchStart}
               />
 
@@ -1274,7 +1293,15 @@ export function CampaignExperience({
 
           {stage === "ready" && campaign.gameType !== "wheel" ? (
             <div className="rounded-[28px] border border-white/70 bg-white/72 px-5 py-4 text-center text-sm text-[#62697a] shadow-[0_18px_40px_rgba(17,24,39,0.06)] backdrop-blur">
-              Grattez le ticket pour révéler immédiatement votre résultat.
+              <p>Grattez le ticket ou utilisez le bouton pour révéler votre résultat.</p>
+              <button
+                type="button"
+                onClick={revealScratchWithoutGesture}
+                disabled={isLoading}
+                className="mt-3 rounded-xl bg-[#111827] px-4 py-3 font-semibold text-white shadow-sm outline-none focus-visible:ring-4 focus-visible:ring-[#64748b] focus-visible:ring-offset-2 disabled:opacity-60"
+              >
+                Révéler le résultat
+              </button>
             </div>
           ) : null}
 

@@ -3,12 +3,13 @@
 import { Check, ChevronRight, CircleAlert, LockKeyhole, ShieldCheck } from "lucide-react";
 import { useRef, useState } from "react";
 
-import { CashierRedemptionContext, PublicRedemptionContext } from "@/lib/types";
+import { PublicRedemptionView } from "@/lib/public-redemption-context";
+import { CashierRedemptionContext } from "@/lib/types";
 import { redeemedStatusLabel } from "@/lib/redemption-status-label";
 
 type ExpressRedemptionProps = {
   code: string;
-  context: PublicRedemptionContext;
+  context: PublicRedemptionView;
 };
 
 type Phase = "ready" | "pin" | "confirm" | "redeemed";
@@ -35,7 +36,7 @@ function statusContent(status: CashierRedemptionContext["status"], redeemedAt?: 
 
 export function ExpressRedemption({ code, context: initialContext }: ExpressRedemptionProps) {
   const pinInputRef = useRef<HTMLInputElement>(null);
-  const [context, setContext] = useState<PublicRedemptionContext>(initialContext);
+  const [context, setContext] = useState<PublicRedemptionView>(initialContext);
   const [phase, setPhase] = useState<Phase>("ready");
   const [pin, setPin] = useState("");
   const [forceReason, setForceReason] = useState("");
@@ -68,7 +69,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: "authorize", pin }),
       });
-      const payload = (await response.json().catch(() => null)) as { context?: PublicRedemptionContext; error?: string } | null;
+      const payload = (await response.json().catch(() => null)) as { context?: PublicRedemptionView; error?: string } | null;
       if (!response.ok || !payload?.context) throw new Error(payload?.error ?? "Autorisation impossible.");
       setContext(payload.context);
       setPhase("confirm");
@@ -95,7 +96,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
           forceReason: canForce ? forceReason : undefined,
         }),
       });
-      const payload = (await response.json().catch(() => null)) as { context?: PublicRedemptionContext; error?: string } | null;
+      const payload = (await response.json().catch(() => null)) as { context?: PublicRedemptionView; error?: string } | null;
       if (!response.ok || !payload?.context) throw new Error(payload?.error ?? "Le retrait n’a pas pu être validé.");
       setContext(payload.context);
       setPhase("redeemed");
@@ -165,7 +166,7 @@ export function ExpressRedemption({ code, context: initialContext }: ExpressRede
               <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8993a6]">Bénéficiaire</p>
                 <p className="mt-2 text-sm font-semibold text-[#182033]">{context.firstName || "Client"}</p>
-                {context.email || context.maskedEmail ? <p className="mt-1 break-all text-xs text-[#7a8498]">{context.email ?? context.maskedEmail}</p> : null}
+                {context.maskedEmail ? <p className="mt-1 break-all text-xs text-[#7a8498]">{context.maskedEmail}</p> : null}
               </div>
               <div className="rounded-[18px] border border-[#e5ebf2] bg-[#fbfcfe] p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8993a6]">Code</p>

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { assertTrustedMutationRequest, getRequestSecurityErrorStatus } from "@/lib/request-security";
 import { assertPersistentPublicRateLimit } from "@/lib/public-security-store";
 import { captureProductEvent, merchantDistinctId } from "@/lib/product-analytics";
+import { toPublicRedemptionView } from "@/lib/public-redemption-context";
 import { logSupportEvent } from "@/lib/support-log";
 import {
   getPublicRedemptionContext,
@@ -39,7 +40,7 @@ export async function GET(_request: Request, { params }: RedemptionRouteContext)
     return NextResponse.json({ error: "Ce code de retrait est introuvable." }, { status: 404 });
   }
 
-  return NextResponse.json({ context }, { status: 200, headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json({ context: toPublicRedemptionView(context) }, { status: 200, headers: { "Cache-Control": "no-store" } });
 }
 
 export async function POST(request: Request, { params }: RedemptionRouteContext) {
@@ -79,22 +80,22 @@ export async function POST(request: Request, { params }: RedemptionRouteContext)
 
     if (mode === "authorize") {
       if (context.status === "redeemed" || context.status === "invalid") {
-        return NextResponse.json({ error: "Ce lot ne peut pas être validé dans son état actuel.", context }, { status: 409 });
+        return NextResponse.json({ error: "Ce lot ne peut pas être validé dans son état actuel.", context: toPublicRedemptionView(context) }, { status: 409 });
       }
 
-      return NextResponse.json({ authorized: true, context }, { status: 200 });
+      return NextResponse.json({ authorized: true, context: toPublicRedemptionView(context) }, { status: 200 });
     }
 
     const forceRedemption = Boolean(body?.forceRedemption);
     const forceReason = body?.forceReason?.trim() ?? "";
     if (forceRedemption && context.status === "available") {
-      return NextResponse.json({ error: "Le forçage est réservé aux lots hors période de validité.", context }, { status: 400 });
+      return NextResponse.json({ error: "Le forçage est réservé aux lots hors période de validité.", context: toPublicRedemptionView(context) }, { status: 400 });
     }
     if (forceRedemption && forceReason.length < 8) {
-      return NextResponse.json({ error: "Un motif d'au moins 8 caractères est requis pour forcer un retrait hors période.", context }, { status: 400 });
+      return NextResponse.json({ error: "Un motif d'au moins 8 caractères est requis pour forcer un retrait hors période.", context: toPublicRedemptionView(context) }, { status: 400 });
     }
     if (context.status !== "available" && !forceRedemption) {
-      return NextResponse.json({ error: "Ce lot ne peut pas être retiré en dehors de sa période de validité.", context }, { status: 409 });
+      return NextResponse.json({ error: "Ce lot ne peut pas être retiré en dehors de sa période de validité.", context: toPublicRedemptionView(context) }, { status: 409 });
     }
 
     const redeemed = await redeemMerchantLeadPrizeFromCashier({
@@ -111,7 +112,6 @@ export async function POST(request: Request, { params }: RedemptionRouteContext)
       merchantId: context.merchantId,
       campaignId: context.campaignId,
       leadId: context.leadId,
-      redemptionCode: context.redemptionCode,
     });
     void captureProductEvent(
       "express_redemption_completed",
@@ -124,7 +124,10 @@ export async function POST(request: Request, { params }: RedemptionRouteContext)
       },
     );
 
-    return NextResponse.json({ redeemed: true, context: { ...context, ...redeemed, status: "redeemed" } }, { status: 200 });
+    return NextResponse.json({
+      redeemed: true,
+      context: toPublicRedemptionView({ ...context, ...redeemed, status: "redeemed" }),
+    }, { status: 200 });
   } catch (error) {
     logSupportEvent("error", "express_redemption_failed", {
       error: error instanceof Error ? error.message : "Express redemption failed",

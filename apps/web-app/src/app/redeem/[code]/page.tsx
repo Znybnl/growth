@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ExpressRedemption } from "@/components/public/express-redemption";
+import { toPublicRedemptionView } from "@/lib/public-redemption-context";
 import { getPublicRedemptionContext } from "@/lib/store";
 
 type RedeemPageProps = {
@@ -35,5 +36,5 @@ export default async function RedeemPage({ params }: RedeemPageProps) {
     );
   }
 
-  return <ExpressRedemption code={code} context={context} />;
+  return <ExpressRedemption code={code} context={toPublicRedemptionView(context)} />;
 }

@@ -470,6 +470,16 @@ export function ImmersiveScratchTicket({
     onReveal();
   }
 
+  function revealWithoutScratch() {
+    if (!enabled || revealedRef.current) return;
+    setHasTouched(true);
+    if (!scratchStartedRef.current) {
+      scratchStartedRef.current = true;
+      onScratchStart?.();
+    }
+    reveal();
+  }
+
   function scratch(x: number, y: number) {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
@@ -751,6 +761,15 @@ export function ImmersiveScratchTicket({
         </div>
         </div>
       </div>
+      {enabled && !revealed ? (
+        <button
+          type="button"
+          onClick={revealWithoutScratch}
+          className="mx-auto mt-3 rounded-xl bg-[#111827] px-4 py-3 font-semibold text-white shadow-sm outline-none focus-visible:ring-4 focus-visible:ring-[#64748b] focus-visible:ring-offset-2"
+        >
+          Révéler le résultat
+        </button>
+      ) : null}
     </div>
   );
 }
