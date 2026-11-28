@@ -42,6 +42,62 @@ for (const width of [320,390,1280]) {
   });
 }
 
+for (const variant of [
+  { name: "immersive", query: "", width: 390 },
+  { name: "immersive-320", query: "", width: 320 },
+  { name: "classic", query: "?template=classic", width: 1280 },
+]) {
+  test(`révélation clavier ${variant.name} : une session préparée, une participation, aucun nouveau tirage`, async ({ page }, info) => {
+    await page.setViewportSize({ width: variant.width, height: 844 });
+    let sessions = 0;
+    const played: unknown[] = [];
+    const events: string[] = [];
+    await page.route("**/api/**", async (route) => {
+      const url = new URL(route.request().url());
+      const body = route.request().postDataJSON();
+      if (url.pathname.includes("/campaign/")) return route.fulfill({ json: { campaign: { actions: [] } } });
+      if (url.pathname.endsWith("/event")) {
+        events.push(body.eventType);
+        return route.fulfill({ json: { event: {} } });
+      }
+      if (url.pathname.endsWith("/draw/session")) {
+        sessions += 1;
+        return route.fulfill({ json: { prize: null, session: {
+          id: "fixture-keyboard-session", campaignId: "fixture-participation", status: "pending",
+          createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 900000).toISOString(),
+          participationToken: "fixture-signed-capability",
+        } } });
+      }
+      if (url.pathname.endsWith("/draw/played")) {
+        played.push(body);
+        return route.fulfill({ json: { recorded: true } });
+      }
+      throw new Error(`Unexpected API request: ${url.pathname}`);
+    });
+
+    await page.goto(`/dev/participation-proof${variant.query}`);
+    if (variant.name === "classic") await page.getByRole("button", { name: "Jouer", exact: true }).click();
+    else await page.locator("canvas").first().click();
+    await page.getByRole("dialog").getByRole("button", { name: /JOUER|Gratter|Jouer/i }).last().click();
+    const reveal = page.getByRole("button", { name: "Révéler le résultat", exact: true });
+    await expect(reveal).toBeVisible();
+    await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
+    const beforePath = info.outputPath(`scratch-${variant.name}-ready-${variant.width}.png`);
+    await page.screenshot({ path: beforePath, fullPage: true, animations: "disabled" });
+    await info.attach(`Ticket prêt (${variant.name}, ${variant.width}px)`, { path: beforePath, contentType: "image/png" });
+
+    await reveal.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("heading", { name: "Perdu", exact: true })).toBeVisible();
+    expect(sessions).toBe(1);
+    expect(played).toEqual([{ campaignId: "fixture-participation", sessionId: "fixture-keyboard-session", token: "fixture-signed-capability" }]);
+    expect(events.filter((event) => event === "game_lost")).toHaveLength(1);
+    const resultPath = info.outputPath(`scratch-${variant.name}-lost-${variant.width}.png`);
+    await page.screenshot({ path: resultPath, fullPage: true, animations: "disabled" });
+    await info.attach(`Résultat perdant (${variant.name}, ${variant.width}px)`, { path: resultPath, contentType: "image/png" });
+  });
+}
+
 test("prévisualisation : premier grattage sans enregistrement réel",async({page})=>{
   let played=0;let events=0;
   await page.route("**/api/**",async(route)=>{

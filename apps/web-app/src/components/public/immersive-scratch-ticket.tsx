@@ -765,7 +765,14 @@ export function ImmersiveScratchTicket({
         <button
           type="button"
           onClick={revealWithoutScratch}
-          className="mx-auto mt-3 rounded-xl bg-[#111827] px-4 py-3 font-semibold text-white shadow-sm outline-none focus-visible:ring-4 focus-visible:ring-[#64748b] focus-visible:ring-offset-2"
+          className={`rounded-xl bg-[#111827] px-4 py-3 font-semibold text-white shadow-sm outline-none focus-visible:ring-4 focus-visible:ring-[#64748b] focus-visible:ring-offset-2 ${travelTheme ? "mx-auto mt-3" : ""}`}
+          style={travelTheme ? undefined : {
+            position: "fixed",
+            left: "50%",
+            bottom: "calc(env(safe-area-inset-bottom, 0px) + 4rem)",
+            transform: "translateX(-50%)",
+            zIndex: 60,
+          }}
         >
           Révéler le résultat
         </button>

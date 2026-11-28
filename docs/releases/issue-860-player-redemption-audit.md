@@ -9,7 +9,7 @@
 
 L’issue #860 a été créée pour réunir l’audit et les corrections ciblées. Le niveau P0 correspond à la priorité demandée pour le chantier : **aucun défaut P0 n’a été reproduit dans les scénarios locaux exécutés**. Trois défauts P1 ont été établis par lecture des flux et corrigés dans la branche : les coordonnées et identifiants internes transmis à la page publique de retrait, les données sensibles écrites dans les journaux de support, et l’absence d’alternative clavier au grattage.
 
-Les contrôles locaux confirment la compilation, les tests ciblés de parcours/SQL et les E2E publics disponibles. L’audit reste partiel pour les parcours gagnants réels, les retraits avec un jeu de données complet, les modèles visuels, les appareils physiques, les mesures de performance et les e-mails. Aucun score de conformité ne peut donc être affirmé. À titre d’orientation seulement, l’état initial est estimé à **7/10 pour le parcours joueur** et **7/10 pour le retrait**, avec un niveau de confiance faible faute de recette complète.
+Les contrôles locaux confirment la compilation, les tests ciblés de parcours/SQL et les E2E publics disponibles. Une fixture Playwright rend le vrai composant du jeu avec des réponses API contrôlées : elle vérifie la révélation clavier en immersif à 320 et 390 px et en classique desktop. L’audit reste partiel pour les parcours gagnants et retraits réels, les appareils physiques, les mesures de performance et les e-mails. Aucun score de conformité ne peut donc être affirmé. À titre d’orientation seulement, l’état initial est estimé à **7/10 pour le parcours joueur** et **7/10 pour le retrait**, avec un niveau de confiance faible faute de recette complète.
 
 **Risque résiduel : moyen à élevé** jusqu’à la décision sur l’entropie et la limitation des recherches de codes, ainsi qu’au traitement autorisé des anciennes lignes de journaux. Les corrections de cette PR réduisent les expositions futures; elles ne nettoient pas l’historique.
 
@@ -75,24 +75,37 @@ Le schéma résume les branches présentes; il ne constitue pas une preuve de re
 | `test:support-log-sanitize` | 2/2 réussis. |
 | `test:session-action-guard` | 1/1 réussi. |
 | `e2e/public-safety.spec.ts` | 4/4 réussis sur Chromium local, avec Supabase désactivé. États couverts : destination image invalide, jeton de prévisualisation invalide, code de retrait introuvable, génération SVG du QR. |
-| Lint | 0 erreur; 4 avertissements `window.location.assign()` préexistants dans les formulaires d’inscription et de gestion d’établissement, hors fichiers modifiés. |
+| E2E de révélation clavier | 3/3 réussis : scratch immersif à 320 et 390 px, template classique à 1280 px. Vérifie une seule session préparée, une seule participation, un état `game_lost` cohérent et aucun tirage supplémentaire. |
+| E2E `participation`, `gain-popins`, `game-screen-layout` | 38 réussis; 1 test de gain flaky a dépassé son délai en attendant le dialogue « Jouer maintenant », puis a réussi au retry (serveur Webpack local sous `CI=true`). |
+| Lint | `npm run lint --workspace @okado/web-app -- src e2e` : 0 erreur, 4 avertissements `window.location.assign()` préexistants dans les formulaires d’inscription et de gestion d’établissement, hors fichiers modifiés. Le lint sans chemins a aussi parcouru `playwright-report/trace/assets` généré par E2E et échoué sur le code vendor de ces artefacts; le contrôle source + E2E est passé. |
 | Build / TypeScript | `next build` réussi sous Next.js 16.4.6. |
 | `git diff --check` | Réussi (fichiers CRLF vérifiés avec `core.whitespace=cr-at-eol`). |
 | Checks Vercel sur la PR | 2/2 réussis (`growth`, `okado-index`). Aucun statut GitHub Actions n’est apparu dans les statuts consultés. |
 
 Les avertissements Node `MODULE_TYPELESS_PACKAGE_JSON` observés pendant les tests ne font pas échouer les suites.
 
-## Captures réelles disponibles
+## Captures de l’application locale — erreurs
 
-Ces captures viennent de l’application locale réelle et montrent deux états d’erreur effectivement vérifiés. Elles ne remplacent pas les captures d’un gain valide, d’un retrait ou des variantes de templates; aucun jeu de test local complet n’était disponible dans ce worktree.
+Ces deux captures viennent de l’application locale réelle et montrent des erreurs effectivement vérifiées.
 
 ![Retrait introuvable — émulation mobile](issue-860-screenshots/redemption-not-found-mobile.png)
 
 ![Jeton de prévisualisation invalide — desktop](issue-860-screenshots/preview-invalid-desktop.png)
 
+## Captures du composant avec fixture Playwright
+
+Ces captures rendent le vrai composant React et son style avec campagne, résultat et API fictifs interceptés par Playwright. Elles vérifient visuellement l’emplacement du bouton clavier, notamment sur un viewport étroit de 320 px. Elles ne représentent pas une campagne publiée ni un retrait réel. Les six fichiers ont été produits par les trois scénarios d’E2E clavier décrits plus haut.
+
+| Variante / viewport | Résultat prêt | Après révélation |
+|---|---|---|
+| Scratch immersif — 320 px | [Capture](issue-860-screenshots/scratch-immersive-320-ready-320.png) | [Capture](issue-860-screenshots/scratch-immersive-320-lost-320.png) |
+| Scratch immersif — 390 px | [Capture](issue-860-screenshots/scratch-immersive-ready-390.png) | [Capture](issue-860-screenshots/scratch-immersive-lost-390.png) |
+| Ticket classique — 1280 px | [Capture](issue-860-screenshots/scratch-classic-ready-1280.png) | [Capture](issue-860-screenshots/scratch-classic-lost-1280.png) |
+
 ## Limites et scénarios non exécutés
 
-- Pas de campagne locale publiée avec gains déterministes permettant de capturer les états gagnant/perdant, formulaires avant/après, QR/code valides ou le bouton de révélation accessible.
+- Pas de campagne locale publiée avec gains déterministes permettant de capturer les formulaires avant/après, un QR/code valide ou un retrait; les captures scratch utilisent une fixture Playwright et couvrent une révélation perdante contrôlée.
+- Pas de recette de bout en bout d’un gain réel ou de ses variantes conditionnelles; l’E2E agrégé a connu un timeout flaky sur une attente de dialogue de gain, réussi au retry.
 - Pas de recette réelle des templates actifs, des longues valeurs, du responsive complet, des navigateurs intégrés ou des appareils iOS/Android.
 - Pas d’audit WCAG automatisé ni de test manuel lecteur d’écran/focus complet; seule l’absence de commande clavier du ticket a été vérifiée puis corrigée dans le code.
 - Pas de mesures reproductibles de performance ni de réseau ralenti. Les travaux de l’issue #395 ont été consultés, mais cette PR ne revendique aucun gain de performance.
@@ -120,7 +133,8 @@ Ces captures viennent de l’application locale réelle et montrent deux états 
 - `apps/web-app/src/lib/support-log.ts`
 - `apps/web-app/src/lib/support-log-sanitize.ts` et son test
 - `apps/web-app/src/lib/participation-api.test.mjs`
+- `apps/web-app/e2e/fixtures/participation.tsx`, `apps/web-app/e2e/participation.spec.ts` et `apps/web-app/src/app/dev/participation-proof/page.tsx`
 - `apps/web-app/package.json`
-- `docs/releases/issue-860-player-redemption-audit.md` et les deux captures référencées
+- `docs/releases/issue-860-player-redemption-audit.md` et les huit captures référencées
 
 **Retour arrière du code :** revert de la PR. Aucune migration SQL n’est incluse.
