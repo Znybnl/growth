@@ -5,8 +5,8 @@ import { publicContent } from "../src/lib/public-content";
 test("production excludes drafts from routes, listing, sitemap and public links", async ({ request }) => {
   const drafts = blogPosts.filter((post) => post.draft);
   expect(drafts.map((post) => post.path)).not.toContain("/blog/animation-salon-coiffure");
-  expect(drafts).toHaveLength(3);
-  expect(drafts.map((post) => post.path)).toEqual(expect.arrayContaining(["/blog/cahier-des-charges-animation-commerciale", "/blog/organiser-remise-lots-jeu-magasin", "/blog/jeu-qr-code-file-attente-commerce"]));
+  expect(drafts).toHaveLength(1);
+  expect(drafts.map((post) => post.path)).toEqual(["/blog/jeu-qr-code-file-attente-commerce"]);
   expect(blogPosts.some((post) => post.path === "/blog/jeu-qr-code-salon-coiffure")).toBe(false);
   expect((await request.get("/blog/jeu-qr-code-salon-coiffure")).status()).toBe(404);
   expect(drafts.length).toBeGreaterThan(0);
@@ -72,4 +72,17 @@ test("approved hair salon guide has public metadata, incoming link and mobile ta
   expect(await (await request.get("/sitemap.xml")).text()).toContain(`https://www.okado.app${slug}`);
   await page.goto("/blog/idees-animations-commerciales-boutique");
   await expect(page.locator(`a[href="${slug}"]`)).toHaveCount(1);
+});
+
+
+test("two approved guides are public with metadata and sitemap entries", async ({ page, request }) => {
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  for (const slug of ["/blog/cahier-des-charges-animation-commerciale", "/blog/organiser-remise-lots-jeu-magasin"]) {
+    expect((await page.goto(slug))?.status()).toBe(200);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://www.okado.app${slug}`);
+    await expect(page.locator('meta[property="article:published_time"]')).toHaveAttribute("content", "2026-11-28");
+    expect(sitemap).toContain(`https://www.okado.app${slug}`);
+    const graph = (await page.locator('script[type="application/ld+json"]').allTextContents()).flatMap((v) => JSON.parse(v)["@graph"] ?? []);
+    expect(graph.find((item) => item["@type"] === "BlogPosting")).toMatchObject({ datePublished: "2026-11-28" });
+  }
 });

@@ -133,8 +133,8 @@ export type BlogPost = {
 export const blogPosts: BlogPost[] = [
   {
     "path": "/blog/cahier-des-charges-animation-commerciale",
-    "draft": true,
     "requiresApproval": true,
+    "publicationApproval": { "approver": "Pierre-Henri BRUNELLE", "date": "2026-11-28" },
     "title": "Cahier des charges d’une animation commerciale : modèle pour un commerce",
     "seoTitle": "Cahier des charges d’une animation commerciale : modèle à compléter",
     "description": "Utilisez un modèle de cahier des charges à compléter : objectif, planning, budget, responsables et bilan de votre animation commerciale.",
@@ -142,7 +142,7 @@ export const blogPosts: BlogPost[] = [
     "intro": "Une animation réussie sur le papier peut devenir difficile à tenir si personne n’a prévu le stock, les horaires ou la personne qui accueille. Un cahier des charges tient parfois en une page : il rend les choix visibles avant de communiquer.",
     "answer": "Pour préparer le cahier des charges d’une animation commerciale, indiquez l’objectif, le public, le format, les dates, le budget, les responsabilités, les conditions et les mesures à suivre. Vérifiez les moyens réellement disponibles avant de lancer l’opération.",
     "author": "L’équipe Okado",
-    "publishedAt": "2026-11-27",
+    "publishedAt": "2026-11-28",
     "updatedAt": "2026-11-28",
     "reviewedAt": "2026-11-28",
     "readingTime": "7 min de lecture",
@@ -414,8 +414,8 @@ export const blogPosts: BlogPost[] = [
   },
   {
     "path": "/blog/organiser-remise-lots-jeu-magasin",
-    "draft": true,
     "requiresApproval": true,
+    "publicationApproval": { "approver": "Pierre-Henri BRUNELLE", "date": "2026-11-28" },
     "title": "Comment organiser la remise des lots d’un jeu en magasin ?",
     "seoTitle": "Remise des lots d’un jeu en magasin : mode d’emploi",
     "description": "Préparez la remise des lots : conditions visibles, consignes pour l’équipe, retrait et suivi des gains non encore remis.",
@@ -423,7 +423,7 @@ export const blogPosts: BlogPost[] = [
     "intro": "Un jeu ne s’arrête pas au message « gagné ». Pour éviter qu’un client et l’équipe découvrent les conditions au comptoir, préparez la remise avant de diffuser l’opération : lot disponible, période, personne responsable et procédure de vérification.",
     "answer": "Pour organiser la remise des lots, décrivez les conditions avant le jeu, réservez les dotations, briefez l’équipe et testez le parcours de retrait. Suivez séparément les gains attribués et les retraits confirmés.",
     "author": "L’équipe Okado",
-    "publishedAt": "2026-11-10",
+    "publishedAt": "2026-11-28",
     "updatedAt": "2026-11-28",
     "reviewedAt": "2026-11-28",
     "readingTime": "6 min de lecture",
