@@ -106,6 +106,7 @@ function acquisitionContext() {
   const page = safeAnalyticsPage(window.location.pathname);
   const utm = (key: string) => {
     const value = params.get(key);
+    if (key === "utm_source" && value?.toLowerCase() === "chatgpt.com") return "chatgpt.com";
     return value && /^[a-z0-9_-]{1,80}$/i.test(value) ? value : undefined;
   };
   return {

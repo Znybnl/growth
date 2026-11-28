@@ -432,6 +432,20 @@ consigne les valeurs et les limites avant déploiement du correctif.
 
 ### Exploitation du blog après le correctif du 21 octobre 2026
 
+### Attribution ChatGPT — correction #862
+
+La source explicite `utm_source=chatgpt.com` est reconnue sur la vitrine,
+les CTA et l'application après consentement. Seul ce domaine exact est autorisé
+en plus des valeurs historiques alphanumériques. Les domaines arbitraires,
+adresses e-mail et URL complètes restent exclus. Les événements passés ne sont
+pas réattribués. Le paramètre reste lu sur l'URL courante : il n'est pas
+conservé lors d'une navigation sans UTM. La source d'une arrivée non marquée
+reste inconnue et le domaine référent brut n'est pas collecté.
+
+La mesure sans consentement nécessite une étude distincte de sa configuration,
+de ses finalités et de son éligibilité aux conditions CNIL. Aucune exemption
+n'est déduite du seul caractère agrégé ou anonyme d'un résultat.
+
 Noter l'heure du déploiement production effectivement vérifié avant de comparer
 les articles dans le rapport Pages vues existant. Les anciens événements
 `/other` ne peuvent pas être réattribués. Les anciens CTA éditoriaux pouvaient

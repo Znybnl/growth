@@ -20,7 +20,7 @@ export function captureMarketingEvent(
     posthog.capture(event, {
       ...properties,
       page,
-      utmSource: safeUtm(params.get("utm_source")),
+      utmSource: safeUtm(params.get("utm_source"), true),
       utmMedium: safeUtm(params.get("utm_medium")),
       utmCampaign: safeUtm(params.get("utm_campaign")),
       source: "client",
@@ -30,6 +30,7 @@ export function captureMarketingEvent(
   });
 }
 
-function safeUtm(value: string | null) {
+function safeUtm(value: string | null, isSource = false) {
+  if (isSource && value?.toLowerCase() === "chatgpt.com") return "chatgpt.com";
   return value && /^[a-z0-9_-]{1,80}$/i.test(value) ? value : undefined;
 }

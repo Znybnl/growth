@@ -171,6 +171,12 @@ for (const app of ["web-app", "landing-page"]) {
     assert.equal(JSON.stringify(acquisition).includes("#secret"), false);
     assert.equal(JSON.stringify(acquisition).includes("private@"), false);
     window.location.pathname = "/redeem/private-gain";
+    window.location.search = "?utm_source=ChatGPT.com&utm_medium=organic&utm_campaign=launch_2026";
+    const chatgpt = config.before_send({ event: "$pageview", properties: {} });
+    assert.equal(chatgpt.properties.utmSource, "chatgpt.com");
+    window.location.search = "?utm_source=private.example.test&utm_medium=organic";
+    const unknownDomain = config.before_send({ event: "$pageview", properties: {} });
+    assert.equal(unknownDomain.properties.utmSource, undefined);
     window.location.search = "?utm_source=private%40example.test&utm_medium=cpc&utm_campaign=launch_2026";
     const restricted = config.before_send({ event: "$pageview", properties: {} }).properties;
     assert.equal(restricted.page, app === "web-app" ? "/redeem/[code]" : "/other");
