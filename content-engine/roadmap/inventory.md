@@ -4,6 +4,7 @@ Généré depuis le registre ; le sujet et l’intention sont des hypothèses d�
 
 | Titre | URL | Sujet / intention probable |
 | --- | --- | --- |
+| Cahier des charges d’une animation commerciale : modèle pour un commerce | /blog/cahier-des-charges-animation-commerciale | Organisation commerciale — répondre à « Cahier des charges d’une animation commerciale : modèle pour un commerce » |
 | Animation en salon de coiffure : idées et conseils pour se lancer | /blog/animation-salon-coiffure | Coiffure — répondre à « Animation en salon de coiffure : idées et conseils pour se lancer » |
 | Comment proposer un jeu QR code pendant l’attente en magasin ? | /blog/jeu-qr-code-file-attente-commerce | Expérience en magasin — répondre à « Comment proposer un jeu QR code pendant l’attente en magasin ? » |
 | Comment organiser la remise des lots d’un jeu en magasin ? | /blog/organiser-remise-lots-jeu-magasin | Organisation des lots — répondre à « Comment organiser la remise des lots d’un jeu en magasin ? » |

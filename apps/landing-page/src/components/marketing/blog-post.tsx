@@ -105,7 +105,7 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
               <span>{post.readingTime}</span>
             </div>
             <p className={practical ? "mt-3 max-w-3xl text-sm leading-6 text-[#667085]" : "mt-4 max-w-3xl text-sm leading-6 text-[#b9c7d9]"}>
-              {practical ? "Guide préparé avec une assistance IA. Les exemples fictifs ne sont pas des résultats clients." : "Guide préparé avec une assistance IA et publié par Okado, éditeur de jeux par QR code. Les cas signalés comme fictifs sont des simulations, pas des résultats clients."}
+              {practical || post.draft ? "Guide préparé avec une assistance IA. Les exemples fictifs ne sont pas des résultats clients." : "Guide préparé avec une assistance IA et publié par Okado, éditeur de jeux par QR code. Les cas signalés comme fictifs sont des simulations, pas des résultats clients."}
             </p>
           </div>
         </header>
@@ -173,7 +173,7 @@ export function BlogPostTemplate({ post }: { post: BlogPost }) {
                   </p>
                 ))}
                 {section.items ? (
-                  <ol className={practical ? "mt-6 grid list-decimal gap-3 pl-5 text-base leading-7 text-[#4b5563] marker:font-semibold marker:text-[#6c00f6]" : "mt-6 grid gap-3 pl-5 text-base leading-7 text-[#4b5563] marker:font-semibold marker:text-[#6c00f6]"}>
+                  <ol className={practical || section.ordered ? "mt-6 grid list-decimal gap-3 pl-5 text-base leading-7 text-[#4b5563] marker:font-semibold marker:text-[#6c00f6]" : "mt-6 grid gap-3 pl-5 text-base leading-7 text-[#4b5563] marker:font-semibold marker:text-[#6c00f6]"}>
                     {section.items.map((item) => (
                       <li key={item} className="pl-2">
                         <BlogInlineText text={item} />

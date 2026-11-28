@@ -85,6 +85,7 @@ export type BlogSection = ContentSection & {
   result?: string;
   fallback?: string;
   optional?: boolean;
+  ordered?: boolean;
   checklist?: string[];
   figures?: {
     src: string;
@@ -130,6 +131,105 @@ export type BlogPost = {
 };
 
 export const blogPosts: BlogPost[] = [
+  {
+    "path": "/blog/cahier-des-charges-animation-commerciale",
+    "draft": true,
+    "requiresApproval": true,
+    "title": "Cahier des charges d’une animation commerciale : modèle pour un commerce",
+    "seoTitle": "Cahier des charges d’une animation commerciale : modèle à compléter",
+    "description": "Utilisez un modèle de cahier des charges à compléter : objectif, planning, budget, responsables et bilan de votre animation commerciale.",
+    "eyebrow": "Organisation commerciale",
+    "intro": "Une animation réussie sur le papier peut devenir difficile à tenir si personne n’a prévu le stock, les horaires ou la personne qui accueille. Un cahier des charges tient parfois en une page : il rend les choix visibles avant de communiquer.",
+    "answer": "Pour préparer le cahier des charges d’une animation commerciale, indiquez l’objectif, le public, le format, les dates, le budget, les responsabilités, les conditions et les mesures à suivre. Vérifiez les moyens réellement disponibles avant de lancer l’opération.",
+    "author": "L’équipe Okado",
+    "publishedAt": "2026-11-27",
+    "updatedAt": "2026-11-28",
+    "reviewedAt": "2026-11-28",
+    "readingTime": "7 min de lecture",
+    "image": "/images/blog/cout-animation-commerciale-commerce.webp",
+    "imageAlt": "Illustration d’une commerçante préparant les postes d’une animation",
+    "takeaway": {
+      "title": "Une fiche courte, un responsable par décision",
+      "text": "Commencez par les contraintes qui peuvent empêcher l’opération : temps, stock, conditions et capacité d’accueil. Complétez la fiche avec votre équipe avant toute annonce."
+    },
+    "source": [
+      {
+        "label": "CCI Bordeaux Gironde — boîte à outils animations commerciales",
+        "href": "https://www.bordeauxgironde.cci.fr/sites/g/files/mwbcuj1076/files/2020-09/boite_a_outils_animations_et_reglementations-compress%C3%A9_0.pdf"
+      },
+      {
+        "label": "DGCCRF — règles françaises sur les loteries publicitaires",
+        "href": "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/loterie-des-pratiques-commerciales-reglementees"
+      },
+      {
+        "label": "CNIL — prospection par courriel et SMS",
+        "href": "https://www.cnil.fr/fr/la-prospection-commerciale-par-courrier-electronique-sms-mms-et-automate-dappel"
+      }
+    ],
+    "sections": [
+      {
+        "title": "À quoi sert le cahier des charges ?",
+        "paragraphs": [
+          "Il rassemble les décisions qui permettront à l’équipe de préparer, présenter et terminer l’animation : quoi proposer, à qui, où, quand, avec quels moyens et qui tranche en cas de problème. Il ne remplace ni un devis, ni les conditions d’un jeu, ni une vérification juridique adaptée.",
+          "Pour une petite opération, une fiche partagée suffit si elle reste compréhensible par les personnes concernées. La [boîte à outils de la CCI Bordeaux Gironde](https://www.bordeauxgironde.cci.fr/sites/g/files/mwbcuj1076/files/2020-09/boite_a_outils_animations_et_reglementations-compress%C3%A9_0.pdf) présente notamment le cadrage et le bilan d’une animation. La structure ci-dessous est une proposition à adapter, pas un formulaire obligatoire."
+        ]
+      },
+      {
+        "title": "Modèle de fiche à compléter",
+        "paragraphs": [
+          "Copiez cette fiche dans votre document ou vos notes, puis remplissez les champs entre crochets avec votre équipe. Elle est adaptable ; aucun fichier à télécharger n’est nécessaire."
+        ],
+        "items": [
+          "Objectif : [action recherchée et résultat à observer].",
+          "Public : [personnes concernées et contexte de participation].",
+          "Format et lieu : [animation, emplacement et modalités de participation].",
+          "Planning : [préparation, début, fin et remise éventuelle des gains].",
+          "Budget : [plafond de dotations, supports, outil éventuel, temps d’équipe et autres frais].",
+          "Responsables : [préparation, accueil, suivi des stocks, remise et personne de relais].",
+          "Conditions : [éligibilité, dates, éventuelles restrictions et informations accessibles aux participants].",
+          "Validation avant lancement : [personne qui vérifie stocks, conditions, support et parcours final].",
+          "Bilan : [indicateurs à suivre, responsable et date du point d’équipe]."
+        ]
+      },
+      {
+        "title": "Définissez l’objectif et les contraintes avant le format",
+        "paragraphs": [
+          "Choisissez un objectif principal formulé comme une action observable : présenter une nouveauté, proposer un atelier ou inviter à une prochaine visite. Précisez le public, le lieu et le moment où la personne peut réellement participer. Un jeu est une possibilité, pas une condition pour animer un commerce.",
+          "Si votre équipe ne peut pas quitter la caisse, évitez un atelier qui réclame un accompagnement continu. Si vous proposez des lots utilisables plus tard, réservez la capacité de les remettre. Comparez les formats dans les [idées d’animations en boutique](/blog/idees-animations-commerciales-boutique), puis revenez à cette fiche pour arrêter vos choix."
+        ]
+      },
+      {
+        "title": "Chiffrez le plafond et attribuez les responsabilités",
+        "paragraphs": [
+          "Exemple fictif pour une boutique : 20 lots à 3 € représentent 60 € si tous sont remis. Ajoutez, selon vos coûts réels, les supports, le temps de préparation et de service, l’éventuel outil et les autres frais ; 60 € n’est donc pas le coût complet. Utilisez une base HT ou TTC cohérente et prévoyez les gains encore valides après la fin de l’animation.",
+          "La fiche doit nommer la personne qui décide du budget, celle qui prépare le support et celle qui vérifie ou remet les lots à chaque créneau. Le [guide du coût d’une animation](/blog/cout-animation-commerciale-commerce) détaille le chiffrage ; le présent modèle sert à coordonner les décisions."
+        ]
+      },
+      {
+        "title": "Planifiez le lancement et la fin",
+        "paragraphs": [
+          "Avant le lancement, confirmez la disponibilité des produits, relisez la promesse et les conditions, briefez l’équipe et testez le support final. Pendant l’opération, indiquez qui traite les questions et surveille les stocks. À la fin, retirez les affiches périmées et gardez une procédure pour les gains encore valides.",
+          "Mini-rétroplanning fictif pour une boutique : J−7, l’équipe choisit le format et réserve les lots ; J−2, elle vérifie les conditions et teste le support ; jour J, une personne présente l’animation et une autre reste disponible pour les questions ; à la fin, le responsable retire les affiches et note les gains encore valides ; J+7, il fait le bilan avec l’équipe. Adaptez ces délais et rôles à vos moyens.",
+          "Si vous choisissez un jeu QR avec Okado, prévisualisez le parcours, puis distinguez le QR de test du QR de diffusion. Définissez vos lots et conditions dans les limites du produit ; le commerce reste responsable de son organisation. Le [fonctionnement d’Okado](/comment-ca-marche) présente les étapes."
+        ]
+      },
+      {
+        "title": "Vérifiez les conditions et préparez le bilan",
+        "paragraphs": [
+          "Pour une loterie publicitaire en France, consultez la DGCCRF et vérifiez le cadre applicable à votre opération : les promesses et les modalités annoncées doivent rester loyales. Si vous recueillez des coordonnées, identifiez la finalité et vérifiez les règles CNIL ; ne confondez pas gestion de participation et consentement à la prospection. Faites relire les conditions si le cas le nécessite.",
+          "Avant de commencer, décidez qui notera quoi : participation, gain attribué, retrait confirmé ou retour qualitatif de l’équipe. Un retrait ne prouve pas une vente supplémentaire et une différence entre deux périodes ne prouve pas à elle seule que l’animation en est la cause. Le [guide de mesure](/blog/mesurer-animation-commerciale) aide à interpréter ces données."
+        ]
+      }
+    ],
+    "related": [
+      "/blog/idees-animations-commerciales-boutique",
+      "/blog/cout-animation-commerciale-commerce",
+      "/blog/mesurer-animation-commerciale",
+      "/comment-ca-marche"
+    ],
+    "ctaLabel": "Découvrir comment fonctionne Okado",
+    "ctaHref": "/comment-ca-marche"
+  },
   {
     "path": "/blog/animation-salon-coiffure",
     "requiresApproval": true,
@@ -317,21 +417,21 @@ export const blogPosts: BlogPost[] = [
     "draft": true,
     "requiresApproval": true,
     "title": "Comment organiser la remise des lots d’un jeu en magasin ?",
-    "seoTitle": "Remise des lots d’un jeu en magasin : méthode",
-    "description": "Préparez la remise des lots : conditions, rôles de l’équipe, suivi des stocks et distinction entre gain et retrait.",
+    "seoTitle": "Remise des lots d’un jeu en magasin : mode d’emploi",
+    "description": "Préparez la remise des lots : conditions visibles, consignes pour l’équipe, retrait et suivi des gains non encore remis.",
     "eyebrow": "Organisation des lots",
-    "intro": "Pour chaque lot, notez ce qui est remis, le lieu, la période, les éventuelles exclusions et la personne qui peut répondre aux questions. L’information annoncée au participant doit correspondre à ce que l’équipe peut effectivement délivrer.",
-    "answer": "Organiser la remise des gains en point de vente. Commencez par définir le parcours, tester le support et préciser les responsabilités de l’équipe.",
+    "intro": "Un jeu ne s’arrête pas au message « gagné ». Pour éviter qu’un client et l’équipe découvrent les conditions au comptoir, préparez la remise avant de diffuser l’opération : lot disponible, période, personne responsable et procédure de vérification.",
+    "answer": "Pour organiser la remise des lots, décrivez les conditions avant le jeu, réservez les dotations, briefez l’équipe et testez le parcours de retrait. Suivez séparément les gains attribués et les retraits confirmés.",
     "author": "L’équipe Okado",
     "publishedAt": "2026-11-10",
-    "updatedAt": "2026-11-10",
-    "reviewedAt": "2026-11-10",
-    "readingTime": "4 min de lecture",
+    "updatedAt": "2026-11-28",
+    "reviewedAt": "2026-11-28",
+    "readingTime": "6 min de lecture",
     "image": "/images/blog/jeu-concours-evenement-local.webp",
     "imageAlt": "Illustration d’une animation commerciale locale",
     "takeaway": {
-      "title": "Préparez un parcours réaliste",
-      "text": "Testez le parcours avec votre équipe et précisez les conditions avant toute diffusion."
+      "title": "Une promesse tient jusqu’à la remise",
+      "text": "Préparez la dotation et le rôle de chaque personne avant de communiquer. Un gain attribué reste à honorer selon ses conditions, même après la fin du jeu."
     },
     "source": [
       {
@@ -345,38 +445,110 @@ export const blogPosts: BlogPost[] = [
     ],
     "sections": [
       {
-        "title": "Décrivez la remise avant le lancement",
+        "title": "Avant le jeu : préparez une fiche de remise",
         "paragraphs": [
-          "Pour chaque lot, notez ce qui est remis, le lieu, la période, les éventuelles exclusions et la personne qui peut répondre aux questions. L’information annoncée au participant doit correspondre à ce que l’équipe peut effectivement délivrer.",
-          "Exemple fictif : un commerce offre cinq accessoires disponibles en deux couleurs. Il précise que le choix dépend du stock et indique les horaires auxquels le retrait est possible."
+          "Pour chaque dotation, écrivez son nom précis, les quantités, le lieu et les horaires de retrait, la durée de validité et les conditions applicables. Faites relire la fiche à la personne qui recevra les gagnants : elle doit pouvoir retrouver la même information que le client.",
+          "Exemple fictif : une boutique prévoit cinq accessoires, en deux couleurs selon disponibilité, à retirer sur place aux horaires d’ouverture jusqu’à la date indiquée. La fiche interne précise leur emplacement et le nom du responsable du réassort. Ne transformez pas ces hypothèses en conditions réellement configurées sans les vérifier."
+        ],
+        "table": {
+          "caption": "Fiche de remise à compléter avant la diffusion",
+          "headers": [
+            "À préciser",
+            "Exemple fictif",
+            "Qui vérifie ?"
+          ],
+          "rows": [
+            [
+              "Dotation et stock",
+              "5 accessoires, couleurs selon stock",
+              "Responsable du stock"
+            ],
+            [
+              "Retrait",
+              "En boutique, pendant les horaires annoncés",
+              "Équipe d’accueil"
+            ],
+            [
+              "Validité et conditions",
+              "Dates et exclusions annoncées avant participation",
+              "Responsable de l’opération"
+            ],
+            [
+              "Contact en cas de doute",
+              "Personne désignée sur chaque créneau",
+              "Équipe de service"
+            ]
+          ]
+        }
+      },
+      {
+        "title": "Pendant le service : répartissez les rôles",
+        "paragraphs": [
+          "Désignez qui contrôle les conditions, où se trouvent les lots et qui peut aider en cas de doute. Une fiche courte près du comptoir est utile si l’équipe change selon les horaires ; ne laissez pas le PIN marchand sur un support visible des clients.",
+          "Testez trois situations avec l’équipe : un gain valide et disponible, un gain présenté après la période annoncée, et un produit absent de son emplacement. Ne créez pas de condition supplémentaire au comptoir et ne promettez pas une substitution qui contredirait l’opération. En cas d’incertitude, faites vérifier la situation par la personne responsable.",
+          "Le [guide de choix des lots](/blog/choisir-lots-jeu-qr-code-commerce) aide à sélectionner les récompenses et à établir leur budget ; ici, la décision porte sur leur remise effective."
         ]
       },
       {
-        "title": "Répartissez les rôles dans l’équipe",
+        "title": "Distinguez le QR du jeu et le justificatif du gain",
         "paragraphs": [
-          "Une personne prépare la liste des lots et leur emplacement ; chaque membre concerné sait à qui demander de l’aide si un article manque. Testez le scénario avant diffusion, y compris une demande présentée après la date indiquée : l’équipe doit connaître la procédure prévue par le commerce.",
-          "Ne donnez pas à un client une nouvelle condition qui contredit la promesse initiale. Pour choisir les dotations et estimer leur plafond, consultez le [guide des lots](/blog/choisir-lots-jeu-qr-code-commerce)."
+          "Le QR de diffusion ouvre le jeu. Le justificatif de gain sert à présenter un résultat gagnant pour sa remise : ce sont deux étapes différentes. Demandez au participant de présenter le support prévu par votre opération et vérifiez la dotation et les conditions avant de confirmer.",
+          "Dans Okado, le QR de gain ouvre la page de retrait ; le PIN marchand sert à confirmer la remise après contrôle. Le code de secours identifie le gain : il ne remplace pas le PIN. Le modèle recommandé d’e-mail de gain comporte ce code ; sa réception dépend du parcours et de l’e-mail effectivement configurés. Le [fonctionnement d’Okado](/comment-ca-marche) présente le parcours général.",
+          "Testez la prévisualisation séparément du QR public, puis vérifiez le support de diffusion et les consignes de retrait avant de l’installer. Les résultats de test ne sont pas des retraits clients."
         ]
       },
       {
-        "title": "Testez le parcours de retrait",
+        "title": "Les 5 vérifications avant de remettre un lot",
         "paragraphs": [
-          "Dans Okado, le gagnant conserve un QR de gain et un code de secours ; l’équipe vérifie les conditions puis valide le retrait avec le PIN de l’établissement. La page [comment ça marche](/comment-ca-marche) décrit ce parcours. Testez le jeu en prévisualisation puis le support de diffusion selon les procédures du site.",
-          "Le QR de gain et le QR de diffusion ont des usages différents : le premier sert à présenter un gain, le second ouvre le jeu. Un gain attribué ne doit pas être compté comme un retrait avant validation."
+          "À effectuer par la personne chargée de la remise, avant toute confirmation :"
+        ],
+        "ordered": true,
+        "items": [
+          "Vérifiez que le justificatif correspond au bon établissement et au lot annoncé.",
+          "Contrôlez les dates et les conditions affichées pour ce gain.",
+          "Vérifiez le statut : un gain déjà retiré ne doit pas être remis à nouveau.",
+          "Assurez-vous que la dotation prévue est disponible et que les conditions de remise sont respectées.",
+          "Si tout est conforme, confirmez le retrait selon le parcours utilisé, puis remettez le lot. Sur la page ouverte par le QR, la confirmation demande le PIN marchand. En cas de doute, faites intervenir le responsable."
         ]
       },
       {
-        "title": "Anticipez les écarts et les questions",
+        "title": "Traitez les exceptions sans improviser",
         "paragraphs": [
-          "Si le lot annoncé n’est plus disponible, mettez de côté la demande et recherchez une solution conforme aux conditions de votre opération ; ne promettez pas une substitution non prévue. La DGCCRF rappelle que les loteries publicitaires ne doivent pas être déloyales.",
-          "Si des coordonnées sont utilisées pour des messages commerciaux, distinguez cette finalité de la remise du gain et vérifiez les règles de la CNIL. Le consentement marketing dans Okado est distinct et facultatif."
-        ]
+          "Si le produit annoncé manque ou si une vérification échoue, faites intervenir le responsable avant toute confirmation. Ne recueillez ni ne conservez de coordonnées supplémentaires par défaut : utilisez seulement les informations nécessaires et les procédures de votre commerce. Cherchez une solution conforme aux conditions de l’opération ; une substitution ne se présume pas autorisée.",
+          "En France, la DGCCRF distingue notamment les loteries publicitaires et les autres jeux de hasard. Consultez sa fiche et faites relire les conditions de votre opération si nécessaire. Pour la prospection électronique, vérifiez les règles CNIL et ne confondez pas la gestion du gain avec l’accord pour recevoir des messages commerciaux."
+        ],
+        "table": {
+          "caption": "Que faire en cas de difficulté ?",
+          "headers": [
+            "Situation",
+            "Action de l’équipe"
+          ],
+          "rows": [
+            [
+              "Gain déjà retiré",
+              "Ne remettez pas une seconde fois ; demandez au responsable de vérifier le statut."
+            ],
+            [
+              "QR de gain illisible",
+              "Si le code de secours est disponible, présentez-le au responsable autorisé à le rechercher dans l’espace marchand ; suivez ensuite les instructions du parcours connecté."
+            ],
+            [
+              "Lot absent",
+              "Vérifiez le stock et les conditions avec le responsable avant de proposer une solution."
+            ],
+            [
+              "Date ou condition incertaine",
+              "Suspendez la remise et faites vérifier les conditions annoncées."
+            ]
+          ]
+        }
       },
       {
-        "title": "Faites un rapprochement simple",
+        "title": "Après le jeu : rapprochez les gains et les retraits",
         "paragraphs": [
-          "Après l’opération, comparez les gains attribués, les retraits validés et les dotations restantes. Une différence peut correspondre à un gain pas encore retiré ; elle ne prouve pas une erreur sans examen.",
-          "Exemple fictif : sur 10 lots attribués, 7 retraits sont validés et 3 restent à présenter, sous réserve de leur validité. Suivez les échéances et le stock réel sans assimiler ces trois gains à des ventes."
+          "Comparez les gains attribués, les retraits confirmés, les gains encore valides et les dotations effectivement disponibles. Un gain attribué n’est pas automatiquement retiré ; un gain non retiré n’est pas nécessairement une erreur. Conservez les réserves nécessaires selon les conditions annoncées.",
+          "Exemple fictif : 10 gains attribués moins 7 retraits confirmés laissent 3 gains à examiner. S’ils sont encore valides, vérifiez que les trois dotations correspondantes peuvent être remises. Le calcul ne mesure ni ventes supplémentaires ni rentabilité.",
+          "Pour choisir quoi suivre au-delà de la remise, consultez [mesurer une animation commerciale](/blog/mesurer-animation-commerciale)."
         ]
       }
     ],
