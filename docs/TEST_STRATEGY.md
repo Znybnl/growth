@@ -608,7 +608,6 @@ absence de publication/écriture. Voir [la livraison #577](releases/2026-10-25-g
 
 ## QR de diffusion administrateur — #470
 
-La suite `test:admin-campaigns` vérifie la nouvelle route avec sessions/base simulées et le vrai générateur SVG partagé : refus 401/403 avant lecture, jeu absent/site archivé, erreur de base sans divulgation, bon lien public sans jeton de test, fichier téléchargeable privé, brouillon sans publication et audit technique hors indicateurs marchand. Les tests de rendu/câblage couvrent la liste, le Wizard et sa confirmation. Les permissions HTTP réelles sont ajoutées à `admin-campaign-access.spec.ts`. La fixture `/dev/admin-qr-proof` (404 en production) teste les vrais composants à 320/390/1280 px et le téléchargement d’un fichier synthétique, sans contourner l’authentification serveur.
 
 Recette : Pilotage → Voir les jeux → QR de diffusion, puis Modifier le jeu et Télécharger le QR de diffusion après enregistrement. Scanner le SVG d’un jeu publié doit ouvrir le bon jeu public ; celui d’un brouillon ne le publie pas. Le QR de test reste temporaire et isolé. Aucune campagne réelle n’est modifiée par les tests.
 
@@ -745,3 +744,14 @@ réels avec requêtes interceptées : absence/refus/accord cookies, DOM décompr
 masqué, identité, déconnexion, route publique, arrêt global et erreur serveur.
 Les suites de consentement et identité existantes doivent rester vertes. Aucune
 capture réelle n’est autorisée par l’exécution de ces tests synthétiques.
+
+## Récupération du mot de passe — #798
+
+test:password-recovery vérifie l’empreinte d’adresse non réversible, la validation
+du jeton Supabase avant la mise à jour, la liaison au même utilisateur, la reprise
+après un mot de passe refusé, la déconnexion et le modèle d’e-mail.
+e2e/password-recovery.spec.ts teste la demande, le message générique, le rate limit,
+l’accès direct, le retrait du fragment, la validation des champs et la réussite avec
+les routes API interceptées. Aucun compte Supabase, e-mail ou destinataire réel
+n’est utilisé. La recette fournisseur reste manuelle sur un compte et une boîte de
+test autorisés.

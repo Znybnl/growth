@@ -23,6 +23,8 @@ export const OPERATIONAL_API_ROUTES = [
   "/api/auth/google/callback",
   "/api/auth/google/session",
   "/api/auth/google/start",
+  "/api/auth/recovery/complete",
+  "/api/auth/recovery/request",
   "/api/auth/signin",
   "/api/auth/signout",
   "/api/auth/signup",

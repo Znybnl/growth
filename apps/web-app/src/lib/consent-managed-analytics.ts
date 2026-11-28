@@ -174,6 +174,21 @@ export function syncAnalyticsConsent() {
       },
       before_send: (event) => {
         if (!event || isPublicGamePage(window.location.pathname) || !hasAnalyticsConsent()) return null;
+        // A reset link can carry a one-time token in the fragment before the
+        // page removes it. Do not measure this credential page or its exit.
+        const currentUrl = event.properties?.$current_url;
+        let currentPath: string | null = null;
+        if (typeof currentUrl === "string") {
+          try {
+            currentPath = new URL(currentUrl, window.location.origin).pathname;
+          } catch {
+            currentPath = null;
+          }
+        }
+        if (
+          window.location.pathname === "/reinitialiser-mot-de-passe" ||
+          currentPath === "/reinitialiser-mot-de-passe"
+        ) return null;
         const consent = readAnalyticsConsent()!;
         // The SDK also attaches person properties at the payload root on
         // identification, not only inside properties. They can contain the

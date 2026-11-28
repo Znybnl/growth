@@ -53,6 +53,7 @@ Référence : [API PostHog — endpoints publics et privés, authentification](h
 | Événement | Déclenchement | Propriétés utiles |
 | --- | --- | --- |
 | `signup_completed` | compte créé côté serveur, y compris callback Google actif, uniquement si compte nouveau | `authProvider`, `source`, `environment` |
+| `password_reset_requested` | demande soumise côté client, avant toute réponse de Supabase, uniquement avec consentement | aucune |
 | `onboarding_started` | première étape observée avec consentement pendant ce montage de l’écran | `step` |
 | `onboarding_step_viewed` | étape affichée ou observée après accord ; dédupliquée tant que l’étape reste la même | `step` |
 | `onboarding_step_completed` | passage à l’étape suivante après validation ; PIN après réponse de sauvegarde réussie | `step` |

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { CookiePreferences } from "@/components/privacy/cookie-preferences";
 import {
   Bebas_Neue,
@@ -169,6 +170,12 @@ export default function RootLayout({
       <body className="min-h-full">
         {children}
         <CookiePreferences alignment="right" />
+        <Script id="okado-recovery-fragment" strategy="beforeInteractive">
+          {`if (window.location.pathname === "/reinitialiser-mot-de-passe" && window.location.hash) {
+            window.__okadoRecoveryFragment = window.location.hash;
+            window.history.replaceState(window.history.state, "", window.location.pathname);
+          }`}
+        </Script>
       </body>
     </html>
   );
