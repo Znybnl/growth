@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useId, type CSSProperties, type ReactNode } from "react";
+import { Fragment, useId, type CSSProperties, type ReactNode } from "react";
 import { FittedWheelLabel } from "./fitted-wheel-label";
 import { SUNSET_DRIVE } from "@/lib/sunset-drive-theme";
 import { legibleSegmentTextColor } from "@/lib/color-contrast";
@@ -34,11 +34,14 @@ export function SunsetGameHeader({ logoMode, logoText, logoUrl, logoWidthPx, log
   title: string; titleFontSizePx: number; titleFontFamily: string; titleAlign: TextAlign; secondaryText: string; subtitleSpacingPx: number; scratch?: boolean;
 }) {
   const Heading = scratch ? "h2" : "h1";
+  const titleLines = title.split(/\r?\n/);
   return <>
     {logoMode !== "none" ? <header className={styles.brand} style={{ marginBottom: unit(logoBottomSpacingPx), textAlign: logoAlign, color: SUNSET_DRIVE.ivory }}>
       {logoMode === "image" && logoUrl ? <Image src={logoUrl} alt={logoText} width={720} height={240} unoptimized className={styles.brandImage} style={{ width: unit(logoWidthPx), marginLeft: logoAlign === "left" ? 0 : "auto", marginRight: logoAlign === "right" ? 0 : "auto" }} /> : logoMode === "text" ? <p className={styles.brandText} style={{ fontSize: unit(logoTextSizePx) }}>{logoText}</p> : null}
     </header> : null}
-    <Heading className={styles.sunsetTitle} style={{ color: SUNSET_DRIVE.ivory, textAlign: titleAlign, fontFamily: titleFontFamily, "--sunset-title-scale": titleFontSizePx / 40 } as CSSProperties}>{title}</Heading>
+    <Heading className={styles.sunsetTitle} style={{ color: SUNSET_DRIVE.ivory, textAlign: titleAlign, fontFamily: titleFontFamily, "--sunset-title-scale": titleFontSizePx / 40 } as CSSProperties}>
+      {titleLines.map((line, index) => <Fragment key={index}>{index > 0 ? "\n" : null}<span>{line}</span></Fragment>)}
+    </Heading>
     {secondaryText.trim() ? <p className={styles.sunsetSubtitle} data-testid={scratch ? "travel-scratch-subtitle" : "christmas-wheel-subtitle"} style={{ color: SUNSET_DRIVE.ivory, marginTop: unit(subtitleSpacingPx) }}>{secondaryText}</p> : null}
   </>;
 }

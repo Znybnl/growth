@@ -16,14 +16,14 @@ test("Sunset Drive : typographie, fond, lots et interaction", async ({ page }, i
     const heading = scene.locator("h1");
     const subtitle = scene.getByTestId("christmas-wheel-subtitle");
     await expect(heading).toHaveCSS("text-transform", "uppercase");
-    await expect(heading).toHaveCSS("font-weight", "800");
+    await expect(heading).toHaveCSS("font-weight", "900");
     await expect(subtitle).toHaveCSS("font-weight", "600");
     await expect(subtitle).toHaveCSS("font-style", "italic");
     await expect(subtitle).toHaveText("Tentez votre chance");
     await expect(heading).toHaveCSS("color", "rgb(255, 240, 214)");
     await expect(subtitle).toHaveCSS("color", "rgb(255, 240, 214)");
     if (width === 390) {
-      expect(parseFloat(await heading.evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(42.12, 1);
+      expect(parseFloat(await heading.evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(44.85, 1);
       expect(parseFloat(await subtitle.evaluate(e => getComputedStyle(e).fontSize))).toBeCloseTo(19.89, 1);
     }
     await expect(page.locator('img[data-template-art="travel-sunset-drive"]')).toHaveJSProperty("complete", true);
