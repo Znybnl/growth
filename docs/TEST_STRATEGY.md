@@ -589,6 +589,10 @@ La suite `test:admin-campaigns` couvre aussi les vrais handlers de duplication a
 
 `npm run test:campaign-duplication -w @okado/web-app` vérifie le mapping des lots vers une copie : nouvel identifiant, conditions d’utilisation conservées (texte renseigné ou vide), achat requis conservé séparément, marqueur de coût non renseigné conservé, et absence de reprise de l’identifiant source ou du stock courant. `test:admin-campaigns` vérifie aussi la conservation de ce marqueur dans les copies administratives.
 
+## Réglage de clic Google à la duplication — #853
+
+`test:campaign-duplication` couvre la copie des valeurs activée et désactivée du réglage « Clic Google requis » et vérifie que l’accord Google lié au jeu source n’est pas transféré. `test:admin-campaigns` vérifie le réglage conservé dans une copie administrative et l’absence de transfert de l’identifiant d’accord.
+
 ## Confirmation d’enregistrement — #577
 
 `e2e/game-ready-577.spec.ts` vérifie la confirmation dans le vrai cadre marchand

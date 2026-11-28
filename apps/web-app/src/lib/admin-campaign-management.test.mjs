@@ -378,6 +378,7 @@ function sourcePerformance(merchantId = "site") {
     campaign: {
       id: "existing", merchantId, title: "Modèle", subtitle: "Un cadeau vous attend", isActive: true,
       goalType: "social_follow", gameType: "scratch", emailCaptureEnabled: true,
+      googleClickRequired: true, googleClickAcceptanceId: "source-google-acceptance",
       ctaLabel: "Suivez-nous", successMetric: "Fidélité", targetUrl: "https://source.test",
       accent: {ink:"#111111",paper:"#ffffff",signal:"#ccaa88"},
       logoMode:"image",logoText:"Logo source",logoUrl:"https://example.test/source-logo.webp",
@@ -428,6 +429,8 @@ test("copie : réglages conservés, nouveaux IDs, stock initial, aucun résultat
   assert.equal(copy.isActive,false);
   assert.equal(copy.id,undefined);
   assert.equal(copy.gameType,"scratch");
+  assert.equal(copy.googleClickRequired,true);
+  assert.equal(copy.googleClickAcceptanceId,undefined);
   assert.deepEqual(copy.presentation,source.campaign.presentation);
   assert.deepEqual(copy.rewardRules,source.campaign.rewardRules);
   assert.equal(copy.prizes[0].id,undefined);

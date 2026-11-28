@@ -1,5 +1,6 @@
 import { conversionRate, globalConversion, isMarketingClick, isPendingGain, effectiveRedemptionDate, marketingVolumes } from "@/lib/metric-rules";
 import { hasLocalGoogleClickAcceptance } from "@/lib/google-click-acceptance";
+import { buildDuplicatedGoogleClickSetting } from "@/lib/campaign-duplication";
 import { selectGuaranteedPrize } from "@/lib/guaranteed-draw";
 import {
   createDrawSessionInSupabase,
@@ -2328,7 +2329,7 @@ function duplicateCampaignInMemory(id: string, merchantId = merchantSeed.id) {
   const campaignId = generateId("camp");
   const duplicate: Campaign = {
     ...clone(campaign),
-    googleClickRequired: false,
+    ...buildDuplicatedGoogleClickSetting(campaign),
     googleClickAcceptanceId: undefined,
     id: campaignId,
     title: `${campaign.title} (copie)`,

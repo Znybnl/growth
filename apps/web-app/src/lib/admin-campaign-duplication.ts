@@ -1,4 +1,5 @@
 import { wizardMarketingActionUrl } from "./wizard-marketing-actions.mjs";
+import { buildDuplicatedGoogleClickSetting } from "@/lib/campaign-duplication";
 import type { CampaignPerformance, CampaignSetupInput, Merchant } from "@/lib/types";
 
 /** Copy configuration only, never participation, gains, current stock or source IDs. */
@@ -39,6 +40,7 @@ export function buildAdminCampaignCopy(
     subtitle: campaign.subtitle,
     goalType: campaign.goalType,
     emailCaptureEnabled: campaign.emailCaptureEnabled,
+    ...buildDuplicatedGoogleClickSetting(campaign),
     ctaLabel: campaign.ctaLabel,
     successMetric: campaign.successMetric,
     targetUrl: adaptMerchantIdentity ? actions[0]?.url : campaign.targetUrl,
